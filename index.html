@@ -459,7 +459,7 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
 #tracker.album-mondiali2026 .filter-pill { background: rgba(10,0,20,0.85); border-color: rgba(255,255,255,0.12); }
 </style>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
 <body>
 
 <!-- POPUP -->
@@ -475,17 +475,42 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
 </div>
 
 <!-- AUTH MODAL -->
-<div class="auth-overlay" id="auth-overlay">
+<div id="auth-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:99999;align-items:center;justify-content:center;padding:20px">
   <div class="auth-box">
     <div class="auth-logo">Figu<span>Book</span></div>
     <div class="auth-subtitle">la tua collezione digitale</div>
-    <div class="auth-title">Accedi al tuo account</div>
-    <div class="auth-desc">Inserisci la tua email per ricevere un link di accesso. I tuoi progressi saranno salvati nel cloud e sincronizzati su tutti i dispositivi.</div>
+
+    <!-- TABS -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-magic" onclick="switchTab('magic')">✉️ Link Email</button>
+      <button class="auth-tab" id="tab-pass" onclick="switchTab('pass')">🔒 Password</button>
+    </div>
+
     <div class="auth-msg" id="auth-msg"></div>
     <div class="auth-err" id="auth-err"></div>
-    <input class="auth-input" id="auth-email" type="email" placeholder="la-tua@email.com" />
-    <button class="auth-btn" id="auth-send-btn" onclick="sendMagicLink()">Invia link di accesso ✉️</button>
-    <div><span class="auth-skip" onclick="skipLogin()">Continua senza account (salvataggio locale)</span></div>
+
+    <!-- MAGIC LINK -->
+    <div id="panel-magic">
+      <p class="auth-desc">Ricevi un link di accesso via email. Nessuna password da ricordare!</p>
+      <input class="auth-input" id="auth-email-magic" type="email" placeholder="la-tua@email.com" />
+      <button class="auth-btn" id="auth-magic-btn" onclick="sendMagicLink()">Invia link di accesso ✉️</button>
+    </div>
+
+    <!-- PASSWORD -->
+    <div id="panel-pass" style="display:none">
+      <div class="auth-subtabs">
+        <button class="auth-subtab active" id="subtab-login" onclick="switchSubTab('login')">Accedi</button>
+        <button class="auth-subtab" id="subtab-signup" onclick="switchSubTab('signup')">Registrati</button>
+      </div>
+      <input class="auth-input" id="auth-email-pass" type="email" placeholder="la-tua@email.com" />
+      <input class="auth-input" id="auth-password" type="password" placeholder="Password" />
+      <input class="auth-input" id="auth-password2" type="password" placeholder="Conferma password" style="display:none" />
+      <button class="auth-btn" id="auth-pass-btn" onclick="submitPassword()">Accedi</button>
+    </div>
+
+    <div style="text-align:center;margin-top:8px">
+      <span class="auth-skip" onclick="skipLogin()">Continua senza account</span>
+    </div>
   </div>
 </div>
 
@@ -497,7 +522,7 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
       <div class="fb-sub">la tua collezione digitale</div>
     </div>
     <div class="header-user" id="header-user">
-      <button class="login-btn" onclick="showAuthModal()">Accedi</button>
+      <button class="login-btn" id="accedi-btn">Accedi</button>
     </div>
   </div>
   <div class="home-content">
@@ -636,7 +661,7 @@ function updateHeaderAuth() {
     el.innerHTML = '<div class="header-user"><span class="user-email">'+currentUser.email+'</span><div class="user-avatar" title="Logout — clicca per uscire" onclick="doLogout()">'+initial+'</div></div>';
     updateSyncBadge(true);
   } else {
-    el.innerHTML = '<button class="login-btn" onclick="showAuthModal()">Accedi</button>';
+    el.innerHTML = '<button class="login-btn" id="accedi-btn">Accedi</button>';
     updateSyncBadge(false);
   }
 }
@@ -649,12 +674,18 @@ function updateSyncBadge(online) {
     : '<span class="sync-badge offline">💾 locale</span>';
 }
 
-function showAuthModal() { document.getElementById('auth-overlay').classList.add('show'); }
-function hideAuthModal() { document.getElementById('auth-overlay').classList.remove('show'); }
+function showAuthModal() {
+  const el = document.getElementById('auth-overlay');
+  if(el) { el.style.display='flex'; el.classList.add('show'); }
+}
+function hideAuthModal() {
+  const el = document.getElementById('auth-overlay');
+  if(el) el.style.display='none';
+}
 function skipLogin()     { hideAuthModal(); }
 
 async function sendMagicLink() {
-  const email = document.getElementById('auth-email').value.trim();
+  const email = (document.getElementById('auth-email-magic')||document.getElementById('auth-email')||{value:''}).value.trim();
   const btn   = document.getElementById('auth-send-btn');
   const msg   = document.getElementById('auth-msg');
   const err   = document.getElementById('auth-err');
@@ -674,6 +705,54 @@ async function sendMagicLink() {
     err.style.display='block';
     btn.disabled=false; btn.textContent='Invia link di accesso ✉️';
   }
+}
+
+function switchTab(tab) {
+  document.getElementById('panel-magic').style.display = tab==='magic' ? 'block' : 'none';
+  document.getElementById('panel-pass').style.display  = tab==='pass'  ? 'block' : 'none';
+  document.getElementById('tab-magic').className = 'auth-tab'+(tab==='magic'?' active':'');
+  document.getElementById('tab-pass').className  = 'auth-tab'+(tab==='pass' ?' active':'');
+  document.getElementById('auth-msg').style.display='none';
+  document.getElementById('auth-err').style.display='none';
+}
+
+function switchSubTab(sub) {
+  const isSignup = sub==='signup';
+  document.getElementById('auth-password2').style.display = isSignup?'block':'none';
+  document.getElementById('auth-pass-btn').textContent = isSignup ? 'Registrati' : 'Accedi';
+  document.getElementById('subtab-login').className  = 'auth-subtab'+(sub==='login' ?' active':'');
+  document.getElementById('subtab-signup').className = 'auth-subtab'+(sub==='signup'?' active':'');
+}
+
+async function submitPassword() {
+  const email = document.getElementById('auth-email-pass').value.trim();
+  const pass  = document.getElementById('auth-password').value;
+  const pass2 = document.getElementById('auth-password2').value;
+  const btn   = document.getElementById('auth-pass-btn');
+  const msg   = document.getElementById('auth-msg');
+  const err   = document.getElementById('auth-err');
+  const isSignup = btn.textContent === 'Registrati';
+  err.style.display='none'; msg.style.display='none';
+  if(!email||!pass){err.textContent='Inserisci email e password.';err.style.display='block';return;}
+  if(isSignup && pass!==pass2){err.textContent='Le password non coincidono.';err.style.display='block';return;}
+  btn.disabled=true; btn.textContent='...';
+  try {
+    let result;
+    if(isSignup) {
+      result = await supa.auth.signUp({email, password:pass});
+    } else {
+      result = await supa.auth.signInWithPassword({email, password:pass});
+    }
+    if(result.error) throw result.error;
+    if(isSignup){
+      msg.textContent='✅ Account creato! Controlla la tua email per confermare.';
+      msg.style.display='block';
+    }
+  } catch(e) {
+    err.textContent='Errore: '+(e.message||'riprova più tardi.');
+    err.style.display='block';
+  }
+  btn.disabled=false; btn.textContent=isSignup?'Registrati':'Accedi';
 }
 
 async function doLogout() {
@@ -981,6 +1060,17 @@ function importOldData() {
 
 initSupabase();
 try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
+
+// Attach login button with addEventListener as failsafe
+document.addEventListener('DOMContentLoaded', function() {
+  var btn = document.getElementById('accedi-btn');
+  if(btn) {
+    btn.addEventListener('click', function() {
+      var modal = document.getElementById('auth-overlay');
+      if(modal) modal.style.display = 'flex';
+    });
+  }
+});
 }
 
 /* ══════════════════════════════════════════════
@@ -1446,6 +1536,17 @@ function importOldData() {
 
 initSupabase();
 try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
+
+// Attach login button with addEventListener as failsafe
+document.addEventListener('DOMContentLoaded', function() {
+  var btn = document.getElementById('accedi-btn');
+  if(btn) {
+    btn.addEventListener('click', function() {
+      var modal = document.getElementById('auth-overlay');
+      if(modal) modal.style.display = 'flex';
+    });
+  }
+});
 </script>
 </body>
 </html>
