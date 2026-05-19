@@ -459,7 +459,7 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
 #tracker.album-mondiali2026 .filter-pill { background: rgba(10,0,20,0.85); border-color: rgba(255,255,255,0.12); }
 </style>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <body>
 
 <!-- POPUP -->
@@ -475,7 +475,7 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
 </div>
 
 <!-- AUTH MODAL -->
-<div id="auth-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:99999;align-items:center;justify-content:center;padding:20px">
+<div id="auth-overlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.92);z-index:99999;align-items:center;justify-content:center;padding:20px;flex-direction:column">
   <div class="auth-box">
     <div class="auth-logo">Figu<span>Book</span></div>
     <div class="auth-subtitle">la tua collezione digitale</div>
@@ -1058,16 +1058,17 @@ function importOldData() {
   } catch(e) { alert('Errore durante importazione: '+e.message); }
 }
 
-initSupabase();
 try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
+window.addEventListener('load', function() {
+  try { initSupabase(); } catch(e) { console.warn('Supabase init error:', e); }
+});
 
 // Attach login button with addEventListener as failsafe
 document.addEventListener('DOMContentLoaded', function() {
   var btn = document.getElementById('accedi-btn');
   if(btn) {
     btn.addEventListener('click', function() {
-      var modal = document.getElementById('auth-overlay');
-      if(modal) modal.style.display = 'flex';
+      showAuthModal();
     });
   }
 });
@@ -1534,16 +1535,17 @@ function importOldData() {
   } catch(e) { alert('Errore durante importazione: '+e.message); }
 }
 
-initSupabase();
 try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
+window.addEventListener('load', function() {
+  try { initSupabase(); } catch(e) { console.warn('Supabase init error:', e); }
+});
 
 // Attach login button with addEventListener as failsafe
 document.addEventListener('DOMContentLoaded', function() {
   var btn = document.getElementById('accedi-btn');
   if(btn) {
     btn.addEventListener('click', function() {
-      var modal = document.getElementById('auth-overlay');
-      if(modal) modal.style.display = 'flex';
+      showAuthModal();
     });
   }
 });
