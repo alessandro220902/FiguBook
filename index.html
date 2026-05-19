@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FiguBook</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&family=Inter:wght@400;500;600;700;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-height:100vh}
+
+/* ── HOME ── */
+#home{min-height:100vh;display:flex;flex-direction:column;position:relative}
+
+/* Football hex pattern background */
+#home::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-color:#070d1f;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(201,168,76,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(26,74,107,0.08) 0%, transparent 40%);
+}
+#home::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg stroke='%23ffffff' stroke-width='0.3' stroke-opacity='0.04'%3E%3Cpolygon points='30,2 52,15 52,45 30,58 8,45 8,15'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.fb-header{
+  position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 18px 14px;
+  background:rgba(7,13,31,0.95);
+  border-bottom:1px solid rgba(201,168,76,0.2);
+}
+.fb-logo-wrap{display:flex;flex-direction:column}
+.fb-logo{display:flex;align-items:center;gap:0}
+.fb-logo .figu{font-size:26px;font-weight:900;color:#c9a84c;letter-spacing:1px;line-height:1}
+.fb-logo .book{font-size:26px;font-weight:900;color:#fff;letter-spacing:1px;line-height:1}
+.fb-logo .sep{width:3px;height:3px;background:#c9a84c;border-radius:50%;margin:0 3px 4px}
+.fb-sub{font-size:8px;letter-spacing:3.5px;color:#3a4a6a;text-transform:uppercase;margin-top:2px}
+.fb-version{font-size:9px;color:#3a4a6a;letter-spacing:1px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15);padding:3px 8px;border-radius:4px}
+
+.home-content{position:relative;z-index:1;flex:1;padding:18px 14px}
+
+.home-greeting{margin-bottom:18px}
+.home-greeting h2{font-size:20px;font-weight:900;color:#fff;letter-spacing:.5px;margin-bottom:3px}
+.home-greeting p{font-size:10px;letter-spacing:2px;color:#3a4a6a;text-transform:uppercase}
+
+.albums-grid{display:flex;flex-direction:column;gap:12px}
+
+/* Album card */
+.album-card{
+  border-radius:14px;cursor:pointer;
+  transition:all .18s;position:relative;overflow:hidden;
+  border:1.5px solid rgba(255,255,255,0.06);
+}
+.album-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+.album-card.last-opened{border-color:rgba(201,168,76,0.4)}
+.album-card.coming-soon{opacity:0.5;cursor:default}
+.album-card.coming-soon:hover{transform:none;box-shadow:none}
+
+/* Card cover area */
+.album-cover{
+  height:110px;position:relative;overflow:hidden;
+  display:flex;align-items:flex-end;padding:0 16px 12px;
+}
+.album-cover-bg{position:absolute;inset:0;z-index:0;background-size:cover}
+.album-cover-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.55) 100%)}
+.album-cover-pattern{
+  position:absolute;inset:0;z-index:2;
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='18' fill='none' stroke='%23ffffff' stroke-width='0.4' stroke-opacity='0.06'/%3E%3Cline x1='2' y1='20' x2='38' y2='20' stroke='%23ffffff' stroke-width='0.3' stroke-opacity='0.04'/%3E%3Cline x1='20' y1='2' x2='20' y2='38' stroke='%23ffffff' stroke-width='0.3' stroke-opacity='0.04'/%3E%3C/svg%3E");
+}
+.album-cover-titles{position:relative;z-index:3;display:flex;flex-direction:column;gap:2px}
+.album-cover-big{
+  font-family:'Poppins',sans-serif !important;
+  font-size:28px;font-weight:900;
+  color:#fff;letter-spacing:2px;
+  line-height:1;text-transform:uppercase;
+  text-shadow:0 2px 10px rgba(0,0,0,0.8);
+}
+.theme-serie-a .album-cover-big{color:#f5c842}
+.theme-world-cup .album-cover-big{color:#ffffff}
+.theme-champions .album-cover-big{color:#c8c8ff}
+.album-cover-small{
+  font-family:'Inter',sans-serif !important;
+  font-size:12px;font-weight:500;
+  color:rgba(255,255,255,0.85);letter-spacing:1px;
+  text-shadow:0 1px 6px rgba(0,0,0,0.8);
+}
+.album-cover-season{
+  position:relative;z-index:1;
+  font-size:8px;letter-spacing:3px;color:rgba(255,255,255,0.6);text-transform:uppercase;font-weight:400;
+}
+.album-badge{
+  position:absolute;top:10px;right:12px;z-index:4;
+  font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
+  padding:3px 9px;border-radius:3px;
+}
+.badge-last{background:#c9a84c;color:#0a0e2a}
+.badge-soon{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1)}
+.badge-new{background:#1a5c2e;color:#3ecf74}
+
+/* Card body */
+.album-body{background:rgba(10,16,40,0.98);padding:12px 16px 14px}
+.album-name{font-size:20px;font-weight:900;color:#fff;letter-spacing:.5px;margin-bottom:10px;line-height:1.1}
+.album-name span{color:#c9a84c}
+
+.album-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.ast{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:7px 4px;text-align:center}
+.ast-val{font-size:15px;font-weight:900;line-height:1;color:#c9a84c}
+.ast-lbl{font-size:7.5px;letter-spacing:1px;color:#3a4a6a;text-transform:uppercase;margin-top:2px}
+.ast.green .ast-val{color:#3ecf74}
+.ast.red   .ast-val{color:#e05252}
+.ast.gold  .ast-val{color:#c9a84c}
+
+.album-pbar-bg{background:rgba(255,255,255,0.06);border-radius:3px;height:4px;overflow:hidden;margin-bottom:6px}
+.album-pbar-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.fill-green{background:linear-gradient(90deg,#3ecf74,#7effa0)}
+.fill-gold{background:linear-gradient(90deg,#c9a84c,#f5c842)}
+.fill-gray{background:rgba(255,255,255,0.08)}
+
+.album-meta{display:flex;justify-content:space-between;font-size:9px;color:#3a4a6a;letter-spacing:.5px}
+.album-meta .arrow{color:#c9a84c;font-size:14px;line-height:1}
+
+/* Album color themes */
+.theme-serie-a .album-cover-bg{background:linear-gradient(135deg,#080b3a 0%,#1a1f6e 50%,#2a0a0a 100%)}
+.theme-serie-a .album-cover-overlay{background:linear-gradient(to bottom,transparent 0%,rgba(10,16,40,0.8) 100%)}
+
+.theme-world-cup .album-cover-bg{background:linear-gradient(135deg,#0a2a50 0%,#1a4a80 40%,#8a6010 100%)}
+.theme-world-cup .album-cover-overlay{background:linear-gradient(to bottom,transparent 0%,rgba(10,16,40,0.8) 100%)}
+
+.theme-champions .album-cover-bg{background:linear-gradient(135deg,#0a0a2a 0%,#1a1a50 50%,#3a3a3a 100%)}
+.theme-champions .album-cover-overlay{background:linear-gradient(to bottom,transparent 0%,rgba(10,16,40,0.8) 100%)}
+
+/* Footer */
+.home-footer{position:relative;z-index:1;background:rgba(7,13,31,0.95);border-top:1px solid rgba(255,255,255,0.04);padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
+.footer-text{font-size:8px;color:#2a3a5a;letter-spacing:2px;text-transform:uppercase}
+.footer-dot{width:4px;height:4px;border-radius:50%;background:#c9a84c;opacity:0.4}
+
+/* ── TRACKER ── */
+#tracker{display:none;min-height:100vh;flex-direction:column}
+#tracker.open{display:flex}
+
+.tracker-header{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:2px solid #1e2a5e;background:#0a1020}
+.back-btn{background:#1e2a5e;border:none;color:#c9a84c;font-size:18px;font-weight:900;width:32px;height:32px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.back-btn:hover{background:#c9a84c;color:#0a0e2a}
+.tracker-title{flex:1}
+.tracker-title .t-season{font-size:8px;letter-spacing:2px;color:#4a5a8a;text-transform:uppercase}
+.tracker-title .t-name{font-size:15px;font-weight:900;color:#fff}
+.tracker-title .t-name span{color:#c9a84c}
+
+.tracker-body{flex:1;padding:10px 12px;max-width:920px;width:100%;margin:0 auto}
+
+/* stats */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.stat{background:#0f1a3a;border:1px solid #1e2a5e;border-radius:6px;padding:8px 4px;text-align:center}
+.stat-val{font-size:20px;font-weight:900;color:#c9a84c;line-height:1}
+.stat-lbl{font-size:8px;letter-spacing:1px;color:#4a5a8a;text-transform:uppercase;margin-top:2px}
+.stat.good .stat-val{color:#3ecf74}
+.stat.bad  .stat-val{color:#e05252}
+
+.progress-wrap{background:#0f1a3a;border:1px solid #1e2a5e;border-radius:6px;padding:8px 12px;margin-bottom:10px}
+.progress-bar-bg{background:#1e2a5e;border-radius:4px;height:6px;overflow:hidden;margin-top:4px}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,#3ecf74,#7effa0);border-radius:4px;transition:width .4s ease}
+.progress-lbl{display:flex;justify-content:space-between;font-size:9px;color:#4a5a8a;margin-top:3px}
+
+/* mode bar */
+.mode-bar{display:grid;gap:6px;margin-bottom:10px}
+.mode-bar.cols5{grid-template-columns:repeat(5,1fr)}
+.mode-bar.cols4{grid-template-columns:repeat(4,1fr)}
+.mode-btn{background:#0f1a3a;border:2px solid #1e2a5e;color:#4a5a8a;font-size:9.5px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;padding:9px 4px;border-radius:6px;cursor:pointer;transition:all .15s;text-align:center}
+.mode-btn:hover{border-color:#c9a84c;color:#c9a84c}
+.mode-btn.m-miss {background:#7a1a1a;border-color:#e05252;color:#fff}
+.mode-btn.m-found{background:#0f3d22;border-color:#3ecf74;color:#fff}
+.mode-btn.m-lista{background:#0d2a45;border-color:#3498db;color:#fff}
+.mode-btn.m-quad {background:#1a1a0a;border-color:#c9a84c;color:#c9a84c}
+.mode-btn.m-doppi{background:#2d1a4a;border-color:#9b59b6;color:#fff}
+
+/* tabs */
+.controls{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.tabs{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.tab{background:#0f1a3a;border:1.5px solid #1e2a5e;color:#4a5a8a;font-size:9px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;padding:7px 6px;border-radius:5px;cursor:pointer;transition:all .13s;flex:1;text-align:center;min-width:50px}
+.tab:hover{border-color:#c9a84c;color:#c9a84c}
+.tab.t-miss {background:#7a1a1a;border-color:#e05252;color:#fff}
+.tab.t-found{background:#0f3d22;border-color:#3ecf74;color:#fff}
+.tab.t-doppi{background:#2d1a4a;border-color:#9b59b6;color:#fff}
+.tab.t-quad {background:#1a1a0a;border-color:#c9a84c;color:#c9a84c}
+
+.section-title{font-size:10px;letter-spacing:2px;color:#4a5a8a;text-transform:uppercase;margin-bottom:7px;padding-bottom:4px;border-bottom:1px solid #1e2a5e}
+
+/* grids */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:4px}
+.grid-doppi{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:4px}
+.grid-quad{display:grid;grid-template-columns:repeat(auto-fill,minmax(50px,1fr));gap:3px}
+.empty-msg{text-align:center;padding:24px;color:#4a5a8a;font-size:11px;letter-spacing:2px;text-transform:uppercase;grid-column:1/-1}
+
+/* miss cards */
+.card-miss{background:#0f1a3a;border:1.5px solid #1e2a5e;border-radius:5px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .12s;user-select:none;font-size:11px;font-weight:900;color:#3a4a7a}
+.card-miss:hover{border-color:#e05252;color:#e05252;transform:scale(1.07)}
+.card-miss.missing{background:#5a0a0a;border-color:#e05252;color:#ff6b6b;box-shadow:0 0 7px rgba(224,82,82,0.35)}
+
+/* found cards */
+.card-found{background:#0a2a14;border:1.5px solid #1a4a28;border-radius:5px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .12s;user-select:none;font-size:11px;font-weight:900;color:#3ecf74}
+.card-found:hover{border-color:#e05252;color:#ff6b6b;transform:scale(1.05)}
+
+/* quad cards */
+.qcard{border-radius:4px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900}
+.qcard.q-miss{background:#5a0a0a;border:1px solid #7a1a1a;color:#ff6b6b}
+.qcard.q-found{background:#0a2a14;border:1px solid #1a4a28;color:#3ecf74}
+
+/* doppioni */
+.dcard{background:#0f1a3a;border:1.5px solid #1e2a5e;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 2px 5px;gap:4px;transition:all .12s;min-height:70px}
+.dcard.has-doppi{background:#1e0a35;border-color:#9b59b6;box-shadow:0 0 7px rgba(155,89,182,0.3)}
+.dcard .dnum{font-size:15px;font-weight:900;color:#4a5a8a;text-align:center;line-height:1}
+.dcard.has-doppi .dnum{color:#d7a8ff}
+.dcard .dbadge{background:#1e2a5e;color:#4a5a8a;font-size:8px;font-weight:900;border-radius:8px;padding:1px 5px;min-width:16px;text-align:center}
+.dcard.has-doppi .dbadge{background:#9b59b6;color:#fff}
+.dcard-btns{display:flex;gap:3px;width:100%}
+.dcard-btns button{flex:1;background:rgba(255,255,255,0.05);border:1px solid #2a3570;color:#888;font-size:15px;font-weight:900;border-radius:3px;padding:2px 0;cursor:pointer;transition:all .12s;line-height:1}
+.dcard-btns .btn-plus:hover{background:rgba(155,89,182,0.4);border-color:#9b59b6;color:#d7a8ff}
+.dcard-btns .btn-minus:hover{background:rgba(224,82,82,0.3);border-color:#e05252;color:#ff8888}
+
+/* doppi summary */
+.doppi-summary{background:#1e0a35;border:1px solid #9b59b6;border-radius:6px;padding:9px 12px;margin-bottom:10px;display:flex;gap:14px;flex-wrap:wrap}
+.ds-item{text-align:center}
+.ds-val{font-size:20px;font-weight:900;color:#d7a8ff}
+.ds-lbl{font-size:8px;letter-spacing:1px;color:#8a60b0;text-transform:uppercase}
+
+/* lista */
+.lista-block{background:#0f1a3a;border:1px solid #1e2a5e;border-radius:6px;padding:9px 12px;margin-bottom:9px}
+.lista-block h3{font-size:10px;letter-spacing:2px;color:#c9a84c;text-transform:uppercase;margin-bottom:7px;padding-bottom:4px;border-bottom:1px solid #1e2a5e;display:flex;justify-content:space-between}
+.lista-chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{background:#5a0a0a;border:1px solid #7a1a1a;color:#ff6b6b;font-size:10px;font-weight:900;padding:3px 7px;border-radius:4px}
+.copy-btn{background:#0d2a45;border:1.5px solid #3498db;color:#7ec8f0;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;padding:8px 14px;border-radius:5px;cursor:pointer;margin-bottom:10px;display:block;width:100%;transition:all .15s}
+.copy-btn:hover{background:#1a4a6b;color:#fff}
+
+/* quad */
+.quad-legend{display:flex;gap:12px;margin-bottom:9px;background:#0f1a3a;border:1px solid #1e2a5e;border-radius:6px;padding:8px 12px;align-items:center;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+.leg-dot{width:11px;height:11px;border-radius:3px}
+.leg-dot.red{background:#e05252}
+.leg-dot.green{background:#3ecf74}
+.quad-section{margin-bottom:12px}
+.quad-section-title{font-size:10px;letter-spacing:1.5px;color:#c9a84c;text-transform:uppercase;margin-bottom:5px;padding-bottom:3px;border-bottom:1px solid #1e2a5e;display:flex;justify-content:space-between}
+.quad-section-title span{font-size:9px;color:#4a5a8a}
+
+/* hint box */
+.hint{background:#1a0a0a;border:1px solid #5a1a1a;border-radius:6px;padding:8px 12px;margin-bottom:9px;font-size:10px;color:#ff9999;line-height:1.6}
+.hint-found{background:#0a1a10;border-color:#1a5a28;color:#99ffbb}
+
+/* trovate layout */
+.found-layout{display:flex;gap:10px;align-items:flex-start}
+.found-cards-area{flex:1;min-width:0}
+.found-section-block{margin-bottom:14px}
+.found-section-header{
+  font-size:10px;letter-spacing:1.5px;color:#3ecf74;
+  text-transform:uppercase;font-weight:700;font-family:'Inter',sans-serif;
+  padding:5px 8px;margin-bottom:6px;
+  background:rgba(62,207,116,0.08);
+  border-left:3px solid #3ecf74;border-radius:0 4px 4px 0;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.found-section-header span{font-size:9px;color:#6b7db3;font-weight:400;letter-spacing:.5px}
+.filter-pill.found-pill.active{background:#3ecf74;border-color:#3ecf74;color:#0a0e2a}
+.filter-pill.found-pill:hover{border-color:#3ecf74;color:#3ecf74}
+
+/* doppioni layout */
+.doppi-layout{display:flex;gap:10px;align-items:flex-start}
+.doppi-cards-area{flex:1;min-width:0}
+.doppi-section-block{margin-bottom:14px}
+.doppi-section-header{
+  font-size:10px;letter-spacing:1.5px;color:#9b59b6;
+  text-transform:uppercase;font-weight:700;font-family:'Inter',sans-serif;
+  padding:5px 8px;margin-bottom:6px;
+  background:rgba(155,89,182,0.08);
+  border-left:3px solid #9b59b6;border-radius:0 4px 4px 0;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.doppi-section-header span{font-size:9px;color:#6b7db3;font-weight:400;letter-spacing:.5px}
+.filter-pill.doppi-pill.active{background:#9b59b6;border-color:#9b59b6;color:#fff}
+.filter-pill.doppi-pill:hover{border-color:#9b59b6;color:#d7a8ff}
+
+/* import banner */
+.import-banner{
+  background:rgba(26,74,107,0.7);border:1.5px solid #3498db;
+  border-radius:8px;padding:10px 14px;margin-bottom:10px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+}
+.import-banner p{font-size:11px;color:#7ec8f0;line-height:1.5;flex:1}
+.import-btn{
+  background:#3498db;border:none;color:#fff;
+  font-size:11px;font-weight:700;font-family:'Inter',sans-serif;
+  padding:8px 14px;border-radius:6px;cursor:pointer;white-space:nowrap;
+}
+.import-btn:hover{background:#2980b9}
+
+/* miss layout: cards + filter sidebar */
+.miss-layout{display:flex;gap:10px;align-items:flex-start}
+.miss-cards-area{flex:1;min-width:0}
+.miss-filter-panel{
+  width:90px;flex-shrink:0;
+  background:#0a1020;border:1px solid #1e2a5e;
+  border-radius:8px;padding:8px 6px;
+  display:flex;flex-direction:column;gap:4px;
+  position:sticky;top:10px;max-height:80vh;overflow-y:auto;
+}
+.miss-filter-panel::-webkit-scrollbar{width:3px}
+.miss-filter-panel::-webkit-scrollbar-thumb{background:#1e2a5e;border-radius:2px}
+.filter-panel-title{
+  font-size:8px;letter-spacing:2px;color:#3a4a6a;
+  text-transform:uppercase;text-align:center;
+  padding-bottom:5px;border-bottom:1px solid #1e2a5e;
+  margin-bottom:2px;font-family:'Inter',sans-serif;
+}
+.filter-pill{
+  background:#111830;border:1.5px solid #1e2a5e;
+  color:#4a5a8a;font-size:9px;font-weight:600;
+  font-family:'Inter',sans-serif;
+  letter-spacing:.5px;text-transform:uppercase;
+  padding:6px 4px;border-radius:5px;
+  cursor:pointer;transition:all .13s;
+  text-align:center;line-height:1.2;width:100%;
+}
+.filter-pill:hover{border-color:#c9a84c;color:#c9a84c}
+.filter-pill.active{background:#c9a84c;border-color:#c9a84c;color:#0a0e2a}
+.filter-pill .fp-count{
+  display:block;font-size:8px;font-weight:400;
+  opacity:.8;margin-top:1px;
+}
+
+.miss-section-block{margin-bottom:14px}
+.miss-section-header{
+  font-size:10px;letter-spacing:1.5px;color:#c9a84c;
+  text-transform:uppercase;font-weight:700;
+  font-family:'Inter',sans-serif;
+  padding:5px 8px;margin-bottom:6px;
+  background:rgba(201,168,76,0.08);
+  border-left:3px solid #c9a84c;border-radius:0 4px 4px 0;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.miss-section-header span{
+  font-size:9px;color:#6b7db3;font-weight:400;letter-spacing:.5px;
+}
+
+/* popup */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;align-items:center;justify-content:center}
+.overlay.show{display:flex}
+.popup{background:#0f1a3a;border:2px solid #e05252;border-radius:10px;padding:22px 18px;max-width:290px;width:90%;text-align:center}
+.popup h3{font-size:13px;color:#e05252;margin-bottom:8px;letter-spacing:1px;text-transform:uppercase}
+.popup p{font-size:12px;color:#8a9aba;margin-bottom:16px;line-height:1.5}
+.popup-btns{display:flex;gap:8px}
+.popup-btns button{flex:1;padding:9px;border-radius:6px;font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:none}
+.btn-confirm{background:#e05252;color:#fff}
+.btn-cancel{background:#1e2a5e;color:#6b7db3;border:1.5px solid #2a3570!important}
+
+.reset-btn{background:transparent;border:1px solid #2a3570;color:#4a5a8a;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:6px 10px;border-radius:4px;cursor:pointer;margin-top:12px;display:block;width:100%}
+.reset-btn:hover{border-color:#e05252;color:#e05252}
+
+.info-bar{background:#0a1020;border-top:1px solid #1e2a5e;padding:8px 16px;text-align:center;font-size:9px;color:#2a3570;letter-spacing:2px;text-transform:uppercase}
+
+/* ── FONT OVERRIDES ── */
+.stat-val, .ast-val, .ds-val, .card-miss, .card-found, .qcard,
+.dcard .dnum, .chip { font-family:'Inter',sans-serif !important; }
+.fb-logo .figu, .fb-logo .book,
+.album-name, .tracker-title .t-name,
+.home-greeting h2 { font-family:'Poppins',sans-serif !important; }
+/* Lighter font weights with Poppins look better */
+.album-body .album-name { font-weight:700; }
+.home-greeting h2 { font-weight:700; }
+.mode-btn { font-family:'Inter',sans-serif !important; font-weight:600; letter-spacing:.5px; }
+.tab { font-family:'Inter',sans-serif !important; font-weight:600; }
+.section-title { font-family:'Inter',sans-serif !important; font-weight:500; }
+.fb-sub, .footer-text, .album-meta, .album-cover-season,
+.ast-lbl, .stat-lbl, .ds-lbl { font-family:'Inter',sans-serif !important; font-weight:400; }
+.fb-logo .figu { font-weight:900; letter-spacing:0; }
+.fb-logo .book { font-weight:700; letter-spacing:0; }
+
+/* Serie A inspired background */
+#tracker.album-calciatori2526 {
+  background: linear-gradient(160deg, #001a1a 0%, #006666 30%, #008080 50%, #0066aa 75%, #003366 100%);
+  min-height: 100vh;
+}
+#tracker.album-calciatori2526::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.07)' stroke-width='1.5'%3E%3C!-- Chevron shapes diagonal --%3E%3Cpolyline points='0,500 120,300 240,500'/%3E%3Cpolyline points='60,550 180,350 300,550'/%3E%3Cpolyline points='120,600 240,400 360,600'/%3E%3Cpolyline points='200,500 320,300 440,500'/%3E%3Cpolyline points='260,550 380,350 500,550'/%3E%3Cpolyline points='320,600 440,400 560,600'/%3E%3Cpolyline points='400,500 520,300 640,500'/%3E%3Cpolyline points='460,550 580,350 700,550'/%3E%3Cpolyline points='520,600 640,400 760,600'/%3E%3Cpolyline points='600,500 720,300 840,500'/%3E%3C!-- Larger chevrons --%3E%3Cpolyline points='-50,600 150,200 350,600' stroke-width='2' stroke='rgba(255,255,255,0.04)'/%3E%3Cpolyline points='100,600 300,200 500,600' stroke-width='2' stroke='rgba(255,255,255,0.04)'/%3E%3Cpolyline points='300,600 500,200 700,600' stroke-width='2' stroke='rgba(255,255,255,0.04)'/%3E%3Cpolyline points='500,600 700,200 900,600' stroke-width='2' stroke='rgba(255,255,255,0.04)'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: cover;
+  pointer-events: none;
+}
+#tracker.album-calciatori2526 .tracker-body {
+  position: relative;
+  z-index: 1;
+}
+#tracker.album-calciatori2526 .tracker-header {
+  background: rgba(0,20,20,0.9);
+  border-bottom-color: rgba(0,180,180,0.3);
+  position: relative;
+  z-index: 1;
+}
+#tracker.album-calciatori2526 .stat {
+  background: rgba(0,30,40,0.85);
+  border-color: rgba(0,150,150,0.2);
+}
+#tracker.album-calciatori2526 .progress-wrap {
+  background: rgba(0,30,40,0.85);
+  border-color: rgba(0,150,150,0.2);
+}
+#tracker.album-calciatori2526 .mode-btn {
+  background: rgba(0,30,40,0.85);
+  border-color: rgba(0,100,100,0.3);
+}
+#tracker.album-calciatori2526 .mode-btn:hover {
+  border-color: #00cccc;
+  color: #00cccc;
+}
+#tracker.album-calciatori2526 .miss-filter-panel,
+#tracker.album-calciatori2526 .miss-layout .miss-filter-panel {
+  background: rgba(0,20,30,0.9);
+  border-color: rgba(0,120,120,0.3);
+}
+#tracker.album-calciatori2526 .filter-pill {
+  background: rgba(0,30,40,0.9);
+  border-color: rgba(0,100,100,0.3);
+}
+#tracker.album-calciatori2526 .import-banner {
+  background: rgba(0,40,60,0.85);
+}
+
+/* Mondiali 2026 multicolor background */
+#tracker.album-mondiali2026 {
+  background: linear-gradient(135deg, #1a0033 0%, #cc0033 20%, #ff6600 38%, #ffcc00 52%, #009933 68%, #0066cc 84%, #330066 100%);
+  min-height: 100vh;
+}
+#tracker.album-mondiali2026::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1'%3E%3Ccircle cx='400' cy='300' r='250'/%3E%3Ccircle cx='400' cy='300' r='180'/%3E%3Ccircle cx='400' cy='300' r='110'/%3E%3Ccircle cx='150' cy='100' r='120'/%3E%3Ccircle cx='650' cy='500' r='150'/%3E%3Ccircle cx='700' cy='80' r='90'/%3E%3Ccircle cx='100' cy='500' r='100'/%3E%3Cline x1='0' y1='0' x2='800' y2='600' stroke-width='0.5'/%3E%3Cline x1='800' y1='0' x2='0' y2='600' stroke-width='0.5'/%3E%3Cline x1='400' y1='0' x2='400' y2='600' stroke-width='0.5'/%3E%3Cline x1='0' y1='300' x2='800' y2='300' stroke-width='0.5'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: cover;
+  pointer-events: none;
+}
+#tracker.album-mondiali2026 .tracker-body { position: relative; z-index: 1; }
+#tracker.album-mondiali2026 .tracker-header {
+  background: rgba(10,0,20,0.88);
+  border-bottom-color: rgba(255,200,0,0.3);
+  position: relative; z-index: 1;
+}
+#tracker.album-mondiali2026 .stat,
+#tracker.album-mondiali2026 .progress-wrap,
+#tracker.album-mondiali2026 .mode-btn,
+#tracker.album-mondiali2026 .miss-filter-panel {
+  background: rgba(10,0,20,0.82);
+  border-color: rgba(255,255,255,0.1);
+}
+#tracker.album-mondiali2026 .mode-btn:hover { border-color: #ffcc00; color: #ffcc00; }
+#tracker.album-mondiali2026 .filter-pill { background: rgba(10,0,20,0.85); border-color: rgba(255,255,255,0.12); }
+</style>
+</head>
+<body>
+
+<!-- POPUP -->
+<div class="overlay" id="overlay">
+  <div class="popup">
+    <h3>Rimuovere dai mancanti?</h3>
+    <p id="popup-msg"></p>
+    <div class="popup-btns">
+      <button class="btn-cancel" onclick="closePopup()">Annulla</button>
+      <button class="btn-confirm" onclick="confirmRemove()">Sì, rimuovi</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ HOME ════════════════ -->
+<div id="home">
+  <div class="fb-header">
+    <div class="fb-logo-wrap">
+      <div class="fb-logo"><span class="figu">Figu</span><div class="sep"></div><span class="book">Book</span></div>
+      <div class="fb-sub">la tua collezione digitale</div>
+    </div>
+    <div class="fb-version">v1.0</div>
+  </div>
+  <div class="home-content">
+    <div class="home-greeting">
+      <h2>I tuoi Album 📚</h2>
+      <p>Seleziona un album per gestire la tua raccolta</p>
+    </div>
+    <div class="albums-grid" id="albums-grid"></div>
+  </div>
+  <div class="home-footer">
+    <span class="footer-text">FiguBook © 2025</span>
+    <div class="footer-dot"></div>
+    <span class="footer-text">Tutti gli album di figurine</span>
+  </div>
+</div>
+
+<!-- ════════════════ TRACKER ════════════════ -->
+<div id="tracker">
+  <div class="tracker-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="tracker-title">
+      <div class="t-season" id="t-season"></div>
+      <div class="t-name" id="t-name"></div>
+    </div>
+  </div>
+  <div class="tracker-body">
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-val" id="s-total">0</div><div class="stat-lbl">Totale</div></div>
+      <div class="stat good"><div class="stat-val" id="s-found">0</div><div class="stat-lbl">Trovate</div></div>
+      <div class="stat bad"><div class="stat-val" id="s-miss">0</div><div class="stat-lbl">Mancanti</div></div>
+      <div class="stat"><div class="stat-val" id="s-pct">0%</div><div class="stat-lbl">Completato</div></div>
+    </div>
+    <div class="progress-wrap">
+      <div style="font-size:9px;color:#3ecf74;font-weight:900;letter-spacing:1px">PROGRESSI</div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="progress-lbl"><span id="prog-l">0</span><span id="prog-r">0</span></div>
+    </div>
+    <div class="import-banner" id="import-banner" style="display:none">
+      <p>📦 Trovati dati dal vecchio tracker Calciatori. Vuoi importare i mancanti?</p>
+      <button class="import-btn" onclick="importOldData()">Importa ora</button>
+      <button class="import-btn" style="background:#555" onclick="document.getElementById('import-banner').style.display='none'">Ignora</button>
+    </div>
+    <div class="mode-bar cols5" id="mode-bar">
+      <button class="mode-btn" id="btn-miss"  onclick="setMode('miss')">❌ Mancanti</button>
+      <button class="mode-btn" id="btn-found" onclick="setMode('found')">✅ Trovate</button>
+      <button class="mode-btn" id="btn-lista" onclick="setMode('lista')">📋 Lista Mancanti</button>
+      <button class="mode-btn" id="btn-quad"  onclick="setMode('quad')">🗺️ Panoramica</button>
+      <button class="mode-btn" id="btn-doppi" onclick="setMode('doppi')">🔁 Doppioni</button>
+    </div>
+    <!-- MANCANTI -->
+    <div id="miss-mode" style="display:none">
+      <div class="hint">💡 Clicca le carte che <strong>non hai</strong> → diventano rosse. Clicca di nuovo per rimuoverle dai mancanti.</div>
+      <div class="miss-layout">
+        <div class="miss-cards-area" id="miss-cards-area"></div>
+        <div class="miss-filter-panel" id="miss-filter-panel">
+          <div class="filter-panel-title">Sezioni</div>
+        </div>
+      </div>
+    </div>
+    <!-- TROVATE -->
+    <div id="found-mode" style="display:none">
+      <div class="hint hint-found">✅ Carte che <strong>non sono nei mancanti</strong>. Clicca per spostarla nei mancanti.</div>
+      <div class="found-layout">
+        <div class="found-cards-area" id="found-cards-area"></div>
+        <div class="miss-filter-panel" id="found-filter-panel">
+          <div class="filter-panel-title">Sezioni</div>
+        </div>
+      </div>
+    </div>
+    <!-- LISTA -->
+    <div id="lista-mode" style="display:none">
+      <button class="copy-btn" id="copy-btn" onclick="copyLista()">📋 Copia lista negli appunti</button>
+      <div id="lista-content"></div>
+    </div>
+    <!-- QUADRO -->
+    <div id="quad-mode" style="display:none">
+      <div class="quad-legend">
+        <div class="leg-item"><div class="leg-dot red"></div>Mancante</div>
+        <div class="leg-item"><div class="leg-dot green"></div>Trovata</div>
+        <div id="quad-summary" style="margin-left:auto;font-size:10px;color:#c9a84c;font-weight:900"></div>
+      </div>
+      <div id="quad-content"></div>
+    </div>
+    <!-- DOPPIONI -->
+    <div id="doppi-mode" style="display:none">
+      <div class="doppi-summary">
+        <div class="ds-item"><div class="ds-val" id="d-types">0</div><div class="ds-lbl">Tipi diversi</div></div>
+        <div class="ds-item"><div class="ds-val" id="d-total">0</div><div class="ds-lbl">Tot. doppioni</div></div>
+        <div class="ds-item"><div class="ds-val" id="d-max">—</div><div class="ds-lbl">Più doppiata</div></div>
+      </div>
+      <div class="doppi-layout">
+        <div class="doppi-cards-area" id="doppi-cards-area"></div>
+        <div class="miss-filter-panel" id="doppi-filter-panel">
+          <div class="filter-panel-title">Sezioni</div>
+        </div>
+      </div>
+    </div>
+    <button class="reset-btn" id="reset-btn">↺ Reset sezione corrente</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   ALBUM DEFINITIONS
+══════════════════════════════════════════════ */
+const ALBUMS = [
+  {
+    id: 'calciatori2526',
+    name: 'Campionato Italiano <span>25/26</span>',
+    nameText: 'Campionato Italiano 2025/26',
+    season: 'Stagione 2025/2026',
+    coverTitle: 'CAMPIONATO',
+    coverSub: 'Italiano 2025/26',
+    available: true,
+    sections: [
+      {id:'coppe',   label:'Coppe',      items: Array.from({length:3},   (_,i)=>String(i+1))},
+      {id:'squadre', label:'Squadre',    items: Array.from({length:20},  (_,i)=>String(i+4))},
+      {id:'acquisti',label:'Acquisti',   items: Array.from({length:20},  (_,i)=>String(i+24))},
+      {id:'seriea1', label:'Serie A/1',  items: Array.from({length:374}, (_,i)=>String(i+44))},
+      {id:'sty',     label:'Style',      items: Array.from({length:20},  (_,i)=>'STY'+(i+1))},
+      {id:'seriea2', label:'Serie A/2',  items: Array.from({length:126}, (_,i)=>String(i+418))},
+      {id:'upg',     label:'Aggiorn.',   items: Array.from({length:80},  (_,i)=>'UPG'+(i+1))},
+      {id:'serieb',  label:'Serie B',    items: Array.from({length:31},  (_,i)=>String(i+544))},
+      {id:'seriec',  label:'Serie C',    items: Array.from({length:44},  (_,i)=>String(i+575))},
+      {id:'kinder',  label:'Kinder',     items: Array.from({length:6},   (_,i)=>'K'+(i+1))},
+      {id:'cel',     label:'Celebration',items: Array.from({length:60},  (_,i)=>'CEL'+(i+1))},
+    ]
+  },
+  {
+    id: 'mondiali2026',
+    name: 'Mondiale di Calcio <span>2026</span>',
+    nameText: 'Mondiale di Calcio 2026',
+    season: 'USA · Canada · Messico',
+    coverTitle: 'MONDIALE',
+    coverSub: 'di Calcio 2026',
+    available: true,
+    sections: [
+      {id:'s00', label:'00', items:['00']},
+      {id:'fcw1', label:'FCW 1-8', items:['FCW1','FCW2','FCW3','FCW4','FCW5','FCW6','FCW7','FCW8']},
+      {id:'ga', label:'Girone A', items:['MEX1','MEX2','MEX3','MEX4','MEX5','MEX6','MEX7','MEX8','MEX9','MEX10','MEX11','MEX12','MEX13','MEX14','MEX15','MEX16','MEX17','MEX18','MEX19','MEX20','RSA1','RSA2','RSA3','RSA4','RSA5','RSA6','RSA7','RSA8','RSA9','RSA10','RSA11','RSA12','RSA13','RSA14','RSA15','RSA16','RSA17','RSA18','RSA19','RSA20','KOR1','KOR2','KOR3','KOR4','KOR5','KOR6','KOR7','KOR8','KOR9','KOR10','KOR11','KOR12','KOR13','KOR14','KOR15','KOR16','KOR17','KOR18','KOR19','KOR20','CZE1','CZE2','CZE3','CZE4','CZE5','CZE6','CZE7','CZE8','CZE9','CZE10','CZE11','CZE12','CZE13','CZE14','CZE15','CZE16','CZE17','CZE18','CZE19','CZE20']},
+      {id:'gb', label:'Girone B', items:['CAN1','CAN2','CAN3','CAN4','CAN5','CAN6','CAN7','CAN8','CAN9','CAN10','CAN11','CAN12','CAN13','CAN14','CAN15','CAN16','CAN17','CAN18','CAN19','CAN20','BIH1','BIH2','BIH3','BIH4','BIH5','BIH6','BIH7','BIH8','BIH9','BIH10','BIH11','BIH12','BIH13','BIH14','BIH15','BIH16','BIH17','BIH18','BIH19','BIH20','QAT1','QAT2','QAT3','QAT4','QAT5','QAT6','QAT7','QAT8','QAT9','QAT10','QAT11','QAT12','QAT13','QAT14','QAT15','QAT16','QAT17','QAT18','QAT19','QAT20','SUI1','SUI2','SUI3','SUI4','SUI5','SUI6','SUI7','SUI8','SUI9','SUI10','SUI11','SUI12','SUI13','SUI14','SUI15','SUI16','SUI17','SUI18','SUI19','SUI20']},
+      {id:'gc', label:'Girone C', items:['BRA1','BRA2','BRA3','BRA4','BRA5','BRA6','BRA7','BRA8','BRA9','BRA10','BRA11','BRA12','BRA13','BRA14','BRA15','BRA16','BRA17','BRA18','BRA19','BRA20','MAR1','MAR2','MAR3','MAR4','MAR5','MAR6','MAR7','MAR8','MAR9','MAR10','MAR11','MAR12','MAR13','MAR14','MAR15','MAR16','MAR17','MAR18','MAR19','MAR20','HAI1','HAI2','HAI3','HAI4','HAI5','HAI6','HAI7','HAI8','HAI9','HAI10','HAI11','HAI12','HAI13','HAI14','HAI15','HAI16','HAI17','HAI18','HAI19','HAI20','SCO1','SCO2','SCO3','SCO4','SCO5','SCO6','SCO7','SCO8','SCO9','SCO10','SCO11','SCO12','SCO13','SCO14','SCO15','SCO16','SCO17','SCO18','SCO19','SCO20']},
+      {id:'gd', label:'Girone D', items:['USA1','USA2','USA3','USA4','USA5','USA6','USA7','USA8','USA9','USA10','USA11','USA12','USA13','USA14','USA15','USA16','USA17','USA18','USA19','USA20','PAR1','PAR2','PAR3','PAR4','PAR5','PAR6','PAR7','PAR8','PAR9','PAR10','PAR11','PAR12','PAR13','PAR14','PAR15','PAR16','PAR17','PAR18','PAR19','PAR20','AUS1','AUS2','AUS3','AUS4','AUS5','AUS6','AUS7','AUS8','AUS9','AUS10','AUS11','AUS12','AUS13','AUS14','AUS15','AUS16','AUS17','AUS18','AUS19','AUS20','TUR1','TUR2','TUR3','TUR4','TUR5','TUR6','TUR7','TUR8','TUR9','TUR10','TUR11','TUR12','TUR13','TUR14','TUR15','TUR16','TUR17','TUR18','TUR19','TUR20']},
+      {id:'ge', label:'Girone E', items:['GER1','GER2','GER3','GER4','GER5','GER6','GER7','GER8','GER9','GER10','GER11','GER12','GER13','GER14','GER15','GER16','GER17','GER18','GER19','GER20','CUW1','CUW2','CUW3','CUW4','CUW5','CUW6','CUW7','CUW8','CUW9','CUW10','CUW11','CUW12','CUW13','CUW14','CUW15','CUW16','CUW17','CUW18','CUW19','CUW20','CIV1','CIV2','CIV3','CIV4','CIV5','CIV6','CIV7','CIV8','CIV9','CIV10','CIV11','CIV12','CIV13','CIV14','CIV15','CIV16','CIV17','CIV18','CIV19','CIV20','ECU1','ECU2','ECU3','ECU4','ECU5','ECU6','ECU7','ECU8','ECU9','ECU10','ECU11','ECU12','ECU13','ECU14','ECU15','ECU16','ECU17','ECU18','ECU19','ECU20']},
+      {id:'gf', label:'Girone F', items:['NED1','NED2','NED3','NED4','NED5','NED6','NED7','NED8','NED9','NED10','NED11','NED12','NED13','NED14','NED15','NED16','NED17','NED18','NED19','NED20','JPN1','JPN2','JPN3','JPN4','JPN5','JPN6','JPN7','JPN8','JPN9','JPN10','JPN11','JPN12','JPN13','JPN14','JPN15','JPN16','JPN17','JPN18','JPN19','JPN20','SWE1','SWE2','SWE3','SWE4','SWE5','SWE6','SWE7','SWE8','SWE9','SWE10','SWE11','SWE12','SWE13','SWE14','SWE15','SWE16','SWE17','SWE18','SWE19','SWE20','TUN1','TUN2','TUN3','TUN4','TUN5','TUN6','TUN7','TUN8','TUN9','TUN10','TUN11','TUN12','TUN13','TUN14','TUN15','TUN16','TUN17','TUN18','TUN19','TUN20']},
+      {id:'gg', label:'Girone G', items:['BEL1','BEL2','BEL3','BEL4','BEL5','BEL6','BEL7','BEL8','BEL9','BEL10','BEL11','BEL12','BEL13','BEL14','BEL15','BEL16','BEL17','BEL18','BEL19','BEL20','EGY1','EGY2','EGY3','EGY4','EGY5','EGY6','EGY7','EGY8','EGY9','EGY10','EGY11','EGY12','EGY13','EGY14','EGY15','EGY16','EGY17','EGY18','EGY19','EGY20','IRN1','IRN2','IRN3','IRN4','IRN5','IRN6','IRN7','IRN8','IRN9','IRN10','IRN11','IRN12','IRN13','IRN14','IRN15','IRN16','IRN17','IRN18','IRN19','IRN20','NZL1','NZL2','NZL3','NZL4','NZL5','NZL6','NZL7','NZL8','NZL9','NZL10','NZL11','NZL12','NZL13','NZL14','NZL15','NZL16','NZL17','NZL18','NZL19','NZL20']},
+      {id:'gh', label:'Girone H', items:['ESP1','ESP2','ESP3','ESP4','ESP5','ESP6','ESP7','ESP8','ESP9','ESP10','ESP11','ESP12','ESP13','ESP14','ESP15','ESP16','ESP17','ESP18','ESP19','ESP20','CPV1','CPV2','CPV3','CPV4','CPV5','CPV6','CPV7','CPV8','CPV9','CPV10','CPV11','CPV12','CPV13','CPV14','CPV15','CPV16','CPV17','CPV18','CPV19','CPV20','KSA1','KSA2','KSA3','KSA4','KSA5','KSA6','KSA7','KSA8','KSA9','KSA10','KSA11','KSA12','KSA13','KSA14','KSA15','KSA16','KSA17','KSA18','KSA19','KSA20','URU1','URU2','URU3','URU4','URU5','URU6','URU7','URU8','URU9','URU10','URU11','URU12','URU13','URU14','URU15','URU16','URU17','URU18','URU19','URU20']},
+      {id:'gi', label:'Girone I', items:['FRA1','FRA2','FRA3','FRA4','FRA5','FRA6','FRA7','FRA8','FRA9','FRA10','FRA11','FRA12','FRA13','FRA14','FRA15','FRA16','FRA17','FRA18','FRA19','FRA20','SEN1','SEN2','SEN3','SEN4','SEN5','SEN6','SEN7','SEN8','SEN9','SEN10','SEN11','SEN12','SEN13','SEN14','SEN15','SEN16','SEN17','SEN18','SEN19','SEN20','IRQ1','IRQ2','IRQ3','IRQ4','IRQ5','IRQ6','IRQ7','IRQ8','IRQ9','IRQ10','IRQ11','IRQ12','IRQ13','IRQ14','IRQ15','IRQ16','IRQ17','IRQ18','IRQ19','IRQ20','NOR1','NOR2','NOR3','NOR4','NOR5','NOR6','NOR7','NOR8','NOR9','NOR10','NOR11','NOR12','NOR13','NOR14','NOR15','NOR16','NOR17','NOR18','NOR19','NOR20']},
+      {id:'gj', label:'Girone J', items:['ARG1','ARG2','ARG3','ARG4','ARG5','ARG6','ARG7','ARG8','ARG9','ARG10','ARG11','ARG12','ARG13','ARG14','ARG15','ARG16','ARG17','ARG18','ARG19','ARG20','ALG1','ALG2','ALG3','ALG4','ALG5','ALG6','ALG7','ALG8','ALG9','ALG10','ALG11','ALG12','ALG13','ALG14','ALG15','ALG16','ALG17','ALG18','ALG19','ALG20','AUT1','AUT2','AUT3','AUT4','AUT5','AUT6','AUT7','AUT8','AUT9','AUT10','AUT11','AUT12','AUT13','AUT14','AUT15','AUT16','AUT17','AUT18','AUT19','AUT20','JOR1','JOR2','JOR3','JOR4','JOR5','JOR6','JOR7','JOR8','JOR9','JOR10','JOR11','JOR12','JOR13','JOR14','JOR15','JOR16','JOR17','JOR18','JOR19','JOR20']},
+      {id:'gk', label:'Girone K', items:['POR1','POR2','POR3','POR4','POR5','POR6','POR7','POR8','POR9','POR10','POR11','POR12','POR13','POR14','POR15','POR16','POR17','POR18','POR19','POR20','COD1','COD2','COD3','COD4','COD5','COD6','COD7','COD8','COD9','COD10','COD11','COD12','COD13','COD14','COD15','COD16','COD17','COD18','COD19','COD20','UZB1','UZB2','UZB3','UZB4','UZB5','UZB6','UZB7','UZB8','UZB9','UZB10','UZB11','UZB12','UZB13','UZB14','UZB15','UZB16','UZB17','UZB18','UZB19','UZB20','COL1','COL2','COL3','COL4','COL5','COL6','COL7','COL8','COL9','COL10','COL11','COL12','COL13','COL14','COL15','COL16','COL17','COL18','COL19','COL20']},
+      {id:'gl', label:'Girone L', items:['ENG1','ENG2','ENG3','ENG4','ENG5','ENG6','ENG7','ENG8','ENG9','ENG10','ENG11','ENG12','ENG13','ENG14','ENG15','ENG16','ENG17','ENG18','ENG19','ENG20','CRO1','CRO2','CRO3','CRO4','CRO5','CRO6','CRO7','CRO8','CRO9','CRO10','CRO11','CRO12','CRO13','CRO14','CRO15','CRO16','CRO17','CRO18','CRO19','CRO20','GHA1','GHA2','GHA3','GHA4','GHA5','GHA6','GHA7','GHA8','GHA9','GHA10','GHA11','GHA12','GHA13','GHA14','GHA15','GHA16','GHA17','GHA18','GHA19','GHA20','PAN1','PAN2','PAN3','PAN4','PAN5','PAN6','PAN7','PAN8','PAN9','PAN10','PAN11','PAN12','PAN13','PAN14','PAN15','PAN16','PAN17','PAN18','PAN19','PAN20']},
+      {id:'fcw2', label:'FCW 9-19', items:['FCW9','FCW10','FCW11','FCW12','FCW13','FCW14','FCW15','FCW16','FCW17','FCW18','FCW19']},
+      {id:'cc', label:'CC 1-12', items:['CC1','CC2','CC3','CC4','CC5','CC6','CC7','CC8','CC9','CC10','CC11','CC12']}
+    ]
+  },
+  {
+    id: 'champions2526',
+    name: 'Coppa dei Campioni <span>25/26</span>',
+    nameText: 'Coppa dei Campioni 2025/26',
+    season: 'Europa · 2025/2026',
+    coverTitle: 'COPPA DEI',
+    coverSub: 'Campioni 25/26',
+    available: false,
+    comingSoon: 'Novembre 2025',
+    sections: [
+      {id:'main', label:'1-600',  items: Array.from({length:600}, (_,i)=>String(i+1))},
+    ]
+  },
+];
+
+/* ══════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════ */
+let missing = {}, doppi = {};
+let currentAlbum = null;
+let currentMode = 'miss';
+let activeMSection, activeFSection, activeDSection;
+let pendingRemove = null;
+let albumOrder = [];  // ids in display order (last opened first)
+
+/* ══════════════════════════════════════════════
+   STORAGE HELPERS
+══════════════════════════════════════════════ */
+// ── Storage: localStorage sync ──────────────────────────────
+function lsGet(key) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
+  catch(e) { return null; }
+}
+function lsSet(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) {}
+  try { if(window.storage) window.storage.set(key, JSON.stringify(value)); } catch(e) {}
+}
+
+function loadAlbumData(albumId) {
+  missing = lsGet('fb_miss_'+albumId) || {};
+  doppi   = lsGet('fb_doppi_'+albumId) || {};
+}
+function saveMiss()  { lsSet('fb_miss_'+currentAlbum.id,  missing); }
+function saveDoppi() { lsSet('fb_doppi_'+currentAlbum.id, doppi); }
+function loadOrder() {
+  albumOrder = lsGet('fb_order') || [];
+}
+function saveOrder() { lsSet('fb_order', albumOrder); }
+function getMissCount(albumId) {
+  const v = lsGet('fb_miss_'+albumId);
+  return v ? Object.keys(v).length : 0;
+}
+
+/* ══════════════════════════════════════════════
+   HOME
+══════════════════════════════════════════════ */
+const ALBUM_THEMES = {
+  calciatori2526: 'theme-serie-a',
+  mondiali2026:   'theme-world-cup',
+  champions2526:  'theme-champions',
+};
+
+function renderHome() {
+  loadOrder();
+  const sorted = [...ALBUMS].sort((a,b) => {
+    const ai = albumOrder.indexOf(a.id), bi = albumOrder.indexOf(b.id);
+    if(ai === -1 && bi === -1) return 0;
+    if(ai === -1) return 1;
+    if(bi === -1) return -1;
+    return bi - ai;
+  });
+  const grid = document.getElementById('albums-grid');
+  grid.innerHTML = '';
+  const lastId = albumOrder[albumOrder.length-1] || null;
+
+  for(let i=0; i<sorted.length; i++) {
+    const a = sorted[i];
+    const total = a.sections.reduce((s,sec)=>s+sec.items.length,0);
+    const missCount = a.available ? getMissCount(a.id) : 0;
+    const foundCount = total - missCount;
+    const pct = Math.round((foundCount/total)*100);
+    const theme = ALBUM_THEMES[a.id] || 'theme-world-cup';
+
+    const card = document.createElement('div');
+    card.className = 'album-card '+theme+(!a.available?' coming-soon':'')+(a.id===lastId&&a.available?' last-opened':'');
+
+    let badge = '';
+    if(a.id === lastId && a.available) badge = '<div class="album-badge badge-last">★ Ultimo aperto</div>';
+    else if(!a.available) badge = '<div class="album-badge badge-soon">'+a.comingSoon+'</div>';
+
+    const pbarClass = a.available?(pct>0?'fill-green':'fill-gray'):'fill-gray';
+
+    card.innerHTML = `
+      <div class="album-cover">
+        <div class="album-cover-bg"></div>
+        <div class="album-cover-overlay"></div>
+        <div class="album-cover-pattern"></div>
+        ${badge}
+        <div class="album-cover-titles">
+          <div class="album-cover-big">${a.coverTitle||''}</div>
+          <div class="album-cover-small">${a.coverSub||a.season}</div>
+        </div>
+      </div>
+      <div class="album-body">
+        <div class="album-name">${a.name}</div>
+        <div class="album-stats-row">
+          <div class="ast gold"><div class="ast-val">${total}</div><div class="ast-lbl">Totale</div></div>
+          <div class="ast green"><div class="ast-val">${a.available?foundCount:'—'}</div><div class="ast-lbl">Trovate</div></div>
+          <div class="ast red"><div class="ast-val">${a.available?missCount:'—'}</div><div class="ast-lbl">Mancanti</div></div>
+          <div class="ast"><div class="ast-val">${a.available?pct+'%':'—'}</div><div class="ast-lbl">Fatto</div></div>
+        </div>
+        <div class="album-pbar-bg"><div class="album-pbar-fill ${pbarClass}" style="width:${a.available?pct:0}%"></div></div>
+        <div class="album-meta">
+          <span>${a.available?(pct===100?'✅ Album completato!':foundCount+' / '+total+' trovate'):'Presto disponibile...'}</span>
+          <span class="arrow">${a.available?'→':''}</span>
+        </div>
+      </div>`;
+    if(a.available) card.onclick = () => openAlbum(a.id);
+    grid.appendChild(card);
+  }
+}
+
+/* ══════════════════════════════════════════════
+   OPEN / CLOSE ALBUM
+══════════════════════════════════════════════ */
+async function openAlbum(albumId) {
+  currentAlbum = ALBUMS.find(a=>a.id===albumId);
+  // update order (push to end = most recent)
+  albumOrder = albumOrder.filter(id=>id!==albumId);
+  albumOrder.push(albumId);
+  saveOrder();
+  loadAlbumData(albumId);
+
+  // Prima apertura Serie A: segna di default STY, UPG, Kinder, CEL come mancanti
+  if(albumId === 'calciatori2526') {
+    const firstTimeKey = 'fb_init_calciatori2526';
+    if(!localStorage.getItem(firstTimeKey)) {
+      const defaultMissingSections = ['sty','upg','kinder','cel'];
+      defaultMissingSections.forEach(secId => {
+        const sec = currentAlbum.sections.find(s=>s.id===secId);
+        if(sec) sec.items.forEach(item => { missing[item] = true; });
+      });
+      saveMiss();
+      localStorage.setItem(firstTimeKey, '1');
+    }
+  }
+
+  const total = currentAlbum.sections.reduce((s,sec)=>s+sec.items.length,0);
+  document.getElementById('t-season').textContent = currentAlbum.season;
+  document.getElementById('t-name').innerHTML = currentAlbum.name;
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('prog-r').textContent = total;
+
+  activeMSection = currentAlbum.sections[0].id;
+  activeFSection = currentAlbum.sections[0].id;
+  activeDSection = currentAlbum.sections[0].id;
+
+  document.getElementById('home').style.display = 'none';
+  const tracker = document.getElementById('tracker');
+  tracker.classList.add('open');
+  tracker.className = tracker.className.replace(/album-\S+/g, '');
+  tracker.classList.add('album-'+albumId);
+
+  setMode('miss');
+  updateStats();
+  checkOldData(albumId);
+}
+
+function goHome() {
+  document.getElementById('tracker').classList.remove('open');
+  document.getElementById('home').style.display = 'flex';
+  currentAlbum = null;
+  function checkOldData(albumId) {
+  if(albumId !== 'calciatori2526') return;
+  try {
+    const old = localStorage.getItem('calc2526_miss');
+    if(old && Object.keys(JSON.parse(old)).length > 0) {
+      const already = localStorage.getItem('fb_miss_calciatori2526');
+      if(!already || Object.keys(JSON.parse(already)).length === 0) {
+        document.getElementById('import-banner').style.display = 'flex';
+      }
+    }
+  } catch(e) {}
+}
+
+function importOldData() {
+  try {
+    const old = localStorage.getItem('calc2526_miss');
+    if(!old) return;
+    const data = JSON.parse(old);
+    lsSet('fb_miss_calciatori2526', data);
+    missing = data;
+    saveMiss();
+    updateStats();
+    renderMissAll();
+    renderFoundAll();
+    document.getElementById('import-banner').style.display = 'none';
+    alert('✅ Importati '+Object.keys(data).length+' mancanti dal vecchio tracker!');
+  } catch(e) { alert('Errore durante importazione: '+e.message); }
+}
+
+try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
+}
+
+/* ══════════════════════════════════════════════
+   STATS
+══════════════════════════════════════════════ */
+function updateStats() {
+  const total = currentAlbum.sections.reduce((s,sec)=>s+sec.items.length,0);
+  const m = Object.keys(missing).length;
+  const f = total - m;
+  const pct = Math.round((f/total)*100);
+  document.getElementById('s-found').textContent = f;
+  document.getElementById('s-miss').textContent = m;
+  document.getElementById('s-pct').textContent = pct+'%';
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-l').textContent = f;
+}
+
+/* ══════════════════════════════════════════════
+   MODE
+══════════════════════════════════════════════ */
+function setMode(m) {
+  currentMode = m;
+  ['miss','found','lista','quad','doppi'].forEach(x=>{
+    document.getElementById(x+'-mode').style.display = m===x?'block':'none';
+  });
+  ['miss','found','lista','quad','doppi'].forEach(x=>{
+    document.getElementById('btn-'+x).className = 'mode-btn'+(m===x?' m-'+x:'');
+  });
+  if(m==='miss')  { renderMissAll(); }
+  if(m==='found') { renderFoundAll(); }
+  if(m==='lista') { renderLista(); }
+  if(m==='quad')  { renderQuad(); }
+  if(m==='doppi') { renderDoppiAll(); updateDoppiSummary(); }
+}
+
+/* ══════════════════════════════════════════════
+   TABS
+══════════════════════════════════════════════ */
+function buildTabs(containerId, activeClass, activeId, onClick) {
+  if(!onClick) return;
+  const c = document.getElementById(containerId); c.innerHTML='';
+  currentAlbum.sections.forEach(s=>{
+    const b = document.createElement('button');
+    b.className = 'tab'+(s.id===activeId?' '+activeClass:'');
+    let sub = '';
+    if(activeClass==='t-miss')  sub = s.items.filter(i=>missing[i]).length+' miss.';
+    if(activeClass==='t-found') sub = s.items.filter(i=>!missing[i]).length+' carte';
+    if(activeClass==='t-doppi') sub = s.items.filter(i=>(doppi[i]||0)>0).length+' tipi';
+    b.innerHTML = s.label+'<br><span style="font-size:9px;font-weight:400;opacity:.8">'+sub+'</span>';
+    b.onclick = ()=>onClick(s.id);
+    c.appendChild(b);
+  });
+}
+
+/* ══════════════════════════════════════════════
+   POPUP
+══════════════════════════════════════════════ */
+function openPopup(item) {
+  pendingRemove = item;
+  document.getElementById('popup-msg').textContent = 'Rimuovere la carta '+item+' dai mancanti? Tornerà nelle trovate.';
+  document.getElementById('overlay').classList.add('show');
+}
+function closePopup() { pendingRemove=null; document.getElementById('overlay').classList.remove('show'); }
+function confirmRemove() {
+  if(!pendingRemove) return;
+  delete missing[pendingRemove];
+  saveMiss(); updateStats();
+  const remCard = document.querySelector('#miss-cards-area [data-id="'+pendingRemove+'"]');
+  if(remCard) remCard.classList.remove('missing');
+  renderMissFilterPills();
+  if(currentMode==='lista') renderLista();
+  if(currentMode==='quad')  renderQuad();
+  closePopup();
+}
+
+/* ══════════════════════════════════════════════
+   MANCANTI
+══════════════════════════════════════════════ */
+let activeMFilter = 'all';
+
+function renderMissAll() {
+  if(!currentAlbum) return;
+  const area = document.getElementById('miss-cards-area');
+  const panel = document.getElementById('miss-filter-panel');
+  if(!area || !panel) return;
+  area.innerHTML = '';
+
+  // Remove old pills (keep title)
+  panel.querySelectorAll('.filter-pill').forEach(p=>p.remove());
+
+  // "Tutte" pill
+  const totalMiss = currentAlbum.sections.reduce((s,sec)=>s+sec.items.filter(i=>missing[i]).length,0);
+  const allPill = document.createElement('button');
+  allPill.className = 'filter-pill'+(activeMFilter==='all'?' active':'');
+  allPill.innerHTML = 'Tutte<span class="fp-count">'+totalMiss+'</span>';
+  allPill.onclick = ()=>{ activeMFilter='all'; renderMissAll(); };
+  panel.appendChild(allPill);
+
+  // Section pills
+  currentAlbum.sections.forEach(sec=>{
+    const mCount = sec.items.filter(i=>missing[i]).length;
+    const pill = document.createElement('button');
+    pill.className = 'filter-pill'+(activeMFilter===sec.id?' active':'');
+    pill.innerHTML = secLabel(sec.id).split(' ')[0]+'<span class="fp-count">'+mCount+'</span>';
+    pill.title = secLabel(sec.id);
+    pill.onclick = ()=>{ activeMFilter=sec.id; renderMissAll(); };
+    panel.appendChild(pill);
+  });
+
+  // Render card sections
+  const sections = activeMFilter==='all'
+    ? currentAlbum.sections
+    : currentAlbum.sections.filter(s=>s.id===activeMFilter);
+
+  sections.forEach(sec=>{
+    const mCount = sec.items.filter(i=>missing[i]).length;
+    const block = document.createElement('div');
+    block.className = 'miss-section-block';
+    block.dataset.secid = sec.id;
+
+    const header = document.createElement('div');
+    header.className = 'miss-section-header';
+    header.innerHTML = secLabel(sec.id)+'<span>'+mCount+' mancanti · '+(sec.items.length-mCount)+' trovate</span>';
+    block.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    sec.items.forEach(item=>{
+      const c = document.createElement('div');
+      c.className = 'card-miss'+(missing[item]?' missing':'');
+      c.dataset.id = item; c.textContent = item;
+      c.onclick = ()=>toggleMissing(item);
+      grid.appendChild(c);
+    });
+    block.appendChild(grid);
+    area.appendChild(block);
+  });
+}
+
+function toggleMissing(item) {
+  if(missing[item]) { openPopup(item); return; }
+  missing[item] = true;
+  saveMiss(); updateStats();
+  // update card in place
+  const card = document.querySelector('#miss-cards-area [data-id="'+item+'"]');
+  if(card) card.classList.add('missing');
+  // update filter pill counts
+  renderMissFilterPills();
+  if(currentMode==='quad') renderQuad();
+}
+
+function renderMissFilterPills() {
+  if(!currentAlbum) return;
+  const panel = document.getElementById('miss-filter-panel');
+  if(!panel) return;
+  const pills = panel.querySelectorAll('.filter-pill');
+  const totalMiss = currentAlbum.sections.reduce((s,sec)=>s+sec.items.filter(i=>missing[i]).length,0);
+  pills.forEach((pill,i)=>{
+    const cnt = pill.querySelector('.fp-count');
+    if(!cnt) return;
+    if(i===0){ cnt.textContent=totalMiss; return; }
+    const sec = currentAlbum.sections[i-1];
+    if(sec) cnt.textContent = sec.items.filter(j=>missing[j]).length;
+  });
+  // also update section headers
+  document.querySelectorAll('.miss-section-header').forEach(h=>{
+    const block = h.closest('.miss-section-block');
+    const sid = block ? block.dataset.secid : null;
+    if(!sid) return;
+    const sec = currentAlbum.sections.find(s=>s.id===sid);
+    if(!sec) return;
+    const mCount = sec.items.filter(i=>missing[i]).length;
+    h.innerHTML = secLabel(sid)+'<span>'+mCount+' mancanti · '+(sec.items.length-mCount)+' trovate</span>';
+  });
+}
+function renderMSection(id) { renderMissAll(); }
+
+/* ══════════════════════════════════════════════
+   TROVATE
+══════════════════════════════════════════════ */
+let activeFFilter = 'all';
+
+function renderFoundAll() {
+  if(!currentAlbum) return;
+  const area = document.getElementById('found-cards-area');
+  const panel = document.getElementById('found-filter-panel');
+  if(!area || !panel) return;
+  area.innerHTML = '';
+  panel.querySelectorAll('.filter-pill').forEach(p=>p.remove());
+
+  const totalFound = currentAlbum.sections.reduce((s,sec)=>s+sec.items.filter(i=>!missing[i]).length,0);
+  const allPill = document.createElement('button');
+  allPill.className = 'filter-pill found-pill'+(activeFFilter==='all'?' active':'');
+  allPill.innerHTML = 'Tutte<span class="fp-count">'+totalFound+'</span>';
+  allPill.onclick = ()=>{ activeFFilter='all'; renderFoundAll(); };
+  panel.appendChild(allPill);
+
+  currentAlbum.sections.forEach(sec=>{
+    const fCount = sec.items.filter(i=>!missing[i]).length;
+    const pill = document.createElement('button');
+    pill.className = 'filter-pill found-pill'+(activeFFilter===sec.id?' active':'');
+    pill.innerHTML = secLabel(sec.id).split(' ')[0]+'<span class="fp-count">'+fCount+'</span>';
+    pill.title = secLabel(sec.id);
+    pill.onclick = ()=>{ activeFFilter=sec.id; renderFoundAll(); };
+    panel.appendChild(pill);
+  });
+
+  const sections = activeFFilter==='all'
+    ? currentAlbum.sections
+    : currentAlbum.sections.filter(s=>s.id===activeFFilter);
+
+  sections.forEach(sec=>{
+    const items = sec.items.filter(i=>!missing[i]);
+    const block = document.createElement('div');
+    block.className = 'found-section-block';
+    const header = document.createElement('div');
+    header.className = 'found-section-header';
+    header.innerHTML = secLabel(sec.id)+'<span>'+items.length+' trovate</span>';
+    block.appendChild(header);
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    if(!items.length) {
+      grid.innerHTML = '<div class="empty-msg" style="grid-column:1/-1;font-size:10px">Nessuna trovata</div>';
+    } else {
+      items.forEach(item=>{
+        const c = document.createElement('div');
+        c.className='card-found'; c.dataset.id=item; c.textContent=item;
+        c.onclick=()=>markAsMissing(item);
+        grid.appendChild(c);
+      });
+    }
+    block.appendChild(grid);
+    area.appendChild(block);
+  });
+}
+
+function markAsMissing(item) {
+  if(confirm('Spostare la carta '+item+' nei mancanti?')) {
+    missing[item]=true; saveMiss(); updateStats();
+    // remove from found area
+    const card = document.querySelector('#found-cards-area [data-id="'+item+'"]');
+    if(card) card.closest('.found-section-block') && card.remove();
+    renderFoundAll();
+    renderMissFilterPills();
+    if(currentMode==='quad') renderQuad();
+  }
+}
+function renderFSection(id) { renderFoundAll(); }
+
+/* ══════════════════════════════════════════════
+   LISTA
+══════════════════════════════════════════════ */
+function renderLista() {
+  if(!currentAlbum) return;
+  const container = document.getElementById('lista-content'); container.innerHTML='';
+  let total=0;
+  currentAlbum.sections.forEach(s=>{
+    const items=s.items.filter(i=>missing[i]); total+=items.length;
+    const block=document.createElement('div'); block.className='lista-block';
+    if(!items.length) { block.innerHTML='<h3>'+secLabel(s.id)+' <span style="color:#3ecf74">✅ Completa</span></h3>'; }
+    else { block.innerHTML='<h3>'+secLabel(s.id)+'<span>'+items.length+' mancanti</span></h3><div class="lista-chips">'+items.map(i=>'<span class="chip">'+i+'</span>').join('')+'</div>'; }
+    container.appendChild(block);
+  });
+  document.getElementById('copy-btn').textContent='📋 Copia lista ('+total+' mancanti)';
+}
+function copyLista() {
+  let lines=[currentAlbum.nameText+' — Mancanti',''];
+  currentAlbum.sections.forEach(s=>{
+    const items=s.items.filter(i=>missing[i]);
+    if(items.length) { lines.push(secLabel(s.id)+' ('+items.length+'):'); lines.push(items.join(' - ')); lines.push(''); }
+  });
+  lines.push('Totale: '+Object.keys(missing).length+' mancanti');
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>{
+    const btn=document.getElementById('copy-btn'); const orig=btn.textContent;
+    btn.textContent='✅ Copiato!'; setTimeout(()=>btn.textContent=orig,2000);
+  });
+}
+
+/* ══════════════════════════════════════════════
+   QUADRO
+══════════════════════════════════════════════ */
+function renderQuad() {
+  if(!currentAlbum) return;
+  const total=currentAlbum.sections.reduce((s,sec)=>s+sec.items.length,0);
+  const mCount=Object.keys(missing).length;
+  document.getElementById('quad-summary').textContent=(total-mCount)+' trovate · '+mCount+' mancanti';
+  const container=document.getElementById('quad-content'); container.innerHTML='';
+  currentAlbum.sections.forEach(s=>{
+    const mc=s.items.filter(i=>missing[i]).length;
+    const sec=document.createElement('div'); sec.className='quad-section';
+    sec.innerHTML='<div class="quad-section-title">'+secLabel(s.id)+'<span>'+(s.items.length-mc)+' trovate · '+mc+' mancanti</span></div>';
+    const grid=document.createElement('div'); grid.className='grid-quad';
+    s.items.forEach(item=>{
+      const c=document.createElement('div');
+      c.className='qcard '+(missing[item]?'q-miss':'q-found');
+      c.textContent=item; grid.appendChild(c);
+    });
+    sec.appendChild(grid); container.appendChild(sec);
+  });
+}
+
+/* ══════════════════════════════════════════════
+   DOPPIONI
+══════════════════════════════════════════════ */
+let activeDFilter = 'all';
+
+function addDoppio(btn, item, delta) {
+  const nxt = Math.max(0,(doppi[item]||0)+delta);
+  if(nxt===0) delete doppi[item]; else doppi[item]=nxt;
+  saveDoppi(); updateDoppiSummary();
+  // update card in place
+  const card = document.querySelector('#doppi-cards-area [data-id="'+item+'"]');
+  if(card){
+    const val=doppi[item]||0;
+    card.classList.toggle('has-doppi',val>0);
+    card.querySelector('.dbadge').textContent=val;
+    card.querySelector('.dnum').style.color=val>0?'#d7a8ff':'#4a5a8a';
+  }
+  // update filter pills
+  renderDoppiFilterPills();
+}
+
+function renderDoppiFilterPills() {
+  if(!currentAlbum) return;
+  const panel = document.getElementById('doppi-filter-panel');
+  if(!panel) return;
+  const pills = panel.querySelectorAll('.filter-pill');
+  const totalD = Object.values(doppi).reduce((s,v)=>s+v,0);
+  pills.forEach((pill,i)=>{
+    const cnt = pill.querySelector('.fp-count');
+    if(!cnt) return;
+    if(i===0){ cnt.textContent=totalD; return; }
+    const sec = currentAlbum.sections[i-1];
+    if(sec) cnt.textContent = sec.items.reduce((s,j)=>s+(doppi[j]||0),0);
+  });
+}
+
+function updateDoppiSummary(){
+  if(!currentAlbum) return;
+  const keys=Object.keys(doppi).filter(k=>doppi[k]>0);
+  const tot=keys.reduce((s,k)=>s+doppi[k],0);
+  document.getElementById('d-types').textContent=keys.length;
+  document.getElementById('d-total').textContent=tot;
+  if(!keys.length){document.getElementById('d-max').textContent='—';return;}
+  const mk=keys.reduce((a,b)=>doppi[a]>=doppi[b]?a:b);
+  document.getElementById('d-max').textContent=mk+' (x'+doppi[mk]+')';
+}
+
+function renderDoppiAll() {
+  if(!currentAlbum) return;
+  const area = document.getElementById('doppi-cards-area');
+  const panel = document.getElementById('doppi-filter-panel');
+  if(!area||!panel) return;
+  area.innerHTML='';
+  panel.querySelectorAll('.filter-pill').forEach(p=>p.remove());
+
+  const totalD = Object.values(doppi).reduce((s,v)=>s+v,0);
+  const allPill = document.createElement('button');
+  allPill.className='filter-pill doppi-pill'+(activeDFilter==='all'?' active':'');
+  allPill.innerHTML='Tutte<span class="fp-count">'+totalD+'</span>';
+  allPill.onclick=()=>{ activeDFilter='all'; renderDoppiAll(); };
+  panel.appendChild(allPill);
+
+  currentAlbum.sections.forEach(sec=>{
+    const dTotal=sec.items.reduce((s,i)=>s+(doppi[i]||0),0);
+    const pill=document.createElement('button');
+    pill.className='filter-pill doppi-pill'+(activeDFilter===sec.id?' active':'');
+    pill.innerHTML=secLabel(sec.id).split(' ')[0]+'<span class="fp-count">'+dTotal+'</span>';
+    pill.title=secLabel(sec.id);
+    pill.onclick=()=>{ activeDFilter=sec.id; renderDoppiAll(); };
+    panel.appendChild(pill);
+  });
+
+  const sections = activeDFilter==='all'
+    ? currentAlbum.sections
+    : currentAlbum.sections.filter(s=>s.id===activeDFilter);
+
+  sections.forEach(sec=>{
+    const dCount=sec.items.filter(i=>(doppi[i]||0)>0).length;
+    const dTotal=sec.items.reduce((s,i)=>s+(doppi[i]||0),0);
+    const block=document.createElement('div');
+    block.className='doppi-section-block';
+    const header=document.createElement('div');
+    header.className='doppi-section-header';
+    header.innerHTML=secLabel(sec.id)+'<span>'+dCount+' tipi · '+dTotal+' totali</span>';
+    block.appendChild(header);
+    const grid=document.createElement('div');
+    grid.className='grid-doppi';
+    sec.items.forEach(item=>{
+      const val=doppi[item]||0;
+      const card=document.createElement('div');
+      card.className='dcard'+(val>0?' has-doppi':'');
+      card.dataset.id=item;
+      card.innerHTML='<div class="dbadge">'+val+'</div>'
+        +'<div class="dnum" style="color:'+(val>0?'#d7a8ff':'#4a5a8a')+'">'+item+'</div>'
+        +'<div class="dcard-btns">'
+        +'<button class="btn-minus" onclick="event.stopPropagation();addDoppio(this,\''+item+'\', -1)">−</button>'
+        +'<button class="btn-plus"  onclick="event.stopPropagation();addDoppio(this,\''+item+'\', +1)">＋</button>'
+        +'</div>';
+      grid.appendChild(card);
+    });
+    block.appendChild(grid);
+    area.appendChild(block);
+  });
+}
+function renderDSection(id){ renderDoppiAll(); }
+
+/* ══════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════ */
+function secLabel(id){
+  const labels={
+    // Serie A
+    coppe:'Coppe', squadre:'Foto Squadre', acquisti:'Nuovi Acquisti',
+    seriea1:'Serie A (1-417)', sty:'Sticker Style', seriea2:'Serie A (418-543)',
+    upg:'Aggiornamenti', serieb:'Serie B', seriec:'Serie C',
+    kinder:'Kinder', cel:'Celebration',
+    // Mondiali
+    s00:'Carta Speciale', fcw1:'FCW 1-8', fcw2:'FCW 9-19', cc:'Championship Cards',
+    ga:'Girone A', gb:'Girone B', gc:'Girone C', gd:'Girone D',
+    ge:'Girone E', gf:'Girone F', gg:'Girone G', gh:'Girone H',
+    gi:'Girone I', gj:'Girone J', gk:'Girone K', gl:'Girone L',
+  };
+  return labels[id]||id;
+}
+
+document.getElementById('reset-btn').onclick=()=>{
+  if(currentMode==='doppi'){if(!confirm('Azzerare tutti i doppioni?'))return;doppi={};saveDoppi();renderDSection(activeDSection);updateDoppiSummary();}
+  else{if(!confirm('Rimuovere tutti i mancanti?'))return;missing={};saveMiss();updateStats();renderMSection(activeMSection);}
+};
+
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
+function checkOldData(albumId) {
+  if(albumId !== 'calciatori2526') return;
+  try {
+    const old = localStorage.getItem('calc2526_miss');
+    if(old && Object.keys(JSON.parse(old)).length > 0) {
+      const already = localStorage.getItem('fb_miss_calciatori2526');
+      if(!already || Object.keys(JSON.parse(already)).length === 0) {
+        document.getElementById('import-banner').style.display = 'flex';
+      }
+    }
+  } catch(e) {}
+}
+
+function importOldData() {
+  try {
+    const old = localStorage.getItem('calc2526_miss');
+    if(!old) return;
+    const data = JSON.parse(old);
+    lsSet('fb_miss_calciatori2526', data);
+    missing = data;
+    saveMiss();
+    updateStats();
+    renderMissAll();
+    renderFoundAll();
+    document.getElementById('import-banner').style.display = 'none';
+    alert('✅ Importati '+Object.keys(data).length+' mancanti dal vecchio tracker!');
+  } catch(e) { alert('Errore durante importazione: '+e.message); }
+}
+
+try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
+</script>
+</body>
+</html>
