@@ -459,6 +459,7 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
 #tracker.album-mondiali2026 .filter-pill { background: rgba(10,0,20,0.85); border-color: rgba(255,255,255,0.12); }
 </style>
 </head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <body>
 
 <!-- POPUP -->
@@ -473,6 +474,21 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
   </div>
 </div>
 
+<!-- AUTH MODAL -->
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-logo">Figu<span>Book</span></div>
+    <div class="auth-subtitle">la tua collezione digitale</div>
+    <div class="auth-title">Accedi al tuo account</div>
+    <div class="auth-desc">Inserisci la tua email per ricevere un link di accesso. I tuoi progressi saranno salvati nel cloud e sincronizzati su tutti i dispositivi.</div>
+    <div class="auth-msg" id="auth-msg"></div>
+    <div class="auth-err" id="auth-err"></div>
+    <input class="auth-input" id="auth-email" type="email" placeholder="la-tua@email.com" />
+    <button class="auth-btn" id="auth-send-btn" onclick="sendMagicLink()">Invia link di accesso ✉️</button>
+    <div><span class="auth-skip" onclick="skipLogin()">Continua senza account (salvataggio locale)</span></div>
+  </div>
+</div>
+
 <!-- ════════════════ HOME ════════════════ -->
 <div id="home">
   <div class="fb-header">
@@ -480,7 +496,9 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
       <div class="fb-logo"><span class="figu">Figu</span><div class="sep"></div><span class="book">Book</span></div>
       <div class="fb-sub">la tua collezione digitale</div>
     </div>
-    <div class="fb-version">v1.0</div>
+    <div class="header-user" id="header-user">
+      <button class="login-btn" onclick="showAuthModal()">Accedi</button>
+    </div>
   </div>
   <div class="home-content">
     <div class="home-greeting">
@@ -504,6 +522,7 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
       <div class="t-season" id="t-season"></div>
       <div class="t-name" id="t-name"></div>
     </div>
+    <div id="tracker-sync-badge"></div>
   </div>
   <div class="tracker-body">
     <div class="stats-bar">
@@ -582,6 +601,118 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
 </div>
 
 <script>
+/* ══════════════════════════════════════════════
+   SUPABASE SETUP
+══════════════════════════════════════════════ */
+const SUPA_URL = 'https://yowlpvbqilapjtyueopk.supabase.co';
+const SUPA_KEY = 'sb_publishable_PiV4zi6R0ZntulNgl9jYBg_ngtMeGCF';
+let supa = null;
+let currentUser = null;
+
+function initSupabase() {
+  try {
+    const { createClient } = window.supabase;
+    supa = createClient(SUPA_URL, SUPA_KEY);
+    supa.auth.onAuthStateChange((event, session) => {
+      currentUser = session?.user || null;
+      updateHeaderAuth();
+      if(event === 'SIGNED_IN') {
+        hideAuthModal();
+        syncAfterLogin();
+      }
+    });
+    supa.auth.getSession().then(({ data: { session } }) => {
+      currentUser = session?.user || null;
+      updateHeaderAuth();
+    });
+  } catch(e) { console.warn('Supabase non disponibile:', e); }
+}
+
+function updateHeaderAuth() {
+  const el = document.getElementById('header-user');
+  if(!el) return;
+  if(currentUser) {
+    const initial = (currentUser.email||'?')[0].toUpperCase();
+    el.innerHTML = '<div class="header-user"><span class="user-email">'+currentUser.email+'</span><div class="user-avatar" title="Logout — clicca per uscire" onclick="doLogout()">'+initial+'</div></div>';
+    updateSyncBadge(true);
+  } else {
+    el.innerHTML = '<button class="login-btn" onclick="showAuthModal()">Accedi</button>';
+    updateSyncBadge(false);
+  }
+}
+
+function updateSyncBadge(online) {
+  const el = document.getElementById('tracker-sync-badge');
+  if(!el) return;
+  el.innerHTML = online
+    ? '<span class="sync-badge">☁️ sync attivo</span>'
+    : '<span class="sync-badge offline">💾 locale</span>';
+}
+
+function showAuthModal() { document.getElementById('auth-overlay').classList.add('show'); }
+function hideAuthModal() { document.getElementById('auth-overlay').classList.remove('show'); }
+function skipLogin()     { hideAuthModal(); }
+
+async function sendMagicLink() {
+  const email = document.getElementById('auth-email').value.trim();
+  const btn   = document.getElementById('auth-send-btn');
+  const msg   = document.getElementById('auth-msg');
+  const err   = document.getElementById('auth-err');
+  if(!email) { err.textContent='Inserisci una email valida.'; err.style.display='block'; return; }
+  btn.disabled = true; btn.textContent = 'Invio in corso...';
+  err.style.display='none';
+  try {
+    const { error } = await supa.auth.signInWithOtp({
+      email, options: { emailRedirectTo: window.location.href }
+    });
+    if(error) throw error;
+    msg.textContent = '✅ Email inviata! Controlla la tua casella e clicca il link.';
+    msg.style.display='block';
+    btn.textContent = 'Email inviata!';
+  } catch(e) {
+    err.textContent = 'Errore: '+(e.message||'riprova più tardi.');
+    err.style.display='block';
+    btn.disabled=false; btn.textContent='Invia link di accesso ✉️';
+  }
+}
+
+async function doLogout() {
+  if(!confirm('Vuoi uscire dal tuo account?')) return;
+  if(supa) await supa.auth.signOut();
+  currentUser = null;
+  updateHeaderAuth();
+}
+
+function saveToCloud() {
+  if(!supa || !currentUser || !currentAlbum) return;
+  supa.from('user_data').upsert({
+    user_id: currentUser.id,
+    album_id: currentAlbum.id,
+    missing: missing,
+    doppi: doppi,
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'user_id,album_id' }).then(()=>{}).catch(()=>{});
+}
+
+async function syncAfterLogin() {
+  if(!supa || !currentUser || !currentAlbum) return;
+  try {
+    const { data } = await supa.from('user_data')
+      .select('missing,doppi')
+      .eq('user_id', currentUser.id)
+      .eq('album_id', currentAlbum.id)
+      .maybeSingle();
+    if(data) {
+      missing = data.missing || {};
+      doppi   = data.doppi   || {};
+      updateStats();
+      if(document.getElementById('miss-cards-area')) renderMissAll();
+    } else {
+      saveToCloud(); // prima volta: carica dati locali sul cloud
+    }
+  } catch(e) {}
+}
+
 /* ══════════════════════════════════════════════
    ALBUM DEFINITIONS
 ══════════════════════════════════════════════ */
@@ -673,12 +804,24 @@ function lsSet(key, value) {
   try { if(window.storage) window.storage.set(key, JSON.stringify(value)); } catch(e) {}
 }
 
-function loadAlbumData(albumId) {
+async function loadAlbumData(albumId) {
+  // prima carica da locale
   missing = lsGet('fb_miss_'+albumId) || {};
   doppi   = lsGet('fb_doppi_'+albumId) || {};
+  // poi sovrascrive con cloud se loggato
+  if(supa && currentUser) {
+    try {
+      const { data } = await supa.from('user_data')
+        .select('missing,doppi')
+        .eq('user_id', currentUser.id)
+        .eq('album_id', albumId)
+        .maybeSingle();
+      if(data) { missing = data.missing||{}; doppi = data.doppi||{}; }
+    } catch(e) {}
+  }
 }
-function saveMiss()  { lsSet('fb_miss_'+currentAlbum.id,  missing); }
-function saveDoppi() { lsSet('fb_doppi_'+currentAlbum.id, doppi); }
+function saveMiss()  { lsSet('fb_miss_'+currentAlbum.id, missing); saveToCloud(); }
+function saveDoppi() { lsSet('fb_doppi_'+currentAlbum.id, doppi); saveToCloud(); }
 function loadOrder() {
   albumOrder = lsGet('fb_order') || [];
 }
@@ -766,7 +909,7 @@ async function openAlbum(albumId) {
   albumOrder = albumOrder.filter(id=>id!==albumId);
   albumOrder.push(albumId);
   saveOrder();
-  loadAlbumData(albumId);
+  await loadAlbumData(albumId);
 
   // Prima apertura Serie A: segna di default STY, UPG, Kinder, CEL come mancanti
   if(albumId === 'calciatori2526') {
@@ -836,6 +979,7 @@ function importOldData() {
   } catch(e) { alert('Errore durante importazione: '+e.message); }
 }
 
+initSupabase();
 try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
 }
 
@@ -1300,6 +1444,7 @@ function importOldData() {
   } catch(e) { alert('Errore durante importazione: '+e.message); }
 }
 
+initSupabase();
 try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
 </script>
 </body>
