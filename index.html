@@ -685,7 +685,7 @@ body{font-family:'Inter',sans-serif;background:#070d1f;color:#fff;min-height:100
 </div>
 
 <!-- ════════════════ TRACKER ════════════════ -->
-<div id="tracker">
+<div id="tracker" style="display:none">
   <div class="tracker-header">
     <button class="back-btn" onclick="goHome()">←</button>
     <div class="tracker-title">
@@ -837,6 +837,7 @@ function showAuthModal() {
   var el = document.getElementById('auth-overlay');
   el.style.display = 'flex';
 }
+function skipLogin() { hideAuthModal(); }
 function hideAuthModal() {
   var el = document.getElementById('auth-overlay');
   el.style.display = 'none';
@@ -890,10 +891,10 @@ async function doLogout() {
 
 /* ════════ STORAGE ════════ */
 function lsGet(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
-function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){} if(supa&&currentUser)saveToCloud();}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 function loadAlbumData(id){missing=lsGet('fb_miss_'+id)||{};doppi=lsGet('fb_doppi_'+id)||{};}
-function saveMiss(){lsSet('fb_miss_'+currentAlbum.id,missing);}
-function saveDoppi(){lsSet('fb_doppi_'+currentAlbum.id,doppi);}
+function saveMiss(){lsSet('fb_miss_'+currentAlbum.id,missing);if(supa&&currentUser&&currentAlbum)saveToCloud();}
+function saveDoppi(){lsSet('fb_doppi_'+currentAlbum.id,doppi);if(supa&&currentUser&&currentAlbum)saveToCloud();}
 function loadOrder(){albumOrder=lsGet('fb_order')||[];}
 function saveOrder(){lsSet('fb_order',albumOrder);}
 function getMissCount(id){var v=lsGet('fb_miss_'+id);return v?Object.keys(v).length:0;}
@@ -991,6 +992,156 @@ function renderHome() {
   addBtn.textContent='+ Aggiungi un album'; addBtn.onclick=openScopri;
   area.appendChild(addBtn);
 }
+
+
+/* ════════ TRACKER STATE ════════ */
+var currentAlbum = null;
+var missing = {};
+var doppi = {};
+var currentMode = 'miss';
+var activeMSection, activeFSection, activeDSection;
+var pendingRemove = null;
+
+/* ════════ TRACKER OPEN/CLOSE ════════ */
+async function openAlbum(albumId) {
+  currentAlbum = ALBUMS.find(function(a){ return a.id === albumId; });
+  if(!currentAlbum) return;
+
+  // update last-opened order
+  albumOrder = albumOrder.filter(function(id){ return id !== albumId; });
+  albumOrder.push(albumId);
+  saveOrder();
+
+  loadAlbumData(albumId);
+
+  // First time Serie A: mark STY/UPG/Kinder/CEL as missing by default
+  if(albumId === 'calciatori2526') {
+    var firstTimeKey = 'fb_init_calciatori2526';
+    if(!localStorage.getItem(firstTimeKey)) {
+      var defaultSecs = ['sty','upg','kinder','cel'];
+      defaultSecs.forEach(function(secId) {
+        var sec = currentAlbum.sections.find(function(s){ return s.id===secId; });
+        if(sec) sec.items.forEach(function(item){ missing[item] = true; });
+      });
+      saveMiss();
+      localStorage.setItem(firstTimeKey, '1');
+    }
+  }
+
+  // Check old tracker data
+  checkOldData(albumId);
+
+  // Sync from cloud if logged in
+  if(supa && currentUser) {
+    try {
+      var r = await supa.from('user_data').select('missing,doppi')
+        .eq('user_id', currentUser.id).eq('album_id', albumId).maybeSingle();
+      if(r.data) { missing = r.data.missing||{}; doppi = r.data.doppi||{}; }
+    } catch(e) {}
+  }
+
+  var total = currentAlbum.sections.reduce(function(s,sec){ return s+sec.items.length; }, 0);
+  document.getElementById('t-season').textContent = currentAlbum.season;
+  document.getElementById('t-name').innerHTML = currentAlbum.name;
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('prog-r').textContent = total;
+
+  activeMSection = currentAlbum.sections[0].id;
+  activeFSection = currentAlbum.sections[0].id;
+  activeDSection = currentAlbum.sections[0].id;
+
+  document.getElementById('home').style.display = 'none';
+  var tracker = document.getElementById('tracker');
+  tracker.style.display = 'flex';
+  tracker.className = tracker.className.replace(/album-\S+/g, '');
+  tracker.classList.add('album-'+albumId);
+
+  setMode('miss');
+  updateStats();
+}
+
+function goHome() {
+  document.getElementById('tracker').style.display = 'none';
+  document.getElementById('home').style.display = 'flex';
+  currentAlbum = null;
+  renderHome();
+}
+
+/* ════════ STATS ════════ */
+function updateStats() {
+  if(!currentAlbum) return;
+  var total = currentAlbum.sections.reduce(function(s,sec){ return s+sec.items.length; }, 0);
+  var m = Object.keys(missing).length;
+  var f = total - m;
+  var pct = Math.round((f/total)*100);
+  document.getElementById('s-found').textContent = f;
+  document.getElementById('s-miss').textContent = m;
+  document.getElementById('s-pct').textContent = pct+'%';
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-l').textContent = f;
+}
+
+/* ════════ MODE ════════ */
+function setMode(m) {
+  currentMode = m;
+  ['miss','found','lista','quad','doppi'].forEach(function(x) {
+    var el = document.getElementById(x+'-mode');
+    if(el) el.style.display = m===x ? 'block' : 'none';
+    var btn = document.getElementById('btn-'+x);
+    if(btn) btn.className = 'mode-btn' + (m===x ? ' m-'+x : '');
+  });
+  if(m==='miss')  renderMissAll();
+  if(m==='found') renderFoundAll();
+  if(m==='lista') renderLista();
+  if(m==='quad')  renderQuad();
+  if(m==='doppi') { renderDoppiAll(); updateDoppiSummary(); }
+}
+
+/* ════════ POPUP ════════ */
+function openPopup(item) {
+  pendingRemove = item;
+  document.getElementById('popup-msg').textContent = 'Rimuovere la carta '+item+' dai mancanti?';
+  document.getElementById('overlay').classList.add('show');
+}
+function closePopup() {
+  pendingRemove = null;
+  document.getElementById('overlay').classList.remove('show');
+}
+function confirmRemove() {
+  if(!pendingRemove) return;
+  delete missing[pendingRemove];
+  saveMiss(); updateStats();
+  var card = document.querySelector('#miss-cards-area [data-id="'+pendingRemove+'"]');
+  if(card) card.classList.remove('missing');
+  renderMissFilterPills();
+  if(currentMode==='lista') renderLista();
+  if(currentMode==='quad')  renderQuad();
+  closePopup();
+}
+
+/* ════════ TROVATE ════════ */
+function markAsMissing(item) {
+  if(confirm('Spostare la carta '+item+' nei mancanti?')) {
+    missing[item]=true; saveMiss(); updateStats();
+    renderFoundAll(); renderMissFilterPills();
+    if(currentMode==='quad') renderQuad();
+  }
+}
+function renderFSection(id) { renderFoundAll(); }
+
+/* ════════ RESET ════════ */
+document.addEventListener('DOMContentLoaded', function() {
+  var resetBtn = document.getElementById('reset-btn');
+  if(resetBtn) resetBtn.onclick = function() {
+    if(currentMode==='doppi'){
+      if(!confirm('Azzerare tutti i doppioni?')) return;
+      doppi={}; saveDoppi(); renderDoppiAll(); updateDoppiSummary();
+    } else {
+      if(!confirm('Rimuovere tutti i mancanti?')) return;
+      missing={}; saveMiss(); updateStats(); renderMissAll();
+    }
+  };
+});
 
 /* ════════ ALBUMS + TRACKER ════════ */
 const ALBUMS = [
