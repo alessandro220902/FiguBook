@@ -1443,22 +1443,10 @@ function importOldData() {
   } catch(e) { alert('Errore durante importazione: '+e.message); }
 }
 
-window.addEventListener('DOMContentLoaded', function() {
-  try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
-  window.addEventListener('load', function() {
-    try { initSupabase(); } catch(e) { console.warn('Supabase init error:', e); }
-  });
-});
+
 
 // Attach login button with addEventListener as failsafe
-document.addEventListener('DOMContentLoaded', function() {
-  var btn = document.getElementById('accedi-btn');
-  if(btn) {
-    btn.addEventListener('click', function() {
-      showAuthModal();
-    });
-  }
-});
+
 
 
 /* ════════ INIT ════════ */
