@@ -10,130 +10,135 @@
 body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-height:100vh}
 
 /* ── HOME ── */
-#home{min-height:100vh;display:flex;flex-direction:column;position:relative}
+#home{min-height:100vh;display:flex;flex-direction:column;position:relative;background:#070d1f}
+#home::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cpolygon points='30,2 52,15 52,45 30,58 8,45 8,15' stroke='%23ffffff' stroke-width='0.3' stroke-opacity='0.03'/%3E%3C/g%3E%3C/svg%3E");}
 
-/* Football hex pattern background */
-#home::before{
-  content:'';position:fixed;inset:0;z-index:0;
-  background-color:#070d1f;
-  background-image:
-    radial-gradient(circle at 20% 50%, rgba(201,168,76,0.04) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(26,74,107,0.08) 0%, transparent 40%);
-}
-#home::after{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg stroke='%23ffffff' stroke-width='0.3' stroke-opacity='0.04'%3E%3Cpolygon points='30,2 52,15 52,45 30,58 8,45 8,15'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-
-.fb-header{
-  position:relative;z-index:1;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:18px 18px 14px;
-  background:rgba(7,13,31,0.95);
-  border-bottom:1px solid rgba(201,168,76,0.2);
-}
+/* ── HEADER ── */
+.fb-header{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(7,13,31,0.97);border-bottom:1px solid rgba(201,168,76,0.15)}
 .fb-logo-wrap{display:flex;flex-direction:column}
-.fb-logo{display:flex;align-items:center;gap:0}
-.fb-logo .figu{font-size:26px;font-weight:900;color:#c9a84c;letter-spacing:1px;line-height:1}
-.fb-logo .book{font-size:26px;font-weight:900;color:#fff;letter-spacing:1px;line-height:1}
-.fb-logo .sep{width:3px;height:3px;background:#c9a84c;border-radius:50%;margin:0 3px 4px}
-.fb-sub{font-size:8px;letter-spacing:3.5px;color:#3a4a6a;text-transform:uppercase;margin-top:2px}
-.fb-version{font-size:9px;color:#3a4a6a;letter-spacing:1px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15);padding:3px 8px;border-radius:4px}
+.fb-logo{display:flex;align-items:center}
+.fb-logo .figu{font-size:22px;font-weight:900;color:#c9a84c;line-height:1}
+.fb-logo .sep{width:3px;height:3px;background:#c9a84c;border-radius:50%;margin:0 3px 3px}
+.fb-logo .book{font-size:22px;font-weight:900;color:#fff;line-height:1}
+.fb-sub{font-size:7px;letter-spacing:3px;color:#2a3a5a;text-transform:uppercase;margin-top:1px}
 
-.home-content{position:relative;z-index:1;flex:1;padding:18px 14px}
+/* hamburger */
+.hamburger{background:none;border:none;cursor:pointer;padding:4px;display:flex;flex-direction:column;gap:5px;z-index:1}
+.hamburger span{display:block;width:22px;height:2px;background:#c9a84c;border-radius:2px;transition:all .2s}
 
-.home-greeting{margin-bottom:18px}
-.home-greeting h2{font-size:20px;font-weight:900;color:#fff;letter-spacing:.5px;margin-bottom:3px}
-.home-greeting p{font-size:10px;letter-spacing:2px;color:#3a4a6a;text-transform:uppercase}
+/* ── DRAWER MENU ── */
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200}
+.drawer-overlay.open{display:block}
+.drawer{position:fixed;top:0;right:-280px;width:270px;height:100vh;background:#0a1020;border-left:1px solid #1e2a5e;z-index:201;transition:right .25s ease;display:flex;flex-direction:column;overflow-y:auto}
+.drawer.open{right:0}
+.drawer-header{padding:20px 18px 14px;border-bottom:1px solid #1e2a5e;display:flex;align-items:center;justify-content:space-between}
+.drawer-logo{font-size:18px;font-weight:900;font-family:'Poppins',sans-serif}
+.drawer-logo span{color:#c9a84c}
+.drawer-close{background:none;border:none;color:#6b7db3;font-size:22px;cursor:pointer;line-height:1}
+.drawer-user{padding:14px 18px;border-bottom:1px solid #1e2a5e;background:rgba(201,168,76,0.05)}
+.drawer-user-email{font-size:11px;color:#c9a84c;font-weight:600;margin-bottom:2px}
+.drawer-user-label{font-size:9px;color:#4a5a8a;letter-spacing:1px;text-transform:uppercase}
+.drawer-section{padding:16px 18px 8px}
+.drawer-section-title{font-size:9px;letter-spacing:2px;color:#4a5a8a;text-transform:uppercase;margin-bottom:10px}
+.drawer-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:8px;cursor:pointer;transition:all .15s;margin-bottom:4px;border:1px solid transparent}
+.drawer-item:hover{background:rgba(255,255,255,0.05);border-color:#1e2a5e}
+.drawer-item.active{background:rgba(201,168,76,0.1);border-color:rgba(201,168,76,0.2)}
+.drawer-item-icon{font-size:18px;width:24px;text-align:center}
+.drawer-item-text{font-size:13px;font-weight:600;color:#fff}
+.drawer-item-sub{font-size:10px;color:#4a5a8a;margin-top:1px}
+.drawer-logout{margin:8px 18px 18px;background:transparent;border:1px solid #e05252;color:#e05252;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;padding:10px;border-radius:8px;cursor:pointer;width:calc(100% - 36px);transition:all .15s}
+.drawer-logout:hover{background:#e05252;color:#fff}
 
-.albums-grid{display:flex;flex-direction:column;gap:12px}
+/* ── HOME CONTENT ── */
+.home-content{position:relative;z-index:1;flex:1;padding:16px 14px}
 
-/* Album card */
-.album-card{
-  border-radius:14px;cursor:pointer;
-  transition:all .18s;position:relative;overflow:hidden;
-  border:1.5px solid rgba(255,255,255,0.06);
-}
-.album-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,0.4)}
-.album-card.last-opened{border-color:rgba(201,168,76,0.4)}
-.album-card.coming-soon{opacity:0.5;cursor:default}
-.album-card.coming-soon:hover{transform:none;box-shadow:none}
+/* empty state */
+.empty-home{text-align:center;padding:60px 20px}
+.empty-home .empty-icon{font-size:64px;margin-bottom:16px}
+.empty-home h3{font-size:18px;font-weight:700;color:#fff;margin-bottom:8px}
+.empty-home p{font-size:13px;color:#4a5a8a;line-height:1.6;margin-bottom:24px}
+.empty-home .add-btn{background:#c9a84c;border:none;color:#0a0e2a;font-size:13px;font-weight:700;font-family:'Poppins',sans-serif;padding:13px 24px;border-radius:10px;cursor:pointer;transition:all .15s}
+.empty-home .add-btn:hover{background:#f5c842;transform:translateY(-2px)}
 
-/* Card cover area */
-.album-cover{
-  height:110px;position:relative;overflow:hidden;
-  display:flex;align-items:flex-end;padding:0 16px 12px;
-}
-.album-cover-bg{position:absolute;inset:0;z-index:0;background-size:cover}
-.album-cover-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.55) 100%)}
-.album-cover-pattern{
-  position:absolute;inset:0;z-index:2;
-  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='18' fill='none' stroke='%23ffffff' stroke-width='0.4' stroke-opacity='0.06'/%3E%3Cline x1='2' y1='20' x2='38' y2='20' stroke='%23ffffff' stroke-width='0.3' stroke-opacity='0.04'/%3E%3Cline x1='20' y1='2' x2='20' y2='38' stroke='%23ffffff' stroke-width='0.3' stroke-opacity='0.04'/%3E%3C/svg%3E");
-}
-.album-cover-titles{position:relative;z-index:3;display:flex;flex-direction:column;gap:2px}
-.album-cover-big{
-  font-family:'Poppins',sans-serif !important;
-  font-size:28px;font-weight:900;
-  color:#fff;letter-spacing:2px;
-  line-height:1;text-transform:uppercase;
-  text-shadow:0 2px 10px rgba(0,0,0,0.8);
-}
-.theme-serie-a .album-cover-big{color:#f5c842}
-.theme-world-cup .album-cover-big{color:#ffffff}
-.theme-champions .album-cover-big{color:#c8c8ff}
-.album-cover-small{
-  font-family:'Inter',sans-serif !important;
-  font-size:12px;font-weight:500;
-  color:rgba(255,255,255,0.85);letter-spacing:1px;
-  text-shadow:0 1px 6px rgba(0,0,0,0.8);
-}
-.album-cover-season{
-  position:relative;z-index:1;
-  font-size:8px;letter-spacing:3px;color:rgba(255,255,255,0.6);text-transform:uppercase;font-weight:400;
-}
-.album-badge{
-  position:absolute;top:10px;right:12px;z-index:4;
-  font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
-  padding:3px 9px;border-radius:3px;
-}
+.home-section-title{font-size:11px;letter-spacing:2px;color:#4a5a8a;text-transform:uppercase;margin-bottom:12px;font-family:'Inter',sans-serif}
+.albums-grid{display:flex;flex-direction:column;gap:14px}
+
+/* ── ALBUM CARD (redesigned) ── */
+.album-card{border-radius:16px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+.album-card:active{transform:scale(0.98)}
+.album-card.last-opened{border-color:rgba(201,168,76,0.35);box-shadow:0 4px 24px rgba(201,168,76,0.1)}
+.album-card.coming-soon{opacity:0.45;cursor:default}
+
+/* cover */
+.album-cover{height:130px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:14px 16px}
+.album-cover-bg{position:absolute;inset:0;z-index:0}
+.album-cover-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(160deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.65) 100%)}
+.album-cover-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:52px;opacity:0.18;z-index:1}
+.album-cover-titles{position:relative;z-index:2}
+.album-cover-big{font-family:'Poppins',sans-serif!important;font-size:30px;font-weight:900;letter-spacing:2px;line-height:1;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,0.8)}
+.album-cover-small{font-family:'Inter',sans-serif!important;font-size:12px;font-weight:500;color:rgba(255,255,255,0.8);letter-spacing:.5px;margin-top:2px}
+.album-badge{position:absolute;top:12px;right:12px;z-index:3;font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:4px}
 .badge-last{background:#c9a84c;color:#0a0e2a}
-.badge-soon{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1)}
-.badge-new{background:#1a5c2e;color:#3ecf74}
+.badge-soon{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.5)}
 
-/* Card body */
-.album-body{background:rgba(10,16,40,0.98);padding:12px 16px 14px}
-.album-name{font-size:20px;font-weight:900;color:#fff;letter-spacing:.5px;margin-bottom:10px;line-height:1.1}
+/* themes */
+.theme-serie-a .album-cover-bg{background:linear-gradient(135deg,#06093a 0%,#141980 45%,#2a0a0a 100%)}
+.theme-serie-a .album-cover-big{color:#f5c842}
+.theme-world-cup .album-cover-bg{background:linear-gradient(135deg,#001a33 0%,#003d7a 40%,#7a5500 100%)}
+.theme-world-cup .album-cover-big{color:#ffffff}
+.theme-champions .album-cover-bg{background:linear-gradient(135deg,#050520 0%,#0f0f50 50%,#2a2a2a 100%)}
+.theme-champions .album-cover-big{color:#c8c8ff}
+
+/* body */
+.album-body{background:#0c1530;padding:14px 16px 16px;border-top:1px solid rgba(255,255,255,0.05)}
+.album-name{font-size:16px;font-weight:700;color:#fff;margin-bottom:12px;line-height:1.2}
 .album-name span{color:#c9a84c}
 
-.album-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
-.ast{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:7px 4px;text-align:center}
-.ast-val{font-size:15px;font-weight:900;line-height:1;color:#c9a84c}
-.ast-lbl{font-size:7.5px;letter-spacing:1px;color:#3a4a6a;text-transform:uppercase;margin-top:2px}
-.ast.green .ast-val{color:#3ecf74}
-.ast.red   .ast-val{color:#e05252}
-.ast.gold  .ast-val{color:#c9a84c}
+/* stats - only 2 main + progress */
+.album-stats-main{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.ast-main{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+.ast-main-val{font-size:22px;font-weight:900;line-height:1}
+.ast-main-info{}
+.ast-main-lbl{font-size:9px;letter-spacing:1px;color:#4a5a8a;text-transform:uppercase}
+.ast-main-sub{font-size:10px;color:#6b7db3;margin-top:1px}
+.ast-main.green .ast-main-val{color:#3ecf74}
+.ast-main.red .ast-main-val{color:#e05252}
 
-.album-pbar-bg{background:rgba(255,255,255,0.06);border-radius:3px;height:4px;overflow:hidden;margin-bottom:6px}
-.album-pbar-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.album-pbar-wrap{margin-bottom:8px}
+.album-pbar-label{display:flex;justify-content:space-between;font-size:10px;color:#4a5a8a;margin-bottom:5px}
+.album-pbar-label span:last-child{color:#c9a84c;font-weight:700}
+.album-pbar-bg{background:rgba(255,255,255,0.06);border-radius:4px;height:5px;overflow:hidden}
+.album-pbar-fill{height:100%;border-radius:4px;transition:width .5s ease}
 .fill-green{background:linear-gradient(90deg,#3ecf74,#7effa0)}
 .fill-gold{background:linear-gradient(90deg,#c9a84c,#f5c842)}
 .fill-gray{background:rgba(255,255,255,0.08)}
 
-.album-meta{display:flex;justify-content:space-between;font-size:9px;color:#3a4a6a;letter-spacing:.5px}
-.album-meta .arrow{color:#c9a84c;font-size:14px;line-height:1}
+.album-footer{display:flex;justify-content:space-between;align-items:center}
+.album-footer-text{font-size:10px;color:#4a5a8a}
+.album-footer-arrow{font-size:18px;color:#c9a84c}
 
-/* Album color themes */
-.theme-serie-a .album-cover-bg{background:linear-gradient(135deg,#080b3a 0%,#1a1f6e 50%,#2a0a0a 100%)}
-.theme-serie-a .album-cover-overlay{background:linear-gradient(to bottom,transparent 0%,rgba(10,16,40,0.8) 100%)}
+/* ── SCOPRI MODAL ── */
+.scopri-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:300;align-items:flex-end;justify-content:center}
+.scopri-overlay.open{display:flex}
+.scopri-sheet{background:#0a1020;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;padding:0 0 30px}
+.scopri-handle{width:40px;height:4px;background:#2a3a5a;border-radius:2px;margin:12px auto 0}
+.scopri-header{padding:16px 20px;border-bottom:1px solid #1e2a5e;display:flex;align-items:center;justify-content:space-between}
+.scopri-header h3{font-size:16px;font-weight:700;color:#fff}
+.scopri-close{background:none;border:none;color:#6b7db3;font-size:20px;cursor:pointer}
+.scopri-list{padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.scopri-item{background:#0f1a3a;border:1px solid #1e2a5e;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px}
+.scopri-item-icon{font-size:28px;width:40px;text-align:center}
+.scopri-item-info{flex:1}
+.scopri-item-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}
+.scopri-item-sub{font-size:11px;color:#4a5a8a}
+.scopri-add-btn{background:#c9a84c;border:none;color:#0a0e2a;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:all .15s}
+.scopri-add-btn:hover{background:#f5c842}
+.scopri-add-btn.added{background:#1a5c2e;color:#3ecf74}
+.scopri-add-btn.added:hover{background:#1a5c2e}
 
-.theme-world-cup .album-cover-bg{background:linear-gradient(135deg,#0a2a50 0%,#1a4a80 40%,#8a6010 100%)}
-.theme-world-cup .album-cover-overlay{background:linear-gradient(to bottom,transparent 0%,rgba(10,16,40,0.8) 100%)}
-
-.theme-champions .album-cover-bg{background:linear-gradient(135deg,#0a0a2a 0%,#1a1a50 50%,#3a3a3a 100%)}
-.theme-champions .album-cover-overlay{background:linear-gradient(to bottom,transparent 0%,rgba(10,16,40,0.8) 100%)}
-
-/* Footer */
-.home-footer{position:relative;z-index:1;background:rgba(7,13,31,0.95);border-top:1px solid rgba(255,255,255,0.04);padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
+/* footer */
+.home-footer{position:relative;z-index:1;background:rgba(7,13,31,0.97);border-top:1px solid rgba(255,255,255,0.04);padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
 .footer-text{font-size:8px;color:#2a3a5a;letter-spacing:2px;text-transform:uppercase}
 .footer-dot{width:4px;height:4px;border-radius:50%;background:#c9a84c;opacity:0.4}
 
@@ -514,6 +519,52 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
   </div>
 </div>
 
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+
+<!-- DRAWER MENU -->
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-logo">Figu<span>Book</span></div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-user" id="drawer-user">
+    <div class="drawer-user-label">Non connesso</div>
+    <div class="drawer-user-email" style="color:#4a5a8a">Accedi per sincronizzare</div>
+  </div>
+  <div class="drawer-section">
+    <div class="drawer-section-title">La mia raccolta</div>
+    <div class="drawer-item active" onclick="closeDrawer()">
+      <div class="drawer-item-icon">📚</div>
+      <div><div class="drawer-item-text">I miei album</div><div class="drawer-item-sub">La tua raccolta</div></div>
+    </div>
+    <div class="drawer-item" onclick="openScopri();closeDrawer()">
+      <div class="drawer-item-icon">🔍</div>
+      <div><div class="drawer-item-text">Scopri album</div><div class="drawer-item-sub">Aggiungi alla raccolta</div></div>
+    </div>
+  </div>
+  <div class="drawer-section">
+    <div class="drawer-section-title">Account</div>
+    <div class="drawer-item" id="drawer-login-item" onclick="showAuthModal();closeDrawer()">
+      <div class="drawer-item-icon">🔐</div>
+      <div><div class="drawer-item-text">Accedi</div><div class="drawer-item-sub">Salva i progressi nel cloud</div></div>
+    </div>
+  </div>
+  <button class="drawer-logout" id="drawer-logout-btn" style="display:none" onclick="doLogout();closeDrawer()">Esci dall'account</button>
+</div>
+
+<!-- SCOPRI SHEET -->
+<div class="scopri-overlay" id="scopri-overlay" onclick="if(event.target===this)closeScopri()">
+  <div class="scopri-sheet">
+    <div class="scopri-handle"></div>
+    <div class="scopri-header">
+      <h3>📚 Scopri Album</h3>
+      <button class="scopri-close" onclick="closeScopri()">✕</button>
+    </div>
+    <div class="scopri-list" id="scopri-list"></div>
+  </div>
+</div>
+
 <!-- ════════════════ HOME ════════════════ -->
 <div id="home">
   <div class="fb-header">
@@ -521,21 +572,17 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
       <div class="fb-logo"><span class="figu">Figu</span><div class="sep"></div><span class="book">Book</span></div>
       <div class="fb-sub">la tua collezione digitale</div>
     </div>
-    <div class="header-user" id="header-user">
-      <button class="login-btn" onclick="showAuthModal()">Accedi</button>
-    </div>
+    <button class="hamburger" onclick="openDrawer()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
   <div class="home-content">
-    <div class="home-greeting">
-      <h2>I tuoi Album 📚</h2>
-      <p>Seleziona un album per gestire la tua raccolta</p>
-    </div>
-    <div class="albums-grid" id="albums-grid"></div>
+    <div id="home-albums-area"></div>
   </div>
   <div class="home-footer">
     <span class="footer-text">FiguBook © 2025</span>
     <div class="footer-dot"></div>
-    <span class="footer-text">Tutti gli album di figurine</span>
+    <span class="footer-text">v1.0</span>
   </div>
 </div>
 
@@ -654,16 +701,8 @@ function initSupabase() {
 }
 
 function updateHeaderAuth() {
-  const el = document.getElementById('header-user');
-  if(!el) return;
-  if(currentUser) {
-    const initial = (currentUser.email||'?')[0].toUpperCase();
-    el.innerHTML = '<div class="header-user"><span class="user-email">'+currentUser.email+'</span><div class="user-avatar" title="Logout — clicca per uscire" onclick="doLogout()">'+initial+'</div></div>';
-    updateSyncBadge(true);
-  } else {
-    el.innerHTML = '<button class="login-btn" onclick="showAuthModal()">Accedi</button>';
-    updateSyncBadge(false);
-  }
+  updateSyncBadge(!!currentUser);
+  updateDrawerUser();
 }
 
 function updateSyncBadge(online) {
@@ -1056,6 +1095,81 @@ function importOldData() {
     document.getElementById('import-banner').style.display = 'none';
     alert('✅ Importati '+Object.keys(data).length+' mancanti dal vecchio tracker!');
   } catch(e) { alert('Errore durante importazione: '+e.message); }
+}
+
+
+/* ── DRAWER ── */
+function openDrawer() {
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+  updateDrawerUser();
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+}
+function updateDrawerUser() {
+  const el = document.getElementById('drawer-user');
+  const loginItem = document.getElementById('drawer-login-item');
+  const logoutBtn = document.getElementById('drawer-logout-btn');
+  if(!el) return;
+  if(currentUser) {
+    el.innerHTML = '<div class="drawer-user-label">Account attivo ☁️</div><div class="drawer-user-email">'+currentUser.email+'</div>';
+    if(loginItem) loginItem.style.display='none';
+    if(logoutBtn) logoutBtn.style.display='block';
+  } else {
+    el.innerHTML = '<div class="drawer-user-label">Non connesso</div><div class="drawer-user-email" style="color:#4a5a8a">Accedi per sincronizzare</div>';
+    if(loginItem) loginItem.style.display='flex';
+    if(logoutBtn) logoutBtn.style.display='none';
+  }
+}
+
+/* ── SCOPRI ── */
+function openScopri() {
+  const list = document.getElementById('scopri-list');
+  const myAlbums = getMyAlbums();
+  list.innerHTML = '';
+  ALBUMS.forEach(function(a) {
+    const isAdded = myAlbums.includes(a.id);
+    const icon = ALBUM_ICONS[a.id] || '📋';
+    const item = document.createElement('div');
+    item.className = 'scopri-item';
+
+    const iconEl = document.createElement('div');
+    iconEl.className = 'scopri-item-icon';
+    iconEl.textContent = icon;
+
+    const infoEl = document.createElement('div');
+    infoEl.className = 'scopri-item-info';
+    infoEl.innerHTML = '<div class="scopri-item-name">'+a.coverTitle+' '+(a.coverSub||'')+'</div>'
+      +'<div class="scopri-item-sub">'+a.season+((!a.available&&a.comingSoon)?' · '+a.comingSoon:'')+'</div>';
+
+    const btn = document.createElement('button');
+    btn.className = 'scopri-add-btn' + (isAdded ? ' added' : '');
+    btn.textContent = isAdded ? '✓ Aggiunto' : '+ Aggiungi';
+    if(!a.available) { btn.disabled=true; btn.style.opacity='0.4'; btn.style.cursor='not-allowed'; }
+    btn.onclick = function() { handleAddAlbum(a.id, btn); };
+
+    item.appendChild(iconEl);
+    item.appendChild(infoEl);
+    item.appendChild(btn);
+    list.appendChild(item);
+  });
+  document.getElementById('scopri-overlay').style.display = 'flex';
+}
+function closeScopri() {
+  document.getElementById('scopri-overlay').style.display='none';
+}
+function handleAddAlbum(id, btn) {
+  addAlbum(id);
+  btn.textContent='✓ Aggiunto';
+  btn.classList.add('added');
+}
+
+/* ── AUTH HEADER (no header user div needed anymore) ── */
+function updateHeaderAuth() {
+  updateSyncBadge(!!currentUser);
+  if(typeof updateDrawerUser === 'function') updateDrawerUser();
 }
 
 try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
