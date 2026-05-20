@@ -4,38 +4,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>FiguBook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&family=Inter:wght@400;500;600;700;900&display=swap');
+/* ── RESET ── */
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-height:100vh}
+body{font-family:'Inter',sans-serif;background:#070d1f;color:#fff;min-height:100vh}
 
 /* ── HOME ── */
-#home{min-height:100vh;display:flex;flex-direction:column;position:relative;background:#070d1f}
+#home{min-height:100vh;display:flex;flex-direction:column;background:#070d1f}
 #home::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cpolygon points='30,2 52,15 52,45 30,58 8,45 8,15' stroke='%23ffffff' stroke-width='0.3' stroke-opacity='0.03'/%3E%3C/g%3E%3C/svg%3E");}
+  background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='30,2 52,15 52,45 30,58 8,45 8,15' fill='none' stroke='%23ffffff' stroke-width='0.3' stroke-opacity='0.03'/%3E%3C/svg%3E");}
 
-/* ── HEADER ── */
-.fb-header{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(7,13,31,0.97);border-bottom:1px solid rgba(201,168,76,0.15)}
+/* HEADER */
+.fb-header{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(7,13,31,0.98);border-bottom:1px solid rgba(201,168,76,0.15)}
 .fb-logo-wrap{display:flex;flex-direction:column}
 .fb-logo{display:flex;align-items:center}
-.fb-logo .figu{font-size:22px;font-weight:900;color:#c9a84c;line-height:1}
+.fb-logo .figu{font-size:22px;font-weight:900;color:#c9a84c;font-family:'Poppins',sans-serif}
 .fb-logo .sep{width:3px;height:3px;background:#c9a84c;border-radius:50%;margin:0 3px 3px}
-.fb-logo .book{font-size:22px;font-weight:900;color:#fff;line-height:1}
+.fb-logo .book{font-size:22px;font-weight:900;color:#fff;font-family:'Poppins',sans-serif}
 .fb-sub{font-size:7px;letter-spacing:3px;color:#2a3a5a;text-transform:uppercase;margin-top:1px}
+.hamburger{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.hamburger span{display:block;width:22px;height:2px;background:#c9a84c;border-radius:2px}
 
-/* hamburger */
-.hamburger{background:none;border:none;cursor:pointer;padding:4px;display:flex;flex-direction:column;gap:5px;z-index:1}
-.hamburger span{display:block;width:22px;height:2px;background:#c9a84c;border-radius:2px;transition:all .2s}
-
-/* ── DRAWER MENU ── */
-.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200}
-.drawer-overlay.open{display:block}
-.drawer{position:fixed;top:0;right:-280px;width:270px;height:100vh;background:#0a1020;border-left:1px solid #1e2a5e;z-index:201;transition:right .25s ease;display:flex;flex-direction:column;overflow-y:auto}
+/* DRAWER */
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000}
+.drawer{position:fixed;top:0;right:-280px;width:270px;height:100vh;background:#0a1020;border-left:1px solid #1e2a5e;z-index:1001;transition:right .25s ease;display:flex;flex-direction:column;overflow-y:auto}
 .drawer.open{right:0}
+.drawer-overlay.open{display:block}
 .drawer-header{padding:20px 18px 14px;border-bottom:1px solid #1e2a5e;display:flex;align-items:center;justify-content:space-between}
 .drawer-logo{font-size:18px;font-weight:900;font-family:'Poppins',sans-serif}
 .drawer-logo span{color:#c9a84c}
-.drawer-close{background:none;border:none;color:#6b7db3;font-size:22px;cursor:pointer;line-height:1}
+.drawer-close{background:none;border:none;color:#6b7db3;font-size:22px;cursor:pointer;line-height:1;padding:4px}
 .drawer-user{padding:14px 18px;border-bottom:1px solid #1e2a5e;background:rgba(201,168,76,0.05)}
 .drawer-user-email{font-size:11px;color:#c9a84c;font-weight:600;margin-bottom:2px}
 .drawer-user-label{font-size:9px;color:#4a5a8a;letter-spacing:1px;text-transform:uppercase}
@@ -43,104 +44,104 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
 .drawer-section-title{font-size:9px;letter-spacing:2px;color:#4a5a8a;text-transform:uppercase;margin-bottom:10px}
 .drawer-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:8px;cursor:pointer;transition:all .15s;margin-bottom:4px;border:1px solid transparent}
 .drawer-item:hover{background:rgba(255,255,255,0.05);border-color:#1e2a5e}
-.drawer-item.active{background:rgba(201,168,76,0.1);border-color:rgba(201,168,76,0.2)}
 .drawer-item-icon{font-size:18px;width:24px;text-align:center}
-.drawer-item-text{font-size:13px;font-weight:600;color:#fff}
+.drawer-item-label{font-size:13px;font-weight:600;color:#fff}
 .drawer-item-sub{font-size:10px;color:#4a5a8a;margin-top:1px}
-.drawer-logout{margin:8px 18px 18px;background:transparent;border:1px solid #e05252;color:#e05252;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;padding:10px;border-radius:8px;cursor:pointer;width:calc(100% - 36px);transition:all .15s}
+.drawer-logout{margin:8px 18px 18px;background:transparent;border:1px solid #e05252;color:#e05252;font-size:11px;font-weight:700;padding:10px;border-radius:8px;cursor:pointer;width:calc(100% - 36px)}
 .drawer-logout:hover{background:#e05252;color:#fff}
 
-/* ── HOME CONTENT ── */
+/* HOME CONTENT */
 .home-content{position:relative;z-index:1;flex:1;padding:16px 14px}
-
-/* empty state */
 .empty-home{text-align:center;padding:60px 20px}
 .empty-home .empty-icon{font-size:64px;margin-bottom:16px}
-.empty-home h3{font-size:18px;font-weight:700;color:#fff;margin-bottom:8px}
+.empty-home h3{font-size:18px;font-weight:700;color:#fff;font-family:'Poppins',sans-serif;margin-bottom:8px}
 .empty-home p{font-size:13px;color:#4a5a8a;line-height:1.6;margin-bottom:24px}
-.empty-home .add-btn{background:#c9a84c;border:none;color:#0a0e2a;font-size:13px;font-weight:700;font-family:'Poppins',sans-serif;padding:13px 24px;border-radius:10px;cursor:pointer;transition:all .15s}
-.empty-home .add-btn:hover{background:#f5c842;transform:translateY(-2px)}
-
-.home-section-title{font-size:11px;letter-spacing:2px;color:#4a5a8a;text-transform:uppercase;margin-bottom:12px;font-family:'Inter',sans-serif}
+.btn-primary{background:#c9a84c;border:none;color:#0a0e2a;font-size:13px;font-weight:700;font-family:'Poppins',sans-serif;padding:13px 24px;border-radius:10px;cursor:pointer;transition:all .15s}
+.btn-primary:hover{background:#f5c842}
+.home-section-title{font-size:11px;letter-spacing:2px;color:#4a5a8a;text-transform:uppercase;margin-bottom:12px}
 .albums-grid{display:flex;flex-direction:column;gap:14px}
+.btn-add-more{background:rgba(201,168,76,0.08);border:1.5px dashed rgba(201,168,76,0.3);color:#c9a84c;font-size:12px;font-weight:700;padding:13px 20px;border-radius:10px;cursor:pointer;width:100%;margin-top:4px}
 
-/* ── ALBUM CARD (redesigned) ── */
-.album-card{border-radius:16px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+/* ALBUM CARD */
+.album-card{border-radius:16px;cursor:pointer;transition:all .18s;overflow:hidden;border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 20px rgba(0,0,0,0.3)}
 .album-card:active{transform:scale(0.98)}
-.album-card.last-opened{border-color:rgba(201,168,76,0.35);box-shadow:0 4px 24px rgba(201,168,76,0.1)}
-.album-card.coming-soon{opacity:0.45;cursor:default}
-
-/* cover */
+.album-card.last-opened{border-color:rgba(201,168,76,0.4);box-shadow:0 4px 24px rgba(201,168,76,0.1)}
 .album-cover{height:130px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:14px 16px}
 .album-cover-bg{position:absolute;inset:0;z-index:0}
-.album-cover-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(160deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.65) 100%)}
-.album-cover-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:52px;opacity:0.18;z-index:1}
+.album-cover-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(160deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0.65) 100%)}
+.album-cover-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:56px;opacity:0.15;z-index:1}
 .album-cover-titles{position:relative;z-index:2}
-.album-cover-big{font-family:'Poppins',sans-serif!important;font-size:30px;font-weight:900;letter-spacing:2px;line-height:1;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,0.8)}
-.album-cover-small{font-family:'Inter',sans-serif!important;font-size:12px;font-weight:500;color:rgba(255,255,255,0.8);letter-spacing:.5px;margin-top:2px}
-.album-badge{position:absolute;top:12px;right:12px;z-index:3;font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:4px}
-.badge-last{background:#c9a84c;color:#0a0e2a}
-.badge-soon{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.5)}
-
-/* themes */
+.album-cover-big{font-family:'Poppins',sans-serif;font-size:30px;font-weight:900;letter-spacing:2px;line-height:1;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,0.8)}
+.album-cover-small{font-size:12px;font-weight:500;color:rgba(255,255,255,0.8);letter-spacing:.5px;margin-top:3px}
+.album-badge{position:absolute;top:12px;right:12px;z-index:3;font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:4px;background:#c9a84c;color:#0a0e2a}
 .theme-serie-a .album-cover-bg{background:linear-gradient(135deg,#06093a 0%,#141980 45%,#2a0a0a 100%)}
 .theme-serie-a .album-cover-big{color:#f5c842}
 .theme-world-cup .album-cover-bg{background:linear-gradient(135deg,#001a33 0%,#003d7a 40%,#7a5500 100%)}
-.theme-world-cup .album-cover-big{color:#ffffff}
+.theme-world-cup .album-cover-big{color:#fff}
 .theme-champions .album-cover-bg{background:linear-gradient(135deg,#050520 0%,#0f0f50 50%,#2a2a2a 100%)}
 .theme-champions .album-cover-big{color:#c8c8ff}
-
-/* body */
 .album-body{background:#0c1530;padding:14px 16px 16px;border-top:1px solid rgba(255,255,255,0.05)}
-.album-name{font-size:16px;font-weight:700;color:#fff;margin-bottom:12px;line-height:1.2}
+.album-name{font-size:16px;font-weight:700;color:#fff;font-family:'Poppins',sans-serif;margin-bottom:12px}
 .album-name span{color:#c9a84c}
-
-/* stats - only 2 main + progress */
 .album-stats-main{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 .ast-main{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px}
 .ast-main-val{font-size:22px;font-weight:900;line-height:1}
-.ast-main-info{}
 .ast-main-lbl{font-size:9px;letter-spacing:1px;color:#4a5a8a;text-transform:uppercase}
 .ast-main-sub{font-size:10px;color:#6b7db3;margin-top:1px}
 .ast-main.green .ast-main-val{color:#3ecf74}
 .ast-main.red .ast-main-val{color:#e05252}
-
-.album-pbar-wrap{margin-bottom:8px}
 .album-pbar-label{display:flex;justify-content:space-between;font-size:10px;color:#4a5a8a;margin-bottom:5px}
 .album-pbar-label span:last-child{color:#c9a84c;font-weight:700}
-.album-pbar-bg{background:rgba(255,255,255,0.06);border-radius:4px;height:5px;overflow:hidden}
+.album-pbar-bg{background:rgba(255,255,255,0.06);border-radius:4px;height:5px;overflow:hidden;margin-bottom:8px}
 .album-pbar-fill{height:100%;border-radius:4px;transition:width .5s ease}
 .fill-green{background:linear-gradient(90deg,#3ecf74,#7effa0)}
-.fill-gold{background:linear-gradient(90deg,#c9a84c,#f5c842)}
 .fill-gray{background:rgba(255,255,255,0.08)}
+.album-footer-row{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#4a5a8a}
+.album-footer-row span:last-child{color:#c9a84c;font-size:16px}
 
-.album-footer{display:flex;justify-content:space-between;align-items:center}
-.album-footer-text{font-size:10px;color:#4a5a8a}
-.album-footer-arrow{font-size:18px;color:#c9a84c}
-
-/* ── SCOPRI MODAL ── */
-.scopri-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:300;align-items:flex-end;justify-content:center}
-.scopri-overlay.open{display:flex}
-.scopri-sheet{background:#0a1020;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;padding:0 0 30px}
+/* SCOPRI SHEET */
+.scopri-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1002;align-items:flex-end;justify-content:center}
+.scopri-sheet{background:#0a1020;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;padding-bottom:30px}
 .scopri-handle{width:40px;height:4px;background:#2a3a5a;border-radius:2px;margin:12px auto 0}
 .scopri-header{padding:16px 20px;border-bottom:1px solid #1e2a5e;display:flex;align-items:center;justify-content:space-between}
-.scopri-header h3{font-size:16px;font-weight:700;color:#fff}
-.scopri-close{background:none;border:none;color:#6b7db3;font-size:20px;cursor:pointer}
+.scopri-header h3{font-size:16px;font-weight:700;color:#fff;font-family:'Poppins',sans-serif}
+.scopri-close{background:none;border:none;color:#6b7db3;font-size:22px;cursor:pointer;padding:4px}
 .scopri-list{padding:12px 16px;display:flex;flex-direction:column;gap:10px}
 .scopri-item{background:#0f1a3a;border:1px solid #1e2a5e;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px}
-.scopri-item-icon{font-size:28px;width:40px;text-align:center}
+.scopri-item-icon{font-size:28px;width:40px;text-align:center;flex-shrink:0}
 .scopri-item-info{flex:1}
 .scopri-item-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}
 .scopri-item-sub{font-size:11px;color:#4a5a8a}
-.scopri-add-btn{background:#c9a84c;border:none;color:#0a0e2a;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:all .15s}
-.scopri-add-btn:hover{background:#f5c842}
-.scopri-add-btn.added{background:#1a5c2e;color:#3ecf74}
-.scopri-add-btn.added:hover{background:#1a5c2e}
+.scopri-add-btn{background:#c9a84c;border:none;color:#0a0e2a;font-size:11px;font-weight:700;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.scopri-add-btn.added{background:#1a5c2e;color:#3ecf74;cursor:default}
 
-/* footer */
-.home-footer{position:relative;z-index:1;background:rgba(7,13,31,0.97);border-top:1px solid rgba(255,255,255,0.04);padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
+/* AUTH MODAL */
+.auth-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:2000;align-items:center;justify-content:center;padding:20px}
+.auth-box{background:#0d1530;border:1.5px solid #1e2a5e;border-radius:16px;padding:28px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.8)}
+.auth-logo{font-size:24px;font-weight:900;font-family:'Poppins',sans-serif;margin-bottom:4px}
+.auth-logo span{color:#c9a84c}
+.auth-subtitle{font-size:8px;letter-spacing:3px;color:#3a4a6a;text-transform:uppercase;margin-bottom:20px}
+.auth-tabs{display:flex;gap:6px;margin-bottom:16px;background:#080f28;border-radius:8px;padding:4px}
+.auth-tab{flex:1;background:transparent;border:none;color:#4a5a8a;font-size:12px;font-weight:700;padding:8px;border-radius:6px;cursor:pointer}
+.auth-tab.active{background:#1e2a5e;color:#fff}
+.auth-subtabs{display:flex;margin-bottom:14px;border-bottom:1px solid #1e2a5e}
+.auth-subtab{flex:1;background:transparent;border:none;border-bottom:2px solid transparent;color:#4a5a8a;font-size:12px;font-weight:700;padding:8px;cursor:pointer;margin-bottom:-1px}
+.auth-subtab.active{color:#c9a84c;border-bottom-color:#c9a84c}
+.auth-input{width:100%;background:#080f28;border:1.5px solid #1e2a5e;border-radius:8px;padding:12px 14px;font-size:14px;color:#fff;outline:none;margin-bottom:10px}
+.auth-input:focus{border-color:#c9a84c}
+.auth-btn{width:100%;background:#c9a84c;border:none;color:#0a0e2a;font-size:13px;font-weight:700;font-family:'Poppins',sans-serif;padding:13px;border-radius:8px;cursor:pointer;margin-bottom:10px}
+.auth-btn:hover{background:#f5c842}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed}
+.auth-skip{font-size:11px;color:#4a5a8a;cursor:pointer;text-decoration:underline}
+.auth-msg{font-size:12px;color:#3ecf74;padding:10px;background:rgba(62,207,116,0.1);border-radius:6px;border:1px solid rgba(62,207,116,0.2);margin-bottom:12px;display:none}
+.auth-err{font-size:12px;color:#e05252;padding:10px;background:rgba(224,82,82,0.1);border-radius:6px;border:1px solid rgba(224,82,82,0.2);margin-bottom:12px;display:none}
+
+/* HOME FOOTER */
+.home-footer{position:relative;z-index:1;background:rgba(7,13,31,0.98);border-top:1px solid rgba(255,255,255,0.04);padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
 .footer-text{font-size:8px;color:#2a3a5a;letter-spacing:2px;text-transform:uppercase}
 .footer-dot{width:4px;height:4px;border-radius:50%;background:#c9a84c;opacity:0.4}
+.sync-badge{font-size:8px;color:#3ecf74;letter-spacing:1px;text-transform:uppercase}
+.sync-badge.offline{color:#e05252}
 
 /* ── TRACKER ── */
 #tracker{display:none;min-height:100vh;flex-direction:column}
@@ -462,10 +463,107 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
 }
 #tracker.album-mondiali2026 .mode-btn:hover { border-color: #ffcc00; color: #ffcc00; }
 #tracker.album-mondiali2026 .filter-pill { background: rgba(10,0,20,0.85); border-color: rgba(255,255,255,0.12); }
+
 </style>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <body>
+
+<!-- AUTH MODAL -->
+<div id="auth-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:2000;align-items:center;justify-content:center;padding:20px">
+  <div class="auth-box">
+    <div class="auth-logo">Figu<span>Book</span></div>
+    <div class="auth-subtitle">la tua collezione digitale</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('magic')">✉️ Link Email</button>
+      <button class="auth-tab" onclick="switchTab('pass')">🔒 Password</button>
+    </div>
+    <div class="auth-msg" id="auth-msg"></div>
+    <div class="auth-err" id="auth-err"></div>
+    <div id="panel-magic">
+      <p style="font-size:12px;color:#6b7db3;margin-bottom:12px;line-height:1.5">Ricevi un link di accesso via email.</p>
+      <input class="auth-input" id="auth-email-magic" type="email" placeholder="la-tua@email.com">
+      <button class="auth-btn" onclick="sendMagicLink()">Invia link ✉️</button>
+    </div>
+    <div id="panel-pass" style="display:none">
+      <div class="auth-subtabs">
+        <button class="auth-subtab active" id="subtab-login" onclick="switchSubTab('login')">Accedi</button>
+        <button class="auth-subtab" id="subtab-signup" onclick="switchSubTab('signup')">Registrati</button>
+      </div>
+      <input class="auth-input" id="auth-email-pass" type="email" placeholder="email">
+      <input class="auth-input" id="auth-password" type="password" placeholder="password">
+      <input class="auth-input" id="auth-password2" type="password" placeholder="conferma password" style="display:none">
+      <button class="auth-btn" id="auth-pass-btn" onclick="submitPassword()">Accedi</button>
+    </div>
+    <span class="auth-skip" onclick="hideAuthModal()">Continua senza account</span>
+  </div>
+</div>
+
+<!-- DRAWER OVERLAY -->
+<div id="drawer-overlay" class="drawer-overlay" onclick="closeDrawer()"></div>
+
+<!-- DRAWER -->
+<div id="drawer" class="drawer">
+  <div class="drawer-header">
+    <div class="drawer-logo">Figu<span>Book</span></div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div id="drawer-user" class="drawer-user">
+    <div class="drawer-user-label">Non connesso</div>
+    <div class="drawer-user-email" style="color:#4a5a8a">Accedi per sincronizzare</div>
+  </div>
+  <div class="drawer-section">
+    <div class="drawer-section-title">Raccolta</div>
+    <div class="drawer-item" onclick="closeDrawer()">
+      <div class="drawer-item-icon">📚</div>
+      <div><div class="drawer-item-label">I miei album</div><div class="drawer-item-sub">La tua raccolta</div></div>
+    </div>
+    <div class="drawer-item" onclick="closeScopri();closeDrawer();openScopri()">
+      <div class="drawer-item-icon">🔍</div>
+      <div><div class="drawer-item-label">Scopri album</div><div class="drawer-item-sub">Aggiungi alla raccolta</div></div>
+    </div>
+  </div>
+  <div class="drawer-section">
+    <div class="drawer-section-title">Account</div>
+    <div class="drawer-item" id="drawer-login-item" onclick="closeDrawer();showAuthModal()">
+      <div class="drawer-item-icon">🔐</div>
+      <div><div class="drawer-item-label">Accedi</div><div class="drawer-item-sub">Salva nel cloud</div></div>
+    </div>
+  </div>
+  <button class="drawer-logout" id="drawer-logout-btn" style="display:none" onclick="doLogout();closeDrawer()">Esci dall'account</button>
+</div>
+
+<!-- SCOPRI SHEET -->
+<div id="scopri-overlay" class="scopri-overlay" onclick="if(event.target===this)closeScopri()">
+  <div class="scopri-sheet">
+    <div class="scopri-handle"></div>
+    <div class="scopri-header">
+      <h3>📚 Scopri Album</h3>
+      <button class="scopri-close" onclick="closeScopri()">✕</button>
+    </div>
+    <div class="scopri-list" id="scopri-list"></div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="home">
+  <div class="fb-header">
+    <div class="fb-logo-wrap">
+      <div class="fb-logo"><span class="figu">Figu</span><div class="sep"></div><span class="book">Book</span></div>
+      <div class="fb-sub">la tua collezione digitale</div>
+    </div>
+    <button class="hamburger" onclick="openDrawer()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="home-content">
+    <div id="home-albums-area"></div>
+  </div>
+  <div class="home-footer">
+    <span class="footer-text">FiguBook © 2025</span>
+    <div class="footer-dot"></div>
+    <div id="sync-badge"></div>
+  </div>
+</div>
 
 <!-- POPUP -->
 <div class="overlay" id="overlay">
@@ -673,85 +771,7 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
 </div>
 
 <script>
-
-/* ── DRAWER ── */
-function openDrawer() {
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('drawer-overlay').classList.add('open');
-  updateDrawerUser();
-}
-function closeDrawer() {
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('drawer-overlay').classList.remove('open');
-}
-function updateDrawerUser() {
-  const el = document.getElementById('drawer-user');
-  const loginItem = document.getElementById('drawer-login-item');
-  const logoutBtn = document.getElementById('drawer-logout-btn');
-  if(!el) return;
-  if(currentUser) {
-    el.innerHTML = '<div class="drawer-user-label">Account attivo ☁️</div><div class="drawer-user-email">'+currentUser.email+'</div>';
-    if(loginItem) loginItem.style.display='none';
-    if(logoutBtn) logoutBtn.style.display='block';
-  } else {
-    el.innerHTML = '<div class="drawer-user-label">Non connesso</div><div class="drawer-user-email" style="color:#4a5a8a">Accedi per sincronizzare</div>';
-    if(loginItem) loginItem.style.display='flex';
-    if(logoutBtn) logoutBtn.style.display='none';
-  }
-}
-
-/* ── SCOPRI ── */
-function openScopri() {
-  const list = document.getElementById('scopri-list');
-  const myAlbums = getMyAlbums();
-  list.innerHTML = '';
-  ALBUMS.forEach(function(a) {
-    const isAdded = myAlbums.includes(a.id);
-    const icon = ALBUM_ICONS[a.id] || '📋';
-    const item = document.createElement('div');
-    item.className = 'scopri-item';
-
-    const iconEl = document.createElement('div');
-    iconEl.className = 'scopri-item-icon';
-    iconEl.textContent = icon;
-
-    const infoEl = document.createElement('div');
-    infoEl.className = 'scopri-item-info';
-    infoEl.innerHTML = '<div class="scopri-item-name">'+a.coverTitle+' '+(a.coverSub||'')+'</div>'
-      +'<div class="scopri-item-sub">'+a.season+((!a.available&&a.comingSoon)?' · '+a.comingSoon:'')+'</div>';
-
-    const btn = document.createElement('button');
-    btn.className = 'scopri-add-btn' + (isAdded ? ' added' : '');
-    btn.textContent = isAdded ? '✓ Aggiunto' : '+ Aggiungi';
-    if(!a.available) { btn.disabled=true; btn.style.opacity='0.4'; btn.style.cursor='not-allowed'; }
-    btn.onclick = function() { handleAddAlbum(a.id, btn); };
-
-    item.appendChild(iconEl);
-    item.appendChild(infoEl);
-    item.appendChild(btn);
-    list.appendChild(item);
-  });
-  document.getElementById('scopri-overlay').style.display = 'flex';
-}
-function closeScopri() {
-  document.getElementById('scopri-overlay').style.display='none';
-}
-function handleAddAlbum(id, btn) {
-  addAlbum(id);
-  btn.textContent='✓ Aggiunto';
-  btn.classList.add('added');
-}
-
-/* ── AUTH HEADER (no header user div needed anymore) ── */
-function updateHeaderAuth() {
-  updateSyncBadge(!!currentUser);
-  if(typeof updateDrawerUser === 'function') updateDrawerUser();
-}
-
-
-/* ══════════════════════════════════════════════
-   SUPABASE SETUP
-══════════════════════════════════════════════ */
+/* ════════ SUPABASE ════════ */
 const SUPA_URL = 'https://yowlpvbqilapjtyueopk.supabase.co';
 const SUPA_KEY = 'sb_publishable_PiV4zi6R0ZntulNgl9jYBg_ngtMeGCF';
 let supa = null;
@@ -759,157 +779,220 @@ let currentUser = null;
 
 function initSupabase() {
   try {
-    const { createClient } = window.supabase;
-    supa = createClient(SUPA_URL, SUPA_KEY);
-    supa.auth.onAuthStateChange((event, session) => {
-      currentUser = session?.user || null;
-      updateHeaderAuth();
-      if(event === 'SIGNED_IN') {
-        hideAuthModal();
-        syncAfterLogin();
-      }
+    supa = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+    supa.auth.onAuthStateChange(function(event, session) {
+      currentUser = session ? session.user : null;
+      updateUI();
+      if(event === 'SIGNED_IN') { hideAuthModal(); if(currentAlbum) syncFromCloud(); }
     });
-    supa.auth.getSession().then(({ data: { session } }) => {
-      currentUser = session?.user || null;
-      updateHeaderAuth();
+    supa.auth.getSession().then(function(r) {
+      currentUser = r.data.session ? r.data.session.user : null;
+      updateUI();
     });
-  } catch(e) { console.warn('Supabase non disponibile:', e); }
+  } catch(e) { console.warn('Supabase error:', e); }
 }
 
-function updateHeaderAuth() {
-  updateSyncBadge(!!currentUser);
-  if(typeof updateDrawerUser==="function") updateDrawerUser();
-}
-
-function updateSyncBadge(online) {
-  const el = document.getElementById('tracker-sync-badge');
-  if(!el) return;
-  el.innerHTML = online
-    ? '<span class="sync-badge">☁️ sync attivo</span>'
+function updateUI() {
+  // Sync badge
+  var sb = document.getElementById('sync-badge');
+  if(sb) sb.innerHTML = currentUser
+    ? '<span class="sync-badge">☁️ sync</span>'
     : '<span class="sync-badge offline">💾 locale</span>';
-}
-
-function showAuthModal() {
-  const el = document.getElementById('auth-overlay');
-  if(el) { el.style.display='flex'; el.classList.add('show'); }
-}
-function hideAuthModal() {
-  const el = document.getElementById('auth-overlay');
-  if(el) el.style.display='none';
-}
-function skipLogin()     { hideAuthModal(); }
-
-async function sendMagicLink() {
-  const email = (document.getElementById('auth-email-magic')||document.getElementById('auth-email')||{value:''}).value.trim();
-  const btn   = document.getElementById('auth-send-btn');
-  const msg   = document.getElementById('auth-msg');
-  const err   = document.getElementById('auth-err');
-  if(!email) { err.textContent='Inserisci una email valida.'; err.style.display='block'; return; }
-  btn.disabled = true; btn.textContent = 'Invio in corso...';
-  err.style.display='none';
-  try {
-    const { error } = await supa.auth.signInWithOtp({
-      email, options: { emailRedirectTo: window.location.href }
-    });
-    if(error) throw error;
-    msg.textContent = '✅ Email inviata! Controlla la tua casella e clicca il link.';
-    msg.style.display='block';
-    btn.textContent = 'Email inviata!';
-  } catch(e) {
-    err.textContent = 'Errore: '+(e.message||'riprova più tardi.');
-    err.style.display='block';
-    btn.disabled=false; btn.textContent='Invia link di accesso ✉️';
-  }
-}
-
-function switchTab(tab) {
-  document.getElementById('panel-magic').style.display = tab==='magic' ? 'block' : 'none';
-  document.getElementById('panel-pass').style.display  = tab==='pass'  ? 'block' : 'none';
-  document.getElementById('tab-magic').className = 'auth-tab'+(tab==='magic'?' active':'');
-  document.getElementById('tab-pass').className  = 'auth-tab'+(tab==='pass' ?' active':'');
-  document.getElementById('auth-msg').style.display='none';
-  document.getElementById('auth-err').style.display='none';
-}
-
-function switchSubTab(sub) {
-  const isSignup = sub==='signup';
-  document.getElementById('auth-password2').style.display = isSignup?'block':'none';
-  document.getElementById('auth-pass-btn').textContent = isSignup ? 'Registrati' : 'Accedi';
-  document.getElementById('subtab-login').className  = 'auth-subtab'+(sub==='login' ?' active':'');
-  document.getElementById('subtab-signup').className = 'auth-subtab'+(sub==='signup'?' active':'');
-}
-
-async function submitPassword() {
-  const email = document.getElementById('auth-email-pass').value.trim();
-  const pass  = document.getElementById('auth-password').value;
-  const pass2 = document.getElementById('auth-password2').value;
-  const btn   = document.getElementById('auth-pass-btn');
-  const msg   = document.getElementById('auth-msg');
-  const err   = document.getElementById('auth-err');
-  const isSignup = btn.textContent === 'Registrati';
-  err.style.display='none'; msg.style.display='none';
-  if(!email||!pass){err.textContent='Inserisci email e password.';err.style.display='block';return;}
-  if(isSignup && pass!==pass2){err.textContent='Le password non coincidono.';err.style.display='block';return;}
-  btn.disabled=true; btn.textContent='...';
-  try {
-    let result;
-    if(isSignup) {
-      result = await supa.auth.signUp({email, password:pass});
+  // Drawer user
+  var du = document.getElementById('drawer-user');
+  var li = document.getElementById('drawer-login-item');
+  var lo = document.getElementById('drawer-logout-btn');
+  if(du) {
+    if(currentUser) {
+      du.innerHTML = '<div class="drawer-user-label">Account attivo ☁️</div><div class="drawer-user-email">'+currentUser.email+'</div>';
+      if(li) li.style.display='none';
+      if(lo) lo.style.display='block';
     } else {
-      result = await supa.auth.signInWithPassword({email, password:pass});
+      du.innerHTML = '<div class="drawer-user-label">Non connesso</div><div class="drawer-user-email" style="color:#4a5a8a">Accedi per sincronizzare</div>';
+      if(li) li.style.display='flex';
+      if(lo) lo.style.display='none';
     }
-    if(result.error) throw result.error;
-    if(isSignup){
-      msg.textContent='✅ Account creato! Controlla la tua email per confermare.';
-      msg.style.display='block';
-    }
-  } catch(e) {
-    err.textContent='Errore: '+(e.message||'riprova più tardi.');
-    err.style.display='block';
   }
-  btn.disabled=false; btn.textContent=isSignup?'Registrati':'Accedi';
-}
-
-async function doLogout() {
-  if(!confirm('Vuoi uscire dal tuo account?')) return;
-  if(supa) await supa.auth.signOut();
-  currentUser = null;
-  updateHeaderAuth();
 }
 
 function saveToCloud() {
   if(!supa || !currentUser || !currentAlbum) return;
   supa.from('user_data').upsert({
-    user_id: currentUser.id,
-    album_id: currentAlbum.id,
-    missing: missing,
-    doppi: doppi,
-    updated_at: new Date().toISOString()
-  }, { onConflict: 'user_id,album_id' }).then(()=>{}).catch(()=>{});
+    user_id: currentUser.id, album_id: currentAlbum.id,
+    missing: missing, doppi: doppi, updated_at: new Date().toISOString()
+  }, {onConflict:'user_id,album_id'}).catch(function(){});
 }
-
-async function syncAfterLogin() {
+async function syncFromCloud() {
   if(!supa || !currentUser || !currentAlbum) return;
   try {
-    const { data } = await supa.from('user_data')
-      .select('missing,doppi')
-      .eq('user_id', currentUser.id)
-      .eq('album_id', currentAlbum.id)
-      .maybeSingle();
-    if(data) {
-      missing = data.missing || {};
-      doppi   = data.doppi   || {};
-      updateStats();
-      if(document.getElementById('miss-cards-area')) renderMissAll();
-    } else {
-      saveToCloud(); // prima volta: carica dati locali sul cloud
-    }
-  } catch(e) {}
+    var r = await supa.from('user_data').select('missing,doppi')
+      .eq('user_id',currentUser.id).eq('album_id',currentAlbum.id).maybeSingle();
+    if(r.data) { missing=r.data.missing||{}; doppi=r.data.doppi||{}; updateStats(); renderMissAll(); }
+    else saveToCloud();
+  } catch(e){}
 }
 
-/* ══════════════════════════════════════════════
-   ALBUM DEFINITIONS
-══════════════════════════════════════════════ */
+/* ════════ AUTH ════════ */
+function showAuthModal() {
+  var el = document.getElementById('auth-overlay');
+  el.style.display = 'flex';
+}
+function hideAuthModal() {
+  var el = document.getElementById('auth-overlay');
+  el.style.display = 'none';
+}
+function switchTab(t) {
+  document.getElementById('panel-magic').style.display = t==='magic'?'block':'none';
+  document.getElementById('panel-pass').style.display  = t==='pass' ?'block':'none';
+  document.querySelectorAll('.auth-tab').forEach(function(b,i){ b.classList.toggle('active', (i===0&&t==='magic')||(i===1&&t==='pass')); });
+  document.getElementById('auth-msg').style.display='none';
+  document.getElementById('auth-err').style.display='none';
+}
+function switchSubTab(s) {
+  var isSignup = s==='signup';
+  document.getElementById('auth-password2').style.display = isSignup?'block':'none';
+  document.getElementById('auth-pass-btn').textContent = isSignup?'Registrati':'Accedi';
+  document.getElementById('subtab-login').classList.toggle('active', !isSignup);
+  document.getElementById('subtab-signup').classList.toggle('active', isSignup);
+}
+async function sendMagicLink() {
+  if(!supa){document.getElementById('auth-err').textContent='Servizio non disponibile.';document.getElementById('auth-err').style.display='block';return;}
+  var email = document.getElementById('auth-email-magic').value.trim();
+  var msg = document.getElementById('auth-msg'); var err = document.getElementById('auth-err');
+  err.style.display='none';
+  if(!email){err.textContent='Inserisci email.';err.style.display='block';return;}
+  var r = await supa.auth.signInWithOtp({email:email, options:{emailRedirectTo:window.location.href}});
+  if(r.error){err.textContent='Errore: '+r.error.message;err.style.display='block';}
+  else{msg.textContent='✅ Email inviata! Controlla la casella.';msg.style.display='block';}
+}
+async function submitPassword() {
+  if(!supa){document.getElementById('auth-err').textContent='Servizio non disponibile.';document.getElementById('auth-err').style.display='block';return;}
+  var email=document.getElementById('auth-email-pass').value.trim();
+  var pass=document.getElementById('auth-password').value;
+  var pass2=document.getElementById('auth-password2').value;
+  var btn=document.getElementById('auth-pass-btn');
+  var msg=document.getElementById('auth-msg'); var err=document.getElementById('auth-err');
+  var isSignup=btn.textContent==='Registrati';
+  err.style.display='none'; msg.style.display='none';
+  if(!email||!pass){err.textContent='Inserisci email e password.';err.style.display='block';return;}
+  if(isSignup&&pass!==pass2){err.textContent='Le password non coincidono.';err.style.display='block';return;}
+  btn.disabled=true;
+  var r = isSignup ? await supa.auth.signUp({email,password:pass}) : await supa.auth.signInWithPassword({email,password:pass});
+  if(r.error){err.textContent='Errore: '+r.error.message;err.style.display='block';}
+  else if(isSignup){msg.textContent='✅ Controlla email per confermare.';msg.style.display='block';}
+  btn.disabled=false;
+}
+async function doLogout() {
+  if(!confirm('Vuoi uscire?')) return;
+  if(supa) await supa.auth.signOut();
+  currentUser=null; updateUI();
+}
+
+/* ════════ STORAGE ════════ */
+function lsGet(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){} if(supa&&currentUser)saveToCloud();}
+function loadAlbumData(id){missing=lsGet('fb_miss_'+id)||{};doppi=lsGet('fb_doppi_'+id)||{};}
+function saveMiss(){lsSet('fb_miss_'+currentAlbum.id,missing);}
+function saveDoppi(){lsSet('fb_doppi_'+currentAlbum.id,doppi);}
+function loadOrder(){albumOrder=lsGet('fb_order')||[];}
+function saveOrder(){lsSet('fb_order',albumOrder);}
+function getMissCount(id){var v=lsGet('fb_miss_'+id);return v?Object.keys(v).length:0;}
+function getMyAlbums(){return lsGet('fb_my_albums')||[];}
+function setMyAlbums(a){lsSet('fb_my_albums',a);}
+
+/* ════════ DRAWER ════════ */
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawer-overlay').classList.add('open');updateUI();}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('open');}
+
+/* ════════ SCOPRI ════════ */
+function openScopri() {
+  var list = document.getElementById('scopri-list');
+  var myAlbums = getMyAlbums();
+  list.innerHTML = '';
+  ALBUMS.forEach(function(a) {
+    var isAdded = myAlbums.indexOf(a.id) >= 0;
+    var icon = ({calciatori2526:'⚽',mondiali2026:'🌍',champions2526:'🏆'})[a.id]||'📋';
+    var item = document.createElement('div'); item.className='scopri-item';
+    var iconEl=document.createElement('div'); iconEl.className='scopri-item-icon'; iconEl.textContent=icon;
+    var infoEl=document.createElement('div'); infoEl.className='scopri-item-info';
+    infoEl.innerHTML='<div class="scopri-item-name">'+(a.coverTitle||'')+' '+(a.coverSub||'')+'</div>'
+      +'<div class="scopri-item-sub">'+a.season+((!a.available&&a.comingSoon)?' · '+a.comingSoon:'')+'</div>';
+    var btn=document.createElement('button');
+    btn.className='scopri-add-btn'+(isAdded?' added':'');
+    btn.textContent=isAdded?'✓ Aggiunto':'+ Aggiungi';
+    if(!a.available){btn.disabled=true;btn.style.opacity='0.4';}
+    if(!isAdded) btn.onclick=function(){addAlbum(a.id,btn);};
+    item.appendChild(iconEl); item.appendChild(infoEl); item.appendChild(btn);
+    list.appendChild(item);
+  });
+  document.getElementById('scopri-overlay').style.display='flex';
+}
+function closeScopri(){document.getElementById('scopri-overlay').style.display='none';}
+function addAlbum(id, btn) {
+  var arr=getMyAlbums(); if(arr.indexOf(id)<0){arr.push(id);setMyAlbums(arr);}
+  if(btn){btn.textContent='✓ Aggiunto';btn.classList.add('added');btn.onclick=null;}
+  renderHome();
+}
+
+/* ════════ HOME ════════ */
+const ALBUM_THEMES={calciatori2526:'theme-serie-a',mondiali2026:'theme-world-cup',champions2526:'theme-champions'};
+const ALBUM_ICONS={calciatori2526:'⚽',mondiali2026:'🌍',champions2526:'🏆'};
+var albumOrder=[];
+
+function renderHome() {
+  loadOrder();
+  var area=document.getElementById('home-albums-area');
+  if(!area) return;
+  area.innerHTML='';
+  var myAlbums=getMyAlbums();
+  if(myAlbums.length===0) {
+    area.innerHTML='<div class="empty-home"><div class="empty-icon">📭</div><h3>Nessun album aggiunto</h3><p>Aggiungi il tuo primo album per iniziare!</p><button class="btn-primary" onclick="openScopri()">+ Scopri gli album</button></div>';
+    return;
+  }
+  var titleEl=document.createElement('div'); titleEl.className='home-section-title'; titleEl.textContent='I miei album';
+  area.appendChild(titleEl);
+  var grid=document.createElement('div'); grid.className='albums-grid'; area.appendChild(grid);
+  var lastId=albumOrder[albumOrder.length-1]||null;
+  var sorted=myAlbums.map(function(id){return ALBUMS.find(function(a){return a.id===id;});}).filter(Boolean).sort(function(a,b){
+    var ai=albumOrder.indexOf(a.id),bi=albumOrder.indexOf(b.id);
+    if(ai<0&&bi<0)return 0; if(ai<0)return 1; if(bi<0)return -1; return bi-ai;
+  });
+  sorted.forEach(function(a) {
+    var total=a.sections.reduce(function(s,sec){return s+sec.items.length;},0);
+    var missCount=getMissCount(a.id); var foundCount=total-missCount;
+    var pct=Math.round((foundCount/total)*100);
+    var theme=ALBUM_THEMES[a.id]||''; var icon=ALBUM_ICONS[a.id]||'📋';
+    var isLast=a.id===lastId;
+    var card=document.createElement('div');
+    card.className='album-card '+theme+(isLast?' last-opened':'');
+    card.innerHTML='<div class="album-cover">'
+      +'<div class="album-cover-bg"></div>'
+      +'<div class="album-cover-overlay"></div>'
+      +'<div class="album-cover-icon">'+icon+'</div>'
+      +(isLast?'<div class="album-badge">★ Ultimo aperto</div>':'')
+      +'<div class="album-cover-titles">'
+      +'<div class="album-cover-big">'+(a.coverTitle||'')+'</div>'
+      +'<div class="album-cover-small">'+(a.coverSub||a.season)+'</div>'
+      +'</div></div>'
+      +'<div class="album-body">'
+      +'<div class="album-name">'+a.name+'</div>'
+      +'<div class="album-stats-main">'
+      +'<div class="ast-main green"><div class="ast-main-val">'+foundCount+'</div><div><div class="ast-main-lbl">Trovate</div><div class="ast-main-sub">su '+total+'</div></div></div>'
+      +'<div class="ast-main red"><div class="ast-main-val">'+missCount+'</div><div><div class="ast-main-lbl">Mancanti</div><div class="ast-main-sub">'+pct+'% fatto</div></div></div>'
+      +'</div>'
+      +'<div class="album-pbar-label"><span>'+foundCount+' / '+total+'</span><span>'+pct+'%</span></div>'
+      +'<div class="album-pbar-bg"><div class="album-pbar-fill '+(pct>0?'fill-green':'fill-gray')+'" style="width:'+pct+'%"></div></div>'
+      +'<div class="album-footer-row"><span>'+(pct===100?'✅ Completato!':pct===0?'Inizia la raccolta':'In corso...')+'</span><span>→</span></div>'
+      +'</div>';
+    card.onclick=function(){openAlbum(a.id);};
+    grid.appendChild(card);
+  });
+  var addBtn=document.createElement('button'); addBtn.className='btn-add-more';
+  addBtn.textContent='+ Aggiungi un album'; addBtn.onclick=openScopri;
+  area.appendChild(addBtn);
+}
+
+/* ════════ ALBUMS + TRACKER ════════ */
 const ALBUMS = [
   {
     id: 'calciatori2526',
@@ -975,299 +1058,6 @@ const ALBUMS = [
   },
 ];
 
-/* ══════════════════════════════════════════════
-   STATE
-══════════════════════════════════════════════ */
-let missing = {}, doppi = {};
-let currentAlbum = null;
-let currentMode = 'miss';
-let activeMSection, activeFSection, activeDSection;
-let pendingRemove = null;
-let albumOrder = [];  // ids in display order (last opened first)
-
-/* ══════════════════════════════════════════════
-   STORAGE HELPERS
-══════════════════════════════════════════════ */
-// ── Storage: localStorage sync ──────────────────────────────
-function lsGet(key) {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
-  catch(e) { return null; }
-}
-function lsSet(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) {}
-  try { if(window.storage) window.storage.set(key, JSON.stringify(value)); } catch(e) {}
-}
-
-async function loadAlbumData(albumId) {
-  // prima carica da locale
-  missing = lsGet('fb_miss_'+albumId) || {};
-  doppi   = lsGet('fb_doppi_'+albumId) || {};
-  // poi sovrascrive con cloud se loggato
-  if(supa && currentUser) {
-    try {
-      const { data } = await supa.from('user_data')
-        .select('missing,doppi')
-        .eq('user_id', currentUser.id)
-        .eq('album_id', albumId)
-        .maybeSingle();
-      if(data) { missing = data.missing||{}; doppi = data.doppi||{}; }
-    } catch(e) {}
-  }
-}
-function saveMiss()  { lsSet('fb_miss_'+currentAlbum.id, missing); saveToCloud(); }
-function saveDoppi() { lsSet('fb_doppi_'+currentAlbum.id, doppi); saveToCloud(); }
-function loadOrder() {
-  albumOrder = lsGet('fb_order') || [];
-}
-function saveOrder() { lsSet('fb_order', albumOrder); }
-function getMissCount(albumId) {
-  const v = lsGet('fb_miss_'+albumId);
-  return v ? Object.keys(v).length : 0;
-}
-
-/* ══════════════════════════════════════════════
-   HOME
-══════════════════════════════════════════════ */
-const ALBUM_THEMES = {
-  calciatori2526: 'theme-serie-a',
-  mondiali2026:   'theme-world-cup',
-  champions2526:  'theme-champions',
-};
-
-function renderHome() {
-  loadOrder();
-  const sorted = [...ALBUMS].sort((a,b) => {
-    const ai = albumOrder.indexOf(a.id), bi = albumOrder.indexOf(b.id);
-    if(ai === -1 && bi === -1) return 0;
-    if(ai === -1) return 1;
-    if(bi === -1) return -1;
-    return bi - ai;
-  });
-  const grid = document.getElementById('albums-grid');
-  grid.innerHTML = '';
-  const lastId = albumOrder[albumOrder.length-1] || null;
-
-  for(let i=0; i<sorted.length; i++) {
-    const a = sorted[i];
-    const total = a.sections.reduce((s,sec)=>s+sec.items.length,0);
-    const missCount = a.available ? getMissCount(a.id) : 0;
-    const foundCount = total - missCount;
-    const pct = Math.round((foundCount/total)*100);
-    const theme = ALBUM_THEMES[a.id] || 'theme-world-cup';
-
-    const card = document.createElement('div');
-    card.className = 'album-card '+theme+(!a.available?' coming-soon':'')+(a.id===lastId&&a.available?' last-opened':'');
-
-    let badge = '';
-    if(a.id === lastId && a.available) badge = '<div class="album-badge badge-last">★ Ultimo aperto</div>';
-    else if(!a.available) badge = '<div class="album-badge badge-soon">'+a.comingSoon+'</div>';
-
-    const pbarClass = a.available?(pct>0?'fill-green':'fill-gray'):'fill-gray';
-
-    card.innerHTML = `
-      <div class="album-cover">
-        <div class="album-cover-bg"></div>
-        <div class="album-cover-overlay"></div>
-        <div class="album-cover-pattern"></div>
-        ${badge}
-        <div class="album-cover-titles">
-          <div class="album-cover-big">${a.coverTitle||''}</div>
-          <div class="album-cover-small">${a.coverSub||a.season}</div>
-        </div>
-      </div>
-      <div class="album-body">
-        <div class="album-name">${a.name}</div>
-        <div class="album-stats-row">
-          <div class="ast gold"><div class="ast-val">${total}</div><div class="ast-lbl">Totale</div></div>
-          <div class="ast green"><div class="ast-val">${a.available?foundCount:'—'}</div><div class="ast-lbl">Trovate</div></div>
-          <div class="ast red"><div class="ast-val">${a.available?missCount:'—'}</div><div class="ast-lbl">Mancanti</div></div>
-          <div class="ast"><div class="ast-val">${a.available?pct+'%':'—'}</div><div class="ast-lbl">Fatto</div></div>
-        </div>
-        <div class="album-pbar-bg"><div class="album-pbar-fill ${pbarClass}" style="width:${a.available?pct:0}%"></div></div>
-        <div class="album-meta">
-          <span>${a.available?(pct===100?'✅ Album completato!':foundCount+' / '+total+' trovate'):'Presto disponibile...'}</span>
-          <span class="arrow">${a.available?'→':''}</span>
-        </div>
-      </div>`;
-    if(a.available) card.onclick = () => openAlbum(a.id);
-    grid.appendChild(card);
-  }
-}
-
-/* ══════════════════════════════════════════════
-   OPEN / CLOSE ALBUM
-══════════════════════════════════════════════ */
-async function openAlbum(albumId) {
-  currentAlbum = ALBUMS.find(a=>a.id===albumId);
-  // update order (push to end = most recent)
-  albumOrder = albumOrder.filter(id=>id!==albumId);
-  albumOrder.push(albumId);
-  saveOrder();
-  await loadAlbumData(albumId);
-
-  // Prima apertura Serie A: segna di default STY, UPG, Kinder, CEL come mancanti
-  if(albumId === 'calciatori2526') {
-    const firstTimeKey = 'fb_init_calciatori2526';
-    if(!localStorage.getItem(firstTimeKey)) {
-      const defaultMissingSections = ['sty','upg','kinder','cel'];
-      defaultMissingSections.forEach(secId => {
-        const sec = currentAlbum.sections.find(s=>s.id===secId);
-        if(sec) sec.items.forEach(item => { missing[item] = true; });
-      });
-      saveMiss();
-      localStorage.setItem(firstTimeKey, '1');
-    }
-  }
-
-  const total = currentAlbum.sections.reduce((s,sec)=>s+sec.items.length,0);
-  document.getElementById('t-season').textContent = currentAlbum.season;
-  document.getElementById('t-name').innerHTML = currentAlbum.name;
-  document.getElementById('s-total').textContent = total;
-  document.getElementById('prog-r').textContent = total;
-
-  activeMSection = currentAlbum.sections[0].id;
-  activeFSection = currentAlbum.sections[0].id;
-  activeDSection = currentAlbum.sections[0].id;
-
-  document.getElementById('home').style.display = 'none';
-  const tracker = document.getElementById('tracker');
-  tracker.classList.add('open');
-  tracker.className = tracker.className.replace(/album-\S+/g, '');
-  tracker.classList.add('album-'+albumId);
-
-  setMode('miss');
-  updateStats();
-  checkOldData(albumId);
-}
-
-function goHome() {
-  document.getElementById('tracker').classList.remove('open');
-  document.getElementById('home').style.display = 'flex';
-  currentAlbum = null;
-  function checkOldData(albumId) {
-  if(albumId !== 'calciatori2526') return;
-  try {
-    const old = localStorage.getItem('calc2526_miss');
-    if(old && Object.keys(JSON.parse(old)).length > 0) {
-      const already = localStorage.getItem('fb_miss_calciatori2526');
-      if(!already || Object.keys(JSON.parse(already)).length === 0) {
-        document.getElementById('import-banner').style.display = 'flex';
-      }
-    }
-  } catch(e) {}
-}
-
-function importOldData() {
-  try {
-    const old = localStorage.getItem('calc2526_miss');
-    if(!old) return;
-    const data = JSON.parse(old);
-    lsSet('fb_miss_calciatori2526', data);
-    missing = data;
-    saveMiss();
-    updateStats();
-    renderMissAll();
-    renderFoundAll();
-    document.getElementById('import-banner').style.display = 'none';
-    alert('✅ Importati '+Object.keys(data).length+' mancanti dal vecchio tracker!');
-  } catch(e) { alert('Errore durante importazione: '+e.message); }
-}
-
-
-window.addEventListener('DOMContentLoaded', function() {
-  try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
-  window.addEventListener('load', function() {
-    try { initSupabase(); } catch(e) { console.warn('Supabase init error:', e); }
-  });
-});
-
-// Attach login button with addEventListener as failsafe
-document.addEventListener('DOMContentLoaded', function() {
-  var btn = document.getElementById('accedi-btn');
-  if(btn) {
-    btn.addEventListener('click', function() {
-      showAuthModal();
-    });
-  }
-});
-}
-
-/* ══════════════════════════════════════════════
-   STATS
-══════════════════════════════════════════════ */
-function updateStats() {
-  const total = currentAlbum.sections.reduce((s,sec)=>s+sec.items.length,0);
-  const m = Object.keys(missing).length;
-  const f = total - m;
-  const pct = Math.round((f/total)*100);
-  document.getElementById('s-found').textContent = f;
-  document.getElementById('s-miss').textContent = m;
-  document.getElementById('s-pct').textContent = pct+'%';
-  document.getElementById('prog-fill').style.width = pct+'%';
-  document.getElementById('prog-l').textContent = f;
-}
-
-/* ══════════════════════════════════════════════
-   MODE
-══════════════════════════════════════════════ */
-function setMode(m) {
-  currentMode = m;
-  ['miss','found','lista','quad','doppi'].forEach(x=>{
-    document.getElementById(x+'-mode').style.display = m===x?'block':'none';
-  });
-  ['miss','found','lista','quad','doppi'].forEach(x=>{
-    document.getElementById('btn-'+x).className = 'mode-btn'+(m===x?' m-'+x:'');
-  });
-  if(m==='miss')  { renderMissAll(); }
-  if(m==='found') { renderFoundAll(); }
-  if(m==='lista') { renderLista(); }
-  if(m==='quad')  { renderQuad(); }
-  if(m==='doppi') { renderDoppiAll(); updateDoppiSummary(); }
-}
-
-/* ══════════════════════════════════════════════
-   TABS
-══════════════════════════════════════════════ */
-function buildTabs(containerId, activeClass, activeId, onClick) {
-  if(!onClick) return;
-  const c = document.getElementById(containerId); c.innerHTML='';
-  currentAlbum.sections.forEach(s=>{
-    const b = document.createElement('button');
-    b.className = 'tab'+(s.id===activeId?' '+activeClass:'');
-    let sub = '';
-    if(activeClass==='t-miss')  sub = s.items.filter(i=>missing[i]).length+' miss.';
-    if(activeClass==='t-found') sub = s.items.filter(i=>!missing[i]).length+' carte';
-    if(activeClass==='t-doppi') sub = s.items.filter(i=>(doppi[i]||0)>0).length+' tipi';
-    b.innerHTML = s.label+'<br><span style="font-size:9px;font-weight:400;opacity:.8">'+sub+'</span>';
-    b.onclick = ()=>onClick(s.id);
-    c.appendChild(b);
-  });
-}
-
-/* ══════════════════════════════════════════════
-   POPUP
-══════════════════════════════════════════════ */
-function openPopup(item) {
-  pendingRemove = item;
-  document.getElementById('popup-msg').textContent = 'Rimuovere la carta '+item+' dai mancanti? Tornerà nelle trovate.';
-  document.getElementById('overlay').classList.add('show');
-}
-function closePopup() { pendingRemove=null; document.getElementById('overlay').classList.remove('show'); }
-function confirmRemove() {
-  if(!pendingRemove) return;
-  delete missing[pendingRemove];
-  saveMiss(); updateStats();
-  const remCard = document.querySelector('#miss-cards-area [data-id="'+pendingRemove+'"]');
-  if(remCard) remCard.classList.remove('missing');
-  renderMissFilterPills();
-  if(currentMode==='lista') renderLista();
-  if(currentMode==='quad')  renderQuad();
-  closePopup();
-}
-
-/* ══════════════════════════════════════════════
-   MANCANTI
-══════════════════════════════════════════════ */
 let activeMFilter = 'all';
 
 function renderMissAll() {
@@ -1668,6 +1458,13 @@ document.addEventListener('DOMContentLoaded', function() {
       showAuthModal();
     });
   }
+});
+
+
+/* ════════ INIT ════════ */
+document.addEventListener('DOMContentLoaded', function() {
+  renderHome();
+  initSupabase();
 });
 </script>
 </body>
