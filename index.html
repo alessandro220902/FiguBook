@@ -673,6 +673,82 @@ body{font-family:'Poppins','Inter',sans-serif;background:#080f28;color:#fff;min-
 </div>
 
 <script>
+
+/* ── DRAWER ── */
+function openDrawer() {
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+  updateDrawerUser();
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+}
+function updateDrawerUser() {
+  const el = document.getElementById('drawer-user');
+  const loginItem = document.getElementById('drawer-login-item');
+  const logoutBtn = document.getElementById('drawer-logout-btn');
+  if(!el) return;
+  if(currentUser) {
+    el.innerHTML = '<div class="drawer-user-label">Account attivo ☁️</div><div class="drawer-user-email">'+currentUser.email+'</div>';
+    if(loginItem) loginItem.style.display='none';
+    if(logoutBtn) logoutBtn.style.display='block';
+  } else {
+    el.innerHTML = '<div class="drawer-user-label">Non connesso</div><div class="drawer-user-email" style="color:#4a5a8a">Accedi per sincronizzare</div>';
+    if(loginItem) loginItem.style.display='flex';
+    if(logoutBtn) logoutBtn.style.display='none';
+  }
+}
+
+/* ── SCOPRI ── */
+function openScopri() {
+  const list = document.getElementById('scopri-list');
+  const myAlbums = getMyAlbums();
+  list.innerHTML = '';
+  ALBUMS.forEach(function(a) {
+    const isAdded = myAlbums.includes(a.id);
+    const icon = ALBUM_ICONS[a.id] || '📋';
+    const item = document.createElement('div');
+    item.className = 'scopri-item';
+
+    const iconEl = document.createElement('div');
+    iconEl.className = 'scopri-item-icon';
+    iconEl.textContent = icon;
+
+    const infoEl = document.createElement('div');
+    infoEl.className = 'scopri-item-info';
+    infoEl.innerHTML = '<div class="scopri-item-name">'+a.coverTitle+' '+(a.coverSub||'')+'</div>'
+      +'<div class="scopri-item-sub">'+a.season+((!a.available&&a.comingSoon)?' · '+a.comingSoon:'')+'</div>';
+
+    const btn = document.createElement('button');
+    btn.className = 'scopri-add-btn' + (isAdded ? ' added' : '');
+    btn.textContent = isAdded ? '✓ Aggiunto' : '+ Aggiungi';
+    if(!a.available) { btn.disabled=true; btn.style.opacity='0.4'; btn.style.cursor='not-allowed'; }
+    btn.onclick = function() { handleAddAlbum(a.id, btn); };
+
+    item.appendChild(iconEl);
+    item.appendChild(infoEl);
+    item.appendChild(btn);
+    list.appendChild(item);
+  });
+  document.getElementById('scopri-overlay').style.display = 'flex';
+}
+function closeScopri() {
+  document.getElementById('scopri-overlay').style.display='none';
+}
+function handleAddAlbum(id, btn) {
+  addAlbum(id);
+  btn.textContent='✓ Aggiunto';
+  btn.classList.add('added');
+}
+
+/* ── AUTH HEADER (no header user div needed anymore) ── */
+function updateHeaderAuth() {
+  updateSyncBadge(!!currentUser);
+  if(typeof updateDrawerUser === 'function') updateDrawerUser();
+}
+
+
 /* ══════════════════════════════════════════════
    SUPABASE SETUP
 ══════════════════════════════════════════════ */
@@ -702,7 +778,7 @@ function initSupabase() {
 
 function updateHeaderAuth() {
   updateSyncBadge(!!currentUser);
-  updateDrawerUser();
+  if(typeof updateDrawerUser==="function") updateDrawerUser();
 }
 
 function updateSyncBadge(online) {
@@ -1098,83 +1174,11 @@ function importOldData() {
 }
 
 
-/* ── DRAWER ── */
-function openDrawer() {
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('drawer-overlay').classList.add('open');
-  updateDrawerUser();
-}
-function closeDrawer() {
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('drawer-overlay').classList.remove('open');
-}
-function updateDrawerUser() {
-  const el = document.getElementById('drawer-user');
-  const loginItem = document.getElementById('drawer-login-item');
-  const logoutBtn = document.getElementById('drawer-logout-btn');
-  if(!el) return;
-  if(currentUser) {
-    el.innerHTML = '<div class="drawer-user-label">Account attivo ☁️</div><div class="drawer-user-email">'+currentUser.email+'</div>';
-    if(loginItem) loginItem.style.display='none';
-    if(logoutBtn) logoutBtn.style.display='block';
-  } else {
-    el.innerHTML = '<div class="drawer-user-label">Non connesso</div><div class="drawer-user-email" style="color:#4a5a8a">Accedi per sincronizzare</div>';
-    if(loginItem) loginItem.style.display='flex';
-    if(logoutBtn) logoutBtn.style.display='none';
-  }
-}
-
-/* ── SCOPRI ── */
-function openScopri() {
-  const list = document.getElementById('scopri-list');
-  const myAlbums = getMyAlbums();
-  list.innerHTML = '';
-  ALBUMS.forEach(function(a) {
-    const isAdded = myAlbums.includes(a.id);
-    const icon = ALBUM_ICONS[a.id] || '📋';
-    const item = document.createElement('div');
-    item.className = 'scopri-item';
-
-    const iconEl = document.createElement('div');
-    iconEl.className = 'scopri-item-icon';
-    iconEl.textContent = icon;
-
-    const infoEl = document.createElement('div');
-    infoEl.className = 'scopri-item-info';
-    infoEl.innerHTML = '<div class="scopri-item-name">'+a.coverTitle+' '+(a.coverSub||'')+'</div>'
-      +'<div class="scopri-item-sub">'+a.season+((!a.available&&a.comingSoon)?' · '+a.comingSoon:'')+'</div>';
-
-    const btn = document.createElement('button');
-    btn.className = 'scopri-add-btn' + (isAdded ? ' added' : '');
-    btn.textContent = isAdded ? '✓ Aggiunto' : '+ Aggiungi';
-    if(!a.available) { btn.disabled=true; btn.style.opacity='0.4'; btn.style.cursor='not-allowed'; }
-    btn.onclick = function() { handleAddAlbum(a.id, btn); };
-
-    item.appendChild(iconEl);
-    item.appendChild(infoEl);
-    item.appendChild(btn);
-    list.appendChild(item);
+window.addEventListener('DOMContentLoaded', function() {
+  try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
+  window.addEventListener('load', function() {
+    try { initSupabase(); } catch(e) { console.warn('Supabase init error:', e); }
   });
-  document.getElementById('scopri-overlay').style.display = 'flex';
-}
-function closeScopri() {
-  document.getElementById('scopri-overlay').style.display='none';
-}
-function handleAddAlbum(id, btn) {
-  addAlbum(id);
-  btn.textContent='✓ Aggiunto';
-  btn.classList.add('added');
-}
-
-/* ── AUTH HEADER (no header user div needed anymore) ── */
-function updateHeaderAuth() {
-  updateSyncBadge(!!currentUser);
-  if(typeof updateDrawerUser === 'function') updateDrawerUser();
-}
-
-try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
-window.addEventListener('load', function() {
-  try { initSupabase(); } catch(e) { console.warn('Supabase init error:', e); }
 });
 
 // Attach login button with addEventListener as failsafe
@@ -1649,9 +1653,11 @@ function importOldData() {
   } catch(e) { alert('Errore durante importazione: '+e.message); }
 }
 
-try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
-window.addEventListener('load', function() {
-  try { initSupabase(); } catch(e) { console.warn('Supabase init error:', e); }
+window.addEventListener('DOMContentLoaded', function() {
+  try { renderHome(); } catch(e) { console.error('renderHome error:', e); }
+  window.addEventListener('load', function() {
+    try { initSupabase(); } catch(e) { console.warn('Supabase init error:', e); }
+  });
 });
 
 // Attach login button with addEventListener as failsafe
