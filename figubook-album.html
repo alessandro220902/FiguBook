@@ -146,8 +146,8 @@
 
   .cover{
     position:relative;overflow:hidden;
-    aspect-ratio:5/3;
-    padding:22px;
+    aspect-ratio:5/2;
+    padding:14px 22px;
     color:#fff;
     background:linear-gradient(135deg, var(--c1,#1f8a5b) 0%, var(--c2,#0a3a8b) 100%);
     display:flex;flex-direction:column;justify-content:space-between;
@@ -160,16 +160,18 @@
   }
   .cover > *{position:relative}
   .cover .eyebrow{
-    font-family:var(--f-mono);font-size:10px;font-weight:600;
-    text-transform:uppercase;letter-spacing:0.12em;opacity:.85;
+    font-family:var(--f-mono);font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:0.12em;
+    background:rgba(0,0,0,.28);border-radius:4px;
+    padding:2px 7px;display:inline-block;
   }
   .cover .title{
     font-family:var(--f-display);font-weight:800;
-    font-size:38px;line-height:.92;letter-spacing:-0.025em;
+    font-size:26px;line-height:.92;letter-spacing:-0.025em;
     text-transform:uppercase;
   }
   .cover .title .yr{
-    display:block;font-size:48px;margin-top:2px;
+    display:block;font-size:34px;margin-top:2px;
   }
   .cover .subtitle{
     font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.12em;
@@ -189,6 +191,7 @@
   .cover .status.new{background:var(--accent);color:var(--accent-ink)}
   .cover .status.abandoned{background:rgba(0,0,0,.5);color:#fff}
   .cover .status.active{background:var(--good);color:#fff}
+  .cover .status.not-started{background:rgba(120,120,120,.5);color:#fff}
 
   /* Cover variants */
   .cover[data-style="celebration"]::after{
@@ -226,19 +229,15 @@
     padding:18px 20px 18px;
     display:flex;flex-direction:column;gap:10px;
   }
-  .card-body h3{
-    font-family:var(--f-display);font-weight:700;font-size:18px;
-    letter-spacing:-0.01em;margin:0;line-height:1.2;
-  }
   .card-body .meta{
-    font-family:var(--f-mono);font-size:11px;text-transform:uppercase;
-    letter-spacing:0.08em;color:var(--muted);
+    font-family:var(--f-mono);font-size:11px;
+    letter-spacing:0.04em;color:var(--muted);
   }
   .progress{display:flex;flex-direction:column;gap:6px}
-  .progress-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .progress-row{display:flex;align-items:baseline;gap:6px}
   .progress-row .have{font-family:var(--f-display);font-weight:700;font-size:24px;letter-spacing:-0.02em;line-height:1}
-  .progress-row .of{font-family:var(--f-mono);font-size:13px;color:var(--muted);margin-left:4px}
-  .progress-row .pct{font-family:var(--f-mono);font-size:13px;color:var(--ink);font-weight:600}
+  .progress-row .of{font-family:var(--f-mono);font-size:13px;color:var(--muted);margin-left:3px}
+  .progress-row .pct{font-family:var(--f-display);font-size:18px;font-weight:700;color:var(--ink);margin-left:6px}
   .doubles-line{
     display:flex;align-items:center;gap:6px;
     font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;
@@ -257,28 +256,49 @@
 
   /* Card admin actions */
   .card-admin{
-    display:flex;gap:6px;
+    display:flex;gap:4px;
     border-top:1px solid var(--line);
-    padding:10px 16px;
+    padding:8px 12px;
     background:var(--bg);
+    align-items:center;
   }
   .card-admin button{
     flex:1;
-    background:transparent;border:0;
-    padding:6px 8px;border-radius:8px;
-    font-family:var(--f-mono);font-size:10.5px;font-weight:600;
-    text-transform:uppercase;letter-spacing:0.08em;
+    background:transparent;border:1px solid transparent;
+    padding:6px 6px;border-radius:8px;
+    font-family:var(--f-mono);font-size:10px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.06em;
     color:var(--muted);
     cursor:pointer;
-    display:inline-flex;align-items:center;justify-content:center;gap:5px;
-    transition:background .12s ease, color .12s ease;
+    display:inline-flex;align-items:center;justify-content:center;gap:4px;
+    transition:background .12s ease, color .12s ease, border-color .12s ease;
   }
-  .card-admin button:hover{background:var(--bg-elev);color:var(--ink)}
-  .card-admin button.danger:hover{background:color-mix(in srgb, var(--warn) 18%, var(--bg-elev));color:var(--warn)}
-  .card-admin .sep{width:1px;background:var(--line);align-self:stretch}
+  /* Share buttons — highlighted */
+  .card-admin button[data-act="share"],
+  .card-admin button[data-act="share-missing"]{
+    color:var(--good);
+    border-color:color-mix(in srgb, var(--good) 35%, transparent);
+  }
+  .card-admin button[data-act="share"]:hover,
+  .card-admin button[data-act="share-missing"]:hover{
+    background:color-mix(in srgb, var(--good) 12%, var(--bg));
+    color:var(--good);border-color:color-mix(in srgb, var(--good) 55%, transparent);
+  }
+  /* Archive — neutral */
+  .card-admin button[data-act="archive"]:hover{background:var(--bg-elev);color:var(--ink)}
+  /* Remove — red/danger, separated */
+  .card-admin button[data-act="remove"]{
+    flex:0 0 auto;padding:6px 8px;color:var(--muted);margin-left:4px;
+    border-color:transparent;
+  }
+  .card-admin button[data-act="remove"]:hover{
+    color:var(--warn);background:color-mix(in srgb, var(--warn) 10%, var(--bg));
+    border-color:color-mix(in srgb, var(--warn) 30%, transparent);
+  }
+  .card-admin .sep{width:1px;background:var(--line);align-self:stretch;margin:0 2px}
   .album-card.done .progress-row .pct{color:var(--good)}
-  .bar{height:5px;background:var(--line);border-radius:99px;overflow:hidden}
-  .bar > i{display:block;height:100%;background:linear-gradient(90deg, var(--c1,var(--accent)), var(--c2,#94e000));border-radius:99px}
+  .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg, var(--c1,var(--accent)), var(--c2,#94e000));border-radius:99px;min-width:2px}
   .album-card.done .bar > i{background:var(--good)}
   .album-card.abandoned .bar > i{background:var(--muted)}
 
@@ -311,10 +331,10 @@
   }
   .add-card:hover{border-color:var(--ink);color:var(--ink);background:var(--bg-elev)}
   .add-card .plus-icon{
-    width:60px;height:60px;border-radius:99px;
-    background:var(--bg-elev);border:1px solid var(--line);
+    width:72px;height:72px;border-radius:99px;
+    background:var(--bg-elev);border:2px solid var(--line);
     display:grid;place-items:center;
-    font-family:var(--f-display);font-weight:700;font-size:32px;
+    font-family:var(--f-display);font-weight:700;font-size:40px;
   }
   .add-card:hover .plus-icon{border-color:var(--ink);background:var(--accent);color:var(--accent-ink)}
   .add-card .label{font-family:var(--f-display);font-weight:600;font-size:18px;text-align:center}
@@ -449,7 +469,12 @@
   body[data-variant="streetwear"] .brand-mark{background:var(--accent);color:#0a0a0a}
 
   /* Disclaimer */
-  .disclaimer{max-width:1480px;margin:30px auto 80px;padding:20px 28px 0;font-family:var(--f-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;line-height:1.6;border-top:1px solid var(--line)}
+  .disclaimer{
+    max-width:640px;margin:30px auto 80px;padding:18px 28px 0;
+    font-family:var(--f-mono);font-size:11px;color:var(--muted);
+    text-transform:none;letter-spacing:0.04em;line-height:1.7;
+    border-top:1px solid var(--line);text-align:center;
+  }
 
   /* Responsive */
   @media (max-width: 1100px){ .albums-grid{grid-template-columns:repeat(2, 1fr)} }
@@ -582,12 +607,12 @@
       <span style="color:var(--ink)">Album</span>
     </div>
     <h1>I miei album</h1>
-    <div class="sub" id="albumHeaderSub">0 album in raccolta · Da settembre 2022</div>
+    <div class="sub" id="albumHeaderSub">0 album in raccolta</div>
   </div>
   <div class="strip-stats">
     <div class="stat"><span class="big" id="statFigurine">0</span><span class="lbl">Figurine totali</span></div>
     <div class="stat"><span class="big" id="statCompletati">0</span><span class="lbl">Completati</span></div>
-    <div class="stat"><span class="big">0</span><span class="lbl">Scambi totali</span></div>
+    <div class="stat" id="statScambi" style="display:none"><span class="big" id="statScambiVal">0</span><span class="lbl">Scambi totali</span></div>
   </div>
 </div>
 
@@ -796,7 +821,7 @@ const ALBUMS = [
     eyebrow: 'PANINI · ADRENALYN XL',
     coverTitle: 'ADRENALYN',
     coverYear: 'XL 25/26',
-    have: 240, total: 450, doubles: 12,
+    have: 240, total: 728, doubles: 12,
     status: 'active', statusLabel: 'In corso',
     lastUpdate: '1 giorno fa',
     c1: '#7a5ae0', c2: '#0a3a8b',
@@ -839,7 +864,7 @@ function renderAlbums(){
   const grid = document.getElementById('albumsGrid');
   grid.innerHTML = '';
 
-  const filtered = ALBUMS.filter(a => activeFilter === 'all' || a.status === activeFilter);
+  const filtered = ALBUMS.filter(a => activeFilter === 'all' || a.status === activeFilter || (activeFilter === 'active' && a.status === 'not-started'));
 
   filtered.forEach(a => {
     const pct = +(a.have / a.total * 100).toFixed(1);
@@ -848,10 +873,17 @@ function renderAlbums(){
     if (isWorking) card.href = a.href;
     card.className = `album-card status-${a.status} ${a.status}`;
 
+    const barBg = pct >= 100
+      ? 'linear-gradient(90deg,var(--good),#4ada80)'
+      : pct >= 67 ? 'linear-gradient(90deg,var(--good),#4ada80)'
+      : pct >= 34 ? 'linear-gradient(90deg,#ff8c00,var(--gold))'
+      : pct > 0   ? 'linear-gradient(90deg,var(--warn),#ff8c00)'
+      : 'transparent';
+
     card.innerHTML = `
       <div class="cover" data-style="${a.coverStyle}" style="--c1:${a.c1};--c2:${a.c2}">
         ${a.featured ? '<span class="featured-tag">★</span>' : ''}
-        <span class="status ${a.status}">${a.statusLabel}</span>
+        <span class="status ${a.status}">${escapeHtml(a.statusLabel)}</span>
         <div>
           <div class="eyebrow">${escapeHtml(a.eyebrow)}</div>
         </div>
@@ -861,33 +893,28 @@ function renderAlbums(){
         </div>
       </div>
       <div class="card-body" style="--c1:${a.c1};--c2:${a.c2}">
-        <h3>${escapeHtml(a.title)}</h3>
-        <div class="meta">${escapeHtml(a.editor)} · ${a.total} figurine</div>
+        <div class="meta">${escapeHtml(a.editor)} · ${a.total.toLocaleString('it-IT')} figurine</div>
         <div class="progress">
           <div class="progress-row">
-            <span><span class="have">${a.have}</span><span class="of">/ ${a.total}</span></span>
+            <span class="have">${a.have.toLocaleString('it-IT')}</span><span class="of">/ ${a.total.toLocaleString('it-IT')}</span>
             <span class="pct">${pct}%</span>
           </div>
-          <div class="bar"><i style="width:${pct}%"></i></div>
+          <div class="bar"><i style="width:${pct}%;background:${barBg}"></i></div>
         </div>
+        ${a.doubles > 0 ? `<div class="doubles-line"><span class="pill-d">${a.doubles} doppie</span><span>pronte per lo scambio</span></div>` : ''}
         <div class="card-footer">
-          <span class="last">Aggiornato ${a.lastUpdate}</span>
           <span class="cta">${isWorking ? 'Apri →' : 'In arrivo'}</span>
-        </div>
-        <div class="doubles-line">
-          <span class="pill-d ${a.doubles ? '' : 'zero'}">${a.doubles || 0} doppie</span>
-          ${a.doubles ? '<span>pronte per lo scambio</span>' : '<span>nessuna doppia</span>'}
         </div>
       </div>
       <div class="card-admin">
         <button data-act="share" data-id="${a.id}" title="Condividi doppie">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
-          Condividi doppie
+          Doppie
         </button>
         <span class="sep"></span>
         <button data-act="share-missing" data-id="${a.id}" title="Condividi mancanti">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
-          Condividi mancanti
+          Mancanti
         </button>
         <span class="sep"></span>
         <button data-act="archive" data-id="${a.id}" title="Archivia album">
@@ -895,7 +922,7 @@ function renderAlbums(){
           ${a.status === 'archived' ? 'Ripristina' : 'Archivia'}
         </button>
         <span class="sep"></span>
-        <button data-act="remove" data-id="${a.id}" class="danger" title="Rimuovi album">
+        <button data-act="remove" data-id="${a.id}" title="Rimuovi album">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
           Rimuovi
         </button>
@@ -970,7 +997,7 @@ function renderAlbums(){
       <div class="label">Aggiungi album</div>
       <div class="hint">Scegli un album dal catalogo o creane uno personalizzato</div>
     `;
-    add.addEventListener('click', () => openAddAlbumModal());
+    add.addEventListener('click', () => { window.location.href = 'figubook-catalogo.html'; });
     grid.appendChild(add);
   }
 }
@@ -984,19 +1011,25 @@ document.querySelectorAll('#filterChips .chip').forEach(chip => {
   });
 });
 
-document.getElementById('addAlbumBtn').addEventListener('click', openAddAlbumModal);
+document.getElementById('addAlbumBtn').addEventListener('click', () => { window.location.href = 'figubook-catalogo.html'; });
 
 function updateFilterCounts(){
   const counts = {
     all: ALBUMS.length,
-    active: ALBUMS.filter(a => a.status === 'active').length,
+    active: ALBUMS.filter(a => a.status === 'active' || a.status === 'not-started').length,
     done: ALBUMS.filter(a => a.status === 'done').length,
     new: ALBUMS.filter(a => a.status === 'new').length,
     archived: ALBUMS.filter(a => a.status === 'archived').length,
   };
   document.querySelectorAll('#filterChips .chip').forEach(chip => {
+    const f = chip.dataset.filter;
     const ct = chip.querySelector('.ct');
-    if (ct) ct.textContent = counts[chip.dataset.filter] || 0;
+    const n = counts[f] || 0;
+    if (ct) ct.textContent = n;
+    if (f !== 'all') {
+      chip.style.opacity = n === 0 ? '0.4' : '';
+      chip.style.pointerEvents = n === 0 ? 'none' : '';
+    }
   });
 }
 // ── Live stats from localStorage — tutti gli album collegati ──
@@ -1013,6 +1046,8 @@ function loadLiveStats(){
       if (a.status !== 'archived') {
         if (a.have >= a.total && a.total > 0) {
           a.status = 'done'; a.statusLabel = 'Completato ✓';
+        } else if (a.have === 0) {
+          a.status = 'not-started'; a.statusLabel = 'Non iniziato';
         } else {
           a.status = 'active'; a.statusLabel = 'In corso';
         }
@@ -1167,7 +1202,7 @@ function saveAlbumStates(){
   ALBUMS.forEach(a => {
     if (saved[a.id]) {
       a.status = saved[a.id];
-      const labelMap = { active:'In corso', done:'Completato ✓', new:'Appena uscito ✨', archived:'Archiviato' };
+      const labelMap = { active:'In corso', done:'Completato ✓', new:'Appena uscito ✨', archived:'Archiviato', 'not-started':'Non iniziato' };
       if (labelMap[a.status]) a.statusLabel = labelMap[a.status];
     }
   });
@@ -1231,7 +1266,7 @@ Object.entries(CATALOG_EXISTING_MAP).forEach(([cid, aid]) => { _ALBUM_TO_CATALOG
 function updateHeaderStats(){
   const count = ALBUMS.length;
   const sub = document.getElementById('albumHeaderSub');
-  if (sub) sub.textContent = `${count} album in raccolta · Da settembre 2022`;
+  if (sub) sub.textContent = `${count} album in raccolta`;
   let figurine = 0, completati = 0;
   ALBUMS.forEach(a => {
     figurine += (a.have || 0);

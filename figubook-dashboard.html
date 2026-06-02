@@ -580,6 +580,104 @@
     font-family:var(--f-mono);font-size:11px;color:var(--muted);
     white-space:nowrap;padding:5px 0;
   }
+
+  /* ── COMPACT SLOGAN BAR ───────────────────────────── */
+  .slogan-bar .inner{padding:7px 28px;font-size:10.5px}
+
+  /* ── EQUAL-HEIGHT COLS ────────────────────────────── */
+  .cols{align-items:stretch}
+  .cols .panel{min-height:260px}
+
+  /* ── NOT-STARTED STATUS PILL ─────────────────────── */
+  .album-mini .status-pill.not-started{background:rgba(140,140,140,.45);color:#fff}
+
+  /* ── OBJ FILTER BUTTONS ──────────────────────────── */
+  .obj-filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .obj-filter-btn{
+    padding:6px 14px;border-radius:99px;border:1px solid var(--line);
+    background:var(--bg);font-family:var(--f-mono);font-size:11px;font-weight:600;
+    color:var(--ink-2);cursor:pointer;text-transform:uppercase;letter-spacing:0.08em;
+    transition:border-color .12s,background .12s,color .12s;
+  }
+  .obj-filter-btn:hover{border-color:var(--ink-2)}
+  .obj-filter-btn.active{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+
+  /* ── OBJ EMPTY STATE ─────────────────────────────── */
+  .obj-empty{padding:28px;text-align:center;color:var(--muted);font-size:14px;grid-column:1/-1}
+
+  /* ── OBJ PAGE LABEL ──────────────────────────────── */
+  .obj-page-label{
+    font-family:var(--f-mono);font-size:11px;color:var(--muted);
+    text-align:center;margin-top:8px;text-transform:uppercase;letter-spacing:0.1em;
+  }
+
+  /* ── MISSIONE / TRAGUARDI / CHART / SESSIONI ────── */
+  .mission-card{
+    background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 22px;position:relative;overflow:hidden;
+  }
+  .mission-card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--accent),#0ea5e9);
+  }
+  .mission-team{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .mission-crest{
+    width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:800;color:#fff;flex-shrink:0;
+    background:linear-gradient(135deg,var(--tc1,#0a3a8b),var(--tc2,#1a1a1a));
+  }
+  .mission-info .nm{font-size:15px;font-weight:700;color:var(--ink);}
+  .mission-info .sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .mission-codes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+  .mission-code{
+    font-family:var(--f-mono);font-size:11px;font-weight:600;
+    background:rgba(200,255,61,0.15);color:var(--ink-2);
+    border:1px solid rgba(200,255,61,0.4);border-radius:6px;padding:3px 8px;
+  }
+  .mission-footer{display:flex;align-items:center;justify-content:space-between;}
+  .mission-bar-wrap{flex:1;background:var(--line);border-radius:99px;height:6px;overflow:hidden;margin-right:12px;}
+  .mission-bar{height:100%;border-radius:99px;background:var(--accent);transition:width .3s;}
+  .mission-pct{font-size:12px;font-weight:700;color:var(--ink-2);white-space:nowrap;margin-right:12px;}
+  .mission-goto{
+    font-size:12px;font-weight:600;color:var(--ink);
+    background:var(--accent);border-radius:8px;padding:5px 12px;text-decoration:none;
+    transition:opacity .15s;white-space:nowrap;
+  }
+  .mission-goto:hover{opacity:.85;}
+  .mission-none{padding:18px;text-align:center;color:var(--muted);font-size:13px;}
+
+  .badges-grid{display:flex;flex-wrap:wrap;gap:10px;padding:4px 0;}
+  .badge-chip{
+    display:flex;align-items:center;gap:8px;
+    background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;
+    padding:9px 14px;min-width:160px;flex:1;
+  }
+  .badge-chip.unlocked{border-color:var(--accent);background:rgba(200,255,61,0.08);}
+  .badge-chip.locked{opacity:.45;filter:grayscale(1);}
+  .badge-icon{font-size:20px;line-height:1;}
+  .badge-info .nm{font-size:12px;font-weight:700;color:var(--ink);}
+  .badge-info .desc{font-size:11px;color:var(--muted);margin-top:1px;}
+
+  .chart-wrap{position:relative;height:140px;margin:12px 0 4px;}
+  .chart-wrap canvas{display:block;width:100%!important;}
+  .chart-empty{display:flex;align-items:center;justify-content:center;height:140px;font-size:13px;color:var(--muted);}
+
+  .sessions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px;}
+  .sess-stat{background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+  .sess-stat .v{font-size:22px;font-weight:800;color:var(--ink);line-height:1;}
+  .sess-stat .l{font-size:11px;color:var(--muted);margin-top:3px;}
+  .sess-streak{font-size:11px;color:var(--good);font-weight:600;margin-top:2px;}
+
+  /* ── SITE FOOTER ─────────────────────────────────── */
+  .site-footer{
+    max-width:1480px;margin:48px auto 0;padding:16px 28px 28px;
+    border-top:1px solid var(--line);
+    font-family:var(--f-mono);font-size:10px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:0.1em;
+    display:flex;flex-direction:column;align-items:center;gap:5px;
+  }
+  .site-footer .footer-row{display:flex;gap:18px;align-items:center;flex-wrap:wrap;justify-content:center}
+  .site-footer .footer-dot{opacity:.4}
 </style>
 </head>
 <body data-variant="stadio">
@@ -667,7 +765,7 @@
       </div>
       <!-- Profilo -->
       <div style="position:relative">
-        <div class="avatar" id="avatarBtn" style="cursor:pointer">L</div>
+        <div class="avatar" id="avatarBtn" style="cursor:pointer">?</div>
         <div class="profile-menu" id="profileMenu">
           <div class="profile-menu-item" id="pmProfilo">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
@@ -700,7 +798,7 @@
 
   <div class="page-head">
     <div>
-      <h1>Ciao Luca, <em>oggi che si fa?</em></h1>
+      <h1 id="greetingH1">Ciao Collezionista, <em>oggi che si fa?</em></h1>
     </div>
     <div class="quick-stats">
       <div class="qstat">
@@ -740,40 +838,9 @@
   <!-- ── DA FARE OGGI + MATCH PRONTI ── -->
   <div class="cols" style="margin-top:18px">
     <section class="panel">
-      <h3>Da fare oggi <span class="demo-badge">DATI DI ESEMPIO</span></h3>
-      <div class="panel-sub">Azioni in coda · ordinate per priorità</div>
-      <div class="todo-list">
-
-        <div class="todo-item meet">
-          <div class="ico">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-          </div>
-          <div class="info">
-            <div class="label">Incontro con Giulia · oggi alle 17:30</div>
-            <div class="meta"><b>Piazza Duomo</b> · 4 figurine ↔ 4 · conferma 1h prima</div>
-          </div>
-          <div class="chev">→</div>
-        </div>
-
-        <div class="todo-item urgent">
-          <div class="ico">3</div>
-          <div class="info">
-            <div class="label">3 proposte di scambio in attesa</div>
-            <div class="meta">Marco, Anna e Luca aspettano una tua risposta</div>
-          </div>
-          <div class="chev">→</div>
-        </div>
-
-        <div class="todo-item add">
-          <div class="ico">+</div>
-          <div class="info">
-            <div class="label">Inserisci la bustina di stamattina</div>
-            <div class="meta"><b>14 figurine</b> non ancora registrate dall'edicola di stamani</div>
-          </div>
-          <div class="chev">→</div>
-        </div>
-
-      </div>
+      <h3>Da fare oggi</h3>
+      <div class="panel-sub">Suggerimenti basati sulla tua collezione</div>
+      <div class="todo-list" id="todoList"></div>
     </section>
 
     <section class="panel">
@@ -859,6 +926,11 @@
     </div>
 
     <div class="obj-body">
+      <div class="obj-filter-bar">
+        <button class="obj-filter-btn active" id="objFilterMissing" data-filter="missing">Più mancanti</button>
+        <button class="obj-filter-btn" id="objFilterComplete" data-filter="complete">Quasi complete</button>
+      </div>
+
       <div class="obj-list" id="objList"></div>
 
       <div class="obj-controls">
@@ -870,6 +942,7 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
         </button>
       </div>
+      <div class="obj-page-label" id="objPageLabel"></div>
     </div>
   </section>
 
@@ -877,47 +950,67 @@
   <section class="activity" style="margin-top:18px">
     <div class="panel-head">
       <div>
-        <h3>Attività recente <span class="demo-badge">DATI DI ESEMPIO</span></h3>
-        <div class="sub">Tutto quello che è successo nel tuo album e nei tuoi scambi</div>
+        <h3>Stato collezione</h3>
+        <div class="sub">Riepilogo reale della tua raccolta</div>
       </div>
-      <span class="live">In tempo reale</span>
+      <span class="live">Aggiornato ora</span>
     </div>
-
-    <div class="act-rows">
-      <div class="act-row success">
-        <div class="ic">✓</div>
-        <div class="text"><b>Scambio completato</b> con Giada · 3 figurine ricevute (#178, #PAR-09, #STY3)</div>
-        <div class="when">2h fa</div>
-      </div>
-      <div class="act-row sent">
-        <div class="ic">→</div>
-        <div class="text">Hai proposto uno scambio a <b>Marco</b> · 3 ↔ 3 figurine</div>
-        <div class="when">4h fa</div>
-      </div>
-      <div class="act-row badge">
-        <div class="ic">★</div>
-        <div class="text">Hai sbloccato il badge <b>"Reparto Difesa"</b> · Calciatori 25-26</div>
-        <div class="when">Ieri</div>
-      </div>
-      <div class="act-row">
-        <div class="ic">+</div>
-        <div class="text">Aggiunte <b>11 figurine</b> dalla bustina di Lunedì · +1 doppia</div>
-        <div class="when">Ieri</div>
-      </div>
-      <div class="act-row success">
-        <div class="ic">✓</div>
-        <div class="text"><b>Scambio completato</b> con Federico · 5 figurine ricevute · ⭐ amico</div>
-        <div class="when">2 g fa</div>
-      </div>
-      <div class="act-row">
-        <div class="ic">+</div>
-        <div class="text">Hai iniziato un nuovo album · <b>FIFA World Cup 2026™</b></div>
-        <div class="when">4 g fa</div>
-      </div>
-    </div>
+    <div class="act-rows" id="activityRows"></div>
   </section>
 
+  <!-- ── LA TUA PROSSIMA MISSIONE ── -->
+  <div class="sec-head" style="margin-top:18px">
+    <div>
+      <h2>La tua prossima missione</h2>
+      <div class="sub">La squadra più vicina al completamento</div>
+    </div>
+  </div>
+  <section class="mission-card" id="missionCard">
+    <div class="mission-none">Caricamento...</div>
+  </section>
+
+  <!-- ── TRAGUARDI SBLOCCATI ── -->
+  <div class="sec-head" style="margin-top:18px">
+    <div>
+      <h2>Traguardi sbloccati</h2>
+      <div class="sub">Premi raggiunti nella tua collezione</div>
+    </div>
+  </div>
+  <div class="badges-grid" id="badgesGrid"></div>
+
+  <!-- ── PROGRESSIONE + SESSIONI ── -->
+  <div class="cols" style="margin-top:18px">
+    <section class="panel">
+      <h3>Progressione 7 giorni</h3>
+      <div class="panel-sub">Figurine aggiunte negli ultimi 7 giorni</div>
+      <div class="chart-wrap" id="chartWrap">
+        <canvas id="progressChart"></canvas>
+      </div>
+      <div id="chartLegend" style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;font-family:var(--f-mono)"></div>
+    </section>
+
+    <section class="panel">
+      <h3>Sessioni di inserimento</h3>
+      <div class="panel-sub">Statistiche dalle tue sessioni</div>
+      <div class="sessions-grid" id="sessionsGrid">
+        <div class="sess-stat"><div class="v" id="sessOpens">—</div><div class="l">Aperture questa settimana</div></div>
+        <div class="sess-stat"><div class="v" id="sessAvg">—</div><div class="l">Figurine per sessione (media)</div></div>
+        <div class="sess-stat"><div class="v" id="sessStreak">—</div><div class="l">Giorni di fila attivi</div><div class="sess-streak" id="sessStreakLabel"></div></div>
+      </div>
+    </section>
+  </div>
+
 </main>
+
+<footer class="site-footer">
+  <div class="footer-row">
+    <span>FiguBook Beta v1.0</span>
+    <span class="footer-dot">·</span>
+    <span>Strumento non affiliato con Panini S.p.A.</span>
+    <span class="footer-dot">·</span>
+    <span id="footerYear"></span>
+  </div>
+</footer>
 
 <div class="toast" id="toast"></div>
 
@@ -965,40 +1058,62 @@
   FiguBookCore.requireSession();
 })();
 
+// ── Greeting from session email ───────────────────
+(function(){
+  const session = FiguBookCore.getSession();
+  if (session && session.email) {
+    const raw = session.email.split('@')[0];
+    const firstName = raw.replace(/[._\-0-9].*/, '');
+    const name = firstName ? firstName.charAt(0).toUpperCase() + firstName.slice(1) : 'Collezionista';
+    const h1 = document.getElementById('greetingH1');
+    if (h1) h1.innerHTML = `Ciao ${escapeHtmlInline(name)}, <em>oggi che si fa?</em>`;
+    const av = document.getElementById('avatarBtn');
+    if (av) av.textContent = name.charAt(0).toUpperCase();
+  }
+  function escapeHtmlInline(s){ return String(s).replace(/[&<>"]/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
+})();
+
+// Footer year
+(function(){ const el = document.getElementById('footerYear'); if(el) el.textContent = new Date().getFullYear(); })();
+
+// ── Code-range helpers (dashboard-only, NOT from album-data files) ────────────
+function _nr(a,b){const r=[];for(let i=a;i<=b;i++)r.push(String(i));return r;}
+function _pfx(p,a,b){const r=[];for(let i=a;i<=b;i++)r.push(p+i);return r;}
+
 // ── Albums data — mirrors Album.html master list (Album.html is source of truth) ──
 const ALBUMS = [
   { id:'calciatori-25-26', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'25/26', name:'Calciatori 25-26',  have:0, total:784, doubles:0, status:'active', c1:'#1f8a5b', c2:'#0a3a8b', featured:true, href:'figubook-calciatori-2526.html',
     objectives:[
-      {team:'Atalanta',   crest:'AT', tc1:'#0a4a8b', tc2:'#1a1a1a', have:0, total:22},
-      {team:'Inter',      crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:22},
-      {team:'Juventus',   crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:22},
-      {team:'Milan',      crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:22},
-      {team:'Napoli',     crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:22},
-      {team:'Roma',       crest:'RO', tc1:'#a01d2e', tc2:'#fcc500', have:0, total:22},
+      {team:'Atalanta', crest:'AT', tc1:'#0a4a8b', tc2:'#1a1a1a', have:0, total:22, codes:_nr(44,65)},
+      {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:22, codes:_nr(220,241)},
+      {team:'Juventus', crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:22, codes:_nr(242,263)},
+      {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:22, codes:_nr(308,329)},
+      {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:22, codes:_nr(330,351)},
+      {team:'Roma',     crest:'RO', tc1:'#a01d2e', tc2:'#fcc500', have:0, total:22, codes:_nr(396,417)},
     ]
   },
   { id:'calciatori-24-25', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'24/25', name:'Calciatori 24-25', have:0, total:886, doubles:0, status:'active', c1:'#f5b800', c2:'#7a5a00', href:'figubook-calciatori-2425.html',
     objectives:[
-      {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:27},
-      {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:27},
-      {team:'Juventus', crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:27},
-      {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:27},
+      {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:27, codes:['206','207','208','209','210','211','212','213','214','215','216','217','218','219','220','221','222','223','224','225','226','227','228','229','U17','U18','230']},
+      {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:27, codes:['306','307','308','309','310','311','312','313','314','315','316','317','318','319','320','321','322','323','324','325','326','327','328','329','U25','U26','330']},
+      {team:'Juventus', crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:27, codes:['231','232','233','234','235','236','237','238','239','240','241','242','243','244','245','246','247','248','249','250','251','252','253','254','U19','U20','255']},
+      {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:27, codes:['356','357','358','359','360','361','362','363','364','365','366','367','368','369','370','371','372','373','374','375','376','377','378','379','U29','U30','380']},
     ]
   },
   { id:'calciatori-23-24', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'23/24', name:'Calciatori 23-24', have:0, total:682, doubles:0, status:'active', c1:'#5a5a5a', c2:'#2a2a2a', href:'figubook-calciatori-2324.html',
     objectives:[
-      {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:22},
-      {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:22},
-      {team:'Juventus', crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:22},
-      {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:22},
+      {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:25, codes:['169','170','171','172','173','174','175','176','177','178','179','180','181','182','183','184','185','186','187','188','189','190','191','193','P7']},
+      {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:25, codes:['277','278','279','280','281','282','283','284','285','286','287','288','289','290','291','292','293','294','295','296','297','298','299','301','P11']},
+      {team:'Juventus', crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:25, codes:['196','197','198','199','200','201','202','203','204','205','206','207','208','209','210','211','212','213','214','215','216','217','218','220','P8']},
+      {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:25, codes:['331','332','333','334','335','336','337','338','339','340','341','342','343','344','345','346','347','348','349','350','351','352','353','355','P13']},
     ]
   },
   { id:'calciatori-22-23', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'22/23', name:'Calciatori 22-23', have:0, total:650, doubles:0, status:'active', c1:'#c8851f', c2:'#7a3a00', href:'figubook-calciatori-2223.html',
     objectives:[
-      {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:22},
-      {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:22},
-      {team:'Juventus', crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:22},
-      {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:22},
+      {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:25, codes:['169','170','171','172','173','174','175','176','177','178','179','180','181','182','183','184','185','186','187','188','189','190','191','193','P7']},
+      {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:25, codes:['277','278','279','280','281','282','283','284','285','286','287','288','289','290','291','292','293','294','295','296','297','298','299','301','P11']},
+      {team:'Juventus', crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:25, codes:['196','197','198','199','200','201','202','203','204','205','206','207','208','209','210','211','212','213','214','215','216','217','218','220','P8']},
+      {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:25, codes:['331','332','333','334','335','336','337','338','339','340','341','342','343','344','345','346','347','348','349','350','351','352','353','355','P13']},
     ]
   },
   { id:'mondiali-qatar-22', editor:'PANINI · FIFA',  coverTitle:'QATAR', coverYear:'2022', name:'Qatar 2022', have:0, total:670, doubles:0, status:'active', c1:'#a01d2e', c2:'#5a1a0a', href:'#',
@@ -1011,36 +1126,36 @@ const ALBUMS = [
   },
   { id:'mondiali-2026', editor:'PANINI · FIFA',  coverTitle:'FIFA', coverYear:'2026', name:'FIFA World Cup 2026', have:0, total:720, doubles:0, status:'new', c1:'#0a3a8b', c2:'#a01d2e', href:'figubook-fwc2026.html',
     objectives:[
-      {team:'Italia',      crest:'IT', tc1:'#1f8a5b', tc2:'#a01d2e', have:0, total:26},
-      {team:'Brasile',     crest:'BR', tc1:'#1f8a5b', tc2:'#fcc500', have:0, total:26},
-      {team:'Argentina',   crest:'AR', tc1:'#8ec5ed', tc2:'#f4f4f4', have:0, total:26},
-      {team:'Francia',     crest:'FR', tc1:'#0a3a8b', tc2:'#a01d2e', have:0, total:26},
-      {team:'Spagna',      crest:'SP', tc1:'#a01d2e', tc2:'#fcc500', have:0, total:26},
-      {team:'Inghilterra', crest:'EN', tc1:'#a01d2e', tc2:'#f4f4f4', have:0, total:26},
+      {team:'Brasile',     crest:'BR', tc1:'#1f8a5b', tc2:'#fcc500', have:0, total:20, codes:_pfx('BRA',1,20)},
+      {team:'Argentina',   crest:'AR', tc1:'#8ec5ed', tc2:'#f4f4f4', have:0, total:20, codes:_pfx('ARG',1,20)},
+      {team:'Francia',     crest:'FR', tc1:'#0a3a8b', tc2:'#a01d2e', have:0, total:20, codes:_pfx('FRA',1,20)},
+      {team:'Spagna',      crest:'SP', tc1:'#a01d2e', tc2:'#fcc500', have:0, total:20, codes:_pfx('ESP',1,20)},
+      {team:'Inghilterra', crest:'EN', tc1:'#a01d2e', tc2:'#f4f4f4', have:0, total:20, codes:_pfx('ENG',1,20)},
+      {team:'Germania',    crest:'GE', tc1:'#1a1a1a', tc2:'#DD0000', have:0, total:20, codes:_pfx('GER',1,20)},
     ]
   },
   { id:'calb-25-26', editor:'PANINI · SERIE B',  coverTitle:'SERIE B', coverYear:'25/26', name:'Serie B 25-26', have:0, total:440, doubles:0, status:'new', c1:'#1f8a5b', c2:'#14110d', href:'figubook-serieb-2526.html',
     objectives:[
-      {team:'Spezia',    crest:'SP', tc1:'#1f8a5b', tc2:'#1a1a1a', have:0, total:18},
-      {team:'Pisa',      crest:'PI', tc1:'#1a1a1a', tc2:'#0a4a8b', have:0, total:18},
-      {team:'Sassuolo',  crest:'SA', tc1:'#1f8a5b', tc2:'#1a1a1a', have:0, total:18},
-      {team:'Bari',      crest:'BA', tc1:'#a01d2e', tc2:'#f4f4f4', have:0, total:18},
+      {team:'Spezia',   crest:'SP', tc1:'#f4f4f4', tc2:'#1a1a1a', have:0, total:20, codes:_nr(374,393)},
+      {team:'Palermo',  crest:'PA', tc1:'#ff7a3d', tc2:'#1a1a1a', have:0, total:20, codes:_nr(286,305)},
+      {team:'Venezia',  crest:'VE', tc1:'#ff7a3d', tc2:'#0a5a3a', have:0, total:20, codes:_nr(418,437)},
+      {team:'Bari',     crest:'BA', tc1:'#a01d2e', tc2:'#f4f4f4', have:0, total:20, codes:_nr(44,63)},
     ]
   },
   { id:'adrenalyn-25-26', editor:'PANINI · ADRENALYN', coverTitle:'ADRENALYN', coverYear:'XL 25/26', name:'Adrenalyn XL 25-26', have:0, total:450, doubles:0, status:'active', c1:'#7a5ae0', c2:'#0a3a8b', href:'figubook-adrenalyn-2526.html',
     objectives:[
-      {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:25},
-      {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:25},
-      {team:'Juventus', crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:25},
-      {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:25},
+      {team:'Inter',    crest:'IN', tc1:'#010E80', tc2:'#1a1a1a', have:0, total:19, codes:['145','146','147','148','149','149bis','150','151','152','153','154','155','156','157','158','159','160','161','162']},
+      {team:'Juventus', crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:21, codes:['163','164','165','166','167','168','169','170','171','172','172bis','173','174','175','176','176bis','177','178','179','180','180bis']},
+      {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:23, codes:['217','218','219','219bis','220','221','222','223','223bis','224','225','225bis','226','226bis','227','228','229','230','231','231bis','232','233','234']},
+      {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:20, codes:['235','236','237','238','239','240','241','242','243','244','245','246','247','248','249','250','250bis','251','252','252bis']},
     ]
   },
   { id:'match-attax-ucl', editor:'TOPPS · UCL', coverTitle:'MATCH ATTAX', coverYear:'25/26', name:'Match Attax UCL', have:0, total:584, doubles:0, status:'active', c1:'#0a4a8b', c2:'#14110d', href:'figubook-matchattax-2526.html',
     objectives:[
-      {team:'Real Madrid', crest:'RM', tc1:'#f4f4f4', tc2:'#fcc500', have:0, total:18},
-      {team:'Man. City',   crest:'MC', tc1:'#8ec5ed', tc2:'#1a4a8b', have:0, total:18},
-      {team:'PSG',         crest:'PS', tc1:'#0a3a8b', tc2:'#a01d2e', have:0, total:18},
-      {team:'Bayern',      crest:'BA', tc1:'#a01d2e', tc2:'#1a4a8b', have:0, total:18},
+      {team:'Real Madrid', crest:'RM', tc1:'#f4f4f4', tc2:'#fcc500', have:0, total:14, codes:_nr(382,395)},
+      {team:'Man. City',   crest:'MC', tc1:'#8ec5ed', tc2:'#1a4a8b', have:0, total:14, codes:_nr(298,311)},
+      {team:'PSG',         crest:'PS', tc1:'#0a3a8b', tc2:'#a01d2e', have:0, total:14, codes:_nr(354,367)},
+      {team:'Bayern',      crest:'BA', tc1:'#dc052d', tc2:'#0066b2', have:0, total:14, codes:_nr(196,209)},
     ]
   },
 ];
@@ -1081,6 +1196,17 @@ function _reloadDashboardAlbums(){
 // Initial load — filter immediately
 _reloadDashboardAlbums();
 
+// ── Per-team have count from localStorage states ──────────────
+function _computeObjHave(storageKey, codes){
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) return 0;
+    const { states } = JSON.parse(raw);
+    if (!states) return 0;
+    return codes.filter(c => states[c] === 'have' || states[c] === 'double').length;
+  } catch(e){ return 0; }
+}
+
 // ── Dashboard live stats from localStorage ────────────────────
 function loadDashboardLiveStats(){
   // Update albums that have a dedicated storage key
@@ -1090,15 +1216,25 @@ function loadDashboardLiveStats(){
     if (a) {
       a.have = s.have;
       a.doubles = s.doubles;
-      // Auto-compute status — never hardcode
-      a.status = (a.have >= a.total && a.total > 0) ? 'done' : 'active';
+      // Per-objective have from real localStorage states
+      if (a.objectives) {
+        a.objectives.forEach(o => {
+          if (o.codes && o.codes.length) {
+            o.have = _computeObjHave(storageKey, o.codes);
+            o.total = o.codes.length;
+          } else {
+            // proportional fallback for objectives without codes
+            o.have = a.total > 0 ? Math.round(o.total * (a.have / a.total)) : 0;
+          }
+        });
+      }
     }
   });
-  // For albums without a storage key, also auto-compute status from their current values
+  // Auto-compute status for all albums
   ALBUMS.forEach(a => {
-    if (!FiguBookCore.ALBUM_STORAGE_KEYS[a.id]) {
-      a.status = (a.have >= a.total && a.total > 0) ? 'done' : 'active';
-    }
+    if (a.have === 0) a.status = 'not-started';
+    else if (a.have >= a.total && a.total > 0) a.status = 'done';
+    else a.status = 'active';
   });
 }
 
@@ -1120,20 +1256,34 @@ function renderDashboardQuickStats(){
 
 // ── Render albums scroller ────────────────────────
 function escapeHtml(s){ return String(s).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
-const STATUS_LABEL = { active:'IN CORSO', done:'COMPLETATO', new:'NUOVO' };
+
+function _statusInfo(a){
+  if (a.have === 0)                             return { cls:'not-started', label:'Non iniziato' };
+  if (a.have >= a.total && a.total > 0)         return { cls:'done',        label:'Completato ★' };
+  return                                               { cls:'active',       label:'In corso' };
+}
+
+function _barColor(pct){
+  if (pct >= 100) return 'linear-gradient(90deg,var(--gold),#f0d000)';
+  if (pct >= 67)  return 'linear-gradient(90deg,var(--good),#4ada80)';
+  if (pct >= 34)  return 'linear-gradient(90deg,#ff8c00,var(--gold))';
+  return                  'linear-gradient(90deg,var(--warn),#ff8c00)';
+}
 
 function renderAlbumsScroller(){
   const root = document.getElementById('albumsScroller');
   root.innerHTML = '';
   ALBUMS.forEach(a => {
     const pct = +(a.have / a.total * 100).toFixed(1);
+    const { cls, label } = _statusInfo(a);
+    const barBg = pct > 0 ? _barColor(pct) : 'transparent';
     const card = document.createElement('a');
     card.className = 'album-mini' + (a.featured ? ' featured' : '');
     card.href = a.href;
     if (a.href === '#') card.title = 'In arrivo';
     card.innerHTML = `
       <div class="cover" style="--c1:${a.c1};--c2:${a.c2}">
-        <span class="status-pill ${a.status}">${STATUS_LABEL[a.status] || a.status}</span>
+        <span class="status-pill ${cls}">${escapeHtml(label)}</span>
         <div class="editor">${escapeHtml(a.editor)}</div>
         <div class="ttl">${escapeHtml(a.coverTitle)}<span class="yr">${escapeHtml(a.coverYear)}</span></div>
       </div>
@@ -1143,7 +1293,7 @@ function renderAlbumsScroller(){
           <span class="have">${a.have}<span style="color:var(--muted);font-size:14px;font-weight:500"> / ${a.total}</span></span>
           <span class="pct">${pct}%</span>
         </div>
-        <div class="bar"><i style="width:${pct}%"></i></div>
+        <div class="bar"><i style="width:${pct}%;background:${barBg}"></i></div>
       </div>
     `;
     root.appendChild(card);
@@ -1155,8 +1305,10 @@ renderDashboardQuickStats();
 
 // ── Render objectives carousel ────────────────────
 let activeObjIdx = 0;
+let activeObjFilter = 'missing'; // 'missing' | 'complete'
+
 function renderObjectives(){
-  if (!ALBUMS.length) return; // no albums in collection
+  if (!ALBUMS.length) return;
   const a = ALBUMS[activeObjIdx];
   const hero = document.getElementById('objHero');
   hero.style.setProperty('--c1', a.c1);
@@ -1167,28 +1319,40 @@ function renderObjectives(){
   document.getElementById('objTotal').textContent = `${a.have} / ${a.total} · ${pct}%`;
   document.getElementById('objPct').textContent = pct + '%';
 
+  // Filter + sort objectives
+  let objs = (a.objectives || []).filter(o => o.total - o.have > 0); // hide complete
+  if (activeObjFilter === 'missing') {
+    // più mancanti: crescente per mancanti (quasi complete first)
+    objs = objs.slice().sort((x, y) => (x.total - x.have) - (y.total - y.have));
+  } else {
+    // quasi complete: decrescente per have (più figurine già raccolte first)
+    objs = objs.slice().sort((x, y) => y.have - x.have);
+  }
+
   const list = document.getElementById('objList');
   list.innerHTML = '';
-  a.objectives.forEach(o => {
-    const p = Math.round(o.have / o.total * 100);
-    const missing = o.total - o.have;
-    const labelText = missing === 0 ? 'Squadra completa ✓' : `mancano ${missing} figurine`;
-    const row = document.createElement('div');
-    row.className = 'obj-row';
-    const albumPage = (a.href && a.href !== '#') ? a.href : null;
-    row.innerHTML = `
-      <div class="crest" style="--tc1:${o.tc1};--tc2:${o.tc2}">${escapeHtml(o.crest)}</div>
-      <div class="team">
-        <div class="nm">${escapeHtml(o.team)}</div>
-        <div class="miss"><b>${o.have}/${o.total}</b> · ${labelText}</div>
-      </div>
-      ${albumPage
-        ? `<a href="${albumPage}" class="obj-link">Vai →</a>`
-        : `<span class="obj-link-na">In arrivo</span>`
-      }
-    `;
-    list.appendChild(row);
-  });
+  if (!objs.length) {
+    list.innerHTML = '<div class="obj-empty">Tutte le squadre di questo album sono complete!</div>';
+  } else {
+    objs.forEach(o => {
+      const missing = o.total - o.have;
+      const row = document.createElement('div');
+      row.className = 'obj-row';
+      const albumPage = (a.href && a.href !== '#') ? a.href : null;
+      row.innerHTML = `
+        <div class="crest" style="--tc1:${o.tc1};--tc2:${o.tc2}">${escapeHtml(o.crest)}</div>
+        <div class="team">
+          <div class="nm">${escapeHtml(o.team)}</div>
+          <div class="miss"><b>${o.have}/${o.total}</b> · mancano <b>${missing}</b></div>
+        </div>
+        ${albumPage
+          ? `<a href="${albumPage}" class="obj-link">Vai →</a>`
+          : `<span class="obj-link-na">In arrivo</span>`
+        }
+      `;
+      list.appendChild(row);
+    });
+  }
 
   // Dots
   const dots = document.getElementById('objDots');
@@ -1205,12 +1369,30 @@ function renderObjectives(){
 
   document.getElementById('objPrev').disabled = activeObjIdx === 0;
   document.getElementById('objNext').disabled = activeObjIdx === ALBUMS.length - 1;
+
+  // Page label
+  const lbl = document.getElementById('objPageLabel');
+  if (lbl) lbl.textContent = `Album ${activeObjIdx + 1} di ${ALBUMS.length}`;
 }
 document.getElementById('objPrev').addEventListener('click', () => {
   if (activeObjIdx > 0){ activeObjIdx--; renderObjectives(); }
 });
 document.getElementById('objNext').addEventListener('click', () => {
   if (activeObjIdx < ALBUMS.length - 1){ activeObjIdx++; renderObjectives(); }
+});
+
+// Filter buttons
+document.getElementById('objFilterMissing').addEventListener('click', () => {
+  activeObjFilter = 'missing';
+  document.getElementById('objFilterMissing').classList.add('active');
+  document.getElementById('objFilterComplete').classList.remove('active');
+  renderObjectives();
+});
+document.getElementById('objFilterComplete').addEventListener('click', () => {
+  activeObjFilter = 'complete';
+  document.getElementById('objFilterComplete').classList.add('active');
+  document.getElementById('objFilterMissing').classList.remove('active');
+  renderObjectives();
 });
 loadDashboardLiveStats();
 renderObjectives();
@@ -1224,6 +1406,11 @@ FiguBookCore.initAutoSync(() => {
   renderDashboardQuickStats();
   if (activeObjIdx >= ALBUMS.length) activeObjIdx = Math.max(0, ALBUMS.length - 1);
   renderObjectives();
+  renderTodoList();
+  renderActivityRows();
+  renderMissionCard();
+  renderBadges();
+  renderSessionsWidget();
 });
 
 // Toast
@@ -1235,16 +1422,321 @@ function showToast(msg){
   t._timer = setTimeout(()=>t.classList.remove('show'), 1600);
 }
 
-// ── Todo item handlers — navigazione mirata ──────────────────
-document.querySelector('.todo-item.meet').addEventListener('click', () => {
-  window.location.href = 'figubook-scambia.html';
-});
-document.querySelector('.todo-item.urgent').addEventListener('click', () => {
-  window.location.href = 'figubook-scambia.html';
-});
-document.querySelector('.todo-item.add').addEventListener('click', () => {
-  window.location.href = 'figubook-calciatori-2526.html';
-});
+// ── Dynamic todo section ──────────────────────────────────────
+function renderTodoList(){
+  const root = document.getElementById('todoList');
+  if (!root) return;
+  root.innerHTML = '';
+
+  let totalDoubles = 0, totalMissing = 0;
+  ALBUMS.forEach(a => { totalDoubles += (a.doubles||0); totalMissing += Math.max(0, a.total-(a.have||0)); });
+
+  const items = [];
+
+  if (totalDoubles > 0) {
+    items.push({ cls:'meet', ico:'↔', label:`Hai ${totalDoubles} doppie disponibili — trova un match!`,
+      meta:'Vai alla sezione Scambia per trovare collezionisti', href:'figubook-scambia.html' });
+  }
+  if (totalMissing > 0) {
+    const featuredAlbum = ALBUMS.find(a=>a.featured && a.have > 0) || ALBUMS.find(a=>a.have>0);
+    items.push({ cls:'add', ico:'+', label:`Ti mancano ${totalMissing.toLocaleString('it-IT')} figurine in totale`,
+      meta: featuredAlbum ? `Controlla i mancanti in ${featuredAlbum.name}` : 'Controlla i tuoi album',
+      href: featuredAlbum ? featuredAlbum.href : 'figubook-mancanti.html' });
+  }
+  if (!items.length) {
+    items.push({ cls:'add', ico:'✓', label:'Tutto in ordine! Aggiungi nuove figurine',
+      meta:'Apri un album e inizia a registrare le tue figurine', href:'figubook-album.html' });
+  }
+
+  items.forEach(item => {
+    const el = document.createElement('div');
+    el.className = `todo-item ${item.cls}`;
+    el.style.cursor = 'pointer';
+    el.innerHTML = `
+      <div class="ico">${escapeHtml(item.ico)}</div>
+      <div class="info">
+        <div class="label">${escapeHtml(item.label)}</div>
+        <div class="meta">${escapeHtml(item.meta)}</div>
+      </div>
+      <div class="chev">→</div>
+    `;
+    el.addEventListener('click', () => { if (item.href) window.location.href = item.href; });
+    root.appendChild(el);
+  });
+}
+
+// ── Dynamic activity section ──────────────────────────────────
+function renderActivityRows(){
+  const root = document.getElementById('activityRows');
+  if (!root) return;
+  root.innerHTML = '';
+
+  const albumsWithCards = ALBUMS.filter(a => a.have > 0);
+
+  if (!albumsWithCards.length) {
+    const empty = document.createElement('div');
+    empty.className = 'act-row';
+    empty.innerHTML = `
+      <div class="ic">📭</div>
+      <div class="text">Nessuna attività ancora. Inizia ad aggiungere figurine!</div>
+      <div class="when"></div>
+    `;
+    root.appendChild(empty);
+    return;
+  }
+
+  albumsWithCards.forEach(a => {
+    const pct = +(a.have / a.total * 100).toFixed(1);
+    const missing = Math.max(0, a.total - a.have);
+    const row = document.createElement('div');
+    row.className = 'act-row' + (a.have >= a.total ? ' success' : '');
+    row.innerHTML = `
+      <div class="ic">${a.have >= a.total ? '★' : '+'}</div>
+      <div class="text"><b>${escapeHtml(a.name)}</b> · ${a.have} figurine raccolte · ${pct}% completato${missing > 0 ? ` · mancano <b>${missing}</b>` : ' · <b>Completato!</b>'}</div>
+      <div class="when">${a.doubles > 0 ? a.doubles + ' doppie' : ''}</div>
+    `;
+    root.appendChild(row);
+  });
+}
+
+renderTodoList();
+renderActivityRows();
+
+// ── Feature 1: La tua prossima missione ───────────────────────
+function renderMissionCard(){
+  const card = document.getElementById('missionCard');
+  if (!card) return;
+
+  // Find best mission across all ALBUMS.objectives: min missing 1-3, max have%
+  let bestAlbum = null, bestObj = null;
+  ALBUMS.forEach(a => {
+    (a.objectives || []).forEach(o => {
+      const miss = (o.total || 0) - (o.have || 0);
+      if (miss >= 1 && miss <= 3){
+        if (!bestObj || miss < (bestObj.total - bestObj.have) ||
+            (miss === (bestObj.total - bestObj.have) && (o.have/o.total) > (bestObj.have/bestObj.total))){
+          bestAlbum = a; bestObj = o;
+        }
+      }
+    });
+  });
+
+  if (!bestObj){
+    card.innerHTML = '<div class="mission-none">Ottimo! Nessuna squadra ha solo 1-3 figurine mancanti. Continua così! 🏆</div>';
+    return;
+  }
+
+  const miss = bestObj.total - bestObj.have;
+  const pct = Math.round(bestObj.have / bestObj.total * 100);
+  const codes = (bestObj.codes || []).filter((_,i) => i < 8); // show up to 8 missing codes (approximation)
+  const albumHref = (bestAlbum.href && bestAlbum.href !== '#') ? bestAlbum.href : null;
+
+  card.innerHTML = `
+    <div class="mission-team">
+      <div class="mission-crest" style="--tc1:${escapeHtml(bestObj.tc1||'#0a3a8b')};--tc2:${escapeHtml(bestObj.tc2||'#1a1a1a')}">${escapeHtml(bestObj.crest||'?')}</div>
+      <div class="mission-info">
+        <div class="nm">${escapeHtml(bestObj.team)}</div>
+        <div class="sub">${escapeHtml(bestAlbum.name)} · mancano ancora <b>${miss}</b> figurine</div>
+      </div>
+    </div>
+    ${codes.length ? `<div class="mission-codes">${codes.map(c=>`<span class="mission-code">${escapeHtml(String(c))}</span>`).join('')}${bestObj.codes && bestObj.codes.length > 8 ? `<span class="mission-code">+${bestObj.codes.length-8}</span>` : ''}</div>` : ''}
+    <div class="mission-footer">
+      <div class="mission-bar-wrap"><div class="mission-bar" style="width:${pct}%"></div></div>
+      <div class="mission-pct">${pct}%</div>
+      ${albumHref ? `<a class="mission-goto" href="${albumHref}">Vai →</a>` : '<span class="mission-goto" style="opacity:.5;cursor:default">In arrivo</span>'}
+    </div>
+  `;
+}
+renderMissionCard();
+
+// ── Feature 2: Traguardi sbloccati ────────────────────────────
+function renderBadges(){
+  const grid = document.getElementById('badgesGrid');
+  if (!grid) return;
+
+  const totalHave = ALBUMS.reduce((s,a) => s+(a.have||0), 0);
+  const hasAny = ALBUMS.some(a => (a.have||0) > 0);
+  const hasSquadraCompleta = ALBUMS.some(a => (a.objectives||[]).some(o => o.have >= o.total && o.total > 0));
+  const hasMetaAlbum = ALBUMS.some(a => (a.have||0) >= (a.total||1)/2);
+  const hasAlbumCompleto = ALBUMS.some(a => (a.have||0) >= (a.total||1));
+  const albumCount = ALBUMS.filter(a => (a.have||0) > 0).length;
+
+  const BADGE_DEFS = [
+    { id:'primo', ico:'🎖️', nm:'Primo album', desc:'Hai iniziato il tuo primo album', unlock: hasAny },
+    { id:'50',    ico:'⭐', nm:'50 figurine',  desc:'Hai raccolto 50 figurine',          unlock: totalHave >= 50 },
+    { id:'100',   ico:'💫', nm:'100 figurine', desc:'Hai raccolto 100 figurine',         unlock: totalHave >= 100 },
+    { id:'500',   ico:'🌟', nm:'500 figurine', desc:'Hai raccolto 500 figurine',         unlock: totalHave >= 500 },
+    { id:'squad', ico:'🏆', nm:'Squadra completa', desc:'Hai completato una squadra',   unlock: hasSquadraCompleta },
+    { id:'meta',  ico:'📖', nm:'Mezzo album',  desc:'Hai riempito almeno metà di un album', unlock: hasMetaAlbum },
+    { id:'full',  ico:'👑', nm:'Album completo', desc:'Hai completato un intero album', unlock: hasAlbumCompleto },
+    { id:'multi', ico:'📚', nm:'Collezionista', desc:'Hai figurine in almeno 3 album',  unlock: albumCount >= 3 },
+  ];
+
+  grid.innerHTML = '';
+  BADGE_DEFS.forEach(b => {
+    const chip = document.createElement('div');
+    chip.className = 'badge-chip ' + (b.unlock ? 'unlocked' : 'locked');
+    chip.innerHTML = `<div class="badge-icon">${b.ico}</div><div class="badge-info"><div class="nm">${escapeHtml(b.nm)}</div><div class="desc">${escapeHtml(b.desc)}</div></div>`;
+    grid.appendChild(chip);
+  });
+}
+renderBadges();
+
+// ── Feature 3: Progressione 7 giorni ─────────────────────────
+function renderProgressChart(){
+  const wrap = document.getElementById('chartWrap');
+  const canvas = document.getElementById('progressChart');
+  if (!canvas) return;
+
+  // Build last-7-days labels + data from all albums' history
+  const days = [];
+  const labels = [];
+  for (let i=6; i>=0; i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    days.push(d.toISOString().slice(0,10));
+    labels.push(d.toLocaleDateString('it-IT',{weekday:'short'}));
+  }
+
+  // Collect data from each active album's history key
+  const data = new Array(7).fill(0);
+  const ALBUM_KEY_MAP = {
+    'calciatori-25-26': 'figubook-history-calciatori-25-26-v1',
+    'calciatori-24-25': 'figubook-history-calciatori-24-25-v1',
+    'calciatori-23-24': 'figubook-history-calciatori-23-24-v1',
+    'calciatori-22-23': 'figubook-history-calciatori-22-23-v1',
+    'adrenalyn-25-26':  'figubook-history-adrenalyn-25-26-v1',
+    'match-attax-ucl':  'figubook-history-match-attax-ucl-v1',
+    'mondiali-2026':    'figubook-history-mondiali-2026-v1',
+    'calb-25-26':       'figubook-history-calb-25-26-v1',
+  };
+  Object.values(ALBUM_KEY_MAP).forEach(hKey => {
+    try {
+      const hist = JSON.parse(localStorage.getItem(hKey) || 'null') || [];
+      hist.forEach(e => {
+        const dk = new Date(e.ts).toISOString().slice(0,10);
+        const idx = days.indexOf(dk);
+        if (idx !== -1) data[idx] += (e.added || 0);
+      });
+    } catch(err){}
+  });
+
+  const hasData = data.some(v => v > 0);
+
+  if (!hasData){
+    if (wrap) wrap.innerHTML = '<div class="chart-empty">Inizia ad aggiungere figurine per vedere il grafico 📊</div>';
+    const leg = document.getElementById('chartLegend');
+    if (leg) leg.textContent = '';
+    return;
+  }
+
+  // Draw with Chart.js if available, else simple canvas bars
+  if (typeof Chart !== 'undefined'){
+    const ctx = canvas.getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Figurine aggiunte',
+          data: data,
+          borderColor: '#c8ff3d',
+          backgroundColor: 'rgba(200,255,61,0.12)',
+          borderWidth: 2,
+          pointBackgroundColor: '#c8ff3d',
+          pointRadius: 4,
+          fill: true,
+          tension: 0.4,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(0,0,0,0.06)' }, ticks: { font: { size: 11 }, color: '#8a8275' } },
+          y: { grid: { color: 'rgba(0,0,0,0.06)' }, ticks: { font: { size: 11 }, color: '#8a8275', precision: 0 }, beginAtZero: true }
+        }
+      }
+    });
+  } else {
+    // Simple bar fallback
+    const ctx = canvas.getContext('2d');
+    const W = canvas.offsetWidth || 400, H = 130;
+    canvas.width = W; canvas.height = H;
+    const max = Math.max(...data, 1);
+    const barW = (W - 40) / 7;
+    ctx.fillStyle = 'rgba(200,255,61,0.18)';
+    data.forEach((v,i) => {
+      const bh = (v / max) * (H - 30);
+      const x = 20 + i * barW + barW * 0.1;
+      const bw = barW * 0.8;
+      ctx.fillStyle = v > 0 ? 'rgba(200,255,61,0.7)' : 'rgba(0,0,0,0.07)';
+      ctx.fillRect(x, H - 20 - bh, bw, bh);
+      ctx.fillStyle = '#8a8275';
+      ctx.font = '10px Geist Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(labels[i], x + bw/2, H - 4);
+    });
+  }
+
+  const total7 = data.reduce((a,b)=>a+b,0);
+  const leg = document.getElementById('chartLegend');
+  if (leg) leg.textContent = total7 > 0 ? `+${total7} figurine negli ultimi 7 giorni` : 'Nessun inserimento nell\'ultima settimana';
+}
+
+// Load Chart.js then render
+(function loadChartJS(){
+  if (typeof Chart !== 'undefined'){
+    renderProgressChart();
+    return;
+  }
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';
+  s.onload = renderProgressChart;
+  s.onerror = renderProgressChart; // render fallback
+  document.head.appendChild(s);
+})();
+
+// ── Feature 4: Sessioni di inserimento ───────────────────────
+function renderSessionsWidget(){
+  try {
+    const sessions = JSON.parse(localStorage.getItem('figubook-sessions-v1') || 'null') || [];
+    const today = new Date().toISOString().slice(0,10);
+
+    // Last 7 days
+    const days7 = [];
+    for (let i=6; i>=0; i--){
+      const d = new Date(); d.setDate(d.getDate()-i);
+      days7.push(d.toISOString().slice(0,10));
+    }
+
+    const sessWeek = sessions.filter(s => days7.includes(s.date));
+    const totalOpens = sessWeek.reduce((s,x) => s+(x.opens||0), 0);
+    const sessWithAdded = sessWeek.filter(s => (s.added||0) > 0);
+    const avgAdded = sessWithAdded.length ? Math.round(sessWithAdded.reduce((s,x)=>s+(x.added||0),0)/sessWithAdded.length) : 0;
+
+    // Streak: consecutive days with at least one session open
+    let streak = 0;
+    for (let i=0; i<30; i++){
+      const d = new Date(); d.setDate(d.getDate()-i);
+      const dk = d.toISOString().slice(0,10);
+      const found = sessions.some(s => s.date === dk);
+      if (found) streak++;
+      else if (i > 0) break;
+    }
+
+    const elOpens = document.getElementById('sessOpens');
+    const elAvg = document.getElementById('sessAvg');
+    const elStreak = document.getElementById('sessStreak');
+    const elStreakLabel = document.getElementById('sessStreakLabel');
+
+    if (elOpens) elOpens.textContent = totalOpens || '0';
+    if (elAvg) elAvg.textContent = avgAdded || '0';
+    if (elStreak) elStreak.textContent = streak || '0';
+    if (elStreakLabel && streak > 0) elStreakLabel.textContent = streak === 1 ? 'Inizia oggi!' : `${streak} giorni di fila 🔥`;
+  } catch(e){}
+}
+renderSessionsWidget();
 
 // ── Notification panel ────────────────────────────────────────
 function clearNotifDot(){

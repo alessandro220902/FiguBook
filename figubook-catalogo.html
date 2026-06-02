@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FiguBook — Catalogo album</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg: #f4efe6;
+    --bg-elev: #fbf8f1;
+    --ink: #14110d;
+    --ink-2: #3a342a;
+    --muted: #8a8275;
+    --line: #e3dccd;
+    --accent: #c8ff3d;
+    --accent-ink: #14110d;
+    --warn: #ff5b2e;
+    --gold: #f5b800;
+    --good: #1f8a5b;
+
+    --f-display: 'Bricolage Grotesque', ui-sans-serif, system-ui;
+    --f-body: 'Geist', ui-sans-serif, system-ui;
+    --f-mono: 'Geist Mono', ui-monospace, Menlo, monospace;
+    --radius: 14px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--f-body); min-height: 100vh; }
+
+  /* ── NAV ─── */
+  .nav{position:sticky;top:0;z-index:100;background:rgba(244,239,230,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+  .nav-inner{max-width:1480px;margin:0 auto;padding:0 28px;height:56px;display:flex;align-items:center;gap:20px;}
+  .brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:800;font-size:15px;font-family:var(--f-display);}
+  .brand-mark{width:28px;height:28px;background:var(--ink);color:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;}
+  .nav-tabs{display:flex;gap:2px;margin-left:auto;}
+  .nav-tab{display:inline-flex;align-items:center;padding:6px 14px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;color:var(--ink-2);transition:background .15s,color .15s;}
+  .nav-tab:hover{background:rgba(0,0,0,.06);}
+  .nav-tab.active{background:var(--ink);color:var(--accent);}
+
+  /* ── PAGE ─── */
+  main{max-width:1000px;margin:0 auto;padding:32px 28px 80px;}
+  h1{font-family:var(--f-display);font-size:32px;font-weight:800;line-height:1.1;color:var(--ink);}
+  .page-sub{font-size:14px;color:var(--muted);margin-top:6px;margin-bottom:28px;}
+
+  /* ── FILTER BAR ─── */
+  .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+  .filter-btn{
+    font-size:13px;font-weight:500;padding:7px 16px;border-radius:20px;border:1px solid var(--line);
+    background:var(--bg-elev);color:var(--ink-2);cursor:pointer;transition:all .15s;font-family:var(--f-body);
+  }
+  .filter-btn:hover{border-color:var(--ink-2);}
+  .filter-btn.active{background:var(--ink);color:var(--accent);border-color:var(--ink);}
+
+  /* ── CATALOG GRID ─── */
+  .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+
+  /* ── CATALOG CARD ─── */
+  .cat-card{
+    background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;display:flex;flex-direction:column;
+    transition:transform .15s,box-shadow .15s;
+  }
+  .cat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.09);}
+  .cat-hero{
+    height:100px;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,var(--c1,#2a6fdb),var(--c2,#0a3a8b));
+    position:relative;
+  }
+  .cat-cover-title{font-family:var(--f-display);font-size:22px;font-weight:900;color:#fff;text-align:center;line-height:1.1;}
+  .cat-cover-year{font-size:13px;color:rgba(255,255,255,.75);margin-top:4px;text-align:center;}
+  .cat-body{padding:16px 18px;flex:1;display:flex;flex-direction:column;gap:10px;}
+  .cat-name{font-size:15px;font-weight:700;color:var(--ink);}
+  .cat-meta{display:flex;gap:8px;flex-wrap:wrap;}
+  .cat-chip{
+    font-size:11px;font-weight:600;font-family:var(--f-mono);
+    padding:3px 9px;border-radius:20px;
+    background:rgba(0,0,0,.06);color:var(--ink-2);
+  }
+  .cat-chip.publisher{background:rgba(200,255,61,.18);color:var(--ink);}
+  .cat-chip.year{background:rgba(0,0,0,.06);}
+  .cat-chip.new-badge{background:rgba(14,165,233,.15);color:#0369a1;}
+  .cat-stats{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;}
+  .cat-prog-bar{height:4px;border-radius:99px;background:var(--line);flex:1;overflow:hidden;}
+  .cat-prog-fill{height:100%;border-radius:99px;background:var(--good);transition:width .3s;}
+  .cat-actions{display:flex;gap:8px;margin-top:auto;}
+  .btn-add{
+    flex:1;padding:9px 14px;border-radius:10px;font-size:13px;font-weight:600;
+    background:var(--ink);color:var(--accent);border:none;cursor:pointer;
+    font-family:var(--f-body);transition:opacity .15s;
+  }
+  .btn-add:hover{opacity:.85;}
+  .btn-add.added{background:var(--good);color:#fff;}
+  .btn-add.added:hover{opacity:.85;}
+  .btn-open{
+    padding:9px 14px;border-radius:10px;font-size:13px;font-weight:600;
+    background:transparent;color:var(--ink-2);border:1px solid var(--line);cursor:pointer;
+    font-family:var(--f-body);transition:background .15s;text-decoration:none;
+    display:flex;align-items:center;gap:4px;
+  }
+  .btn-open:hover{background:rgba(0,0,0,.05);}
+
+  /* ── EMPTY STATE ─── */
+  .cat-empty{padding:48px;text-align:center;color:var(--muted);font-size:14px;grid-column:1/-1;}
+
+  /* ── FOOTER ─── */
+  .site-footer{max-width:1000px;margin:0 auto;padding:16px 28px 28px;border-top:1px solid var(--line);font-family:var(--f-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;display:flex;flex-direction:column;align-items:center;gap:5px;}
+  .site-footer .footer-row{display:flex;gap:18px;align-items:center;flex-wrap:wrap;justify-content:center;}
+  .site-footer .footer-dot{opacity:.4;}
+
+  /* ── TOAST ─── */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--ink);color:var(--accent);font-size:13px;font-weight:600;padding:10px 20px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:9999;white-space:nowrap;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="figubook-dashboard.html"><span class="brand-mark">F</span><span>FiguBook</span></a>
+    <div class="nav-tabs">
+      <a class="nav-tab" href="figubook-dashboard.html">Dashboard</a>
+      <a class="nav-tab active" href="figubook-album.html">Album</a>
+      <a class="nav-tab" href="figubook-scambia.html">Scambia</a>
+      <a class="nav-tab" href="#">Community</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <h1>Catalogo album</h1>
+  <p class="page-sub">Scegli gli album da aggiungere alla tua libreria</p>
+
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" data-f="all">Tutti</button>
+    <button class="filter-btn" data-f="panini">Panini</button>
+    <button class="filter-btn" data-f="topps">Topps</button>
+    <button class="filter-btn" data-f="2526">2025/26</button>
+    <button class="filter-btn" data-f="2425">2024/25</button>
+  </div>
+
+  <div class="cat-grid" id="catGrid"></div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-row">
+    <span>FiguBook Beta v1.0</span>
+    <span class="footer-dot">·</span>
+    <span>Strumento non affiliato con Panini S.p.A.</span>
+    <span class="footer-dot">·</span>
+    <span id="footerYear"></span>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="figubook-core.js"></script>
+<script>
+(function(){ FiguBookCore.requireSession(); })();
+document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+// ── Catalog data ──────────────────────────────────────────────
+const CATALOG = [
+  {
+    id: 'calciatori-25-26',
+    name: 'Calciatori Panini 25/26',
+    coverTitle: 'CALCIATORI',
+    coverYear: '25/26',
+    publisher: 'Panini',
+    year: '2025/26',
+    total: 784,
+    c1: '#1f8a5b', c2: '#0a3a8b',
+    href: 'figubook-calciatori-2526.html',
+    storageKey: 'figubook-calciatori-2526-v1',
+    filters: ['panini','2526'],
+    isNew: false,
+  },
+  {
+    id: 'calciatori-24-25',
+    name: 'Calciatori Panini 24/25',
+    coverTitle: 'CALCIATORI',
+    coverYear: '24/25',
+    publisher: 'Panini',
+    year: '2024/25',
+    total: 886,
+    c1: '#f5b800', c2: '#7a5a00',
+    href: 'figubook-calciatori-2425.html',
+    storageKey: 'figubook-calciatori-2425-v1',
+    filters: ['panini','2425'],
+    isNew: false,
+  },
+  {
+    id: 'calciatori-23-24',
+    name: 'Calciatori Panini 23/24',
+    coverTitle: 'CALCIATORI',
+    coverYear: '23/24',
+    publisher: 'Panini',
+    year: '2023/24',
+    total: 682,
+    c1: '#5a5a5a', c2: '#2a2a2a',
+    href: 'figubook-calciatori-2324.html',
+    storageKey: 'figubook-calciatori-2324-v1',
+    filters: ['panini'],
+    isNew: false,
+  },
+  {
+    id: 'calciatori-22-23',
+    name: 'Calciatori Panini 22/23',
+    coverTitle: 'CALCIATORI',
+    coverYear: '22/23',
+    publisher: 'Panini',
+    year: '2022/23',
+    total: 650,
+    c1: '#c8851f', c2: '#7a3a00',
+    href: 'figubook-calciatori-2223.html',
+    storageKey: 'figubook-calciatori-2223-v1',
+    filters: ['panini'],
+    isNew: false,
+  },
+  {
+    id: 'adrenalyn-25-26',
+    name: 'Adrenalyn XL 25/26',
+    coverTitle: 'ADRENALYN',
+    coverYear: 'XL 25/26',
+    publisher: 'Panini',
+    year: '2025/26',
+    total: 728,
+    c1: '#7a5ae0', c2: '#0a3a8b',
+    href: 'figubook-adrenalyn-2526.html',
+    storageKey: 'figubook-adrenalyn-2526-v1',
+    filters: ['panini','2526'],
+    isNew: true,
+  },
+  {
+    id: 'match-attax-ucl',
+    name: 'Match Attax UCL 25/26',
+    coverTitle: 'MATCH ATTAX',
+    coverYear: 'UCL',
+    publisher: 'Topps',
+    year: '2025/26',
+    total: 584,
+    c1: '#0a3a8b', c2: '#1a1a1a',
+    href: 'figubook-matchattax-2526.html',
+    storageKey: 'figubook-matchattax-ucl-2526-v1',
+    filters: ['topps','2526'],
+    isNew: true,
+  },
+  {
+    id: 'mondiali-2026',
+    name: 'FIFA World Cup 2026',
+    coverTitle: 'FIFA WC',
+    coverYear: '2026',
+    publisher: 'Panini',
+    year: '2025/26',
+    total: 720,
+    c1: '#0a3a8b', c2: '#a01d2e',
+    href: 'figubook-fwc2026.html',
+    storageKey: 'figubook-fwc2026-v1',
+    filters: ['panini','2526'],
+    isNew: true,
+  },
+  {
+    id: 'calb-25-26',
+    name: 'Serie B Panini 25/26',
+    coverTitle: 'SERIE B',
+    coverYear: '25/26',
+    publisher: 'Panini',
+    year: '2025/26',
+    total: 440,
+    c1: '#1f8a5b', c2: '#14110d',
+    href: 'figubook-serieb-2526.html',
+    storageKey: 'figubook-serieb-2526-v1',
+    filters: ['panini','2526'],
+    isNew: true,
+  },
+];
+
+// ── localStorage helpers ──────────────────────────────────────
+function getMyAlbums(){
+  try{ return JSON.parse(localStorage.getItem('figubook-my-albums-v1') || '[]') || []; }catch(e){ return []; }
+}
+function getRemovedAlbums(){
+  try{ return JSON.parse(localStorage.getItem('figubook-removed-albums-v1') || '[]') || []; }catch(e){ return []; }
+}
+function setMyAlbums(arr){ try{ localStorage.setItem('figubook-my-albums-v1', JSON.stringify(arr)); }catch(e){} }
+function setRemovedAlbums(arr){ try{ localStorage.setItem('figubook-removed-albums-v1', JSON.stringify(arr)); }catch(e){} }
+
+function isAdded(id){
+  const my = getMyAlbums();
+  const removed = getRemovedAlbums();
+  return my.includes(id) && !removed.includes(id);
+}
+
+function getHave(storageKey){
+  try{
+    const state = JSON.parse(localStorage.getItem(storageKey) || 'null');
+    if (!state) return 0;
+    return Object.values(state).reduce((s,v) => s+(v>0?1:0), 0);
+  }catch(e){ return 0; }
+}
+
+function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]); }
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+// ── Render catalog ────────────────────────────────────────────
+let activeFilter = 'all';
+
+function renderCatalog(){
+  const grid = document.getElementById('catGrid');
+  grid.innerHTML = '';
+
+  const filtered = CATALOG.filter(a => {
+    if (activeFilter === 'all') return true;
+    return a.filters.includes(activeFilter);
+  });
+
+  if (!filtered.length){
+    grid.innerHTML = '<div class="cat-empty">Nessun album trovato per questo filtro.</div>';
+    return;
+  }
+
+  filtered.forEach(a => {
+    const added = isAdded(a.id);
+    const have = added ? getHave(a.storageKey) : 0;
+    const pct = a.total > 0 ? Math.round(have / a.total * 100) : 0;
+
+    const card = document.createElement('div');
+    card.className = 'cat-card';
+    card.innerHTML = `
+      <div class="cat-hero" style="--c1:${escapeHtml(a.c1)};--c2:${escapeHtml(a.c2)}">
+        <div>
+          <div class="cat-cover-title">${escapeHtml(a.coverTitle)}</div>
+          <div class="cat-cover-year">${escapeHtml(a.coverYear)}</div>
+        </div>
+      </div>
+      <div class="cat-body">
+        <div class="cat-name">${escapeHtml(a.name)}</div>
+        <div class="cat-meta">
+          <span class="cat-chip publisher">${escapeHtml(a.publisher)}</span>
+          <span class="cat-chip year">${escapeHtml(a.year)}</span>
+          <span class="cat-chip">${a.total} figurine</span>
+          ${a.isNew ? '<span class="cat-chip new-badge">Nuovo</span>' : ''}
+        </div>
+        ${added ? `
+          <div class="cat-stats">
+            <span>${have} / ${a.total} · ${pct}%</span>
+            <div class="cat-prog-bar"><div class="cat-prog-fill" style="width:${pct}%"></div></div>
+          </div>
+        ` : ''}
+        <div class="cat-actions">
+          <button class="btn-add ${added?'added':''}" data-id="${escapeHtml(a.id)}">
+            ${added ? '✓ Aggiunto' : '+ Aggiungi album'}
+          </button>
+          ${a.href ? `<a class="btn-open" href="${escapeHtml(a.href)}">Apri →</a>` : ''}
+        </div>
+      </div>
+    `;
+
+    // Add / remove button
+    card.querySelector('.btn-add').addEventListener('click', function(){
+      const id = this.dataset.id;
+      const my = getMyAlbums();
+      const removed = getRemovedAlbums();
+      const currently = my.includes(id) && !removed.includes(id);
+      if (currently){
+        // Remove: add to removed list
+        if (!removed.includes(id)) removed.push(id);
+        setRemovedAlbums(removed);
+        showToast('Album rimosso dalla libreria');
+      } else {
+        // Add: ensure in my, remove from removed
+        if (!my.includes(id)) my.push(id);
+        const newRemoved = removed.filter(x => x !== id);
+        setMyAlbums(my);
+        setRemovedAlbums(newRemoved);
+        showToast('Album aggiunto alla libreria! 🎉');
+      }
+      renderCatalog();
+    });
+
+    grid.appendChild(card);
+  });
+}
+
+// Filter buttons
+document.getElementById('filterBar').addEventListener('click', function(e){
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  activeFilter = btn.dataset.f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+  renderCatalog();
+});
+
+renderCatalog();
+</script>
+</body>
+</html>

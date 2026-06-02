@@ -161,6 +161,8 @@
   .chip{padding:7px 13px;border-radius:99px;background:var(--bg-elev);border:1px solid var(--line);font-size:13px;font-weight:500;color:var(--ink-2);cursor:pointer;white-space:nowrap}
   .chip.active{background:var(--ink);color:var(--bg-elev);border-color:var(--ink)}
   .chip:hover:not(.active){border-color:var(--ink)}
+  .chip .ct{font-family:var(--f-mono);font-size:11px;color:var(--muted);padding:1px 6px;border-radius:99px;background:var(--bg);border:1px solid var(--line);margin-left:2px}
+  .chip.active .ct{background:rgba(255,255,255,.15);color:var(--accent);border-color:transparent}
   .sort{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:99px;background:var(--bg-elev);border:1px solid var(--line);font-size:12.5px;color:var(--ink-2);cursor:pointer}
   .sort:hover{border-color:var(--ink)}
 
@@ -317,8 +319,105 @@
   }
   .toast.show{opacity:1;transform:translateY(0)}
 
-  /* Disclaimer */
-  .disclaimer{max-width:1480px;margin:30px auto 80px;padding:20px 28px 0;font-family:var(--f-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;line-height:1.6;border-top:1px solid var(--line)}
+  /* Disclaimer — centered, 2 lines max, smaller */
+  .disclaimer{
+    max-width:640px;margin:30px auto 80px;padding:20px 28px 0;
+    font-family:var(--f-mono);font-size:11px;color:var(--muted);
+    letter-spacing:0.06em;line-height:1.7;
+    border-top:1px solid var(--line);text-align:center;
+  }
+
+  /* ── Balance badges fix ─────────────────────────────────────── */
+  .balance-badge.balanced{background:color-mix(in srgb,#22c55e 14%,transparent);color:#16a34a;border:1px solid color-mix(in srgb,#22c55e 35%,transparent)}
+  .balance-badge.skewed{background:color-mix(in srgb,#ef4444 12%,transparent);color:#dc2626;border:1px solid color-mix(in srgb,#ef4444 35%,transparent)}
+
+  /* ── Friend card highlight ──────────────────────────────────── */
+  .card.friend-card{
+    border-left:3px solid var(--accent);
+    background:color-mix(in srgb, var(--accent) 4%, var(--bg-elev));
+  }
+
+  /* ── Demo badge on card ─────────────────────────────────────── */
+  .demo-badge-card{
+    position:absolute;bottom:10px;right:12px;
+    font-family:var(--f-mono);font-size:9px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.08em;
+    color:var(--muted);opacity:0.6;pointer-events:none;
+    user-select:none;
+  }
+
+  /* ── User status indicator ──────────────────────────────────── */
+  .user-status{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:11.5px;color:var(--muted);margin-top:1px;
+  }
+  .user-status .sdot{
+    width:7px;height:7px;border-radius:99px;flex-shrink:0;
+  }
+  .user-status .sdot.online{background:#22c55e;box-shadow:0 0 0 2px color-mix(in srgb,#22c55e 25%,transparent)}
+  .user-status .sdot.recent{background:#9ca3af}
+  .user-status .sdot.away{background:#6b7280}
+
+  /* ── Rep detail line ────────────────────────────────────────── */
+  .rep-detail{
+    font-family:var(--f-mono);font-size:10px;color:var(--muted);
+    margin-top:1px;letter-spacing:0.04em;
+  }
+
+  /* ── Album chip count highlight ─────────────────────────────── */
+  .album-chip .a-meta{font-size:12px;color:var(--ink-2);opacity:0.9}
+  .album-chip.active .a-meta{color:rgba(255,255,255,.9);opacity:1}
+
+  /* ── Modal ──────────────────────────────────────────────────── */
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,.55);
+    backdrop-filter:blur(4px);z-index:300;
+    opacity:0;pointer-events:none;transition:opacity .2s ease;
+  }
+  .modal-backdrop.open{opacity:1;pointer-events:auto}
+  .modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-48%) scale(.97);
+    width:min(560px, calc(100vw - 32px));
+    background:var(--bg-elev);border:1px solid var(--line);
+    border-radius:var(--radius-lg);box-shadow:0 32px 64px -24px rgba(0,0,0,.5);
+    z-index:310;padding:28px;
+    opacity:0;pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+    max-height:90vh;overflow-y:auto;
+  }
+  .modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+  .modal-head h3{font-family:var(--f-display);font-weight:700;font-size:22px;margin:0;letter-spacing:-0.01em}
+  .modal-close{width:34px;height:34px;border-radius:99px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink);cursor:pointer;flex-shrink:0}
+  .modal-close:hover{border-color:var(--ink)}
+  .form-field{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+  .form-field label{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted)}
+  .form-field select,.form-field input,.form-field textarea{
+    width:100%;padding:11px 14px;border-radius:10px;
+    background:var(--bg);border:1px solid var(--line);
+    font-size:14px;font-family:var(--f-body);color:var(--ink);
+  }
+  .form-field select:focus,.form-field input:focus,.form-field textarea:focus{outline:none;border-color:var(--ink)}
+  .form-field textarea{resize:vertical;min-height:80px}
+  .modal-actions{display:flex;gap:8px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+  .btn-primary{flex:1;padding:12px;border-radius:99px;background:var(--accent);color:var(--accent-ink);border:0;font-weight:700;font-size:14px;cursor:pointer}
+  .btn-primary:hover{filter:brightness(.95)}
+  .btn-secondary{padding:12px 18px;border-radius:99px;background:var(--bg);color:var(--ink);border:1px solid var(--line);font-weight:600;font-size:14px;cursor:pointer}
+  .btn-secondary:hover{border-color:var(--ink)}
+
+  /* ── Profile modal ──────────────────────────────────────────── */
+  .profile-modal-av{
+    width:72px;height:72px;border-radius:99px;
+    display:grid;place-items:center;color:#fff;
+    font-family:var(--f-display);font-weight:700;font-size:28px;
+    background:linear-gradient(135deg, var(--pav1,#2a6fdb), var(--pav2,#7a5ae0));
+    box-shadow:inset 0 0 0 3px var(--bg-elev), 0 0 0 2px var(--line);
+    margin-bottom:14px;
+  }
+  .profile-stats-row{display:flex;gap:20px;margin:14px 0;padding:14px;background:var(--bg);border-radius:12px;border:1px solid var(--line)}
+  .profile-stat{flex:1;text-align:center}
+  .profile-stat .pval{font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:-0.02em;display:block}
+  .profile-stat .plbl{font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);display:block;margin-top:2px}
 
   /* Variants */
   body[data-variant="stadio"]{
@@ -433,9 +532,15 @@
     <div class="crumb"><a href="figubook-dashboard.html">Dashboard</a><span class="sep">/</span><span style="color:var(--ink)">Scambia</span></div>
     <h1>Scambia</h1>
     <div class="sub">Le tue proposte, in arrivo e in uscita. Le doppie non si sprecano.</div>
+    <div style="margin-top:14px">
+      <button class="btn-new" id="newProposeTop">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Nuova proposta
+      </button>
+    </div>
   </div>
   <div class="strip-stats">
-    <div class="stat"><span class="big"><span class="pulse-dot"></span>0</span><span class="lbl">Vicini in zona</span></div>
+    <div class="stat"><span class="big" id="statVicini"><span class="pulse-dot" id="pulseDot" style="display:none"></span><span id="viciniCount">0</span></span><span class="lbl">Vicini in zona</span></div>
     <div class="stat"><span class="big">0</span><span class="lbl">Match pronti</span></div>
     <div class="stat"><span class="big">0</span><span class="lbl">Scambi completati</span></div>
   </div>
@@ -463,9 +568,9 @@
 
 <div class="filter-row">
   <div class="chips" id="chips">
-    <button class="chip active" data-filter="all">Tutti</button>
-    <button class="chip" data-filter="nearby">Solo vicini (&lt; 1 km)</button>
-    <button class="chip" data-filter="friends">Solo amici</button>
+    <button class="chip active" data-filter="all">Tutti <span class="ct" id="ctAll"></span></button>
+    <button class="chip" data-filter="nearby">Vicini a me <span class="ct" id="ctNearby"></span></button>
+    <button class="chip" data-filter="friends">Solo amici <span class="ct" id="ctFriends"></span></button>
   </div>
   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
     <button class="sort">
@@ -483,6 +588,49 @@
 
 <div class="disclaimer">
   Lo scambio fra utenti avviene di persona. FiguBook non interviene nel trasferimento dei beni. Verifica sempre l'identità del tuo interlocutore prima di incontrarvi.
+</div>
+
+<!-- ── NUOVA PROPOSTA MODAL ─────────────────────────────────── -->
+<div class="modal-backdrop" id="proposalBackdrop"></div>
+<div class="modal" id="proposalModal" role="dialog" aria-modal="true" aria-labelledby="proposalTitle">
+  <div class="modal-head">
+    <h3 id="proposalTitle">Nuova proposta</h3>
+    <button class="modal-close" id="proposalClose" aria-label="Chiudi">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="form-field">
+    <label>Album</label>
+    <select id="pAlbum"></select>
+  </div>
+  <div class="form-field">
+    <label>Figurine che offri (le tue doppie)</label>
+    <textarea id="pOffer" placeholder="es. 220, 345, 401 — separale con virgola"></textarea>
+  </div>
+  <div class="form-field">
+    <label>Figurine che cerchi</label>
+    <textarea id="pWant" placeholder="es. 178, PAR-09, STY3"></textarea>
+  </div>
+  <div class="form-field">
+    <label>Utente destinatario</label>
+    <input id="pUser" type="text" placeholder="es. @giadaa" />
+  </div>
+  <div class="modal-actions">
+    <button class="btn-secondary" id="proposalCancel">Annulla</button>
+    <button class="btn-primary" id="proposalSend">Invia proposta</button>
+  </div>
+</div>
+
+<!-- ── PROFILO UTENTE MODAL ─────────────────────────────────── -->
+<div class="modal-backdrop" id="profileBackdrop"></div>
+<div class="modal" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
+  <div class="modal-head">
+    <h3 id="profileModalTitle">Profilo</h3>
+    <button class="modal-close" id="profileClose" aria-label="Chiudi">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div id="profileModalBody"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -503,8 +651,8 @@ const _ALBUMS_MASTER = [
   { id:'mondiali-qatar-22', name:'Qatar 2022',          c1:'#a01d2e', c2:'#5a1a0a', total:670, storageKey:null },
   { id:'mondiali-2026',     name:'FIFA World Cup 2026', c1:'#0a3a8b', c2:'#a01d2e', total:720, storageKey:'figubook-fwc2026-v1' },
   { id:'calb-25-26',        name:'Serie B 25-26',       c1:'#1f8a5b', c2:'#14110d', total:440, storageKey:'figubook-serieb-2526-v1' },
-  { id:'adrenalyn-25-26',   name:'Adrenalyn XL 25-26',  c1:'#7a5ae0', c2:'#0a3a8b', total:450, storageKey:null },
-  { id:'match-attax-ucl',   name:'Match Attax UCL',     c1:'#0a4a8b', c2:'#14110d', total:300, storageKey:null },
+  { id:'adrenalyn-25-26',   name:'Adrenalyn XL 25-26',  c1:'#7a5ae0', c2:'#0a3a8b', total:728, storageKey:'figubook-adrenalyn-2526-v1' },
+  { id:'match-attax-ucl',   name:'Match Attax UCL',     c1:'#0a4a8b', c2:'#14110d', total:584, storageKey:'figubook-matchattax-ucl-2526-v1' },
 ];
 // Catalog-ID → album-ID map (matches Album.html CATALOG_EXISTING_MAP)
 const _SCAMBIA_CATALOG_MAP = {
@@ -635,34 +783,86 @@ function renderStars(rep){
   return html;
 }
 
+// ─── ALBUM HREF MAP ─────────────────────────────────────────
+const ALBUM_PAGE = {
+  'calciatori-25-26':  'figubook-calciatori-2526.html',
+  'calciatori-24-25':  'figubook-calciatori-2425.html',
+  'calciatori-23-24':  'figubook-calciatori-2324.html',
+  'calciatori-22-23':  'figubook-calciatori-2223.html',
+  'mondiali-2026':     'figubook-fwc2026.html',
+  'calb-25-26':        'figubook-serieb-2526.html',
+  'adrenalyn-25-26':   'figubook-adrenalyn-2526.html',
+  'match-attax-ucl':   'figubook-matchattax-2526.html',
+};
+
+// ─── DEMO USER STATUS (simulated) ───────────────────────────
+const USER_STATUS = {
+  giada:   { label:'Online ora',      cls:'online' },
+  marco:   { label:'Attivo 2h fa',    cls:'recent' },
+  fede:    { label:'Online ora',      cls:'online' },
+  sara:    { label:'Attivo 3h fa',    cls:'recent' },
+  stefano: { label:'Attivo 1 giorno fa', cls:'away' },
+  anna:    { label:'Attivo 5h fa',    cls:'recent' },
+  luca:    { label:'Attivo 2 giorni fa', cls:'away' },
+  giulia:  { label:'Online ora',      cls:'online' },
+  tommaso: { label:'Attivo 4h fa',    cls:'recent' },
+};
+
+// ─── UTIL: format distance lowercase ────────────────────────
+function fmtDist(d){ return d.replace(/ M$/,' m').replace(/ KM$/,' km').replace(/ Km$/,' km'); }
+
+// ─── UTIL: compute filter counts for current tab/album ──────
+function computeFilterCounts(){
+  const base = PROPOSALS
+    .filter(p => p.tab === activeTab)
+    .filter(p => activeAlbum === 'all' || p.album === activeAlbum);
+  const toMeters = d => { const [v,u='m'] = d.split(' '); return u.toLowerCase().startsWith('k') ? parseFloat(v)*1000 : parseFloat(v); };
+  return {
+    all:     base.length,
+    nearby:  base.filter(p => toMeters(p.distance) < 1000).length,
+    friends: base.filter(p => USERS[p.user] && USERS[p.user].friend).length,
+  };
+}
+
+// ─── UPDATE FILTER CHIP COUNTS ──────────────────────────────
+function updateFilterCounts(){
+  const c = computeFilterCounts();
+  const ct = (id,n) => { const el=document.getElementById(id); if(el) el.textContent=n; };
+  ct('ctAll', c.all); ct('ctNearby', c.nearby); ct('ctFriends', c.friends);
+}
+
 // ─── CARDS ─────────────────────────────────────────────────
 function renderCards(){
   const container = document.getElementById('cards');
   container.innerHTML = '';
 
+  const toMeters = d => { const [v,u='m'] = d.split(' '); return u.toLowerCase().startsWith('k') ? parseFloat(v)*1000 : parseFloat(v); };
   const list = PROPOSALS
     .filter(p => p.tab === activeTab)
     .filter(p => activeAlbum === 'all' || p.album === activeAlbum)
     .filter(p => {
       if (activeFilter === 'all') return true;
-      if (activeFilter === 'nearby') {
-        // Parse distance to meters
-        const parts = p.distance.split(' ');
-        const v = parseFloat(parts[0]);
-        const unit = parts[1] || 'm';
-        const meters = unit.startsWith('km') ? v * 1000 : v;
-        return meters < 1000;
-      }
+      if (activeFilter === 'nearby') return toMeters(p.distance) < 1000;
       if (activeFilter === 'friends') return USERS[p.user] && USERS[p.user].friend;
       return true;
     });
 
+  updateFilterCounts();
+
+  // Tab-specific empty states
   if (list.length === 0){
+    const emptyMsgs = {
+      match:    { ico:'🔍', h:'Nessun match trovato',           sub:'Non ci sono match per il filtro selezionato.' },
+      received: { ico:'📬', h:'Nessuna proposta ricevuta ancora', sub:'Quando qualcuno ti manderà una proposta, apparirà qui.' },
+      sent:     { ico:'📤', h:'Non hai ancora inviato proposte',  sub:'Usa "+ Nuova proposta" per iniziare uno scambio.' },
+      confirmed:{ ico:'✅', h:'Nessuno scambio confermato ancora', sub:'Gli scambi confermati e gli incontri programmati appariranno qui.' },
+    };
+    const m = emptyMsgs[activeTab] || emptyMsgs.match;
     container.innerHTML = `
       <div class="empty-state">
-        <div class="ico">∅</div>
-        <h3>Niente da mostrare qui</h3>
-        <p>Cambia tab, album o filtro per vedere altre proposte.</p>
+        <div class="ico">${m.ico}</div>
+        <h3>${escapeHtml(m.h)}</h3>
+        <p>${escapeHtml(m.sub)}</p>
       </div>`;
     return;
   }
@@ -671,48 +871,52 @@ function renderCards(){
     const user = USERS[p.user];
     const album = ALBUMS_REF.find(a => a.id === p.album);
     const isConfirmed = p.tab === 'confirmed';
-    const isMatch = p.tab === 'match';
+    const status = USER_STATUS[p.user] || { label:'Attivo di recente', cls:'recent' };
+    const posRate = Math.round((user.rep / 5) * 100);
 
-    // "Hai bisogno di X sue · Ha bisogno di X tue"
-    // For 'match' tab: 'tu hai' = doppie/things he needs ; 'lui ha' = mancanti for me
-    // give = ciò che tu offri ; get = ciò che ricevi
-    const youNeedCount = p.get.length;     // sue figurine che ti mancano
-    const heNeedsCount = p.give.length;    // tue doppie che gli mancano
+    // give = tu offri → "Tu dai X"; get = tu ricevi → "Tu ricevi X"
+    const daiCount = p.give.length;
+    const riceviCount = p.get.length;
 
     const card = document.createElement('a');
-    card.className = 'card' + (isConfirmed ? ' confirmed' : '');
-    card.href = `figubook-scambia-dettaglio.html?id=${encodeURIComponent(p.id)}`;
+    card.className = 'card' + (isConfirmed ? ' confirmed' : '') + (user.friend ? ' friend-card' : '');
+    card.href = `figubook-scambia-dettaglio.html?id=${encodeURIComponent(p.user)}`;
+
+    const albumPageHref = ALBUM_PAGE[p.album] || '#';
 
     card.innerHTML = `
-      <div class="av" style="--av1:${user.av1};--av2:${user.av2}">
+      <div class="av" style="--av1:${user.av1};--av2:${user.av2}" data-uid="${escapeHtml(p.user)}" data-clicktype="avatar">
         ${escapeHtml(user.initial)}
       </div>
       <div class="person">
         <div class="row1">
-          <span class="name">${escapeHtml(user.name)}</span>
+          <span class="name" data-uid="${escapeHtml(p.user)}" data-clicktype="name" style="cursor:pointer">${escapeHtml(user.name)}</span>
           <span class="handle">${escapeHtml(user.handle)}</span>
           ${user.friend ? '<span class="friend-pill">★ Amico</span>' : ''}
           ${renderStars(user.rep)}
         </div>
-        <div class="meta">
+        <div class="rep-detail">${user.totalTrades} scambi · ${posRate}% positivi</div>
+        <div class="user-status">
+          <span class="sdot ${status.cls}"></span>
+          <span>${escapeHtml(status.label)}</span>
+        </div>
+        <div class="meta" style="margin-top:4px">
           <span class="pin">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 14.5 9 2.5 2.5 0 0 1 12 11.5z"/></svg>
-            ${escapeHtml(p.distance)}
+            ${escapeHtml(fmtDist(p.distance))}
           </span>
-          <span class="dot"></span>
-          <span>${user.totalTrades} scambi totali</span>
           ${p.when ? `<span class="dot"></span><span>${escapeHtml(p.when)}</span>` : ''}
         </div>
         ${album ? `
-          <span class="album-ref">
+          <a class="album-ref" href="${escapeHtml(albumPageHref)}" data-clicktype="albumref" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-top:4px">
             <span class="swatch" style="background:linear-gradient(135deg, ${album.c1}, ${album.c2})"></span>
             ${escapeHtml(album.name)}
-          </span>
+          </a>
         ` : ''}
         <div class="deal-line">
-          <span>Hai bisogno di <b>${youNeedCount} sue</b></span>
+          <span>Tu dai <b>${daiCount}</b></span>
           <span class="sep-dot"></span>
-          <span>Ha bisogno di <b>${heNeedsCount} tue</b></span>
+          <span>Tu ricevi <b>${riceviCount}</b></span>
         </div>
         ${isConfirmed ? `
           <div class="meet-info">
@@ -725,11 +929,21 @@ function renderCards(){
         ` : ''}
       </div>
       <div class="card-actions">
-        ${!isConfirmed ? `<span class="balance-badge ${p.balance === 'pari' ? 'balanced' : 'skewed'}">${p.balance === 'pari' ? '✓ Bilanciato' : '⚖ Sbilanciato'}</span>` : ''}
+        ${!isConfirmed ? `<span class="balance-badge ${p.balance === 'pari' ? 'balanced' : 'skewed'}">${p.balance === 'pari' ? '✓ Bilanciato' : '⚠ Sbilanciato'}</span>` : ''}
         <span class="status-pill ${p.status}">${escapeHtml(p.statusLabel)}</span>
         <span class="vedi">Vedi <span style="font-family:var(--f-mono)">→</span></span>
       </div>
+      <span class="demo-badge-card">DEMO</span>
     `;
+
+    // Album ref chip: stop propagation so card link doesn't fire
+    const aref = card.querySelector('.album-ref');
+    if (aref) aref.addEventListener('click', e => e.stopPropagation());
+
+    // Avatar / name → profile modal
+    card.querySelectorAll('[data-clicktype="avatar"],[data-clicktype="name"]').forEach(el => {
+      el.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); openProfileModal(el.dataset.uid); });
+    });
 
     container.appendChild(card);
   });
@@ -754,8 +968,110 @@ document.querySelectorAll('#chips .chip').forEach(chip => {
   });
 });
 
-document.getElementById('newPropose').addEventListener('click', () => {
-  showToast('Flow "Nuova proposta" in arrivo nella prossima versione');
+// ─── "VICINI IN ZONA" pulse dot ────────────────────────────
+(function updateVicini(){
+  const n = 0; // no real nearby users yet
+  const dot = document.getElementById('pulseDot');
+  const cnt = document.getElementById('viciniCount');
+  if(cnt) cnt.textContent = n;
+  if(dot) dot.style.display = n > 0 ? '' : 'none';
+})();
+
+// ─── NUOVA PROPOSTA MODAL ──────────────────────────────────
+function openProposalModal(){
+  // Populate album dropdown
+  const sel = document.getElementById('pAlbum');
+  if(sel){
+    sel.innerHTML = '<option value="">Scegli album…</option>';
+    ALBUMS_REF.forEach(a => {
+      const opt = document.createElement('option');
+      opt.value = a.id; opt.textContent = a.name;
+      sel.appendChild(opt);
+    });
+  }
+  document.getElementById('proposalBackdrop').classList.add('open');
+  document.getElementById('proposalModal').classList.add('open');
+}
+function closeProposalModal(){
+  document.getElementById('proposalBackdrop').classList.remove('open');
+  document.getElementById('proposalModal').classList.remove('open');
+}
+['newPropose','newProposeTop'].forEach(id => {
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('click', openProposalModal);
+});
+document.getElementById('proposalClose').addEventListener('click', closeProposalModal);
+document.getElementById('proposalCancel').addEventListener('click', closeProposalModal);
+document.getElementById('proposalBackdrop').addEventListener('click', closeProposalModal);
+document.getElementById('proposalSend').addEventListener('click', () => {
+  const albumId = document.getElementById('pAlbum').value;
+  const offer   = document.getElementById('pOffer').value.trim();
+  const want    = document.getElementById('pWant').value.trim();
+  const toUser  = document.getElementById('pUser').value.trim();
+  if(!albumId){ showToast('Scegli un album'); return; }
+  if(!offer)  { showToast('Inserisci le figurine che offri'); return; }
+  if(!want)   { showToast('Inserisci le figurine che cerchi'); return; }
+  // Save to localStorage
+  const key = 'figubook-proposals-v1';
+  let proposals = [];
+  try { proposals = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){}
+  proposals.push({
+    id: 'p' + Date.now(),
+    tab: 'sent',
+    albumId,
+    offer: offer.split(',').map(s=>s.trim()).filter(Boolean),
+    want:  want.split(',').map(s=>s.trim()).filter(Boolean),
+    to: toUser,
+    ts: Date.now(),
+  });
+  try { localStorage.setItem(key, JSON.stringify(proposals)); } catch(e){}
+  closeProposalModal();
+  showToast('✓ Proposta inviata e salvata');
+});
+
+// ─── PROFILE MODAL ─────────────────────────────────────────
+function openProfileModal(uid){
+  const user = USERS[uid];
+  if(!user) return;
+  const posRate = Math.round((user.rep / 5) * 100);
+  const body = document.getElementById('profileModalBody');
+  const albumNames = [...new Set(PROPOSALS.filter(p=>p.user===uid).map(p=>{
+    const a=ALBUMS_REF.find(x=>x.id===p.album); return a?a.name:null;
+  }))].filter(Boolean);
+  body.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding-bottom:18px;border-bottom:1px solid var(--line)">
+      <div class="profile-modal-av" style="--pav1:${user.av1};--pav2:${user.av2}">${escapeHtml(user.initial)}</div>
+      <div style="font-family:var(--f-display);font-weight:700;font-size:22px;letter-spacing:-0.01em">${escapeHtml(user.name)}</div>
+      <div style="font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-top:2px">${escapeHtml(user.handle)}</div>
+      ${user.friend ? '<span class="friend-pill" style="margin-top:6px">★ Amico</span>' : ''}
+      <div style="margin-top:8px">${renderStars(user.rep)}</div>
+      <div class="rep-detail" style="margin-top:4px">${user.totalTrades} scambi · ${posRate}% positivi</div>
+    </div>
+    <div class="profile-stats-row">
+      <div class="profile-stat"><span class="pval">${user.totalTrades}</span><span class="plbl">Scambi</span></div>
+      <div class="profile-stat"><span class="pval">${posRate}%</span><span class="plbl">Positivi</span></div>
+      <div class="profile-stat"><span class="pval">${user.rep.toFixed(1)}</span><span class="plbl">Reputazione</span></div>
+    </div>
+    ${albumNames.length ? `<div style="margin-top:4px;margin-bottom:14px">
+      <div style="font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px">Album in comune</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">${albumNames.map(n=>`<span style="font-size:12px;padding:3px 10px;border-radius:99px;background:var(--bg);border:1px solid var(--line)">${escapeHtml(n)}</span>`).join('')}</div>
+    </div>` : ''}
+    <div class="modal-actions" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
+      <button class="btn-secondary" onclick="this.closest('.modal').classList.remove('open');document.getElementById('profileBackdrop').classList.remove('open');showToast('Segnalazione inviata')">Segnala</button>
+      <button class="btn-primary" onclick="this.closest('.modal').classList.remove('open');document.getElementById('profileBackdrop').classList.remove('open');openProposalModal()">Proponi scambio</button>
+    </div>
+  `;
+  document.getElementById('profileModalTitle').textContent = user.name;
+  document.getElementById('profileBackdrop').classList.add('open');
+  document.getElementById('profileModal').classList.add('open');
+}
+document.getElementById('profileClose').addEventListener('click', () => {
+  document.getElementById('profileBackdrop').classList.remove('open');
+  document.getElementById('profileModal').classList.remove('open');
+});
+document.getElementById('profileBackdrop').addEventListener('click', () => {
+  document.getElementById('profileBackdrop').classList.remove('open');
+  document.getElementById('profileModal').classList.remove('open');
 });
 
 renderAlbumChips();
@@ -767,6 +1083,7 @@ function _refreshScambia(){
   ALBUMS_REF.length = 0;
   fresh.forEach(a => ALBUMS_REF.push(a));
   renderAlbumChips();
+  renderCards();
 }
 FiguBookCore.initAutoSync(_refreshScambia);
 

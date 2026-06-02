@@ -112,8 +112,8 @@
     display:inline-flex;align-items:center;gap:6px;
     white-space:nowrap;
   }
-  .balance-indicator.balanced{background:color-mix(in srgb, var(--good) 14%, transparent);color:var(--good);border:1px solid color-mix(in srgb, var(--good) 35%, transparent)}
-  .balance-indicator.skewed{background:color-mix(in srgb, var(--gold) 18%, transparent);color:#8a6700;border:1px solid color-mix(in srgb, var(--gold) 40%, transparent)}
+  .balance-indicator.balanced{background:color-mix(in srgb,#22c55e 14%,transparent);color:#16a34a;border:1px solid color-mix(in srgb,#22c55e 35%,transparent)}
+  .balance-indicator.skewed{background:color-mix(in srgb,#ef4444 12%,transparent);color:#dc2626;border:1px solid color-mix(in srgb,#ef4444 35%,transparent)}
 
   /* ── DEAL SECTION ──────────────────────────────── */
   .deal-section{
@@ -838,8 +838,11 @@ function renderStickerList(rootId, codes, side){
 }
 
 // ── Load proposal from URL ─────────────────────────────────
+// Supports ?id=giada (user) or ?id=m1 (proposal id, legacy)
 const id = getParam('id') || 'm1';
-const p = PROPOSALS.find(x => x.id === id) || PROPOSALS[0];
+const p = PROPOSALS.find(x => x.user === id)
+       || PROPOSALS.find(x => x.id === id)
+       || PROPOSALS[0];
 const user = USERS[p.user];
 const album = ALBUMS_REF[p.album];
 

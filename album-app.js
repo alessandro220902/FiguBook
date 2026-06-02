@@ -1,6 +1,59 @@
 // FiguBook — Album page app
 // Rendering, state management, persistence, quick-mark interactions, list view.
 
+// ── Official team color palette (Part 1 / Part 4) ──────────────
+// Keyed by exact section name as it appears in SECTIONS data.
+// Used for hero gradient and rail dot/active highlight.
+window.FIGUBOOK_TEAM_COLORS = {
+  // ── Serie A ─────────────────────────────────────────────────
+  'Atalanta':            { c1:'#1C2B6E', c2:'#000000' },
+  'Bologna':             { c1:'#003DA5', c2:'#CC0000' },
+  'Cagliari':            { c1:'#CC0000', c2:'#003DA5' },
+  'Como':                { c1:'#0055A5', c2:'#000000' },
+  'Cremonese':           { c1:'#CC0000', c2:'#CCCCCC' },
+  'Empoli':              { c1:'#0066CC', c2:'#003366' },
+  'Fiorentina':          { c1:'#5B0FA8', c2:'#3D0070' },
+  'Frosinone':           { c1:'#FFCC00', c2:'#003DA5' },
+  'Genoa':               { c1:'#CC0000', c2:'#003DA5' },
+  'Hellas Verona':       { c1:'#003DA5', c2:'#FFCC00' },
+  'Inter':               { c1:'#000000', c2:'#003DA5' },
+  'Juventus':            { c1:'#000000', c2:'#333333' },
+  'Lazio':               { c1:'#87CEEB', c2:'#003DA5' },
+  'Lecce':               { c1:'#FFCC00', c2:'#CC0000' },
+  'Milan':               { c1:'#CC0000', c2:'#000000' },
+  'Monza':               { c1:'#CC0000', c2:'#FFFFFF' },
+  'Napoli':              { c1:'#00AAFF', c2:'#003DA5' },
+  'Parma':               { c1:'#FFCC00', c2:'#003DA5' },
+  'Roma':                { c1:'#CC0000', c2:'#FFCC00' },
+  'Salernitana':         { c1:'#8B0000', c2:'#000000' },
+  'Sampdoria':           { c1:'#003DA5', c2:'#CC0000' },
+  'Sassuolo':            { c1:'#00AA44', c2:'#000000' },
+  'Torino':              { c1:'#8B0000', c2:'#000000' },
+  'Udinese':             { c1:'#000000', c2:'#FFFFFF' },
+  'Venezia':             { c1:'#FF8C00', c2:'#000000' },
+  // ── Serie B extras ──────────────────────────────────────────
+  'Pisa':                { c1:'#003DA5', c2:'#000000' },
+  'Spezia':              { c1:'#000000', c2:'#CC7700' },
+  'Palermo':             { c1:'#CC0000', c2:'#FFCC00' },
+  'Bari':                { c1:'#CC0000', c2:'#FFFFFF' },
+  'Catanzaro':           { c1:'#CC0000', c2:'#FFDD00' },
+  'Cesena':              { c1:'#000000', c2:'#FFFFFF' },
+  'Juve Stabia':         { c1:'#FFDD00', c2:'#000000' },
+  'Mantova':             { c1:'#CC0000', c2:'#000000' },
+  'Modena':              { c1:'#FFDD00', c2:'#003DA5' },
+  'Reggiana':            { c1:'#CC0000', c2:'#CCCCCC' },
+  'Pescara':             { c1:'#FFFFFF', c2:'#003DA5' },
+  'Avellino':            { c1:'#00AA44', c2:'#FFFFFF' },
+  'Carrarese':           { c1:'#0055A5', c2:'#CCCCCC' },
+  'Südtirol':            { c1:'#CC0000', c2:'#FFFFFF' },
+  'Padova':              { c1:'#FFFFFF', c2:'#8B0000' },
+  'Virtus Entella':      { c1:'#003DA5', c2:'#CC0000' },
+};
+// Helper: returns team colors if available, otherwise falls back to sec.c1/c2
+function _teamClr(sec){
+  return window.FIGUBOOK_TEAM_COLORS[sec.name] || { c1: sec.c1, c2: sec.c2 };
+}
+
 (function(){
   const SECTIONS = window.SECTIONS;
   const GROUPS   = window.GROUPS;
@@ -123,10 +176,16 @@
       visibleSections.forEach(sec => {
         const c = getSectionCounts(sec);
         const pct = Math.round(c.have / c.all * 100);
+        const isActive = sec.id === activeSectionId;
+        const tc = _teamClr(sec);  // official colors or fallback
         const row = document.createElement('div');
-        row.className = 'sec-row' + (sec.id === activeSectionId ? ' active' : '');
+        row.className = 'sec-row' + (isActive ? ' active' : '');
+        // Active row: use official team color instead of generic --ink
+        if (isActive) {
+          row.style.cssText = `background:linear-gradient(135deg,${tc.c1},${tc.c2});color:#fff`;
+        }
         row.innerHTML = `
-          <div class="sec-dot" style="--c1:${sec.c1};--c2:${sec.c2}">${initials(sec)}</div>
+          <div class="sec-dot" style="--c1:${tc.c1};--c2:${tc.c2}">${initials(sec)}</div>
           <div>
             <div class="sec-name">${escapeHtml(sec.short || sec.name)}${sec.ia ? '<span class="tag-ia">IA</span>' : ''}</div>
             <div class="sec-bar"><i style="width:${pct}%"></i></div>
@@ -166,8 +225,10 @@
   function renderHero(sec){
     const hero = document.getElementById('secHero');
     hero.setAttribute('data-kind', sec.kind);
-    hero.style.setProperty('--c1', sec.c1);
-    hero.style.setProperty('--c2', sec.c2);
+    // Use official team colors when available, otherwise fall back to sec colors
+    const tc = _teamClr(sec);
+    hero.style.setProperty('--c1', tc.c1);
+    hero.style.setProperty('--c2', tc.c2);
     // ✅ Hero adattivo per sezioni piccole
     hero.classList.toggle('compact', sec.codes.length < 8);
 
@@ -181,15 +242,16 @@
     info.innerHTML = '';
     const first = sec.codes[0], last = sec.codes[sec.codes.length-1];
     const codeRange = (first === last) ? `${first}` : `${first} – ${last}`;
+    // Exclude logo-type codes (kind=logo or codes identified as logos) from count
+    const nonLogoCodes = sec.codes.filter(c => sec.kind !== 'logo');
     info.appendChild(span(`Figurine ${codeRange}`));
-    info.appendChild(span(`${sec.codes.length} figurine`));
+    info.appendChild(span(`${nonLogoCodes.length} figurine`));
     if (sec.city) info.appendChild(span('Città: ' + sec.city));
 
     const c = getSectionCounts(sec);
     const badges = document.getElementById('heroBadges');
     badges.innerHTML = '';
     badges.appendChild(badge(`${c.have} possedute`));
-    if (c.double > 0) badges.appendChild(badge(`${c.double} doppie`));
     badges.appendChild(badge(`${c.missing} mancanti`));
     if (sec.ia) badges.appendChild(badge('Calciatori IA'));
 
@@ -277,7 +339,7 @@
     const name = NAMES[code];
     const showHover = (st === 'have' || st === 'double') && !name;
     div.innerHTML = `
-      <span class="counter-chip">${owned}</span>
+      ${owned > 0 ? `<span class="counter-chip">${owned}</span>` : ''}
       ${extras > 0 ? `<span class="double-chip">×${extras}</span>` : ''}
       <div class="num">${formatCode(code)}</div>
       ${name ? `<div class="player-name">${nameHtml(name)}</div>` : ''}
@@ -310,8 +372,8 @@
     div.innerHTML = `
       <span class="num">${formatCode(code)}</span>
       ${namePart}
-      <span class="counter-chip">${owned}</span>
-      ${extras > 0 ? `<span class="double-chip">×${extras}</span>` : ''}
+      ${owned > 0 ? `<span class="counter-chip">${owned}</span>` : '<span></span>'}
+      ${extras > 0 ? `<span class="double-chip">×${extras}</span>` : '<span></span>'}
       <button class="step minus" aria-label="Rimuovi una copia" data-act="minus">−</button>
       <button class="step plus" aria-label="Aggiungi una copia" data-act="plus">+</button>
     `;

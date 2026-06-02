@@ -1,0 +1,111 @@
+/*
+  FiguBook — Album page visual overrides
+  Applied to all 8 album pages via <link> in <head>.
+  Do NOT add functional/storage logic here — visual only.
+*/
+
+/* ── Part 1 — Smooth hero gradient transition ────────────────── */
+/* @property allows CSS custom properties to be animated */
+@property --c1 {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #2a6fdb;
+}
+@property --c2 {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #0a3a8b;
+}
+
+.sec-hero {
+  transition: --c1 0.3s ease, --c2 0.3s ease;
+}
+
+/* ── Part 3 — Reduce hero section height (−30% vertical padding) */
+.sec-hero {
+  padding: 21px 32px !important;   /* was 30px 32px */
+  min-height: 126px !important;    /* was 180px */
+}
+.sec-hero.compact {
+  padding: 14px 28px !important;   /* was 20px 28px */
+  min-height: 90px !important;     /* was 110px */
+}
+.sec-hero h2 {
+  font-size: 40px !important;      /* was 52px — proportionally smaller */
+  margin: 6px 0 4px !important;
+}
+.sec-hero.compact h2 {
+  font-size: 28px !important;      /* was 36px */
+}
+.sec-hero-right .big {
+  font-size: 36px !important;      /* was 46px */
+}
+.sec-hero.compact .sec-hero-right .big {
+  font-size: 26px !important;
+}
+
+/* ── Part 2 — Counter chip: hide when value 0 ────────────────── */
+/* Missing stickers: no orange "0" badge (handled in JS; this is CSS safety net) */
+.sticker.missing .counter-chip {
+  display: none !important;
+}
+.list-row.missing .counter-chip {
+  display: none !important;
+}
+
+/* ── Part 2 — Double chip: gold, clearly differentiated ─────── */
+.sticker .double-chip {
+  background: #FFD700 !important;
+  color: #14110d !important;
+  font-weight: 800 !important;
+}
+.list-row .double-chip {
+  background: #FFD700 !important;
+  color: #14110d !important;
+  font-weight: 800 !important;
+}
+
+/* ── Part 2 — Counter chip: green (have/double) ─────────────── */
+.sticker .counter-chip {
+  background: var(--good) !important;
+  color: #fff !important;
+}
+/* Existing .sticker.double .counter-chip already green — no override needed */
+
+/* ── Part 2 — Missing cards: dashed border, neutral bg ──────── */
+.sticker.missing {
+  background: rgba(0,0,0,0.04) !important;
+  border: 1.5px dashed var(--line) !important;
+}
+body[data-variant="stadio"] .sticker.missing {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1.5px dashed #2e4a63 !important;
+}
+
+/* ── Part 2 — Quick-strip (red bar) hidden for missing cards ─── */
+body.quick-mode .sticker.missing .quick-strip {
+  display: none !important;
+}
+/* Minus step button: already visibility:hidden for missing via base CSS */
+
+/* ── Part 4 — Active rail row: reset CSS bg (JS sets inline bg) */
+.sec-row.active {
+  background: transparent;        /* JS sets inline gradient per team */
+  color: #fff !important;
+}
+.sec-row.active .sec-name {
+  color: #fff !important;
+}
+.sec-row.active .sec-prog {
+  color: rgba(255,255,255,0.8) !important;
+}
+.sec-row.active .sec-bar {
+  background: rgba(255,255,255,0.25) !important;
+}
+.sec-row.active .sec-bar > i {
+  background: rgba(255,255,255,0.9) !important;
+}
+.sec-row.active .tag-ia {
+  background: rgba(255,255,255,0.2) !important;
+  color: #fff !important;
+}
