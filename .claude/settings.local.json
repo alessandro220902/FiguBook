@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ' *)",
+      "Bash(awk '{print $5, $9}')",
+      "Bash(grep album-data *)"
+    ]
+  }
+}

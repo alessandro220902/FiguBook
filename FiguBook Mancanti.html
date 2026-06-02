@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FiguBook — Tutte le mancanti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#f4efe6; --bg-elev:#fbf8f1;
+    --ink:#14110d; --ink-2:#3a342a; --muted:#8a8275;
+    --line:#e3dccd; --line-strong:#14110d;
+    --accent:#c8ff3d; --accent-ink:#14110d;
+    --warn:#ff5b2e; --gold:#f5b800; --good:#1f8a5b;
+    --f-display:'Bricolage Grotesque', ui-sans-serif, system-ui;
+    --f-body:'Geist', ui-sans-serif, system-ui;
+    --f-mono:'Geist Mono', ui-monospace, Menlo, monospace;
+    --radius:14px; --radius-lg:22px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer}
+
+  /* NAV */
+  .nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb, var(--bg) 88%, transparent);backdrop-filter:blur(14px) saturate(140%);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:1480px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:28px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:-0.02em}
+  .brand-mark{width:32px;height:32px;border-radius:9px;background:var(--ink);color:var(--accent);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:18px;transform:rotate(-6deg)}
+  .nav-tabs{display:flex;gap:4px;flex:1;margin-left:12px}
+  .nav-tab{padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--ink-2);border:1px solid transparent}
+  .nav-tab.active{background:var(--ink);color:var(--bg)}
+  .nav-tab:hover:not(.active){background:rgba(20,17,13,0.06)}
+  .nav-actions{display:flex;align-items:center;gap:10px}
+  .icon-btn{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--bg-elev);display:grid;place-items:center;color:var(--ink);position:relative}
+  .icon-btn:hover{border-color:var(--ink)}
+  .icon-btn .dot{position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:99px;background:var(--warn);box-shadow:0 0 0 2px var(--bg-elev)}
+  .avatar{width:38px;height:38px;border-radius:999px;background:linear-gradient(135deg,#ffce5b,#ff5b2e);display:grid;place-items:center;font-family:var(--f-display);font-weight:700;color:#fff;font-size:14px;box-shadow:inset 0 0 0 2px var(--bg-elev), 0 0 0 1px var(--ink)}
+
+  /* ── Nav dropdowns — hidden by default, shown on .open ── */
+  .nav-dropdown{
+    position:absolute;top:calc(100% + 8px);right:0;min-width:320px;
+    background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius,14px);
+    box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:200;
+    opacity:0;pointer-events:none;transform:translateY(-4px) scale(.98);
+    transition:opacity .14s,transform .14s;overflow:hidden;
+  }
+  .nav-dropdown.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+  .search-panel{min-width:360px}
+  .profile-menu{
+    position:absolute;top:calc(100% + 10px);right:0;width:200px;
+    background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius,14px);
+    box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:200;
+    opacity:0;pointer-events:none;transform:translateY(-4px) scale(.98);
+    transition:opacity .14s,transform .14s;padding:4px 0;
+  }
+  .profile-menu.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+  .profile-menu-item{padding:9px 14px;font-size:13.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:9px;color:var(--ink-2)}
+  .profile-menu-item:hover{background:var(--bg);color:var(--ink)}
+  .profile-menu-item.danger:hover{color:var(--warn)}
+  .profile-menu-sep{height:1px;background:var(--line)}
+
+  /* ── Nav search panel internals ── */
+  .search-box{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+  .search-box input,.search-input{flex:1;width:100%;padding:12px 16px;border:0;border-bottom:1px solid var(--line);background:transparent;outline:none;font-family:inherit;font-size:14px;color:var(--ink);display:block}
+  .search-box input::placeholder,.search-input::placeholder{color:var(--muted)}
+  .search-results{max-height:320px;overflow-y:auto;padding:4px 0}
+  .search-result-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer}
+  .search-result-item:hover{background:var(--bg)}
+  .search-result-code{font-family:var(--f-mono,monospace);font-size:11px;background:var(--bg);padding:2px 6px;border-radius:5px;border:1px solid var(--line);color:var(--muted)}
+  .search-result-name{font-size:13.5px;font-weight:500;color:var(--ink)}
+  .search-result-album{font-size:11.5px;color:var(--muted)}
+  .search-empty{padding:16px;text-align:center;font-size:13px;color:var(--muted)}
+  .search-hints{padding:8px 12px 10px;display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line)}
+  .search-hint{padding:4px 10px;border-radius:99px;background:var(--bg);border:1px solid var(--line);font-size:12px;color:var(--ink-2);cursor:pointer}
+  .search-hint:hover{border-color:var(--ink)}
+
+  /* ── Notif panel internals ── */
+  .notif-head{padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+  .notif-head h3{font-family:var(--f-display,inherit);font-weight:700;font-size:16px;margin:0}
+  .mark-read-btn{font-size:12px;color:var(--muted);background:none;border:0;cursor:pointer;font-family:inherit}
+  .mark-read-btn:hover{color:var(--ink)}
+  .notif-list{max-height:340px;overflow-y:auto;padding:4px 0}
+  .notif-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;cursor:pointer;position:relative}
+  .notif-item:hover{background:var(--bg)}
+  .notif-item.unread{background:color-mix(in srgb, var(--accent) 8%, var(--bg-elev))}
+  .notif-dot{position:absolute;top:14px;left:6px;width:6px;height:6px;border-radius:99px;background:var(--warn)}
+  .notif-icon{width:32px;height:32px;border-radius:8px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;flex-shrink:0}
+  .notif-body{flex:1;min-width:0}
+  .notif-title{font-size:13px;font-weight:600;color:var(--ink);line-height:1.3}
+  .notif-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+  /* Page head */
+  .page-head{max-width:1480px;margin:0 auto;padding:24px 28px 0;display:flex;justify-content:space-between;gap:32px;align-items:flex-end;flex-wrap:wrap}
+  .crumb{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;display:flex;gap:6px;align-items:center}
+  .crumb .sep{opacity:.5}
+  .crumb a:hover{color:var(--ink)}
+  .page-head h1{font-family:var(--f-display);font-weight:700;font-size:46px;letter-spacing:-0.025em;margin:8px 0 0;line-height:1}
+  .page-head .sub{color:var(--muted);font-size:14px;margin-top:6px}
+
+  .head-stats{display:flex;gap:14px;flex-wrap:wrap}
+  .stat{background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:14px 20px;min-width:120px}
+  .stat .v{font-family:var(--f-display);font-weight:700;font-size:28px;line-height:1;letter-spacing:-0.02em}
+  .stat .l{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-top:4px}
+  .stat.warn .v{color:var(--warn)}
+
+  /* Toolbar */
+  .toolbar{
+    max-width:1480px;margin:22px auto 18px;padding:0 28px;
+    display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;
+  }
+  .search{
+    flex:1;min-width:240px;max-width:520px;
+    display:flex;align-items:center;gap:10px;
+    padding:10px 16px;border-radius:99px;
+    background:var(--bg-elev);border:1px solid var(--line);
+    color:var(--muted);
+  }
+  .search input{
+    flex:1;border:0;background:transparent;outline:none;
+    font-family:var(--f-body);font-size:14px;color:var(--ink);
+  }
+  .search input::placeholder{color:var(--muted)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{padding:7px 13px;border-radius:99px;background:var(--bg-elev);border:1px solid var(--line);font-size:13px;font-weight:500;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+  .chip.active{background:var(--ink);color:var(--bg-elev);border-color:var(--ink)}
+  .chip:hover:not(.active){border-color:var(--ink)}
+
+  /* Grid */
+  .wrap{max-width:1480px;margin:0 auto 60px;padding:0 28px}
+  .grid{
+    display:grid;grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));gap:12px;
+  }
+
+  .miss-card{
+    position:relative;overflow:hidden;
+    aspect-ratio:3/4;
+    border-radius:12px;
+    background:linear-gradient(180deg, var(--card-c1,#0a3a8b) 0%, color-mix(in srgb, var(--card-c1,#0a3a8b) 70%, #14110d) 100%);
+    color:#fff;
+    display:flex;flex-direction:column;justify-content:space-between;
+    padding:14px 14px 12px;
+    transition:transform .14s ease, box-shadow .14s ease;
+    cursor:pointer;
+  }
+  .miss-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 18px 36px -16px rgba(0,0,0,.4);
+  }
+  .miss-card::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(60% 90% at 100% 0%, rgba(255,255,255,.18), transparent 60%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0 2px, transparent 2px 12px);
+  }
+  .miss-card > *{position:relative;z-index:1}
+
+  .miss-card .team-line{
+    font-family:var(--f-mono);font-size:10.5px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.12em;
+    opacity:.95;line-height:1.2;
+  }
+  .miss-card .num{
+    font-family:var(--f-display);font-weight:800;
+    font-size:clamp(34px, 4vw, 48px);
+    letter-spacing:-0.03em;line-height:.9;
+    text-align:center;
+    margin-top:8px;
+  }
+  .miss-card .section-hint{
+    font-family:var(--f-mono);font-size:10px;
+    text-transform:uppercase;letter-spacing:0.08em;
+    opacity:.7;text-align:center;
+  }
+  .miss-card .found-btn{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    width:100%;padding:8px 10px;
+    border:0;border-radius:8px;
+    background:var(--good);color:#fff;
+    font-family:var(--f-body);font-size:12.5px;font-weight:700;
+    text-transform:uppercase;letter-spacing:0.06em;
+    cursor:pointer;
+    box-shadow:0 2px 8px -1px rgba(0,0,0,.25);
+    transition:filter .12s ease, transform .08s ease;
+  }
+  .miss-card .found-btn:hover{filter:brightness(1.12)}
+  .miss-card .found-btn:active{transform:scale(.96)}
+
+  /* When marked found (state transition) */
+  .miss-card.found{
+    animation:found-flash .6s ease forwards;
+  }
+  @keyframes found-flash{
+    0%   { transform:scale(1); }
+    30%  { transform:scale(1.08); box-shadow:0 0 0 8px color-mix(in srgb, var(--good) 35%, transparent); }
+    100% { transform:scale(0); opacity:0; height:0; padding:0; margin:0;
+           grid-row:span 0; }
+  }
+
+  /* Section grouping (optional, switchable via filters) */
+  .grouped-section{margin-bottom:30px}
+  .grouped-section .gh{
+    font-family:var(--f-mono);font-size:11px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);
+    margin:0 0 10px;display:flex;align-items:center;gap:8px;
+  }
+  .grouped-section .gh .ct{
+    font-family:var(--f-mono);font-size:10.5px;font-weight:700;
+    padding:2px 8px;border-radius:99px;
+    background:var(--bg-elev);border:1px solid var(--line);color:var(--ink-2);
+  }
+
+  /* Toast */
+  .toast{
+    position:fixed;bottom:24px;left:24px;z-index:200;
+    padding:10px 18px;border-radius:99px;
+    background:var(--ink);color:var(--accent);
+    font-family:var(--f-mono);font-size:12px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.08em;
+    opacity:0;transform:translateY(10px);pointer-events:none;
+    transition:opacity .22s ease, transform .22s ease;
+    box-shadow:0 14px 32px -12px rgba(0,0,0,.5);
+  }
+  .toast.show{opacity:1;transform:translateY(0)}
+
+  /* Variants */
+  body[data-variant="stadio"]{
+    --bg:#0d1b2a;--bg-elev:#152736;--ink:#f4efe6;--ink-2:#cfd9e3;--muted:#7e90a3;
+    --line:#22384a;--line-strong:#f4efe6;--accent:#ff7a3d;--accent-ink:#0d1b2a;
+    --warn:#ff5b2e;--gold:#ffd25b;--good:#4ade80;
+  }
+  body[data-variant="stadio"] .nav-tab.active{background:var(--accent);color:var(--ink)}
+  body[data-variant="streetwear"]{
+    --bg:#ece9e2;--bg-elev:#fefcf7;--ink:#0a0a0a;--ink-2:#2a2a2a;--muted:#7d7a72;
+    --line:#d8d4ca;--line-strong:#0a0a0a;--accent:#ff3df5;--accent-ink:#0a0a0a;
+    --warn:#ff5b2e;--gold:#0ea5e9;--good:#0a8d3a;--f-display:'Space Grotesk', ui-sans-serif;
+  }
+
+  /* Empty state */
+  .empty{padding:60px 28px;text-align:center;color:var(--muted);background:var(--bg-elev);border:1px dashed var(--line);border-radius:var(--radius-lg);max-width:1480px;margin:0 auto 60px}
+  .empty .ico{font-family:var(--f-display);font-size:48px;color:var(--muted);margin-bottom:8px}
+  .empty h3{font-family:var(--f-display);font-weight:700;font-size:20px;margin:0 0 6px;color:var(--ink)}
+  .empty p{margin:0;font-size:14px}
+
+  /* Disclaimer */
+  .disclaimer{max-width:1480px;margin:30px auto 80px;padding:20px 28px 0;font-family:var(--f-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;line-height:1.6;border-top:1px solid var(--line)}
+  html{background-color:#0d1b2a}
+
+  /* ── COPIA MANCANTI — SHARE MODAL ─────────────── */
+  .miss-share-backdrop{
+    position:fixed;inset:0;z-index:110;
+    background:rgba(20,17,13,.55);
+    backdrop-filter:blur(4px);
+    opacity:0;pointer-events:none;
+    transition:opacity .22s ease;
+  }
+  .miss-share-backdrop.open{opacity:1;pointer-events:auto}
+  .miss-share-modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.96);
+    z-index:120;
+    width:min(620px,92vw);
+    background:var(--bg-elev);border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    display:flex;flex-direction:column;overflow:hidden;
+    opacity:0;pointer-events:none;
+    transition:opacity .22s ease,transform .22s ease;
+    box-shadow:0 30px 80px -20px rgba(0,0,0,.5);
+  }
+  .miss-share-modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .miss-share-head{
+    padding:20px 24px;
+    display:flex;align-items:flex-start;justify-content:space-between;gap:18px;
+    border-bottom:1px solid var(--line);
+  }
+  .miss-share-head .eyebrow{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:4px}
+  .miss-share-head h2{font-family:var(--f-display);font-weight:700;font-size:20px;letter-spacing:-0.01em;margin:0;line-height:1.1}
+  .miss-share-close{width:34px;height:34px;border-radius:99px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink);cursor:pointer}
+  .miss-share-close:hover{border-color:var(--ink)}
+  .miss-share-text-box{
+    margin:18px 24px 8px;
+    padding:14px 16px;border-radius:12px;
+    background:var(--bg);border:1px solid var(--line);
+    font-family:var(--f-mono);font-size:12px;line-height:1.7;color:var(--ink);
+    white-space:pre-wrap;max-height:220px;overflow-y:auto;
+    scrollbar-width:thin;
+  }
+  .miss-share-actions{
+    display:grid;grid-template-columns:1fr 1fr;gap:8px;
+    padding:12px 24px 22px;
+  }
+  .miss-share-btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:11px 14px;border-radius:10px;
+    background:var(--bg);border:1px solid var(--line);
+    font-family:var(--f-body);font-size:13px;font-weight:600;color:var(--ink);
+    cursor:pointer;transition:border-color .12s ease,background .12s ease;
+    white-space:nowrap;
+  }
+  .miss-share-btn:hover{border-color:var(--ink);background:var(--bg-elev)}
+  .miss-share-btn.primary{background:var(--ink);color:var(--accent);border-color:var(--ink);grid-column:span 2}
+  .miss-share-btn.primary:hover{filter:brightness(1.1)}
+  .miss-share-btn.copied{background:var(--good);color:#fff;border-color:var(--good)}
+</style>
+</head>
+<body data-variant="stadio">
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="FiguBook Dashboard.html"><span class="brand-mark">F</span><span>FiguBook</span></a>
+    <div class="nav-tabs">
+      <a class="nav-tab" href="FiguBook Dashboard.html">Dashboard</a>
+      <a class="nav-tab active" href="FiguBook Album.html">Album</a>
+      <a class="nav-tab" href="FiguBook Scambia.html">Scambia</a>
+      <a class="nav-tab" href="#">Community</a>
+    </div>
+    <div class="nav-actions">
+      <!-- Cerca -->
+      <div style="position:relative">
+        <button class="icon-btn" id="searchBtn" aria-label="Cerca"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+        <div class="nav-dropdown search-panel" id="searchPanel">
+          <input class="search-input" id="searchInput" placeholder="Cerca numero carta o album..." autocomplete="off" />
+          <div class="search-hints">
+            <button class="search-hint" data-hint="carta">&#127183; Numero carta</button>
+            <button class="search-hint" data-hint="album">&#128218; Album</button>
+          </div>
+          <div class="search-results" id="searchResults"></div>
+        </div>
+      </div>
+      <!-- Messaggi -->
+      <div style="position:relative">
+        <button class="icon-btn" id="msgBtn" aria-label="Messaggi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button>
+      </div>
+      <!-- Notifiche -->
+      <div style="position:relative">
+        <button class="icon-btn" id="notifBtn" aria-label="Notifiche"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="dot" id="notifDot"></span></button>
+        <div class="nav-dropdown" id="notifPanel">
+          <div class="notif-head"><h4>Notifiche</h4><button class="mark-read" id="markReadBtn">Segna tutte lette</button></div>
+          <div class="notif-item unread" data-href="FiguBook Scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Marco</div><div class="info">3 &#8596; 3 figurine &middot; Calciatori 25/26 &middot; 4h fa</div></div><div class="notif-dot"></div></div>
+          <div class="notif-item unread" data-href="FiguBook Scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Anna</div><div class="info">2 &#8596; 2 figurine &middot; Calciatori 25/26 &middot; 5h fa</div></div><div class="notif-dot"></div></div>
+          <div class="notif-item"><div class="notif-ic">&#9733;</div><div class="notif-txt"><div class="nm">Badge sbloccato: &ldquo;Reparto Difesa&rdquo;</div><div class="info">Calciatori 25/26 &middot; Ieri</div></div></div>
+        </div>
+      </div>
+      <!-- Profilo -->
+      <div style="position:relative">
+        <div class="avatar" id="avatarBtn" style="cursor:pointer">L</div>
+        <div class="profile-menu" id="profileMenu">
+          <div class="profile-menu-item" id="pmProfilo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>Il mio profilo</div>
+          <div class="profile-menu-sep"></div>
+          <div class="profile-menu-item" id="pmImpostazioni"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Impostazioni</div>
+          <div class="profile-menu-sep"></div>
+          <div class="profile-menu-item danger" id="pmEsci"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Esci</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="page-head">
+  <div>
+    <div class="crumb">
+      <a href="FiguBook Dashboard.html">Dashboard</a><span class="sep">/</span>
+      <a href="FiguBook Album.html">Album</a><span class="sep">/</span>
+      <a id="crumbAlbum" href="FiguBook Calciatori 2025-2026.html">Calciatori 25-26</a><span class="sep">/</span>
+      <span style="color:var(--ink)">Tutte le mancanti</span>
+    </div>
+    <h1>Le mie mancanti</h1>
+    <div class="sub" id="pageSubtitle">Una lista unica delle figurine che ti mancano dall'album <b>Calciatori 25/26</b>. Tocca <b>"Trovata"</b> quando ne becchi una nelle bustine.</div>
+  </div>
+  <div class="head-stats">
+    <div class="stat warn"><div class="v" id="totalMissing">716</div><div class="l">Mancanti</div></div>
+    <div class="stat"><div class="v" id="totalSquads">20</div><div class="l">Squadre interessate</div></div>
+    <div class="stat"><div class="v" id="checkedToday">0</div><div class="l">Trovate oggi</div></div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="searchEl" type="text" placeholder="Cerca numero figurina o squadra (es. 220, Inter, STY3)…" />
+  </div>
+  <div class="chips" id="groupChips">
+    <button class="chip active" data-group="flat">Lista unica</button>
+    <button class="chip" data-group="bySection">Raggruppa per sezione</button>
+    <button class="chip" id="copiaMancanti" style="background:var(--ink);color:var(--bg-elev);border-color:var(--ink)">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+      Copia mancanti
+    </button>
+  </div>
+</div>
+
+<div class="wrap" id="missingWrap"></div>
+
+<div class="disclaimer">
+  Sito non affiliato con Panini S.p.A. — strumento personale di tracking della collezione e scambio fra utenti.
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- COPIA MANCANTI MODAL -->
+<div class="miss-share-backdrop" id="missShareBackdrop"></div>
+<div class="miss-share-modal" id="missShareModal" aria-hidden="true">
+  <div class="miss-share-head">
+    <div>
+      <div class="eyebrow">Le mie mancanti</div>
+      <h2>Copia mancanti</h2>
+    </div>
+    <button class="miss-share-close" id="missShareClose" aria-label="Chiudi">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="miss-share-text-box" id="missShareTextBox"></div>
+  <div class="miss-share-actions">
+    <button class="miss-share-btn primary" id="missShareCopyBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      <span>Copia negli appunti</span>
+    </button>
+    <button class="miss-share-btn" id="missShareTxtBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span>Salva .txt</span>
+    </button>
+    <button class="miss-share-btn" id="missShareXlsxBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      <span>Salva .xlsx</span>
+    </button>
+    <button class="miss-share-btn" id="missShareWhatsappBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <span>WhatsApp Web</span>
+    </button>
+    <button class="miss-share-btn" id="missShareMailBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <span>Mail</span>
+    </button>
+  </div>
+</div>
+
+<script src="figubook-core.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+
+<!-- Routing: carica il file dati corretto in base al parametro ?album= dell'URL -->
+<script>
+(function(){
+  var p = new URLSearchParams(window.location.search).get('album') || '2526';
+  var map = {
+    '2526':   'album-data.js',
+    '2425':   'album-data-2425.js',
+    '2324':   'album-data-2324.js',
+    '2223':   'album-data-2223.js',
+    'serieb': 'album-data-serieb-2526.js',
+    'fwc2026':'album-data-fwc2026.js'
+  };
+  document.write('\x3Cscript src="' + (map[p] || 'album-data.js') + '">\x3C\x2Fscript>');
+})();
+</script>
+
+<script>
+// ── Album routing — aggiorna breadcrumb, titolo, sottotitolo ──
+(function(){
+  var ALBUM_META = {
+    '2526':   { title:'Calciatori 25/26', crumbHref:'FiguBook Calciatori 2025-2026.html', crumbLabel:'Calciatori 25-26' },
+    '2425':   { title:'Calciatori 24/25', crumbHref:'FiguBook Calciatori 2024-2025.html', crumbLabel:'Calciatori 24-25' },
+    '2324':   { title:'Calciatori 23/24', crumbHref:'FiguBook Calciatori 2023-2024.html', crumbLabel:'Calciatori 23-24' },
+    '2223':   { title:'Calciatori 22/23', crumbHref:'FiguBook Calciatori 2022-2023.html', crumbLabel:'Calciatori 22-23' },
+    'serieb': { title:'Serie B 25/26',    crumbHref:'FiguBook Serie B 2025-2026.html',   crumbLabel:'Serie B 25-26' },
+    'fwc2026':{ title:'FIFA WC 2026',     crumbHref:'FiguBook FIFA World Cup 2026.html', crumbLabel:'FIFA WC 2026' }
+  };
+  var param = new URLSearchParams(window.location.search).get('album') || '2526';
+  var meta  = ALBUM_META[param] || ALBUM_META['2526'];
+  window._ALBUM_TITLE = meta.title;
+  document.title = 'FiguBook — Mancanti · ' + meta.title;
+  var el;
+  el = document.getElementById('crumbAlbum');
+  if (el){ el.href = meta.crumbHref; el.textContent = meta.crumbLabel; }
+  el = document.getElementById('pageSubtitle');
+  if (el) el.innerHTML = 'Una lista unica delle figurine che ti mancano dall\'album <b>' + meta.title + '</b>. Tocca <b>“Trovata”</b> quando ne becchi una nelle bustine.';
+})();
+
+// ── Stato/Helper ──────────────────────────────────────
+const SECTIONS = window.SECTIONS;
+const STATES   = window.STICKER_STATES;
+const persist  = window.saveAlbum;
+
+let activeGroup = 'flat';     // 'flat' | 'bySection'
+let searchQuery = '';
+let checkedTodayCount = 0;
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove('show'), 1500);
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
+
+function findSectionForCode(code){
+  return SECTIONS.find(s => s.codes.includes(code));
+}
+
+// Per le "Squadre Serie A" (4-23), ogni numero rappresenta una squadra alfabetica
+function teamPhotoColorMap(){
+  const teams = SECTIONS.filter(s => s.group === 'Squadre Serie A' && s.kind === 'team');
+  const sorted = [...teams].sort((a,b) => a.name.localeCompare(b.name));
+  const map = {};
+  for (let i = 0; i < 20; i++){
+    const code = String(4 + i);
+    const t = sorted[i];
+    if (t) map[code] = { c1: t.c1, c2: t.c2, teamName: t.name };
+  }
+  return map;
+}
+const teamPhotoMap = teamPhotoColorMap();
+
+// Costruisce la lista di tutte le mancanti
+function getAllMissing(){
+  const out = [];
+  SECTIONS.forEach(sec => {
+    sec.codes.forEach(code => {
+      if (STATES[code] === 'missing'){
+        // Determina nome squadra/area per quella figurina
+        let teamName = sec.short || sec.name;
+        let c1 = sec.c1, c2 = sec.c2;
+        if (sec.kind === 'team-photos' && teamPhotoMap[code]){
+          teamName = teamPhotoMap[code].teamName;
+          c1 = teamPhotoMap[code].c1;
+          c2 = teamPhotoMap[code].c2;
+        }
+        out.push({ code, teamName, sectionName: sec.name, c1, c2, sectionId: sec.id });
+      }
+    });
+  });
+  return out;
+}
+
+function matchesSearch(item, q){
+  if (!q) return true;
+  const qq = q.toLowerCase();
+  return item.code.toLowerCase().includes(qq) ||
+         item.teamName.toLowerCase().includes(qq) ||
+         item.sectionName.toLowerCase().includes(qq);
+}
+
+function renderStats(){
+  const all = getAllMissing();
+  document.getElementById('totalMissing').textContent = all.length;
+  // count unique sections
+  const uniqueSections = new Set(all.map(i => i.sectionId));
+  document.getElementById('totalSquads').textContent = uniqueSections.size;
+  document.getElementById('checkedToday').textContent = checkedTodayCount;
+}
+
+function buildCard(item){
+  const card = document.createElement('div');
+  card.className = 'miss-card';
+  card.dataset.code = item.code;
+  card.style.setProperty('--card-c1', item.c1);
+  card.style.setProperty('--card-c2', item.c2);
+  card.innerHTML = `
+    <div>
+      <div class="team-line">${escapeHtml(item.teamName)}</div>
+      <div class="section-hint" style="opacity:.6;font-size:9.5px;margin-top:3px">${escapeHtml(item.sectionName)}</div>
+    </div>
+    <div class="num">${escapeHtml(item.code)}</div>
+    <button class="found-btn" type="button">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+      Trovata
+    </button>
+  `;
+  card.querySelector('.found-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    markFound(item.code, card);
+  });
+  return card;
+}
+
+function markFound(code, cardEl){
+  STATES[code] = 'have';
+  if (typeof persist === 'function') persist();
+  checkedTodayCount++;
+  cardEl.classList.add('found');
+  showToast(`${code} segnata come trovata ✓`);
+  setTimeout(() => {
+    const groupSec = cardEl.closest('.grouped-section');
+    cardEl.remove();
+    renderStats();
+    if (groupSec){
+      const remaining = groupSec.querySelectorAll('.miss-card').length;
+      if (remaining === 0){
+        groupSec.remove();
+      } else {
+        const ct = groupSec.querySelector('.ct');
+        if (ct) ct.textContent = `${remaining} mancanti`;
+      }
+    }
+    const stillVisible = document.querySelectorAll('.miss-card').length;
+    if (stillVisible === 0) render();
+  }, 580);
+}
+
+function render(){
+  const wrap = document.getElementById('missingWrap');
+  wrap.innerHTML = '';
+  const all = getAllMissing().filter(it => matchesSearch(it, searchQuery));
+
+  if (all.length === 0){
+    wrap.innerHTML = `
+      <div class="empty">
+        <div class="ico">✓</div>
+        <h3>${searchQuery ? 'Nessuna figurina corrisponde alla ricerca' : 'Niente da mostrare'}</h3>
+        <p>${searchQuery ? 'Prova un altro numero o nome squadra.' : 'Hai segnato tutte le tue figurine come possedute. 🎉'}</p>
+      </div>
+    `;
+    return;
+  }
+
+  if (activeGroup === 'flat'){
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    all.forEach(it => grid.appendChild(buildCard(it)));
+    wrap.appendChild(grid);
+  } else {
+    // Group by section
+    const groups = {};
+    all.forEach(it => {
+      if (!groups[it.sectionName]) groups[it.sectionName] = [];
+      groups[it.sectionName].push(it);
+    });
+    Object.keys(groups).forEach(sectionName => {
+      const items = groups[sectionName];
+      const sec = document.createElement('section');
+      sec.className = 'grouped-section';
+      sec.innerHTML = `<h3 class="gh">${escapeHtml(sectionName)} <span class="ct">${items.length} mancanti</span></h3>`;
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      items.forEach(it => grid.appendChild(buildCard(it)));
+      sec.appendChild(grid);
+      wrap.appendChild(sec);
+    });
+  }
+}
+
+// Search
+document.getElementById('searchEl').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  render();
+});
+
+// Group toggle
+document.querySelectorAll('#groupChips .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    activeGroup = chip.dataset.group;
+    document.querySelectorAll('#groupChips .chip').forEach(c => c.classList.toggle('active', c === chip));
+    render();
+  });
+});
+
+renderStats();
+render();
+
+// ── Copia mancanti modal ──────────────────────────────────────
+let _missShareText = '';
+
+function getMissingText(){
+  const all = getAllMissing();
+  const lines = ['Le mie mancanti — ' + (window._ALBUM_TITLE || 'Calciatori 25/26')];
+  if (all.length === 0){
+    lines.push('Nessuna figurina mancante 🎉');
+  } else {
+    all.forEach(it => {
+      const name = (window.STICKER_NAMES && window.STICKER_NAMES[it.code]) ? window.STICKER_NAMES[it.code] : '';
+      lines.push(`${it.code}${name ? ' · ' + name : ''} (${it.teamName})`);
+    });
+  }
+  lines.push('');
+  lines.push('Generato con FiguBook');
+  return lines.join('\n');
+}
+
+function openMissShareModal(){
+  _missShareText = getMissingText();
+  document.getElementById('missShareTextBox').textContent = _missShareText;
+  const copyBtn = document.getElementById('missShareCopyBtn');
+  copyBtn.querySelector('span').textContent = 'Copia negli appunti';
+  copyBtn.className = 'miss-share-btn primary';
+  document.getElementById('missShareModal').classList.add('open');
+  document.getElementById('missShareBackdrop').classList.add('open');
+}
+function closeMissShareModal(){
+  document.getElementById('missShareModal').classList.remove('open');
+  document.getElementById('missShareBackdrop').classList.remove('open');
+}
+
+document.getElementById('copiaMancanti').addEventListener('click', openMissShareModal);
+document.getElementById('missShareClose').addEventListener('click', closeMissShareModal);
+document.getElementById('missShareBackdrop').addEventListener('click', closeMissShareModal);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMissShareModal(); });
+
+document.getElementById('missShareCopyBtn').addEventListener('click', () => {
+  const btn = document.getElementById('missShareCopyBtn');
+  navigator.clipboard.writeText(_missShareText).then(() => {
+    btn.querySelector('span').textContent = '✓ Copiato!';
+    btn.className = 'miss-share-btn primary copied';
+    setTimeout(() => {
+      btn.querySelector('span').textContent = 'Copia negli appunti';
+      btn.className = 'miss-share-btn primary';
+    }, 2200);
+  }).catch(() => showToast('Impossibile copiare'));
+});
+
+document.getElementById('missShareTxtBtn').addEventListener('click', () => {
+  const blob = new Blob([_missShareText], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'mancanti-figubook.txt'; a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('missShareXlsxBtn').addEventListener('click', () => {
+  if (typeof XLSX === 'undefined'){ showToast('Libreria Excel non disponibile'); return; }
+  const allLines = _missShareText.split('\n');
+  const dataLines = allLines.slice(1).filter(l => l && l !== 'Generato con FiguBook');
+  const rows = dataLines.map(l => {
+    const parenIdx = l.lastIndexOf(' (');
+    const base = parenIdx !== -1 ? l.slice(0, parenIdx) : l;
+    const squadra = parenIdx !== -1 ? l.slice(parenIdx + 2, l.length - 1) : '';
+    const sep = base.indexOf(' · ');
+    return sep === -1
+      ? {Numero: base.trim(), Giocatore: '', Squadra: squadra}
+      : {Numero: base.slice(0, sep).trim(), Giocatore: base.slice(sep + 3).trim(), Squadra: squadra};
+  });
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Mancanti');
+  XLSX.writeFile(wb, 'mancanti-figubook.xlsx');
+});
+
+document.getElementById('missShareWhatsappBtn').addEventListener('click', () => {
+  window.open('https://web.whatsapp.com/send?text=' + encodeURIComponent(_missShareText), '_blank');
+});
+
+document.getElementById('missShareMailBtn').addEventListener('click', () => {
+  window.location.href = 'mailto:?subject=' + encodeURIComponent('Le mie mancanti FiguBook') + '&body=' + encodeURIComponent(_missShareText);
+});
+
+// ── Navbar JS ─────────────────────────────────────────────────
+(function initNavbar(){
+  function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function closeAllPanels(){
+    var sp=document.getElementById('searchPanel'),np=document.getElementById('notifPanel'),pm=document.getElementById('profileMenu');
+    if(sp)sp.classList.remove('open');
+    if(np)np.classList.remove('open');
+    if(pm)pm.classList.remove('open');
+  }
+
+  // SEARCH
+  var SEARCH_ALBUM_DATA = [
+    { id:'calciatori-25-26', name:'Calciatori 25-26',    href:'FiguBook Calciatori 2025-2026.html',  storageKey:'figubook-calciatori-2526-v1' },
+    { id:'calciatori-24-25', name:'Calciatori 24-25',    href:'FiguBook Calciatori 2024-2025.html',  storageKey:'figubook-calciatori-2425-v1' },
+    { id:'calciatori-23-24', name:'Calciatori 23-24',    href:'FiguBook Calciatori 2023-2024.html',  storageKey:'figubook-calciatori-2324-v1' },
+    { id:'calciatori-22-23', name:'Calciatori 22-23',    href:'FiguBook Calciatori 2022-2023.html',  storageKey:'figubook-calciatori-2223-v1' },
+    { id:'mondiali-2026',    name:'FIFA World Cup 2026', href:'FiguBook FIFA World Cup 2026.html',   storageKey:'figubook-fwc2026-v1' },
+    { id:'calb-25-26',       name:'Serie B 25-26',       href:'FiguBook Serie B 2025-2026.html',     storageKey:'figubook-serieb-2526-v1' },
+  ];
+  function buildSearchIndex(){
+    var idx=[];
+    SEARCH_ALBUM_DATA.forEach(function(alb){
+      idx.push({type:'album',code:'',name:alb.name,album:alb.name,href:alb.href});
+      try{
+        var raw=localStorage.getItem(alb.storageKey);
+        if(!raw)return;
+        var parsed=JSON.parse(raw),names=parsed.names;
+        if(!names)return;
+        Object.keys(names).forEach(function(code){
+          if(names[code])idx.push({type:'card',code:code,name:names[code],album:alb.name,href:alb.href+'#card-'+code});
+        });
+      }catch(e){}
+    });
+    return idx;
+  }
+  function renderSearchResults(query){
+    var res=document.getElementById('searchResults');
+    if(!res)return;
+    var q=query.trim().toLowerCase();
+    if(!q){res.innerHTML='';return;}
+    var idx=buildSearchIndex();
+    var hits=idx.filter(function(it){
+      return it.code.toLowerCase().indexOf(q)>=0||it.name.toLowerCase().indexOf(q)>=0||it.album.toLowerCase().indexOf(q)>=0;
+    }).slice(0,12);
+    if(!hits.length){
+      res.innerHTML='<div class="search-empty">Nessun risultato per "'+_esc(query)+'"</div>';
+      return;
+    }
+    res.innerHTML=hits.map(function(it){
+      return '<div class="search-result-item" data-href="'+_esc(it.href)+'">'
+        +(it.type==='card'?'<span class="search-result-code">'+_esc(it.code)+'</span>':'<span class="search-result-code">&#128218;</span>')
+        +'<div><div class="search-result-name">'+_esc(it.name)+'</div>'
+        +'<div class="search-result-album">'+_esc(it.album)+'</div></div></div>';
+    }).join('');
+    res.querySelectorAll('.search-result-item').forEach(function(el){
+      el.addEventListener('click',function(){window.location.href=el.dataset.href;});
+    });
+  }
+  var searchBtn=document.getElementById('searchBtn');
+  var searchPanel=document.getElementById('searchPanel');
+  var searchInput=document.getElementById('searchInput');
+  if(searchBtn&&searchPanel){
+    searchBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var isOpen=searchPanel.classList.contains('open');
+      closeAllPanels();
+      if(!isOpen){searchPanel.classList.add('open');setTimeout(function(){if(searchInput)searchInput.focus();},60);}
+    });
+  }
+  if(searchInput){
+    searchInput.addEventListener('input',function(e){renderSearchResults(e.target.value);});
+  }
+  document.querySelectorAll('.search-hint').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(searchInput){searchInput.value=btn.dataset.hint;renderSearchResults(btn.dataset.hint);searchInput.focus();}
+    });
+  });
+
+  // MESSAGES
+  var msgBtn=document.getElementById('msgBtn');
+  if(msgBtn){
+    msgBtn.addEventListener('click',function(){window.location.href='FiguBook Dashboard.html#messages';});
+  }
+
+  // NOTIFICATIONS
+  // notif handled via FiguBookCore
+  var notifBtn=document.getElementById('notifBtn');
+  var notifPanel=document.getElementById('notifPanel');
+  var notifDot=document.getElementById('notifDot');
+  var markReadBtn=document.getElementById('markReadBtn');
+  function updateNotifDot(){
+    if(!notifDot)return;
+    notifDot.style.display=(FiguBookCore.getNotifRead())?'none':'';
+  }
+  updateNotifDot();
+  if(notifBtn&&notifPanel){
+    notifBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var isOpen=notifPanel.classList.contains('open');
+      closeAllPanels();
+      if(!isOpen){
+        notifPanel.classList.add('open');
+        FiguBookCore.setNotifRead();
+        updateNotifDot();
+      }
+    });
+  }
+  if(markReadBtn){
+    markReadBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      document.querySelectorAll('.notif-item.unread').forEach(function(el){el.classList.remove('unread');});
+      document.querySelectorAll('.notif-dot').forEach(function(el){el.remove();});
+      FiguBookCore.setNotifRead();
+      updateNotifDot();
+    });
+  }
+  document.querySelectorAll('.notif-item[data-href]').forEach(function(el){
+    el.addEventListener('click',function(){window.location.href=el.dataset.href;});
+  });
+
+  // PROFILE
+  var avatarBtn=document.getElementById('avatarBtn');
+  var profileMenu=document.getElementById('profileMenu');
+  if(avatarBtn&&profileMenu){
+    avatarBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var isOpen=profileMenu.classList.contains('open');
+      closeAllPanels();
+      if(!isOpen)profileMenu.classList.add('open');
+    });
+  }
+  var pmProfilo=document.getElementById('pmProfilo');
+  if(pmProfilo)pmProfilo.addEventListener('click',function(){closeAllPanels();showToast('Profilo in arrivo');});
+  var pmImpostazioni=document.getElementById('pmImpostazioni');
+  if(pmImpostazioni)pmImpostazioni.addEventListener('click',function(){closeAllPanels();showToast('Impostazioni in arrivo');});
+  var pmEsci=document.getElementById('pmEsci');
+  if(pmEsci){
+    pmEsci.addEventListener('click',function(){
+      FiguBookCore.clearSession();
+      window.location.href='FiguBook Benvenuto.html';
+    });
+  }
+
+  // Close on outside click
+  document.addEventListener('click',function(e){
+    var inSearch=searchPanel&&searchPanel.contains(e.target);
+    var inNotif=notifPanel&&notifPanel.contains(e.target);
+    var inProfile=profileMenu&&profileMenu.contains(e.target);
+    if(!inSearch&&!inNotif&&!inProfile)closeAllPanels();
+  });
+})();
+</script>
+
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "variant": "stadio",
+  "fontDisplay": "Space Grotesk"
+}/*EDITMODE-END*/;
+const VARIANTS = ["pitch", "stadio", "streetwear"];
+function App(){
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  React.useEffect(() => { document.body.dataset.variant = t.variant; }, [t.variant]);
+  React.useEffect(() => { document.documentElement.style.setProperty('--f-display', `'${t.fontDisplay}', ui-sans-serif`); }, [t.fontDisplay]);
+  return (
+    <TweaksPanel title="Tweaks">
+      <TweakSection label="Stile" />
+      <TweakRadio label="Variante" value={t.variant} options={VARIANTS} onChange={(v) => setTweak('variant', v)} />
+      <TweakSelect label="Font display" value={t.fontDisplay} options={['Bricolage Grotesque', 'Space Grotesk', 'Instrument Serif', 'Geist']} onChange={(v) => setTweak('fontDisplay', v)} />
+    </TweaksPanel>
+  );
+}
+const mount = document.createElement('div');
+document.body.appendChild(mount);
+ReactDOM.createRoot(mount).render(<App />);
+</script>
+
+</body>
+</html>

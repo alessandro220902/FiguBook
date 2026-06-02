@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FiguBook — Calciatori 2024-2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg: #f4efe6;
+    --bg-elev: #fbf8f1;
+    --ink: #14110d;
+    --ink-2: #3a342a;
+    --muted: #8a8275;
+    --line: #e3dccd;
+    --line-strong: #14110d;
+    --accent: #c8ff3d;
+    --accent-ink: #14110d;
+    --warn: #ff5b2e;
+    --gold: #f5b800;
+    --good: #1f8a5b;
+
+    --f-display: 'Bricolage Grotesque', ui-sans-serif, system-ui;
+    --f-body: 'Geist', ui-sans-serif, system-ui;
+    --f-mono: 'Geist Mono', ui-monospace, Menlo, monospace;
+    --f-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+
+    --radius: 14px;
+    --radius-lg: 22px;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:var(--f-body);font-size:15px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer}
+  .muted{color:var(--muted)}
+
+  /* NAV */
+  .nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb, var(--bg) 88%, transparent);backdrop-filter:blur(14px) saturate(140%);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:1480px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:28px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:-0.02em}
+  .brand-mark{width:32px;height:32px;border-radius:9px;background:var(--ink);color:var(--accent);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:18px;transform:rotate(-6deg)}
+  .nav-tabs{display:flex;gap:4px;flex:1;margin-left:12px}
+  .nav-tab{padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--ink-2);border:1px solid transparent}
+  .nav-tab.active{background:var(--ink);color:var(--bg)}
+  .nav-tab:hover:not(.active){background:rgba(20,17,13,0.06)}
+  .nav-actions{display:flex;align-items:center;gap:10px}
+  .icon-btn{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--bg-elev);display:grid;place-items:center;color:var(--ink);position:relative}
+  .icon-btn:hover{border-color:var(--ink)}
+  .icon-btn .dot{position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:99px;background:var(--warn);box-shadow:0 0 0 2px var(--bg-elev)}
+  .nav-dropdown{position:absolute;top:calc(100% + 8px);right:0;min-width:320px;background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:200;opacity:0;pointer-events:none;transform:translateY(-4px) scale(.98);transition:opacity .14s,transform .14s;overflow:hidden}
+  .nav-dropdown.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+  .search-panel{min-width:360px}
+  .search-input{width:100%;padding:10px 14px;border:0;border-bottom:1px solid var(--line);background:var(--bg-elev);color:var(--ink);font-size:14px;outline:none;box-sizing:border-box}
+  .search-hints{display:flex;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line)}
+  .search-hint{font-size:12px;padding:4px 10px;border-radius:99px;border:1px solid var(--line);background:var(--bg);color:var(--ink-2);cursor:pointer}
+  .search-hint:hover{border-color:var(--ink);color:var(--ink)}
+  .search-results{max-height:280px;overflow-y:auto}
+  .search-result-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--line)}
+  .search-result-item:hover{background:var(--bg)}
+  .search-result-code{font-family:var(--f-mono);font-size:12px;color:var(--accent);min-width:32px}
+  .search-result-name{font-size:13.5px;font-weight:500;color:var(--ink)}
+  .search-result-album{font-size:11px;color:var(--muted)}
+  .search-empty{padding:18px 14px;font-size:13px;color:var(--muted);text-align:center}
+  .notif-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+  .notif-head h4{font-family:var(--f-display);font-weight:700;font-size:16px;margin:0}
+  .notif-head .mark-read{font-family:var(--f-mono);font-size:10px;color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:0.08em;background:none;border:0;padding:0}
+  .notif-head .mark-read:hover{color:var(--ink)}
+  .notif-item{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;cursor:pointer;border-bottom:1px solid var(--line)}
+  .notif-item:hover{background:var(--bg)}
+  .notif-ic{font-size:18px;line-height:1.2;flex-shrink:0}
+  .notif-txt .nm{font-size:13.5px;font-weight:500;color:var(--ink)}
+  .notif-txt .info{font-size:11px;color:var(--muted);margin-top:2px}
+  .notif-dot{width:8px;height:8px;border-radius:99px;background:var(--accent);flex-shrink:0;margin-top:4px}
+  .notif-item.unread{background:color-mix(in srgb,var(--accent) 5%,var(--bg-elev))}
+  .profile-menu{position:absolute;top:calc(100% + 10px);right:0;width:200px;background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:200;opacity:0;pointer-events:none;transform:translateY(-4px) scale(.98);transition:opacity .14s,transform .14s;padding:4px 0}
+  .profile-menu.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+  .profile-menu-item{padding:9px 14px;font-size:13.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:9px;color:var(--ink-2)}
+  .profile-menu-item:hover{background:var(--bg);color:var(--ink)}
+  .profile-menu-item.danger:hover{color:var(--warn)}
+  .profile-menu-sep{height:1px;background:var(--line)}
+  .avatar{width:38px;height:38px;border-radius:999px;background:linear-gradient(135deg,#ffce5b,#ff5b2e);display:grid;place-items:center;font-family:var(--f-display);font-weight:700;color:#fff;font-size:14px;box-shadow:inset 0 0 0 2px var(--bg-elev), 0 0 0 1px var(--ink)}
+
+  /* Subheader */
+  .subhead{max-width:1480px;margin:0 auto;padding:24px 28px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+  .crumb{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;display:flex;gap:6px;align-items:center}
+  .crumb a:hover{color:var(--ink)}
+  .crumb .sep{opacity:.5}
+  .subhead h1{font-family:var(--f-display);font-weight:700;font-size:42px;letter-spacing:-0.025em;margin:8px 0 0;line-height:1}
+  .subhead .meta{color:var(--muted);font-size:14px;margin-top:6px}
+
+  .subhead-actions{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+  .missing-link{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:9px 14px;border-radius:99px;
+    background:var(--warn);color:#fff;border:0;
+    font-size:13px;font-weight:600;
+    text-decoration:none;
+    box-shadow:0 4px 14px -4px color-mix(in srgb, var(--warn) 50%, transparent);
+    transition:transform .12s ease, filter .12s ease;
+  }
+  .missing-link:hover{transform:translateY(-1px);filter:brightness(1.08)}
+  .missing-link .count-pill{
+    font-family:var(--f-mono);font-size:11px;font-weight:700;
+    padding:2px 8px;border-radius:99px;
+    background:rgba(0,0,0,.25);color:#fff;
+  }
+
+  .album-progress{display:flex;align-items:center;gap:18px;padding:14px 18px;border-radius:14px;background:var(--bg-elev);border:1px solid var(--line);min-width:360px}
+  .album-progress .big{font-family:var(--f-display);font-weight:700;font-size:34px;letter-spacing:-0.02em;line-height:1}
+  .album-progress .pct{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px}
+  .album-progress .ring{width:54px;height:54px;border-radius:99px;background:conic-gradient(var(--accent) calc(var(--p, 9) * 1%), var(--line) 0);display:grid;place-items:center}
+  .album-progress .ring > i{width:42px;height:42px;border-radius:99px;background:var(--bg-elev);display:grid;place-items:center;font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--ink);font-style:normal}
+  .album-progress .bar{flex:1;height:6px;background:var(--line);border-radius:99px;overflow:hidden;max-width:200px}
+  .album-progress .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#94e000);width:9%}
+
+  /* Layout */
+  .layout{max-width:1480px;margin:0 auto;padding:24px 28px 60px;display:grid;grid-template-columns:300px 1fr;gap:22px}
+
+  /* LEFT RAIL */
+  .rail{position:sticky;top:80px;align-self:start;background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;max-height:calc(100vh - 100px);display:flex;flex-direction:column}
+  .rail-head{padding:18px 18px 12px}
+  .rail-head h3{font-family:var(--f-display);font-weight:700;font-size:18px;letter-spacing:-0.01em;margin:0 0 10px}
+  .rail-search{width:100%;padding:9px 12px;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-size:13px;color:var(--ink);font-family:var(--f-body)}
+  .rail-search:focus{outline:none;border-color:var(--ink)}
+  .rail-list{overflow-y:auto;padding:4px 8px 14px;flex:1;scrollbar-width:thin}
+  .rail-list::-webkit-scrollbar{width:6px}
+  .rail-list::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+
+  .rail-group-h{font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:14px 12px 6px}
+  .rail-group-h:first-child{padding-top:6px}
+
+  .sec-row{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;cursor:pointer;transition:background .12s ease}
+  .sec-row:hover{background:var(--bg)}
+  .sec-row.active{background:var(--ink);color:var(--bg-elev)}
+  .sec-row.active .sec-prog{color:var(--accent)}
+  .sec-row.active .sec-bar > i{background:var(--accent)}
+  .sec-row.active .sec-bar{background:rgba(255,255,255,.18)}
+
+  .sec-dot{
+    width:28px;height:28px;border-radius:7px;display:grid;place-items:center;
+    font-family:var(--f-mono);font-size:10px;font-weight:700;color:#fff;letter-spacing:0.04em;
+    background:linear-gradient(135deg, var(--c1,#2a6fdb), var(--c2,#0a3a8b));
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);
+  }
+  .sec-name{font-size:13.5px;font-weight:500;line-height:1.2;display:flex;align-items:center;gap:6px}
+  .sec-bar{height:3px;width:70px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:5px}
+  .sec-bar > i{display:block;height:100%;background:var(--accent)}
+  .sec-prog{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-align:right;line-height:1.2;white-space:nowrap}
+  .sec-row.active .sec-name{color:var(--bg-elev)}
+  .tag-ia{font-family:var(--f-mono);font-size:9px;background:var(--accent);color:var(--ink);padding:1px 5px;border-radius:99px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+  .sec-row.active .tag-ia{background:var(--accent);color:var(--ink)}
+
+  /* MAIN */
+  .main{display:flex;flex-direction:column;gap:18px}
+
+  /* Section hero — varied by type, uses CSS vars --c1/--c2 for color */
+  .sec-hero{
+    position:relative;overflow:hidden;
+    border-radius:var(--radius-lg);
+    padding:30px 32px;color:#fff;
+    background:linear-gradient(135deg, var(--c1,#2a6fdb) 0%, var(--c2,#0a3a8b) 100%);
+    display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap;
+    min-height:180px;
+    transition:min-height .2s ease, padding .2s ease;
+  }
+  .sec-hero > div:first-child{flex:1 1 320px;min-width:0}
+  .sec-hero::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(60% 90% at 100% 0%, rgba(255,255,255,.18), transparent 60%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0 2px, transparent 2px 14px);
+  }
+  .sec-hero > *{position:relative}
+  .sec-hero .eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;opacity:.85;display:flex;gap:10px;align-items:center}
+  .sec-hero h2{font-family:var(--f-display);font-weight:800;font-size:52px;letter-spacing:-0.03em;line-height:.95;margin:10px 0 6px;transition:font-size .2s ease}
+  .sec-hero .info{font-size:14px;opacity:.85;display:flex;gap:18px;flex-wrap:wrap;margin-top:4px}
+  .sec-hero .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .sec-hero .badge{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;padding:5px 10px;border-radius:99px;background:rgba(255,255,255,.16);backdrop-filter:blur(6px)}
+
+  .sec-hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:220px}
+  .sec-hero-right .big{font-family:var(--f-display);font-weight:800;font-size:46px;line-height:1;letter-spacing:-0.02em;transition:font-size .2s ease}
+  .sec-hero-right .lbl{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;opacity:.85}
+  .sec-hero-right .bar{height:6px;width:200px;background:rgba(0,0,0,.22);border-radius:99px;overflow:hidden}
+  .sec-hero-right .bar > i{display:block;height:100%;background:#fff;border-radius:99px}
+
+  /* ── Hero adattivo per sezioni piccole (<8 figurine) ────── */
+  .sec-hero.compact{min-height:110px;padding:20px 28px}
+  .sec-hero.compact h2{font-size:36px}
+  .sec-hero.compact .badges{margin-top:10px}
+  .sec-hero.compact .sec-hero-right .big{font-size:32px}
+
+  /* Type-specific hero treatments — kept LIGHT so c1/c2 colors remain dominant */
+  .sec-hero[data-kind="opening-trofei"]::after{content:"";position:absolute;left:-40px;bottom:-60px;width:240px;height:240px;border-radius:99px;background:radial-gradient(circle, rgba(255,215,0,.4), transparent 65%);pointer-events:none}
+  .sec-hero[data-kind="opening-trofei"] h2{background:linear-gradient(135deg, #fff, #ffe98b);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  .sec-hero[data-kind="style"]::after{content:"STYLE";position:absolute;right:-20px;top:50%;transform:translateY(-50%);font-family:var(--f-display);font-weight:900;font-size:200px;color:rgba(255,255,255,.06);letter-spacing:-0.05em;pointer-events:none}
+
+  /* IA: usa i colori della sezione (--c1/--c2) + overlay griglia tech */
+  .sec-hero[data-kind="ai"]::after{
+    content:"";position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.10) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.10) 1px, transparent 1px);
+    background-size:24px 24px;
+    mask:radial-gradient(ellipse at 80% 50%, #000 0%, transparent 70%);
+    pointer-events:none;
+  }
+
+  .sec-hero[data-kind="upgrade"]{background:linear-gradient(135deg, #14110d, #1a1a2a);color:#fff;overflow:hidden}
+  .sec-hero[data-kind="upgrade"]::after{content:"";position:absolute;inset:-20%;background:conic-gradient(from 0deg, #c8ff3d, #ff5b2e, #f5b800, #7a5ae0, #0ea5e9, #c8ff3d);filter:blur(60px);opacity:.4;pointer-events:none}
+  .sec-hero[data-kind="upgrade"] h2{position:relative}
+
+  .sec-hero[data-kind="kinder"]{color:#1a1a1a}
+  .sec-hero[data-kind="kinder"] .badge{background:rgba(0,0,0,.16);color:#1a1a1a}
+  .sec-hero[data-kind="kinder"] .eyebrow{color:rgba(0,0,0,.7)}
+
+  .sec-hero[data-kind="celebration"]{color:#1a1a1a}
+  .sec-hero[data-kind="celebration"] .badge{background:rgba(0,0,0,.16);color:#1a1a1a}
+  .sec-hero[data-kind="celebration"] .eyebrow{color:rgba(0,0,0,.7)}
+  .sec-hero[data-kind="celebration"]::after{content:"";position:absolute;inset:0;background-image:
+    radial-gradient(circle at 10% 80%, #fff 2px, transparent 3px),
+    radial-gradient(circle at 30% 20%, #fff 2px, transparent 3px),
+    radial-gradient(circle at 80% 70%, #fff 3px, transparent 4px),
+    radial-gradient(circle at 70% 30%, #fff 2px, transparent 3px),
+    radial-gradient(circle at 50% 50%, #fff 1.5px, transparent 2.5px);
+    opacity:.5;pointer-events:none}
+
+  /* Filters — STICKY just below nav */
+  .filters{
+    position:sticky;top:70px;z-index:30;
+    display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+    padding:14px 18px;background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;
+    box-shadow:0 8px 24px -16px rgba(0,0,0,.25);
+  }
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{padding:8px 13px;border-radius:99px;background:var(--bg);border:1px solid var(--line);font-size:13px;font-weight:500;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px}
+  .chip .ct{font-family:var(--f-mono);font-size:11px;color:var(--muted);background:transparent}
+  .chip.active{background:var(--ink);color:var(--bg-elev);border-color:var(--ink)}
+  .chip.active .ct{color:var(--accent)}
+  .chip:hover:not(.active){border-color:var(--ink)}
+  .view-toggle{display:flex;gap:4px;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:3px}
+  .view-toggle button{padding:6px 12px;border-radius:99px;border:0;background:transparent;color:var(--ink-2);font-size:12px;font-weight:500;cursor:pointer}
+  .view-toggle button.active{background:var(--ink);color:var(--bg-elev)}
+
+  /* Mode toggle */
+  .mode-toggle{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:7px 12px;border-radius:99px;
+    background:var(--bg);border:1px solid var(--line);color:var(--ink-2);
+    font-size:12.5px;font-weight:500;font-family:inherit;
+    white-space:nowrap;
+  }
+  .mode-toggle:hover{ border-color:var(--ink) }
+  .mode-toggle .mode-dot{ width:8px;height:8px;border-radius:99px;background:var(--line);transition:background .15s ease, box-shadow .15s ease; }
+  .mode-toggle[aria-pressed="true"]{ background:var(--ink);color:var(--bg-elev);border-color:var(--ink); }
+  .mode-toggle[aria-pressed="true"] .mode-dot{ background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent); }
+
+  /* Reset button */
+  .reset-btn{
+    width:34px;height:34px;border-radius:99px;
+    background:var(--bg);border:1px solid var(--line);color:var(--ink-2);
+    display:grid;place-items:center;
+  }
+  .reset-btn:hover{ border-color:var(--warn); color:var(--warn) }
+
+  body.quick-mode .panel{ border-color:color-mix(in srgb, var(--accent) 50%, var(--line)); }
+
+  @keyframes fb-flash {
+    0%   { box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 90%, transparent); }
+    60%  { box-shadow:0 0 0 12px color-mix(in srgb, var(--accent) 0%, transparent); }
+    100% { box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent); }
+  }
+  .sticker.flash, .list-row.flash{ animation:fb-flash 1.2s ease-out 2 }
+
+  /* Grid panel */
+  .panel{background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius-lg);padding:22px}
+  .grid{display:grid;grid-template-columns:repeat(6, 1fr);gap:10px}
+  @media (min-width:1280px){ .grid{grid-template-columns:repeat(7, 1fr)} }
+
+  /* ─────────────────────────────────────────────────────────
+     STICKER — Grid view
+     Layout:
+       ●N (chip top-left)
+       big number CENTERED
+       name centered below
+       [−] (bottom-left, red)        [+] (bottom-right, green)
+     ───────────────────────────────────────────────────────── */
+  .sticker{
+    aspect-ratio: 3/4;border-radius:10px;
+    background:var(--bg);border:1px solid var(--line);
+    position:relative;overflow:hidden;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;
+    padding:24px 8px 38px;
+    cursor:pointer;
+    transition:transform .14s ease, box-shadow .14s ease;
+  }
+  .sticker:hover{transform:translateY(-3px);box-shadow:0 14px 28px -10px rgba(0,0,0,.22)}
+
+  .sticker .num{
+    font-family:var(--f-display);font-weight:700;
+    font-size:clamp(20px, 2.6vw, 28px);
+    letter-spacing:-0.02em;color:var(--ink);
+    line-height:1;text-align:center;
+    position:relative;z-index:1;
+  }
+  .sticker .player-name{
+    font-family:var(--f-display);font-weight:600;font-size:10.5px;
+    text-transform:uppercase;letter-spacing:0.02em;
+    color:var(--ink);text-align:center;
+    max-width:calc(100% - 12px);
+    line-height:1.1;
+    overflow-wrap:break-word;
+    overflow:hidden;
+    position:relative;z-index:1;
+  }
+  .sticker .player-name.add{
+    font-family:var(--f-mono);font-size:9px;color:var(--muted);font-weight:500;
+    text-transform:none;letter-spacing:0;
+    opacity:0;transition:opacity .12s ease;
+  }
+  .sticker:hover .player-name.add,
+  body.quick-mode .sticker .player-name.add{ opacity:1 }
+
+  /* Counter chip — colored by state */
+  .sticker .counter-chip{
+    position:absolute;top:6px;left:6px;
+    width:22px;height:22px;border-radius:99px;
+    background:var(--good);color:#fff;
+    font-family:var(--f-mono);font-size:11px;font-weight:700;
+    display:grid;place-items:center;z-index:3;
+    box-shadow:0 1px 4px rgba(0,0,0,.18);
+    transition:background .14s ease;
+  }
+  .sticker.missing .counter-chip{background:var(--warn)}
+  /* counter-chip resta VERDE anche sulle doppie — non sovrascrivere */
+
+  /* Doubles chip — top-right, shows extra copies count */
+  .sticker .double-chip{
+    position:absolute;top:6px;right:6px;
+    padding:2px 7px;border-radius:99px;
+    background:var(--gold);color:#14110d;
+    font-family:var(--f-mono);font-size:10px;font-weight:700;
+    z-index:3;
+    box-shadow:0 1px 4px rgba(0,0,0,.18);
+    line-height:1.6;
+  }
+  .list-row .double-chip{
+    font-family:var(--f-mono);font-size:11px;font-weight:700;
+    padding:2px 8px;border-radius:99px;
+    background:var(--gold);color:#14110d;
+    white-space:nowrap;
+  }
+
+  /* Quick-strip — Bug 11: full-width red bar, visible only in quick-mode */
+  .sticker .quick-strip{
+    display:none;
+    position:absolute;bottom:0;left:0;right:0;
+    height:32px;
+    align-items:center;justify-content:center;
+    background:#e53e3e;
+    border-radius:0 0 10px 10px;
+    z-index:3;
+  }
+  body.quick-mode .sticker .quick-strip{ display:flex; }
+  body.quick-mode .sticker .step.plus{ display:none; }
+  body.quick-mode .sticker .step.minus{ display:none; }
+  .sticker .q-minus{
+    appearance:none;border:0;background:transparent;color:#fff;
+    font-family:var(--f-mono);font-size:22px;font-weight:700;
+    padding:0;width:100%;height:100%;cursor:pointer;
+    letter-spacing:0;line-height:1;
+  }
+  .sticker .q-minus:hover{ background:#c53030; border-radius:0 0 10px 10px; }
+
+  /* +/− steppers — always visible, colored */
+  .sticker .step{
+    position:absolute;bottom:6px;
+    width:28px;height:28px;border-radius:99px;border:0;
+    font-family:var(--f-mono);font-size:17px;font-weight:700;line-height:1;
+    display:grid;place-items:center;cursor:pointer;
+    z-index:3;padding:0;
+    box-shadow:0 2px 8px rgba(0,0,0,.22);
+    transition:transform .08s ease, filter .12s ease;
+  }
+  .sticker .step.minus{ left:6px; background:var(--warn); color:#fff }
+  .sticker .step.plus{ right:6px; background:var(--good); color:#fff }
+  .sticker .step:hover{ filter:brightness(1.1); transform:scale(1.05) }
+  .sticker .step:active{ transform:scale(.92) }
+  .sticker.missing .step.minus{ visibility:hidden }
+
+  /* Sticker states */
+  .sticker.have{
+    background:linear-gradient(180deg, color-mix(in srgb, var(--card-c1,#fff) 60%, #fff), color-mix(in srgb, var(--card-c1,#fff) 90%, #f1ead9));
+    border-color:color-mix(in srgb, var(--card-c1,#000) 40%, var(--line));
+  }
+  .sticker.missing{background:transparent;border:1px dashed var(--line)}
+  .sticker.missing .num{color:var(--muted)}
+  .sticker.missing .player-name{display:none}
+  /* Doppia: mix orange (doppione signal) + colore squadra. Il counter chip resta sopra con alto contrasto. */
+  .sticker.double{
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--card-c1,#2a6fdb) 70%, var(--warn)) 0%, color-mix(in srgb, var(--card-c2,#0a3a8b) 80%, var(--warn)) 100%);
+    border-color:var(--warn);
+    box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--warn) 50%, transparent);
+    color:#fff;
+  }
+  .sticker.double .num{ color:#fff }
+  .sticker.double .player-name{ color:#fff }
+  /* Counter chip per le doppie: cerchio arancione/scuro con bordo per massimo contrasto sopra qualsiasi sfondo */
+  /* Counter chip per le doppie: resta VERDE come per le carte possedute */
+  .sticker.double .counter-chip{
+    background:var(--good);color:#fff;
+    box-shadow:0 1px 4px rgba(0,0,0,.18);
+    font-weight:700;
+  }
+
+  /* Section-kind variants for stickers — usano --card-c1/c2 dinamici */
+  .sticker.kind-team-photos.have, .sticker.kind-transfer.have{
+    background:linear-gradient(135deg, var(--card-c1,#2a6fdb) 0%, var(--card-c2,#0a3a8b) 100%);
+    border-color:rgba(0,0,0,.2);color:#fff;
+  }
+  .sticker.kind-team-photos.have .num, .sticker.kind-transfer.have .num{color:#fff}
+  .sticker.kind-team-photos.have .player-name, .sticker.kind-transfer.have .player-name{color:#fff}
+  .sticker.kind-team-photos.have::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0 2px, transparent 2px 8px);pointer-events:none}
+
+  .sticker.kind-opening-trofei.have{
+    background:linear-gradient(135deg, var(--card-c1,#f5b800), var(--card-c2,#7a5a00));
+    border-color:var(--card-c2,#7a5a00);color:#fff;
+  }
+  .sticker.kind-opening-trofei.have .num,
+  .sticker.kind-opening-trofei.have .player-name{color:#fff}
+
+  .sticker.kind-style.have{
+    background:linear-gradient(135deg, var(--card-c1,#ff3df5), var(--card-c2,#7a1a8b));
+    border-color:var(--card-c2,#7a1a8b);color:#fff;
+  }
+  .sticker.kind-style.have .num, .sticker.kind-style.have .player-name{color:#fff}
+
+  /* ✅ IA: ora usa i colori della sezione (--card-c1/c2), non più hardcoded */
+  .sticker.kind-ai.have{
+    background:linear-gradient(135deg, var(--card-c1,#c8ff3d) 0%, var(--card-c2,#1a4d2a) 100%);
+    border-color:color-mix(in srgb, var(--card-c2,#000) 60%, rgba(0,0,0,.2));
+    color:#fff;
+  }
+  .sticker.kind-ai.have .num, .sticker.kind-ai.have .player-name{color:#fff}
+  .sticker.kind-ai.have::before{
+    content:"";position:absolute;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.14) 1px, transparent 1px),
+                     linear-gradient(90deg, rgba(255,255,255,.14) 1px, transparent 1px);
+    background-size:8px 8px;pointer-events:none;
+  }
+
+  .sticker.kind-upgrade.have{background:linear-gradient(135deg, #14110d, #1a1a2a);color:#fff;border:none}
+  .sticker.kind-upgrade.have::before{content:"";position:absolute;inset:-2px;background:conic-gradient(from 0deg, #c8ff3d, #ff5b2e, #f5b800, #7a5ae0, #0ea5e9, #c8ff3d);filter:blur(10px);opacity:.55;z-index:0}
+  .sticker.kind-upgrade.have .num, .sticker.kind-upgrade.have .player-name{color:#fff;position:relative;z-index:1}
+
+  .sticker.kind-kinder.have{
+    background:linear-gradient(135deg, var(--card-c1,#ff7a3d), var(--card-c2,#fcc500));
+    border-color:rgba(0,0,0,.18);color:#1a1a1a;
+  }
+  .sticker.kind-celebration.have{
+    background:linear-gradient(135deg, var(--card-c1,#ff3df5), var(--card-c2,#fcc500));
+    border-color:rgba(0,0,0,.2);color:#1a1a1a;
+  }
+  .sticker.kind-celebration.have::after{content:"★";position:absolute;top:6px;right:8px;font-size:11px;color:rgba(0,0,0,.45)}
+
+  .sticker.kind-other-league.have{
+    background:linear-gradient(135deg, var(--card-c1,#1f8a5b), var(--card-c2,#0a3a2a));
+    border-color:var(--card-c2,#0a3a2a);color:#fff;
+  }
+  .sticker.kind-other-league.have .num,
+  .sticker.kind-other-league.have .player-name{color:#fff}
+
+  .sticker.selected{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* ─────────────────────────────────────────────────────────
+     LIST VIEW
+     Compact rows with the same controls
+     ───────────────────────────────────────────────────────── */
+  .list-view{display:flex;flex-direction:column;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--bg)}
+  .list-row{
+    display:grid;grid-template-columns:72px 1fr auto auto auto auto;gap:14px;
+    align-items:center;
+    padding:12px 16px;
+    border-bottom:1px solid var(--line);
+    cursor:pointer;
+    transition:background .12s ease;
+    background:var(--bg-elev);
+  }
+  .list-row:hover{ background:color-mix(in srgb, var(--ink) 5%, var(--bg-elev)) }
+  .list-row:last-child{ border-bottom:0 }
+  .list-row .num{ font-family:var(--f-display); font-size:18px; font-weight:700; letter-spacing:-0.01em; line-height:1 }
+  .list-row .player-name{ font-size:14px; font-weight:500; color:var(--ink); }
+  .list-row .player-name.placeholder{ color:var(--muted); font-style:italic; font-weight:400; font-size:13px }
+  .list-row.missing .player-name{ color:var(--muted) }
+  .list-row .counter-chip{
+    width:24px;height:24px;border-radius:99px;
+    background:var(--good);color:#fff;
+    font-family:var(--f-mono);font-size:11px;font-weight:700;
+    display:grid;place-items:center;
+  }
+  .list-row.missing .counter-chip{ background:var(--warn) }
+  .list-row.double .counter-chip{ background:var(--good);color:#fff }
+  .list-row .step{
+    width:28px;height:28px;border-radius:99px;border:0;
+    font-family:var(--f-mono);font-size:15px;font-weight:700;line-height:1;
+    display:grid;place-items:center;cursor:pointer;padding:0;
+    box-shadow:0 2px 6px rgba(0,0,0,.18);
+  }
+  .list-row .step.minus{ background:var(--warn);color:#fff }
+  .list-row .step.plus{ background:var(--good);color:#fff }
+  .list-row .step:hover{ filter:brightness(1.1) }
+  .list-row.missing .step.minus{ visibility:hidden }
+  .list-row.selected{ background:color-mix(in srgb, var(--accent) 18%, var(--bg-elev)) }
+
+  /* Grid footer */
+  .grid-footer{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;gap:12px;flex-wrap:wrap}
+
+  /* TOAST */
+  .toast{
+    position:fixed;bottom:24px;left:24px;z-index:200;
+    padding:10px 18px;border-radius:99px;
+    background:var(--ink);color:var(--accent);
+    font-family:var(--f-mono);font-size:12px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.08em;
+    opacity:0;transform:translateY(10px);pointer-events:none;
+    transition:opacity .22s ease, transform .22s ease;
+    box-shadow:0 14px 32px -12px rgba(0,0,0,.5);
+  }
+  .toast.show{ opacity:1;transform:translateY(0) }
+
+  /* DRAWER */
+  .drawer-backdrop{position:fixed;inset:0;background:rgba(20,17,13,0.45);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:80}
+  .drawer-backdrop.open{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:100vw;background:var(--bg-elev);border-left:1px solid var(--line);z-index:90;transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);overflow-y:auto;box-shadow:-30px 0 60px -20px rgba(0,0,0,.3)}
+  .drawer.open{transform:translateX(0)}
+  .drawer-head{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+  .drawer-head .label{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted)}
+  .drawer-close{width:34px;height:34px;border-radius:99px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink)}
+  .drawer-close:hover{border-color:var(--ink)}
+  .drawer-body{padding:22px}
+
+  .big-sticker{
+    aspect-ratio:3/4;max-width:260px;margin:0 auto 18px;
+    border-radius:14px;position:relative;overflow:hidden;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;
+    padding:18px;
+    background:var(--bg);border:1px solid var(--line);
+    box-shadow:0 20px 40px -16px rgba(0,0,0,.3);
+  }
+  .big-sticker .num{font-family:var(--f-display);font-size:42px;font-weight:800;letter-spacing:-0.02em;color:var(--ink);line-height:1}
+  .big-sticker .player-name{font-family:var(--f-display);font-weight:600;font-size:16px;color:var(--ink);text-transform:uppercase;letter-spacing:0.02em;text-align:center}
+  .big-sticker .meta{font-family:var(--f-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px}
+
+  .drawer h2{font-family:var(--f-display);font-weight:700;font-size:24px;letter-spacing:-0.01em;margin:8px 0 4px;line-height:1.05}
+  .drawer .subtitle{color:var(--muted);font-size:13px}
+
+  .state-banner{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;margin:18px 0 8px;background:var(--bg);border:1px solid var(--line)}
+  .state-banner.have{background:color-mix(in srgb, var(--good) 12%, var(--bg-elev));border-color:color-mix(in srgb, var(--good) 35%, var(--line));color:var(--good)}
+  .state-banner.double{background:color-mix(in srgb, var(--gold) 16%, var(--bg-elev));border-color:color-mix(in srgb, var(--gold) 45%, var(--line));color:#8a6700}
+  .state-banner.missing{background:color-mix(in srgb, var(--warn) 12%, var(--bg-elev));border-color:color-mix(in srgb, var(--warn) 35%, var(--line));color:var(--warn)}
+  .state-banner .ic{width:30px;height:30px;border-radius:99px;background:rgba(255,255,255,.2);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:14px}
+  .state-banner .info b{font-weight:600;display:block}
+  .state-banner .info small{display:block;opacity:.85;font-size:12px;margin-top:2px}
+
+  .name-input-row{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+  .name-input-row label{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted)}
+  .name-input-row input{width:100%;padding:11px 14px;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-size:14px;font-family:var(--f-body);color:var(--ink)}
+  .name-input-row input:focus{outline:none;border-color:var(--ink)}
+
+  .state-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:18px}
+  .state-buttons button{
+    padding:11px 8px;border-radius:10px;border:1px solid var(--line);background:var(--bg);
+    font-size:12px;font-weight:600;color:var(--ink-2);
+    display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;
+  }
+  .state-buttons button .ico{font-family:var(--f-display);font-size:18px;font-weight:800}
+  .state-buttons button.active.have{background:color-mix(in srgb, var(--good) 14%, #fff);border-color:var(--good);color:var(--good)}
+  .state-buttons button.active.double{background:color-mix(in srgb, var(--gold) 18%, #fff);border-color:var(--gold);color:#8a6700}
+  .state-buttons button.active.missing{background:color-mix(in srgb, var(--warn) 12%, #fff);border-color:var(--warn);color:var(--warn)}
+
+  .drawer-section{margin-top:22px}
+  .drawer-section h4{font-family:var(--f-mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin:0 0 10px}
+
+  .owner{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;padding:10px;border-radius:10px;background:var(--bg);border:1px solid var(--line);margin-bottom:8px}
+  .owner:hover{border-color:var(--ink)}
+  .owner .av{width:36px;height:36px;border-radius:99px;display:grid;place-items:center;color:#fff;font-family:var(--f-display);font-weight:700;font-size:13px;background:linear-gradient(135deg, var(--av1,#2a6fdb), var(--av2,#7a5ae0));box-shadow:inset 0 0 0 2px var(--bg-elev), 0 0 0 1px var(--line)}
+  .owner .name{font-size:13px;font-weight:600;line-height:1.2}
+  .owner .meta{font-family:var(--f-mono);font-size:10px;text-transform:uppercase;color:var(--muted);letter-spacing:0.08em;margin-top:2px}
+  .owner .ask{appearance:none;border:0;background:var(--accent);color:var(--ink);padding:7px 11px;border-radius:99px;font-weight:600;font-size:12px;cursor:pointer}
+  .owner .ask:hover{filter:brightness(.95)}
+
+  .drawer-cta{display:flex;gap:8px;margin-top:24px;padding-top:18px;border-top:1px solid var(--line)}
+  .btn{appearance:none;border:0;border-radius:999px;padding:12px 18px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:1;cursor:pointer}
+  .btn-accent{background:var(--accent);color:var(--accent-ink)}
+  .btn-accent:hover{filter:brightness(.95)}
+  .btn-line{background:var(--bg);color:var(--ink);border:1px solid var(--line-strong)}
+  .btn-line:hover{background:var(--bg-elev)}
+
+  /* Variants */
+  body[data-variant="stadio"]{
+    --bg:#0d1b2a;--bg-elev:#152736;--ink:#f4efe6;--ink-2:#cfd9e3;--muted:#7e90a3;
+    --line:#22384a;--line-strong:#f4efe6;--accent:#ff7a3d;--accent-ink:#0d1b2a;
+    --warn:#ff5b2e;--gold:#ffd25b;--good:#4ade80;
+  }
+  body[data-variant="stadio"] .sticker.have{background:linear-gradient(180deg, color-mix(in srgb, var(--card-c1,#1c3245) 70%, #1c3245), color-mix(in srgb, var(--card-c1,#0d1b2a) 90%, #0d1b2a));border-color:color-mix(in srgb, var(--card-c1,#22384a) 60%, #22384a);color:var(--ink)}
+  body[data-variant="stadio"] .sticker.have .num,
+  body[data-variant="stadio"] .sticker.have .player-name{color:#fff}
+  body[data-variant="stadio"] .sticker.missing{border:1px dashed #2e4a63}
+  body[data-variant="stadio"] .sticker.double{
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--card-c1,#1c3245) 65%, var(--warn)) 0%, color-mix(in srgb, var(--card-c2,#0d1b2a) 80%, var(--warn)) 100%);
+    border-color:var(--warn);
+    box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--warn) 50%, transparent);
+    color:#fff;
+  }
+  body[data-variant="stadio"] .sticker.double .num{ color:#fff }
+  body[data-variant="stadio"] .sticker.double .counter-chip{
+    background:var(--good);color:#fff;
+    box-shadow:0 1px 4px rgba(0,0,0,.35);
+  }
+  body[data-variant="stadio"] .nav-tab.active{background:var(--accent);color:var(--ink)}
+  body[data-variant="stadio"] .album-progress .ring > i{background:var(--bg-elev);color:var(--ink)}
+  body[data-variant="stadio"] .big-sticker{background:#1c3245;border-color:#22384a;color:var(--ink)}
+  body[data-variant="stadio"] .big-sticker .num,body[data-variant="stadio"] .big-sticker .player-name{color:var(--ink)}
+  body[data-variant="stadio"] .rail-search{background:#0d1b2a;color:var(--ink);border-color:#22384a}
+  body[data-variant="stadio"] .list-row{background:#152736;color:var(--ink)}
+  body[data-variant="stadio"] .list-row .player-name{color:var(--ink)}
+  body[data-variant="stadio"] .list-row.missing .player-name{color:var(--muted)}
+  body[data-variant="stadio"] .list-view{background:#0d1b2a;border-color:#22384a}
+  body[data-variant="stadio"] .state-buttons button.active.have{background:color-mix(in srgb, var(--good) 20%, #152736);color:var(--good)}
+  body[data-variant="stadio"] .state-buttons button.active.double{background:color-mix(in srgb, var(--gold) 22%, #152736);color:var(--gold)}
+  body[data-variant="stadio"] .state-buttons button.active.missing{background:color-mix(in srgb, var(--warn) 20%, #152736);color:var(--warn)}
+
+  body[data-variant="streetwear"]{
+    --bg:#ece9e2;--bg-elev:#fefcf7;--ink:#0a0a0a;--ink-2:#2a2a2a;--muted:#7d7a72;
+    --line:#d8d4ca;--line-strong:#0a0a0a;--accent:#ff3df5;--accent-ink:#0a0a0a;
+    --warn:#ff5b2e;--gold:#0ea5e9;--good:#0a8d3a;--f-display:'Space Grotesk', ui-sans-serif;
+  }
+  body[data-variant="streetwear"] .brand-mark{background:var(--accent);color:#0a0a0a}
+
+  /* Responsive */
+  @media (max-width: 1080px){
+    .layout{grid-template-columns:260px 1fr}
+    .grid{grid-template-columns:repeat(5,1fr)}
+  }
+  @media (max-width: 820px){
+    .layout{grid-template-columns:1fr}
+    .rail{position:relative;top:0;max-height:none}
+    .rail-list{max-height:300px}
+    .grid{grid-template-columns:repeat(4,1fr)}
+    .drawer{width:100vw}
+  }
+
+  /* Footer */
+  .disclaimer{max-width:1480px;margin:20px auto 80px;padding:0 28px;font-family:var(--f-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;line-height:1.6;border-top:1px solid var(--line);padding-top:20px;margin-top:30px}
+
+  /* Prevent white flash during page navigation */
+  html{background-color:#0d1b2a}
+</style>
+</head>
+<body data-variant="stadio">
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="FiguBook Dashboard.html">
+      <span class="brand-mark">F</span>
+      <span>FiguBook</span>
+    </a>
+    <div class="nav-tabs">
+      <a class="nav-tab" href="FiguBook Dashboard.html">Dashboard</a>
+      <a class="nav-tab active" href="FiguBook Album.html">Album</a>
+      <a class="nav-tab" href="FiguBook Scambia.html">Scambia</a>
+      <a class="nav-tab" href="#">Community</a>
+    </div>
+    <div class="nav-actions">
+      <!-- Cerca -->
+      <div style="position:relative">
+        <button class="icon-btn" id="searchBtn" aria-label="Cerca"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+        <div class="nav-dropdown search-panel" id="searchPanel">
+          <input class="search-input" id="searchInput" placeholder="Cerca numero carta o album..." autocomplete="off" />
+          <div class="search-hints">
+            <button class="search-hint" data-hint="carta">&#127183; Numero carta</button>
+            <button class="search-hint" data-hint="album">&#128218; Album</button>
+          </div>
+          <div class="search-results" id="searchResults"></div>
+        </div>
+      </div>
+      <!-- Messaggi -->
+      <div style="position:relative">
+        <button class="icon-btn" id="msgBtn" aria-label="Messaggi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button>
+      </div>
+      <!-- Notifiche -->
+      <div style="position:relative">
+        <button class="icon-btn" id="notifBtn" aria-label="Notifiche"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="dot" id="notifDot"></span></button>
+        <div class="nav-dropdown" id="notifPanel">
+          <div class="notif-head"><h4>Notifiche</h4><button class="mark-read" id="markReadBtn">Segna tutte lette</button></div>
+          <div class="notif-item unread" data-href="FiguBook Scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Marco</div><div class="info">3 &#8596; 3 figurine &middot; Calciatori 25/26 &middot; 4h fa</div></div><div class="notif-dot"></div></div>
+          <div class="notif-item unread" data-href="FiguBook Scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Anna</div><div class="info">2 &#8596; 2 figurine &middot; Calciatori 25/26 &middot; 5h fa</div></div><div class="notif-dot"></div></div>
+          <div class="notif-item"><div class="notif-ic">&#9733;</div><div class="notif-txt"><div class="nm">Badge sbloccato: &ldquo;Reparto Difesa&rdquo;</div><div class="info">Calciatori 25/26 &middot; Ieri</div></div></div>
+        </div>
+      </div>
+      <!-- Profilo -->
+      <div style="position:relative">
+        <div class="avatar" id="avatarBtn" style="cursor:pointer">L</div>
+        <div class="profile-menu" id="profileMenu">
+          <div class="profile-menu-item" id="pmProfilo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>Il mio profilo</div>
+          <div class="profile-menu-sep"></div>
+          <div class="profile-menu-item" id="pmImpostazioni"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Impostazioni</div>
+          <div class="profile-menu-sep"></div>
+          <div class="profile-menu-item danger" id="pmEsci"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Esci</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="subhead">
+  <div>
+    <div class="crumb">
+      <a href="FiguBook Dashboard.html">Dashboard</a>
+      <span class="sep">/</span>
+      <a href="FiguBook Album.html">Album</a>
+      <span class="sep">/</span>
+      <span style="color:var(--ink)">Calciatori 24-25</span>
+      <span class="sep">/</span>
+      <span style="color:var(--ink)" id="bcSection">—</span>
+    </div>
+    <h1>Calciatori Panini 2024–2025</h1>
+    <div class="meta">Stagione 2024/25 · 580 figurine tracciate · 26 sezioni</div>
+  </div>
+  <div class="subhead-actions">
+    <a class="missing-link" href="FiguBook Mancanti.html?album=2425">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      Tutte le figurine mancanti
+      <span class="count-pill" id="missingCountPill">716</span>
+    </a>
+    <button class="fb-doubles-btn" id="fbDblTrigger">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+      Tutti i doppioni
+      <span class="count-pill" id="fbDblCountPill">0</span>
+    </button>
+    <div class="album-progress" style="--p:9">
+    <div class="ring"><i id="headerPctRing">9%</i></div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span class="big" id="headerCount">68<span style="color:var(--muted);font-size:18px"> / 784</span></span>
+      <span class="pct"><span id="headerMiss">716</span> mancanti · <span id="headerDouble">1</span> doppia</span>
+    </div>
+    <div class="bar"><i id="headerBar" style="width:8.7%"></i></div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="rail">
+    <div class="rail-head">
+      <h3>Sezioni</h3>
+      <input class="rail-search" id="railSearch" placeholder="Cerca sezione o #figurina (es. 245, STY3)…" />
+    </div>
+    <div class="rail-list" id="railList"></div>
+  </aside>
+
+  <main class="main">
+    <section class="sec-hero" id="secHero" data-kind="team">
+      <div>
+        <div class="eyebrow" id="heroEyebrow">SEZIONE 01 · APERTURA</div>
+        <h2 id="heroTitle">Trofei</h2>
+        <div class="info" id="heroInfo"></div>
+        <div class="badges" id="heroBadges"></div>
+      </div>
+      <div class="sec-hero-right">
+        <span class="lbl">Completamento sezione</span>
+        <span class="big" id="heroPctBig">33%</span>
+        <div class="bar"><i id="heroPctBar" style="width:33%"></i></div>
+      </div>
+    </section>
+
+    <section class="filters">
+      <div class="chips" id="filterChips">
+        <button class="chip active" data-filter="all">Tutte <span class="ct">3</span></button>
+        <button class="chip" data-filter="missing">Mancanti <span class="ct">2</span></button>
+        <button class="chip" data-filter="double">Doppie <span class="ct">0</span></button>
+        <button class="chip" data-filter="have">Possedute <span class="ct">1</span></button>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button class="mode-toggle" id="modeToggle" aria-pressed="false">
+          <span class="mode-dot"></span>
+          <span class="mode-lbl">Inserimento rapido</span>
+        </button>
+        <div class="view-toggle" id="viewToggle">
+          <button class="active" data-view="grid">Griglia</button>
+          <button data-view="list">Lista</button>
+        </div>
+        <button class="reset-btn" id="resetBtn" title="Reset demo — cancella stato locale">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div id="albumView"></div>
+      <div class="grid-footer">
+        <span id="visibleCount">3 figurine visibili</span>
+        <span id="sectionPos">Sezione 1 di 37</span>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="disclaimer">
+  Sito non affiliato con Panini S.p.A. — strumento di tracking della collezione e scambio fra utenti. Marchi e denominazioni citati appartengono ai rispettivi proprietari.
+</div>
+
+<!-- DRAWER -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <span class="label" id="drawerLabel">FIGURINA · TROFEI</span>
+    <button class="drawer-close" id="drawerClose" aria-label="Chiudi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="drawer-body">
+    <div class="big-sticker" id="drawerSticker">
+      <div class="num" id="drawerNum">1</div>
+      <div class="player-name" id="drawerName">—</div>
+      <div class="meta" id="drawerMeta">Trofei</div>
+    </div>
+
+    <h2 id="drawerTitle">Figurina 1</h2>
+    <div class="subtitle" id="drawerSubtitle">Sezione: Trofei</div>
+
+    <div class="state-banner" id="drawerBanner">
+      <div class="ic" id="drawerBannerIcon">?</div>
+      <div class="info">
+        <b id="drawerBannerTitle">Mancante</b>
+        <small id="drawerBannerSub">Ti manca all'appello.</small>
+      </div>
+    </div>
+
+    <div class="state-buttons" id="stateButtons">
+      <button data-state="missing" class="active missing"><span class="ico">?</span>Mancante</button>
+      <button data-state="have"><span class="ico">✓</span>Posseduta</button>
+      <button data-state="double"><span class="ico">×N</span>Doppia</button>
+    </div>
+
+    <div class="name-input-row" id="nameInputRow" style="display:none">
+      <label>Aggiungi nome (opzionale)</label>
+      <input id="nameInput" type="text" placeholder="es. Mario Rossi" />
+    </div>
+
+    <div class="drawer-section" id="ownersSection">
+      <h4>Chi ce l'ha vicino a te</h4>
+      <div class="owner"><div class="av" style="--av1:#c8ff3d;--av2:#1f8a5b">G</div><div><div class="name">Giada · @giadaa</div><div class="meta">340 m · 2 doppie</div></div><button class="ask">Chiedi</button></div>
+      <div class="owner"><div class="av" style="--av1:#7a5ae0;--av2:#ff3df5">M</div><div><div class="name">Marco · @kicko</div><div class="meta">610 m · 1 doppia</div></div><button class="ask">Chiedi</button></div>
+      <div class="owner"><div class="av" style="--av1:#2a6fdb;--av2:#0ea5e9">F</div><div><div class="name">Federico · @fede10</div><div class="meta">1.1 km · amico</div></div><button class="ask">Chiedi</button></div>
+    </div>
+
+    <div class="drawer-cta">
+      <button class="btn btn-accent">Proponi scambio</button>
+    </div>
+  </div>
+</aside>
+
+<!-- Toast persistenza -->
+<div class="toast" id="toast">✓ Salvato</div>
+
+<script src="figubook-core.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+<script src="figubook-doubles.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+
+<script src="album-data-2425.js"></script>
+<script>
+/* Patch: scroll to sec-hero with navbar offset instead of raw top:0 */
+(function(){
+  var _orig = window.scrollTo.bind(window);
+  window.scrollTo = function(xOrOpts, y) {
+    if (xOrOpts && typeof xOrOpts === 'object' && xOrOpts.top === 0) {
+      var hero = document.getElementById('secHero');
+      if (hero) {
+        var top = hero.getBoundingClientRect().top + window.pageYOffset - 80;
+        _orig({ top: Math.max(0, top), behavior: xOrOpts.behavior || 'smooth' });
+        return;
+      }
+    }
+    _orig.apply(window, arguments);
+  };
+})();
+</script>
+<script src="album-app.js"></script>
+
+
+<script>
+// ── Navbar JS ─────────────────────────────────────────────────
+(function initNavbar(){
+  function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function closeAllPanels(){
+    var sp=document.getElementById('searchPanel'),np=document.getElementById('notifPanel'),pm=document.getElementById('profileMenu');
+    if(sp)sp.classList.remove('open');
+    if(np)np.classList.remove('open');
+    if(pm)pm.classList.remove('open');
+  }
+
+  // SEARCH
+  var SEARCH_ALBUM_DATA = [
+    { id:'calciatori-25-26', name:'Calciatori 25-26',    href:'FiguBook Calciatori 2025-2026.html',  storageKey:'figubook-calciatori-2526-v1' },
+    { id:'calciatori-24-25', name:'Calciatori 24-25',    href:'FiguBook Calciatori 2024-2025.html',  storageKey:'figubook-calciatori-2425-v1' },
+    { id:'calciatori-23-24', name:'Calciatori 23-24',    href:'FiguBook Calciatori 2023-2024.html',  storageKey:'figubook-calciatori-2324-v1' },
+    { id:'calciatori-22-23', name:'Calciatori 22-23',    href:'FiguBook Calciatori 2022-2023.html',  storageKey:'figubook-calciatori-2223-v1' },
+    { id:'mondiali-2026',    name:'FIFA World Cup 2026', href:'FiguBook FIFA World Cup 2026.html',   storageKey:'figubook-fwc2026-v1' },
+    { id:'calb-25-26',       name:'Serie B 25-26',       href:'FiguBook Serie B 2025-2026.html',     storageKey:'figubook-serieb-2526-v1' },
+    { id:'match-attax-ucl', name:'Match Attax UCL 25/26', href:'FiguBook Match Attax UCL 2025-2026.html', storageKey:'figubook-matchattax-ucl-2526-v1' },
+    { id:'adrenalyn-25-26', name:'Adrenalyn XL 25/26', href:'FiguBook Adrenalyn XL 2025-2026.html', storageKey:'figubook-adrenalyn-2526-v1' },
+  ];
+  function buildSearchIndex(){
+    var idx=[];
+    SEARCH_ALBUM_DATA.forEach(function(alb){
+      idx.push({type:'album',code:'',name:alb.name,album:alb.name,href:alb.href});
+      try{
+        var raw=localStorage.getItem(alb.storageKey);
+        if(!raw)return;
+        var parsed=JSON.parse(raw),names=parsed.names;
+        if(!names)return;
+        Object.keys(names).forEach(function(code){
+          if(names[code])idx.push({type:'card',code:code,name:names[code],album:alb.name,href:alb.href+'#card-'+code});
+        });
+      }catch(e){}
+    });
+    return idx;
+  }
+  function renderSearchResults(query){
+    var res=document.getElementById('searchResults');
+    if(!res)return;
+    var q=query.trim().toLowerCase();
+    if(!q){res.innerHTML='';return;}
+    var idx=buildSearchIndex();
+    var hits=idx.filter(function(it){
+      return it.code.toLowerCase().indexOf(q)>=0||it.name.toLowerCase().indexOf(q)>=0||it.album.toLowerCase().indexOf(q)>=0;
+    }).slice(0,12);
+    if(!hits.length){
+      res.innerHTML='<div class="search-empty">Nessun risultato per "'+_esc(query)+'"</div>';
+      return;
+    }
+    res.innerHTML=hits.map(function(it){
+      return '<div class="search-result-item" data-href="'+_esc(it.href)+'">'
+        +(it.type==='card'?'<span class="search-result-code">'+_esc(it.code)+'</span>':'<span class="search-result-code">&#128218;</span>')
+        +'<div><div class="search-result-name">'+_esc(it.name)+'</div>'
+        +'<div class="search-result-album">'+_esc(it.album)+'</div></div></div>';
+    }).join('');
+    res.querySelectorAll('.search-result-item').forEach(function(el){
+      el.addEventListener('click',function(){window.location.href=el.dataset.href;});
+    });
+  }
+  var searchBtn=document.getElementById('searchBtn');
+  var searchPanel=document.getElementById('searchPanel');
+  var searchInput=document.getElementById('searchInput');
+  if(searchBtn&&searchPanel){
+    searchBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var isOpen=searchPanel.classList.contains('open');
+      closeAllPanels();
+      if(!isOpen){searchPanel.classList.add('open');setTimeout(function(){if(searchInput)searchInput.focus();},60);}
+    });
+  }
+  if(searchInput){
+    searchInput.addEventListener('input',function(e){renderSearchResults(e.target.value);});
+  }
+  document.querySelectorAll('.search-hint').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(searchInput){searchInput.value=btn.dataset.hint;renderSearchResults(btn.dataset.hint);searchInput.focus();}
+    });
+  });
+
+  // MESSAGES
+  var msgBtn=document.getElementById('msgBtn');
+  if(msgBtn){
+    msgBtn.addEventListener('click',function(){window.location.href='FiguBook Dashboard.html#messages';});
+  }
+
+  // NOTIFICATIONS
+  // notif handled via FiguBookCore
+  var notifBtn=document.getElementById('notifBtn');
+  var notifPanel=document.getElementById('notifPanel');
+  var notifDot=document.getElementById('notifDot');
+  var markReadBtn=document.getElementById('markReadBtn');
+  function updateNotifDot(){
+    if(!notifDot)return;
+    notifDot.style.display=(FiguBookCore.getNotifRead())?'none':'';
+  }
+  updateNotifDot();
+  if(notifBtn&&notifPanel){
+    notifBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var isOpen=notifPanel.classList.contains('open');
+      closeAllPanels();
+      if(!isOpen){
+        notifPanel.classList.add('open');
+        FiguBookCore.setNotifRead();
+        updateNotifDot();
+      }
+    });
+  }
+  if(markReadBtn){
+    markReadBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      document.querySelectorAll('.notif-item.unread').forEach(function(el){el.classList.remove('unread');});
+      document.querySelectorAll('.notif-dot').forEach(function(el){el.remove();});
+      FiguBookCore.setNotifRead();
+      updateNotifDot();
+    });
+  }
+  document.querySelectorAll('.notif-item[data-href]').forEach(function(el){
+    el.addEventListener('click',function(){window.location.href=el.dataset.href;});
+  });
+
+  // PROFILE
+  var avatarBtn=document.getElementById('avatarBtn');
+  var profileMenu=document.getElementById('profileMenu');
+  if(avatarBtn&&profileMenu){
+    avatarBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var isOpen=profileMenu.classList.contains('open');
+      closeAllPanels();
+      if(!isOpen)profileMenu.classList.add('open');
+    });
+  }
+  var pmProfilo=document.getElementById('pmProfilo');
+  if(pmProfilo)pmProfilo.addEventListener('click',function(){closeAllPanels();showToast('Profilo in arrivo');});
+  var pmImpostazioni=document.getElementById('pmImpostazioni');
+  if(pmImpostazioni)pmImpostazioni.addEventListener('click',function(){closeAllPanels();showToast('Impostazioni in arrivo');});
+  var pmEsci=document.getElementById('pmEsci');
+  if(pmEsci){
+    pmEsci.addEventListener('click',function(){
+      FiguBookCore.clearSession();
+      window.location.href='FiguBook Benvenuto.html';
+    });
+  }
+
+  // Close on outside click
+  document.addEventListener('click',function(e){
+    var inSearch=searchPanel&&searchPanel.contains(e.target);
+    var inNotif=notifPanel&&notifPanel.contains(e.target);
+    var inProfile=profileMenu&&profileMenu.contains(e.target);
+    if(!inSearch&&!inNotif&&!inProfile)closeAllPanels();
+  });
+})();
+
+// ── Tutti i doppioni overlay ──────────────────────────────────
+document.getElementById('fbDblTrigger').addEventListener('click', function(){
+  if (window._fbDblOpen) window._fbDblOpen();
+});
+if (typeof FiguBookDoubles !== 'undefined') {
+  FiguBookDoubles.init('figubook-calciatori-2425-v1', 'Calciatori 24-25');
+}
+</script>
+
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "variant": "stadio",
+  "fontDisplay": "Space Grotesk"
+}/*EDITMODE-END*/;
+const VARIANTS = ["pitch", "stadio", "streetwear"];
+function App(){
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  React.useEffect(() => { document.body.dataset.variant = t.variant; }, [t.variant]);
+  React.useEffect(() => { document.documentElement.style.setProperty('--f-display', `'${t.fontDisplay}', ui-sans-serif`); }, [t.fontDisplay]);
+  return (
+    <TweaksPanel title="Tweaks">
+      <TweakSection label="Stile" />
+      <TweakRadio label="Variante" value={t.variant} options={VARIANTS} onChange={(v) => setTweak('variant', v)} />
+      <TweakSelect label="Font display" value={t.fontDisplay} options={['Bricolage Grotesque', 'Space Grotesk', 'Instrument Serif', 'Geist']} onChange={(v) => setTweak('fontDisplay', v)} />
+    </TweaksPanel>
+  );
+}
+const mount = document.createElement('div');
+document.body.appendChild(mount);
+ReactDOM.createRoot(mount).render(<App />);
+</script>
+
+</body>
+</html>

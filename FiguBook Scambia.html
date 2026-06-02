@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FiguBook — Scambia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#f4efe6; --bg-elev:#fbf8f1;
+    --ink:#14110d; --ink-2:#3a342a; --muted:#8a8275;
+    --line:#e3dccd; --line-strong:#14110d;
+    --accent:#c8ff3d; --accent-ink:#14110d;
+    --warn:#ff5b2e; --gold:#f5b800; --good:#1f8a5b;
+    --f-display:'Bricolage Grotesque', ui-sans-serif, system-ui;
+    --f-body:'Geist', ui-sans-serif, system-ui;
+    --f-mono:'Geist Mono', ui-monospace, Menlo, monospace;
+    --radius:14px; --radius-lg:22px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer}
+
+  /* NAV */
+  .nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb, var(--bg) 88%, transparent);backdrop-filter:blur(14px) saturate(140%);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:1480px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:28px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:-0.02em}
+  .brand-mark{width:32px;height:32px;border-radius:9px;background:var(--ink);color:var(--accent);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:18px;transform:rotate(-6deg)}
+  .nav-tabs{display:flex;gap:4px;flex:1;margin-left:12px}
+  .nav-tab{padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--ink-2);border:1px solid transparent}
+  .nav-tab.active{background:var(--ink);color:var(--bg)}
+  .nav-tab:hover:not(.active){background:rgba(20,17,13,0.06)}
+  .nav-actions{display:flex;align-items:center;gap:10px}
+  .icon-btn{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--bg-elev);display:grid;place-items:center;color:var(--ink);position:relative}
+  .icon-btn:hover{border-color:var(--ink)}
+  .icon-btn .dot{position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:99px;background:var(--warn);box-shadow:0 0 0 2px var(--bg-elev)}
+  .nav-dropdown{position:absolute;top:calc(100% + 8px);right:0;min-width:320px;background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:200;opacity:0;pointer-events:none;transform:translateY(-4px) scale(.98);transition:opacity .14s,transform .14s;overflow:hidden}
+  .nav-dropdown.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+  .search-panel{min-width:360px}
+  .search-input{width:100%;padding:10px 14px;border:0;border-bottom:1px solid var(--line);background:var(--bg-elev);color:var(--ink);font-size:14px;outline:none;box-sizing:border-box}
+  .search-hints{display:flex;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line)}
+  .search-hint{font-size:12px;padding:4px 10px;border-radius:99px;border:1px solid var(--line);background:var(--bg);color:var(--ink-2);cursor:pointer}
+  .search-hint:hover{border-color:var(--ink);color:var(--ink)}
+  .search-results{max-height:280px;overflow-y:auto}
+  .search-result-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--line)}
+  .search-result-item:hover{background:var(--bg)}
+  .search-result-code{font-family:var(--f-mono);font-size:12px;color:var(--accent);min-width:32px}
+  .search-result-name{font-size:13.5px;font-weight:500;color:var(--ink)}
+  .search-result-album{font-size:11px;color:var(--muted)}
+  .search-empty{padding:18px 14px;font-size:13px;color:var(--muted);text-align:center}
+  .notif-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+  .notif-head h4{font-family:var(--f-display);font-weight:700;font-size:16px;margin:0}
+  .notif-head .mark-read{font-family:var(--f-mono);font-size:10px;color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:0.08em;background:none;border:0;padding:0}
+  .notif-head .mark-read:hover{color:var(--ink)}
+  .notif-item{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;cursor:pointer;border-bottom:1px solid var(--line)}
+  .notif-item:hover{background:var(--bg)}
+  .notif-ic{font-size:18px;line-height:1.2;flex-shrink:0}
+  .notif-txt .nm{font-size:13.5px;font-weight:500;color:var(--ink)}
+  .notif-txt .info{font-size:11px;color:var(--muted);margin-top:2px}
+  .notif-dot{width:8px;height:8px;border-radius:99px;background:var(--accent);flex-shrink:0;margin-top:4px}
+  .notif-item.unread{background:color-mix(in srgb,var(--accent) 5%,var(--bg-elev))}
+  .profile-menu{position:absolute;top:calc(100% + 10px);right:0;width:200px;background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:200;opacity:0;pointer-events:none;transform:translateY(-4px) scale(.98);transition:opacity .14s,transform .14s;padding:4px 0}
+  .profile-menu.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+  .profile-menu-item{padding:9px 14px;font-size:13.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:9px;color:var(--ink-2)}
+  .profile-menu-item:hover{background:var(--bg);color:var(--ink)}
+  .profile-menu-item.danger:hover{color:var(--warn)}
+  .profile-menu-sep{height:1px;background:var(--line)}
+  .avatar{width:38px;height:38px;border-radius:999px;background:linear-gradient(135deg,#ffce5b,#ff5b2e);display:grid;place-items:center;font-family:var(--f-display);font-weight:700;color:#fff;font-size:14px;box-shadow:inset 0 0 0 2px var(--bg-elev), 0 0 0 1px var(--ink)}
+
+  /* Page head */
+  .page-head{max-width:1480px;margin:0 auto;padding:32px 28px 0;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap}
+  .crumb{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;display:flex;gap:6px;align-items:center}
+  .crumb .sep{opacity:.5}
+  .page-head h1{font-family:var(--f-display);font-weight:700;font-size:48px;letter-spacing:-0.025em;margin:8px 0 0;line-height:1}
+  .page-head .sub{color:var(--muted);font-size:14px;margin-top:6px}
+
+  /* ── 3 STAT IN CIMA ─────────────────────────────── */
+  .strip-stats{display:flex;gap:14px;flex-wrap:wrap}
+  .stat{background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:14px 20px;min-width:150px}
+  .stat .big{font-family:var(--f-display);font-weight:700;font-size:28px;line-height:1;letter-spacing:-0.02em;display:block}
+  .stat .lbl{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-top:4px;display:block}
+  .stat .big .pulse-dot{display:inline-block;width:8px;height:8px;border-radius:99px;background:var(--good);margin-right:6px;vertical-align:middle;animation:pulse 1.4s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+  /* ── ALBUM CHIPS ROW ────────────────────────────── */
+  .albums-strip{
+    max-width:1480px;margin:24px auto 0;padding:0 28px;
+  }
+  .albums-strip .ah{
+    font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;
+    margin-bottom:14px;display:flex;align-items:center;gap:10px;
+  }
+  .albums-strip .ah .ln{flex:1;height:1px;background:var(--line);max-width:60px}
+  .album-chips{display:flex;gap:10px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+  .album-chips::-webkit-scrollbar{height:6px}
+  .album-chips::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+
+  .album-chip{
+    flex:0 0 auto;
+    min-width:230px;
+    padding:12px 16px;border-radius:14px;
+    background:var(--bg-elev);border:1px solid var(--line);
+    cursor:pointer;
+    transition:transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+    position:relative;overflow:hidden;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .album-chip:hover{transform:translateY(-2px);box-shadow:0 10px 24px -12px rgba(0,0,0,.25);border-color:var(--ink)}
+  .album-chip.active{
+    background:var(--c1, var(--ink));
+    border-color:var(--c2, var(--ink));
+    color:#fff;
+    box-shadow:0 14px 28px -12px color-mix(in srgb, var(--c1, #000) 60%, transparent);
+  }
+  .album-chip .a-name{font-family:var(--f-display);font-weight:700;font-size:14px;letter-spacing:-0.01em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .album-chip .a-meta{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .album-chip.active .a-meta{color:rgba(255,255,255,.85)}
+  .album-chip .a-match{
+    display:inline-flex;align-items:center;gap:5px;align-self:flex-start;
+    font-family:var(--f-mono);font-size:10.5px;font-weight:700;
+    padding:3px 8px;border-radius:99px;
+    background:var(--accent);color:var(--accent-ink);
+    margin-top:2px;
+    white-space:nowrap;
+  }
+  .album-chip.active .a-match{background:#fff;color:var(--c1, var(--ink))}
+  .album-chip.all-pill .a-name{display:flex;align-items:center;gap:6px}
+
+  /* ── TAB BAR ────────────────────────────────────── */
+  .tab-bar{
+    max-width:1480px;margin:24px auto 0;padding:0 28px;
+    display:flex;gap:0;border-bottom:1px solid var(--line);
+  }
+  .tab-btn{
+    appearance:none;border:0;background:transparent;
+    padding:14px 18px;
+    font-size:14px;font-weight:500;color:var(--muted);
+    cursor:pointer;position:relative;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .tab-btn .count{
+    font-family:var(--f-mono);font-size:11px;font-weight:600;
+    padding:2px 7px;border-radius:99px;background:var(--bg-elev);border:1px solid var(--line);color:var(--ink-2);
+  }
+  .tab-btn:hover{color:var(--ink)}
+  .tab-btn.active{color:var(--ink);font-weight:600}
+  .tab-btn.active::after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:2px;background:var(--ink)}
+  .tab-btn.active .count{background:var(--ink);color:var(--accent);border-color:var(--ink)}
+
+  /* ── FILTER ROW ─────────────────────────────────── */
+  .filter-row{
+    max-width:1480px;margin:18px auto;padding:0 28px;
+    display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:center;
+  }
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{padding:7px 13px;border-radius:99px;background:var(--bg-elev);border:1px solid var(--line);font-size:13px;font-weight:500;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+  .chip.active{background:var(--ink);color:var(--bg-elev);border-color:var(--ink)}
+  .chip:hover:not(.active){border-color:var(--ink)}
+  .sort{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:99px;background:var(--bg-elev);border:1px solid var(--line);font-size:12.5px;color:var(--ink-2);cursor:pointer}
+  .sort:hover{border-color:var(--ink)}
+
+  /* ── NEW PROPOSAL BUTTON (lime, prominent) ──────── */
+  .btn-new{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:12px 22px;border-radius:99px;
+    background:var(--accent);color:var(--accent-ink);border:0;
+    font-size:14.5px;font-weight:700;
+    box-shadow:0 8px 20px -6px color-mix(in srgb, var(--accent) 55%, transparent), inset 0 1px 0 rgba(255,255,255,.4);
+    transition:transform .1s ease, filter .12s ease, box-shadow .12s ease;
+  }
+  .btn-new:hover{
+    filter:brightness(1.06);
+    transform:translateY(-2px);
+    box-shadow:0 14px 26px -8px color-mix(in srgb, var(--accent) 65%, transparent), inset 0 1px 0 rgba(255,255,255,.5);
+  }
+  .btn-new:active{transform:translateY(0)}
+  .btn-new svg{stroke:var(--accent-ink)}
+
+  /* ── PROPOSAL CARDS (compact) ───────────────────── */
+  .cards{max-width:1480px;margin:0 auto 60px;padding:0 28px;display:flex;flex-direction:column;gap:10px}
+
+  .card{
+    background:var(--bg-elev);border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:16px 20px;
+    display:grid;grid-template-columns:56px 1fr auto;gap:18px;align-items:center;
+    cursor:pointer;
+    transition:border-color .14s ease, transform .14s ease, box-shadow .14s ease;
+    position:relative;
+  }
+  .card:hover{
+    border-color:var(--ink);transform:translateY(-2px);
+    box-shadow:0 16px 32px -16px rgba(0,0,0,.2);
+  }
+
+  .av{
+    width:56px;height:56px;border-radius:99px;
+    display:grid;place-items:center;color:#fff;
+    font-family:var(--f-display);font-weight:700;font-size:22px;
+    background:linear-gradient(135deg, var(--av1,#2a6fdb), var(--av2,#7a5ae0));
+    box-shadow:inset 0 0 0 3px var(--bg-elev), 0 0 0 1px var(--line);
+    position:relative;
+  }
+
+  .person{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .person .row1{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .person .name{font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:-0.01em;line-height:1}
+  .person .handle{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+  .friend-pill{
+    display:inline-flex;align-items:center;gap:3px;
+    font-family:var(--f-mono);font-size:9.5px;font-weight:700;letter-spacing:0.06em;
+    padding:2px 7px;border-radius:99px;
+    background:var(--accent);color:var(--accent-ink);text-transform:uppercase;
+  }
+
+  /* Stars rating */
+  .stars{display:inline-flex;align-items:center;gap:2px}
+  .stars .star{width:13px;height:13px;display:inline-block;color:var(--gold)}
+  .stars .star.empty{color:var(--line)}
+  .stars .num{font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--ink);margin-left:4px}
+
+  /* Meta line: distance + total trades */
+  .person .meta{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .person .meta .dot{display:inline-block;width:3px;height:3px;border-radius:99px;background:var(--muted)}
+  .person .meta .pin{display:inline-flex;align-items:center;gap:3px}
+
+  /* Album reference + deal summary */
+  .person .album-ref{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:var(--f-mono);font-size:11px;font-weight:600;
+    color:var(--ink-2);text-transform:uppercase;letter-spacing:0.06em;
+    padding:3px 9px;border-radius:99px;
+    background:var(--bg);border:1px solid var(--line);
+    align-self:flex-start;
+  }
+  .person .album-ref .swatch{width:8px;height:8px;border-radius:3px}
+
+  .deal-line{
+    margin-top:2px;
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    font-size:13px;color:var(--ink-2);
+  }
+  .deal-line b{font-weight:600;color:var(--ink)}
+  .deal-line .sep-dot{display:inline-block;width:3px;height:3px;border-radius:99px;background:var(--muted)}
+
+  /* Right column */
+  .card-actions{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  .balance-badge{
+    font-family:var(--f-mono);font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:0.08em;
+    padding:5px 11px;border-radius:99px;
+    display:inline-flex;align-items:center;gap:5px;
+    white-space:nowrap;
+  }
+  .balance-badge.balanced{background:color-mix(in srgb, var(--good) 14%, transparent);color:var(--good);border:1px solid color-mix(in srgb, var(--good) 35%, transparent)}
+  .balance-badge.skewed{background:color-mix(in srgb, var(--gold) 18%, transparent);color:#8a6700;border:1px solid color-mix(in srgb, var(--gold) 40%, transparent)}
+  .status-pill{
+    font-family:var(--f-mono);font-size:10.5px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.1em;
+    padding:5px 10px;border-radius:99px;
+    background:var(--bg);border:1px solid var(--line);color:var(--ink-2);
+    white-space:nowrap;
+  }
+  .status-pill.pending{background:color-mix(in srgb, var(--gold) 16%, var(--bg-elev));border-color:color-mix(in srgb, var(--gold) 40%, var(--line));color:#8a6700}
+  .status-pill.accepted{background:color-mix(in srgb, var(--good) 14%, var(--bg-elev));border-color:color-mix(in srgb, var(--good) 35%, var(--line));color:var(--good)}
+  .status-pill.counter{background:color-mix(in srgb, #7a5ae0 14%, var(--bg-elev));border-color:color-mix(in srgb, #7a5ae0 40%, var(--line));color:#5a3aa0}
+  .status-pill.confirmed{background:var(--ink);color:var(--accent);border-color:var(--ink)}
+
+  .vedi{
+    font-size:13px;font-weight:600;color:var(--ink);
+    display:inline-flex;align-items:center;gap:4px;
+    padding:6px 12px;border-radius:99px;
+    background:transparent;border:1px solid var(--line);
+    transition:all .14s ease;
+  }
+  .card:hover .vedi{background:var(--ink);color:var(--bg-elev);border-color:var(--ink)}
+
+  /* Confirmed meet card */
+  .card.confirmed{
+    border-color:color-mix(in srgb, var(--ink) 35%, var(--line));
+    background:color-mix(in srgb, var(--accent) 6%, var(--bg-elev));
+  }
+  .meet-info{
+    grid-column:2 / 4;margin-top:4px;
+    display:flex;gap:14px;flex-wrap:wrap;
+    font-family:var(--f-mono);font-size:11px;color:var(--ink-2);text-transform:uppercase;letter-spacing:0.08em;
+    padding:8px 12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;
+  }
+  .meet-info b{color:var(--ink)}
+  .meet-info .meet-row{display:inline-flex;align-items:center;gap:5px}
+
+  /* Empty state */
+  .empty-state{
+    padding:60px 28px;text-align:center;
+    background:var(--bg-elev);border:1px dashed var(--line);border-radius:var(--radius-lg);
+    margin:0 28px 60px;max-width:1480px;
+  }
+  .empty-state .ico{font-family:var(--f-display);font-size:48px;color:var(--muted);margin-bottom:8px}
+  .empty-state h3{font-family:var(--f-display);font-weight:700;font-size:20px;margin:0 0 6px}
+  .empty-state p{color:var(--muted);font-size:14px;margin:0}
+
+  /* Toast */
+  .toast{
+    position:fixed;bottom:24px;left:24px;z-index:200;
+    padding:10px 18px;border-radius:99px;
+    background:var(--ink);color:var(--accent);
+    font-family:var(--f-mono);font-size:12px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.08em;
+    opacity:0;transform:translateY(10px);pointer-events:none;
+    transition:opacity .22s ease, transform .22s ease;
+    box-shadow:0 14px 32px -12px rgba(0,0,0,.5);
+  }
+  .toast.show{opacity:1;transform:translateY(0)}
+
+  /* Disclaimer */
+  .disclaimer{max-width:1480px;margin:30px auto 80px;padding:20px 28px 0;font-family:var(--f-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;line-height:1.6;border-top:1px solid var(--line)}
+
+  /* Variants */
+  body[data-variant="stadio"]{
+    --bg:#0d1b2a;--bg-elev:#152736;--ink:#f4efe6;--ink-2:#cfd9e3;--muted:#7e90a3;
+    --line:#22384a;--line-strong:#f4efe6;--accent:#ff7a3d;--accent-ink:#0d1b2a;
+    --warn:#ff5b2e;--gold:#ffd25b;--good:#4ade80;
+  }
+  body[data-variant="stadio"] .nav-tab.active{background:var(--accent);color:var(--ink)}
+
+  /* ── Stadio dark — chip contrast ────────────────────────────── */
+  /* Inactive: stronger border + readable meta text */
+  body[data-variant="stadio"] .album-chip{
+    border-color:rgba(244,239,230,.20);
+  }
+  body[data-variant="stadio"] .album-chip .a-meta{
+    color:var(--ink-2);
+  }
+  body[data-variant="stadio"] .album-chip:hover{
+    border-color:rgba(244,239,230,.42);
+  }
+  /* Active: full-color bg, white text, tighter border */
+  body[data-variant="stadio"] .album-chip.active{
+    color:#fff;
+    border-color:var(--c1, var(--accent));
+    box-shadow:0 14px 28px -12px color-mix(in srgb, var(--c1, #ff7a3d) 55%, transparent);
+  }
+  body[data-variant="stadio"] .album-chip.active .a-name{
+    color:#fff;
+  }
+  body[data-variant="stadio"] .album-chip.active .a-meta{
+    color:rgba(255,255,255,.85);
+  }
+  /* Match pill on active chip: white-tinted badge */
+  body[data-variant="stadio"] .album-chip.active .a-match{
+    background:rgba(255,255,255,.22);
+    color:#fff;
+  }
+
+  body[data-variant="streetwear"]{
+    --bg:#ece9e2;--bg-elev:#fefcf7;--ink:#0a0a0a;--ink-2:#2a2a2a;--muted:#7d7a72;
+    --line:#d8d4ca;--line-strong:#0a0a0a;--accent:#ff3df5;--accent-ink:#0a0a0a;
+    --warn:#ff5b2e;--gold:#0ea5e9;--good:#0a8d3a;--f-display:'Space Grotesk', ui-sans-serif;
+  }
+  body[data-variant="streetwear"] .brand-mark{background:var(--accent);color:#0a0a0a}
+
+  /* Responsive */
+  @media (max-width: 820px){
+    .card{grid-template-columns:48px 1fr;gap:14px}
+    .av{width:48px;height:48px;font-size:18px}
+    .card-actions{grid-column:1/-1;flex-direction:row;justify-content:space-between;flex-wrap:wrap;align-items:center}
+    .page-head h1{font-size:36px}
+    .strip-stats{width:100%}
+  }
+  html{background-color:#0d1b2a}
+</style>
+</head>
+<body data-variant="stadio">
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="FiguBook Dashboard.html"><span class="brand-mark">F</span><span>FiguBook</span></a>
+    <div class="nav-tabs">
+      <a class="nav-tab" href="FiguBook Dashboard.html">Dashboard</a>
+      <a class="nav-tab" href="FiguBook Album.html">Album</a>
+      <a class="nav-tab active" href="FiguBook Scambia.html">Scambia</a>
+      <a class="nav-tab" href="#">Community</a>
+    </div>
+    <div class="nav-actions">
+      <!-- Cerca -->
+      <div style="position:relative">
+        <button class="icon-btn" id="searchBtn" aria-label="Cerca"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+        <div class="nav-dropdown search-panel" id="searchPanel">
+          <input class="search-input" id="searchInput" placeholder="Cerca numero carta o album..." autocomplete="off" />
+          <div class="search-hints">
+            <button class="search-hint" data-hint="carta">&#127183; Numero carta</button>
+            <button class="search-hint" data-hint="album">&#128218; Album</button>
+          </div>
+          <div class="search-results" id="searchResults"></div>
+        </div>
+      </div>
+      <!-- Messaggi -->
+      <div style="position:relative">
+        <button class="icon-btn" id="msgBtn" aria-label="Messaggi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button>
+      </div>
+      <!-- Notifiche -->
+      <div style="position:relative">
+        <button class="icon-btn" id="notifBtn" aria-label="Notifiche"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="dot" id="notifDot"></span></button>
+        <div class="nav-dropdown" id="notifPanel">
+          <div class="notif-head"><h4>Notifiche</h4><button class="mark-read" id="markReadBtn">Segna tutte lette</button></div>
+          <div class="notif-item unread" data-href="FiguBook Scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Marco</div><div class="info">3 &#8596; 3 figurine &middot; Calciatori 25/26 &middot; 4h fa</div></div><div class="notif-dot"></div></div>
+          <div class="notif-item unread" data-href="FiguBook Scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Anna</div><div class="info">2 &#8596; 2 figurine &middot; Calciatori 25/26 &middot; 5h fa</div></div><div class="notif-dot"></div></div>
+          <div class="notif-item"><div class="notif-ic">&#9733;</div><div class="notif-txt"><div class="nm">Badge sbloccato: &ldquo;Reparto Difesa&rdquo;</div><div class="info">Calciatori 25/26 &middot; Ieri</div></div></div>
+        </div>
+      </div>
+      <!-- Profilo -->
+      <div style="position:relative">
+        <div class="avatar" id="avatarBtn" style="cursor:pointer">L</div>
+        <div class="profile-menu" id="profileMenu">
+          <div class="profile-menu-item" id="pmProfilo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>Il mio profilo</div>
+          <div class="profile-menu-sep"></div>
+          <div class="profile-menu-item" id="pmImpostazioni"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Impostazioni</div>
+          <div class="profile-menu-sep"></div>
+          <div class="profile-menu-item danger" id="pmEsci"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Esci</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="page-head">
+  <div>
+    <div class="crumb"><a href="FiguBook Dashboard.html">Dashboard</a><span class="sep">/</span><span style="color:var(--ink)">Scambia</span></div>
+    <h1>Scambia</h1>
+    <div class="sub">Le tue proposte, in arrivo e in uscita. Le doppie non si sprecano.</div>
+  </div>
+  <div class="strip-stats">
+    <div class="stat"><span class="big"><span class="pulse-dot"></span>0</span><span class="lbl">Vicini in zona</span></div>
+    <div class="stat"><span class="big">0</span><span class="lbl">Match pronti</span></div>
+    <div class="stat"><span class="big">0</span><span class="lbl">Scambi completati</span></div>
+  </div>
+</div>
+
+<!-- ALBUM CHIPS -->
+<div class="albums-strip">
+  <div class="ah">
+    <span>Filtra per album</span>
+    <span class="ln"></span>
+  </div>
+  <div class="album-chips" id="albumChips"></div>
+</div>
+
+<!-- TAB BAR -->
+<div style="max-width:1480px;margin:18px auto 0;padding:0 28px">
+  <span style="font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);background:color-mix(in srgb, var(--gold) 15%, transparent);border:1px solid color-mix(in srgb, var(--gold) 40%, transparent);padding:2px 8px;border-radius:99px">DATI DI ESEMPIO</span>
+</div>
+<div class="tab-bar" id="tabBar">
+  <button class="tab-btn active" data-tab="match">Match consigliati <span class="count">5</span></button>
+  <button class="tab-btn" data-tab="received">Ricevute <span class="count">3</span></button>
+  <button class="tab-btn" data-tab="sent">Inviate <span class="count">2</span></button>
+  <button class="tab-btn" data-tab="confirmed">Confermati <span class="count">2</span></button>
+</div>
+
+<div class="filter-row">
+  <div class="chips" id="chips">
+    <button class="chip active" data-filter="all">Tutti</button>
+    <button class="chip" data-filter="nearby">Solo vicini (&lt; 1 km)</button>
+    <button class="chip" data-filter="friends">Solo amici</button>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <button class="sort">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
+      Ordina: Più recenti
+    </button>
+    <button class="btn-new" id="newPropose">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      Nuova proposta
+    </button>
+  </div>
+</div>
+
+<div class="cards" id="cards"></div>
+
+<div class="disclaimer">
+  Lo scambio fra utenti avviene di persona. FiguBook non interviene nel trasferimento dei beni. Verifica sempre l'identità del tuo interlocutore prima di incontrarvi.
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="figubook-core.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+
+<script>
+// ─── ALBUMS (for chip filter) — built dynamically from localStorage (Album.html is source of truth) ──
+const _ALBUMS_MASTER = [
+  { id:'calciatori-25-26',  name:'Calciatori 25-26',    c1:'#1f8a5b', c2:'#0a3a8b', total:784, storageKey:'figubook-calciatori-2526-v1' },
+  { id:'calciatori-24-25',  name:'Calciatori 24-25',    c1:'#f5b800', c2:'#7a5a00', total:886, storageKey:'figubook-calciatori-2425-v1' },
+  { id:'calciatori-23-24',  name:'Calciatori 23-24',    c1:'#5a5a5a', c2:'#2a2a2a', total:682, storageKey:'figubook-calciatori-2324-v1' },
+  { id:'calciatori-22-23',  name:'Calciatori 22-23',    c1:'#c8851f', c2:'#7a3a00', total:650, storageKey:'figubook-calciatori-2223-v1' },
+  { id:'mondiali-qatar-22', name:'Qatar 2022',          c1:'#a01d2e', c2:'#5a1a0a', total:670, storageKey:null },
+  { id:'mondiali-2026',     name:'FIFA World Cup 2026', c1:'#0a3a8b', c2:'#a01d2e', total:720, storageKey:'figubook-fwc2026-v1' },
+  { id:'calb-25-26',        name:'Serie B 25-26',       c1:'#1f8a5b', c2:'#14110d', total:440, storageKey:'figubook-serieb-2526-v1' },
+  { id:'adrenalyn-25-26',   name:'Adrenalyn XL 25-26',  c1:'#7a5ae0', c2:'#0a3a8b', total:450, storageKey:null },
+  { id:'match-attax-ucl',   name:'Match Attax UCL',     c1:'#0a4a8b', c2:'#14110d', total:300, storageKey:null },
+];
+// Catalog-ID → album-ID map (matches Album.html CATALOG_EXISTING_MAP)
+const _SCAMBIA_CATALOG_MAP = {
+  'cal-22-23':'calciatori-22-23', 'cal-23-24':'calciatori-23-24',
+  'cal-24-25':'calciatori-24-25', 'cal-25-26':'calciatori-25-26',
+  'calb-25-26':'calb-25-26',      'adr-25-26':'adrenalyn-25-26',
+  'ma-25-26':'match-attax-ucl',   'fwc-26':'mondiali-2026',
+  'qatar-22-2':'mondiali-qatar-22',
+};
+
+function _buildAlbumsRef(){
+  let removed = [];
+  try { removed = JSON.parse(localStorage.getItem('figubook-removed-albums-v1') || '[]'); } catch(e) {}
+  // Source of truth: figubook-my-albums-v1
+  const myAlbums = FiguBookCore.getMyAlbums();
+  const keepIds = new Set(myAlbums.map(cid => _SCAMBIA_CATALOG_MAP[cid] || cid));
+  return _ALBUMS_MASTER
+    .filter(a => !removed.includes(a.id) && keepIds.has(a.id))
+    .map(a => {
+      const s = a.storageKey ? FiguBookCore.getAlbumStats(a.storageKey) : {have:0, doubles:0};
+      const have = s.have || 0;
+      // Auto-compute status from real data
+      const status = (have >= a.total && a.total > 0) ? 'done' : 'active';
+      return { id:a.id, name:a.name, c1:a.c1, c2:a.c2, total:a.total, status,
+               missing:Math.max(0, a.total - have), doubles:s.doubles, matches:0 };
+    });
+}
+const ALBUMS_REF = _buildAlbumsRef();
+
+// ─── USERS ──────────────────────────────────────────────────
+const USERS = {
+  giada:    {name:'Giada',     handle:'@giadaa',     av1:'#c8ff3d', av2:'#1f8a5b', initial:'G', rep:4.9, totalTrades:34},
+  marco:    {name:'Marco',     handle:'@kicko',      av1:'#7a5ae0', av2:'#ff3df5', initial:'M', rep:4.6, totalTrades:18},
+  fede:     {name:'Federico',  handle:'@fede10',     av1:'#2a6fdb', av2:'#0ea5e9', initial:'F', rep:5.0, totalTrades:62, friend:true},
+  sara:     {name:'Sara',      handle:'@ssarah',     av1:'#ff5b2e', av2:'#ffce5b', initial:'S', rep:4.3, totalTrades:12},
+  stefano:  {name:'Stefano',   handle:'@stef.inter', av1:'#0a3a8b', av2:'#1a1a1a', initial:'ST', rep:4.7, totalTrades:27},
+  anna:     {name:'Anna',      handle:'@annette',    av1:'#7a1212', av2:'#fcc500', initial:'A', rep:4.8, totalTrades:41},
+  luca:     {name:'Luca',      handle:'@lucone98',   av1:'#a01d2e', av2:'#fcc500', initial:'L', rep:3.9, totalTrades:9},
+  giulia:   {name:'Giulia',    handle:'@giulia.pm',  av1:'#7a5ae0', av2:'#0a3a8b', initial:'GI', rep:5.0, totalTrades:88, friend:true},
+  tommaso:  {name:'Tommaso',   handle:'@tomtom',     av1:'#1f8a5b', av2:'#0a4a8b', initial:'T', rep:4.5, totalTrades:23},
+};
+
+// ─── PROPOSALS ──────────────────────────────────────────────
+const PROPOSALS = [
+  // Match consigliati
+  { id:'m1', tab:'match', user:'giada',   distance:'340 m',  album:'calciatori-25-26', give:['220','345','401'], get:['178','PAR-09','STY3'], status:'match', statusLabel:'Match 3 ↔ 3', balance:'pari' },
+  { id:'m2', tab:'match', user:'fede',    distance:'1.1 km', album:'calciatori-25-26', give:['245','267','412','490','503'], get:['401','455','UPG-12','STY8','78'], status:'match', statusLabel:'Match 5 ↔ 5', balance:'pari' },
+  { id:'m3', tab:'match', user:'stefano', distance:'2.3 km', album:'adrenalyn-25-26',  give:['340','350','360','380','394','410'], get:['12','45','67','89','102','155'], status:'match', statusLabel:'Match 6 ↔ 6', balance:'pari' },
+  { id:'m4', tab:'match', user:'marco',   distance:'610 m',  album:'calciatori-25-26', give:['UPG-12','UPG-44','UPG-67'], get:['82','155','312','421'], status:'match', statusLabel:'Match 3 ↔ 4', balance:'skew' },
+  { id:'m5', tab:'match', user:'sara',    distance:'1.4 km', album:'fwc-26',           give:['CEL-12','CEL-34'], get:['K-2','K-4'], status:'match', statusLabel:'Match 2 ↔ 2', balance:'pari' },
+
+  // Ricevute
+  { id:'r1', tab:'received', user:'marco', distance:'610 m',  album:'calciatori-25-26', give:['220','345','401'], get:['178','PAR-09','STY3'], status:'pending', statusLabel:'In attesa', when:'18h fa', balance:'pari' },
+  { id:'r2', tab:'received', user:'anna',  distance:'2.0 km', album:'calciatori-25-26', give:['514'], get:['UPG-12','UPG-44'], status:'counter', statusLabel:'Contro-proposta', when:'1 g fa', balance:'skew' },
+  { id:'r3', tab:'received', user:'luca',  distance:'3.4 km', album:'match-attax',      give:['441'], get:['390'], status:'pending', statusLabel:'In attesa', when:'2 g fa', balance:'pari' },
+
+  // Inviate
+  { id:'s1', tab:'sent', user:'giada',   distance:'340 m',  album:'calciatori-25-26', give:['245','267','412'], get:['74','89','120'], status:'pending', statusLabel:'In attesa lei', when:'4h fa', balance:'pari' },
+  { id:'s2', tab:'sent', user:'fede',    distance:'1.1 km', album:'calciatori-25-26', give:['490','503','512','601','612'], get:['401','455','UPG-12','STY8','78'], status:'accepted', statusLabel:'Accettato', when:'Ieri', balance:'pari' },
+
+  // Confermati
+  { id:'c1', tab:'confirmed', user:'giulia',  distance:'500 m',  album:'calciatori-25-26', give:['220','345','401','CEL-12'], get:['178','PAR-09','STY3','K-2'], status:'confirmed', statusLabel:'Incontro programmato', when:'Oggi',   meet:'Piazza Duomo · 17:30', balance:'pari' },
+  { id:'c2', tab:'confirmed', user:'tommaso', distance:'1.8 km', album:'adrenalyn-25-26',  give:['340','350','360','UPG-44','UPG-67','UPG-78','STY10'], get:['12','45','67','89','102','155','198'], status:'confirmed', statusLabel:'Incontro programmato', when:'Domani', meet:'Stazione Centrale · 10:00', balance:'pari' },
+];
+
+let activeTab = 'match';
+let activeFilter = 'all';
+let activeAlbum = 'all';  // 'all' or album id
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove('show'), 1600);
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
+
+// ─── ALBUM CHIPS ────────────────────────────────────────────
+function renderAlbumChips(){
+  const root = document.getElementById('albumChips');
+  root.innerHTML = '';
+
+  // "All" chip
+  const totalMatches = ALBUMS_REF.reduce((s,a)=>s+a.matches, 0);
+  const all = document.createElement('button');
+  all.className = 'album-chip all-pill' + (activeAlbum === 'all' ? ' active' : '');
+  all.style.setProperty('--c1', '#14110d');
+  all.style.setProperty('--c2', '#3a342a');
+  all.innerHTML = `
+    <div class="a-name"><span>📚</span>Tutti gli album</div>
+    <div class="a-meta">${ALBUMS_REF.length} album</div>
+    <span class="a-match">${totalMatches} match</span>
+  `;
+  all.addEventListener('click', () => { activeAlbum = 'all'; renderAlbumChips(); renderCards(); });
+  root.appendChild(all);
+
+  ALBUMS_REF.forEach(a => {
+    const chip = document.createElement('button');
+    chip.className = 'album-chip' + (activeAlbum === a.id ? ' active' : '');
+    chip.style.setProperty('--c1', a.c1);
+    chip.style.setProperty('--c2', a.c2);
+    chip.innerHTML = `
+      <div class="a-name">${escapeHtml(a.name)}</div>
+      <div class="a-meta">${a.missing}/${a.total} mancanti · ${a.doubles} doppie</div>
+      <span class="a-match">${a.matches} match disponibili</span>
+    `;
+    chip.addEventListener('click', () => { activeAlbum = a.id; renderAlbumChips(); renderCards(); });
+    root.appendChild(chip);
+  });
+}
+
+// ─── STAR RATING ───────────────────────────────────────────
+function renderStars(rep){
+  const full = Math.floor(rep);
+  const half = rep - full >= 0.5;
+  let html = '<span class="stars">';
+  for (let i=1; i<=5; i++){
+    if (i <= full){
+      html += '<svg class="star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88L2 9.27l6.91-1.01L12 2z"/></svg>';
+    } else if (i === full+1 && half){
+      html += '<svg class="star" viewBox="0 0 24 24"><defs><linearGradient id="halfg"><stop offset="50%" stop-color="currentColor"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs><path fill="url(#halfg)" stroke="currentColor" stroke-width="0.7" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88L2 9.27l6.91-1.01L12 2z"/></svg>';
+    } else {
+      html += '<svg class="star empty" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88L2 9.27l6.91-1.01L12 2z"/></svg>';
+    }
+  }
+  html += `<span class="num">${rep.toFixed(1)}</span></span>`;
+  return html;
+}
+
+// ─── CARDS ─────────────────────────────────────────────────
+function renderCards(){
+  const container = document.getElementById('cards');
+  container.innerHTML = '';
+
+  const list = PROPOSALS
+    .filter(p => p.tab === activeTab)
+    .filter(p => activeAlbum === 'all' || p.album === activeAlbum)
+    .filter(p => {
+      if (activeFilter === 'all') return true;
+      if (activeFilter === 'nearby') {
+        // Parse distance to meters
+        const parts = p.distance.split(' ');
+        const v = parseFloat(parts[0]);
+        const unit = parts[1] || 'm';
+        const meters = unit.startsWith('km') ? v * 1000 : v;
+        return meters < 1000;
+      }
+      if (activeFilter === 'friends') return USERS[p.user] && USERS[p.user].friend;
+      return true;
+    });
+
+  if (list.length === 0){
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="ico">∅</div>
+        <h3>Niente da mostrare qui</h3>
+        <p>Cambia tab, album o filtro per vedere altre proposte.</p>
+      </div>`;
+    return;
+  }
+
+  list.forEach(p => {
+    const user = USERS[p.user];
+    const album = ALBUMS_REF.find(a => a.id === p.album);
+    const isConfirmed = p.tab === 'confirmed';
+    const isMatch = p.tab === 'match';
+
+    // "Hai bisogno di X sue · Ha bisogno di X tue"
+    // For 'match' tab: 'tu hai' = doppie/things he needs ; 'lui ha' = mancanti for me
+    // give = ciò che tu offri ; get = ciò che ricevi
+    const youNeedCount = p.get.length;     // sue figurine che ti mancano
+    const heNeedsCount = p.give.length;    // tue doppie che gli mancano
+
+    const card = document.createElement('a');
+    card.className = 'card' + (isConfirmed ? ' confirmed' : '');
+    card.href = `FiguBook Scambia Dettaglio.html?id=${encodeURIComponent(p.id)}`;
+
+    card.innerHTML = `
+      <div class="av" style="--av1:${user.av1};--av2:${user.av2}">
+        ${escapeHtml(user.initial)}
+      </div>
+      <div class="person">
+        <div class="row1">
+          <span class="name">${escapeHtml(user.name)}</span>
+          <span class="handle">${escapeHtml(user.handle)}</span>
+          ${user.friend ? '<span class="friend-pill">★ Amico</span>' : ''}
+          ${renderStars(user.rep)}
+        </div>
+        <div class="meta">
+          <span class="pin">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 14.5 9 2.5 2.5 0 0 1 12 11.5z"/></svg>
+            ${escapeHtml(p.distance)}
+          </span>
+          <span class="dot"></span>
+          <span>${user.totalTrades} scambi totali</span>
+          ${p.when ? `<span class="dot"></span><span>${escapeHtml(p.when)}</span>` : ''}
+        </div>
+        ${album ? `
+          <span class="album-ref">
+            <span class="swatch" style="background:linear-gradient(135deg, ${album.c1}, ${album.c2})"></span>
+            ${escapeHtml(album.name)}
+          </span>
+        ` : ''}
+        <div class="deal-line">
+          <span>Hai bisogno di <b>${youNeedCount} sue</b></span>
+          <span class="sep-dot"></span>
+          <span>Ha bisogno di <b>${heNeedsCount} tue</b></span>
+        </div>
+        ${isConfirmed ? `
+          <div class="meet-info">
+            <span class="meet-row">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <b>${escapeHtml(p.meet)}</b>
+            </span>
+            <span class="meet-row">${p.give.length} ↔ ${p.get.length} figurine</span>
+          </div>
+        ` : ''}
+      </div>
+      <div class="card-actions">
+        ${!isConfirmed ? `<span class="balance-badge ${p.balance === 'pari' ? 'balanced' : 'skewed'}">${p.balance === 'pari' ? '✓ Bilanciato' : '⚖ Sbilanciato'}</span>` : ''}
+        <span class="status-pill ${p.status}">${escapeHtml(p.statusLabel)}</span>
+        <span class="vedi">Vedi <span style="font-family:var(--f-mono)">→</span></span>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+// ─── HANDLERS ──────────────────────────────────────────────
+document.querySelectorAll('#tabBar .tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    activeTab = btn.dataset.tab;
+    document.querySelectorAll('#tabBar .tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    activeFilter = 'all';
+    document.querySelectorAll('#chips .chip').forEach(c => c.classList.toggle('active', c.dataset.filter === 'all'));
+    renderCards();
+  });
+});
+
+document.querySelectorAll('#chips .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    activeFilter = chip.dataset.filter;
+    document.querySelectorAll('#chips .chip').forEach(c => c.classList.toggle('active', c === chip));
+    renderCards();
+  });
+});
+
+document.getElementById('newPropose').addEventListener('click', () => {
+  showToast('Flow "Nuova proposta" in arrivo nella prossima versione');
+});
+
+renderAlbumChips();
+renderCards();
+
+// ── Live sync: rebuild chips + re-render on storage change ────
+function _refreshScambia(){
+  const fresh = _buildAlbumsRef();
+  ALBUMS_REF.length = 0;
+  fresh.forEach(a => ALBUMS_REF.push(a));
+  renderAlbumChips();
+}
+FiguBookCore.initAutoSync(_refreshScambia);
+
+// ── Navbar JS ─────────────────────────────────────────────────
+(function initNavbar(){
+  function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function closeAllPanels(){
+    var sp=document.getElementById('searchPanel'),np=document.getElementById('notifPanel'),pm=document.getElementById('profileMenu');
+    if(sp)sp.classList.remove('open');
+    if(np)np.classList.remove('open');
+    if(pm)pm.classList.remove('open');
+  }
+
+  // SEARCH
+  var SEARCH_ALBUM_DATA = [
+    { id:'calciatori-25-26', name:'Calciatori 25-26',    href:'FiguBook Calciatori 2025-2026.html',  storageKey:'figubook-calciatori-2526-v1' },
+    { id:'calciatori-24-25', name:'Calciatori 24-25',    href:'FiguBook Calciatori 2024-2025.html',  storageKey:'figubook-calciatori-2425-v1' },
+    { id:'calciatori-23-24', name:'Calciatori 23-24',    href:'FiguBook Calciatori 2023-2024.html',  storageKey:'figubook-calciatori-2324-v1' },
+    { id:'calciatori-22-23', name:'Calciatori 22-23',    href:'FiguBook Calciatori 2022-2023.html',  storageKey:'figubook-calciatori-2223-v1' },
+    { id:'mondiali-2026',    name:'FIFA World Cup 2026', href:'FiguBook FIFA World Cup 2026.html',   storageKey:'figubook-fwc2026-v1' },
+    { id:'calb-25-26',       name:'Serie B 25-26',       href:'FiguBook Serie B 2025-2026.html',     storageKey:'figubook-serieb-2526-v1' },
+  ];
+  function buildSearchIndex(){
+    var idx=[];
+    SEARCH_ALBUM_DATA.forEach(function(alb){
+      idx.push({type:'album',code:'',name:alb.name,album:alb.name,href:alb.href});
+      try{
+        var raw=localStorage.getItem(alb.storageKey);
+        if(!raw)return;
+        var parsed=JSON.parse(raw),names=parsed.names;
+        if(!names)return;
+        Object.keys(names).forEach(function(code){
+          if(names[code])idx.push({type:'card',code:code,name:names[code],album:alb.name,href:alb.href+'#card-'+code});
+        });
+      }catch(e){}
+    });
+    return idx;
+  }
+  function renderSearchResults(query){
+    var res=document.getElementById('searchResults');
+    if(!res)return;
+    var q=query.trim().toLowerCase();
+    if(!q){res.innerHTML='';return;}
+    var idx=buildSearchIndex();
+    var hits=idx.filter(function(it){
+      return it.code.toLowerCase().indexOf(q)>=0||it.name.toLowerCase().indexOf(q)>=0||it.album.toLowerCase().indexOf(q)>=0;
+    }).slice(0,12);
+    if(!hits.length){
+      res.innerHTML='<div class="search-empty">Nessun risultato per "'+_esc(query)+'"</div>';
+      return;
+    }
+    res.innerHTML=hits.map(function(it){
+      return '<div class="search-result-item" data-href="'+_esc(it.href)+'">'
+        +(it.type==='card'?'<span class="search-result-code">'+_esc(it.code)+'</span>':'<span class="search-result-code">&#128218;</span>')
+        +'<div><div class="search-result-name">'+_esc(it.name)+'</div>'
+        +'<div class="search-result-album">'+_esc(it.album)+'</div></div></div>';
+    }).join('');
+    res.querySelectorAll('.search-result-item').forEach(function(el){
+      el.addEventListener('click',function(){window.location.href=el.dataset.href;});
+    });
+  }
+  var searchBtn=document.getElementById('searchBtn');
+  var searchPanel=document.getElementById('searchPanel');
+  var searchInput=document.getElementById('searchInput');
+  if(searchBtn&&searchPanel){
+    searchBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var isOpen=searchPanel.classList.contains('open');
+      closeAllPanels();
+      if(!isOpen){searchPanel.classList.add('open');setTimeout(function(){if(searchInput)searchInput.focus();},60);}
+    });
+  }
+  if(searchInput){
+    searchInput.addEventListener('input',function(e){renderSearchResults(e.target.value);});
+  }
+  document.querySelectorAll('.search-hint').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(searchInput){searchInput.value=btn.dataset.hint;renderSearchResults(btn.dataset.hint);searchInput.focus();}
+    });
+  });
+
+  // MESSAGES
+  var msgBtn=document.getElementById('msgBtn');
+  if(msgBtn){
+    msgBtn.addEventListener('click',function(){window.location.href='FiguBook Dashboard.html#messages';});
+  }
+
+  // NOTIFICATIONS
+  // notif handled via FiguBookCore
+  var notifBtn=document.getElementById('notifBtn');
+  var notifPanel=document.getElementById('notifPanel');
+  var notifDot=document.getElementById('notifDot');
+  var markReadBtn=document.getElementById('markReadBtn');
+  function updateNotifDot(){
+    if(!notifDot)return;
+    notifDot.style.display=(FiguBookCore.getNotifRead())?'none':'';
+  }
+  updateNotifDot();
+  if(notifBtn&&notifPanel){
+    notifBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var isOpen=notifPanel.classList.contains('open');
+      closeAllPanels();
+      if(!isOpen){
+        notifPanel.classList.add('open');
+        FiguBookCore.setNotifRead();
+        updateNotifDot();
+      }
+    });
+  }
+  if(markReadBtn){
+    markReadBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      document.querySelectorAll('.notif-item.unread').forEach(function(el){el.classList.remove('unread');});
+      document.querySelectorAll('.notif-dot').forEach(function(el){el.remove();});
+      FiguBookCore.setNotifRead();
+      updateNotifDot();
+    });
+  }
+  document.querySelectorAll('.notif-item[data-href]').forEach(function(el){
+    el.addEventListener('click',function(){window.location.href=el.dataset.href;});
+  });
+
+  // PROFILE
+  var avatarBtn=document.getElementById('avatarBtn');
+  var profileMenu=document.getElementById('profileMenu');
+  if(avatarBtn&&profileMenu){
+    avatarBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var isOpen=profileMenu.classList.contains('open');
+      closeAllPanels();
+      if(!isOpen)profileMenu.classList.add('open');
+    });
+  }
+  var pmProfilo=document.getElementById('pmProfilo');
+  if(pmProfilo)pmProfilo.addEventListener('click',function(){closeAllPanels();showToast('Profilo in arrivo');});
+  var pmImpostazioni=document.getElementById('pmImpostazioni');
+  if(pmImpostazioni)pmImpostazioni.addEventListener('click',function(){closeAllPanels();showToast('Impostazioni in arrivo');});
+  var pmEsci=document.getElementById('pmEsci');
+  if(pmEsci){
+    pmEsci.addEventListener('click',function(){
+      FiguBookCore.clearSession();
+      window.location.href='FiguBook Benvenuto.html';
+    });
+  }
+
+  // Close on outside click
+  document.addEventListener('click',function(e){
+    var inSearch=searchPanel&&searchPanel.contains(e.target);
+    var inNotif=notifPanel&&notifPanel.contains(e.target);
+    var inProfile=profileMenu&&profileMenu.contains(e.target);
+    if(!inSearch&&!inNotif&&!inProfile)closeAllPanels();
+  });
+})();
+</script>
+
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "variant": "stadio",
+  "fontDisplay": "Space Grotesk"
+}/*EDITMODE-END*/;
+const VARIANTS = ["pitch", "stadio", "streetwear"];
+function App(){
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  React.useEffect(() => { document.body.dataset.variant = t.variant; }, [t.variant]);
+  React.useEffect(() => { document.documentElement.style.setProperty('--f-display', `'${t.fontDisplay}', ui-sans-serif`); }, [t.fontDisplay]);
+  return (
+    <TweaksPanel title="Tweaks">
+      <TweakSection label="Stile" />
+      <TweakRadio label="Variante" value={t.variant} options={VARIANTS} onChange={(v) => setTweak('variant', v)} />
+      <TweakSelect label="Font display" value={t.fontDisplay} options={['Bricolage Grotesque', 'Space Grotesk', 'Instrument Serif', 'Geist']} onChange={(v) => setTweak('fontDisplay', v)} />
+    </TweaksPanel>
+  );
+}
+const mount = document.createElement('div');
+document.body.appendChild(mount);
+ReactDOM.createRoot(mount).render(<App />);
+</script>
+
+</body>
+</html>

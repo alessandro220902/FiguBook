@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FiguBook — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#f4efe6; --bg-elev:#fbf8f1;
+    --ink:#14110d; --ink-2:#3a342a; --muted:#8a8275;
+    --line:#e3dccd; --line-strong:#14110d;
+    --accent:#c8ff3d; --accent-ink:#14110d;
+    --warn:#ff5b2e; --gold:#f5b800; --good:#1f8a5b;
+    --f-display:'Bricolage Grotesque', ui-sans-serif, system-ui;
+    --f-body:'Geist', ui-sans-serif, system-ui;
+    --f-mono:'Geist Mono', ui-monospace, Menlo, monospace;
+    --radius:14px; --radius-lg:22px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer}
+
+  /* ── NAV ─────────────────────────────────────── */
+  .nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb, var(--bg) 88%, transparent);backdrop-filter:blur(14px) saturate(140%);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:1480px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:28px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:-0.02em}
+  .brand-mark{width:32px;height:32px;border-radius:9px;background:var(--ink);color:var(--accent);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:18px;transform:rotate(-6deg)}
+  .nav-tabs{display:flex;gap:4px;flex:1;margin-left:12px}
+  .nav-tab{padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--ink-2);border:1px solid transparent}
+  .nav-tab.active{background:var(--ink);color:var(--bg)}
+  .nav-tab:hover:not(.active){background:rgba(20,17,13,0.06)}
+  .nav-actions{display:flex;align-items:center;gap:10px}
+  .icon-btn{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--bg-elev);display:grid;place-items:center;color:var(--ink);position:relative}
+  .icon-btn:hover{border-color:var(--ink)}
+  .icon-btn .dot{position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:99px;background:var(--warn);box-shadow:0 0 0 2px var(--bg-elev)}
+  .avatar{width:38px;height:38px;border-radius:999px;background:linear-gradient(135deg,#ffce5b,#ff5b2e);display:grid;place-items:center;font-family:var(--f-display);font-weight:700;color:#fff;font-size:14px;box-shadow:inset 0 0 0 2px var(--bg-elev), 0 0 0 1px var(--ink)}
+
+  /* ── SLOGAN BAR ────────────────────────────────── */
+  .slogan-bar{
+    border-bottom:1px solid var(--line);
+    background:var(--bg-elev);
+  }
+  .slogan-bar .inner{
+    max-width:1480px;margin:0 auto;padding:14px 28px;
+    display:flex;align-items:center;gap:14px;
+    font-family:var(--f-mono);font-size:11.5px;
+    text-transform:uppercase;letter-spacing:0.14em;
+    color:var(--ink-2);
+  }
+  .slogan-bar .badge{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:3px 10px;border-radius:99px;
+    background:var(--accent);color:var(--accent-ink);
+    font-weight:700;
+  }
+  .slogan-bar .badge::before{
+    content:"";width:6px;height:6px;border-radius:99px;background:var(--accent-ink);
+  }
+
+  /* ── PAGE WRAP ─────────────────────────────────── */
+  main{max-width:1480px;margin:0 auto;padding:28px}
+
+  /* ── PAGE HEAD ─────────────────────────────────── */
+  .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:32px}
+  .page-head h1{font-family:var(--f-display);font-weight:700;font-size:46px;letter-spacing:-0.025em;margin:0;line-height:1}
+  .page-head h1 em{font-family:var(--f-display);font-style:italic;font-weight:500;color:var(--muted)}
+  .page-head .sub{color:var(--muted);font-size:14px;margin-top:6px}
+
+  .quick-stats{display:flex;gap:12px;flex-wrap:wrap}
+  .qstat{
+    background:var(--bg-elev);border:1px solid var(--line);
+    border-radius:14px;padding:13px 18px;min-width:120px;
+  }
+  .qstat .v{font-family:var(--f-display);font-weight:700;font-size:24px;line-height:1;letter-spacing:-0.02em}
+  .qstat .l{font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-top:5px}
+
+  /* ── SECTION HEAD ──────────────────────────────── */
+  .sec-head{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:36px 0 16px;
+  }
+  .sec-head h2{font-family:var(--f-display);font-weight:700;font-size:24px;letter-spacing:-0.015em;margin:0;line-height:1}
+  .sec-head .sub{color:var(--muted);font-size:13px;margin-top:4px}
+  .sec-head .more{
+    font-size:13px;font-weight:500;color:var(--ink-2);
+    display:inline-flex;align-items:center;gap:6px;
+    padding:7px 12px;border-radius:99px;border:1px solid var(--line);background:var(--bg-elev);
+  }
+  .sec-head .more:hover{border-color:var(--ink)}
+
+  /* ── ALBUMS SCROLLER ───────────────────────────── */
+  .albums-scroller{
+    display:flex;gap:14px;overflow-x:auto;
+    padding:4px 4px 18px;margin:0 -28px;padding-left:28px;padding-right:28px;
+    scrollbar-width:thin;
+    scroll-snap-type:x mandatory;
+  }
+  .albums-scroller::-webkit-scrollbar{height:6px}
+  .albums-scroller::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+  .albums-scroller::-webkit-scrollbar-track{background:transparent}
+
+  .album-mini{
+    flex:0 0 280px;
+    border-radius:var(--radius);overflow:hidden;
+    background:var(--bg-elev);border:1px solid var(--line);
+    cursor:pointer;
+    transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease;
+    scroll-snap-align:start;
+    display:flex;flex-direction:column;
+    text-decoration:none;color:var(--ink);
+  }
+  .album-mini:hover{
+    transform:translateY(-3px);
+    box-shadow:0 14px 28px -14px rgba(0,0,0,.3);
+    border-color:var(--ink);
+  }
+  .album-mini.featured{
+    border-color:var(--accent);
+    box-shadow:0 0 0 1px var(--accent), 0 12px 24px -10px rgba(0,0,0,.18);
+  }
+
+  .album-mini .cover{
+    height:120px;position:relative;overflow:hidden;
+    padding:14px 16px;color:#fff;
+    background:linear-gradient(135deg, var(--c1,#1f8a5b) 0%, var(--c2,#0a3a8b) 100%);
+    display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .album-mini .cover::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(60% 90% at 100% 0%, rgba(255,255,255,.18), transparent 60%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0 2px, transparent 2px 14px);
+  }
+  .album-mini .cover > *{position:relative}
+  .album-mini .editor{font-family:var(--f-mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.12em;opacity:.85}
+  .album-mini .ttl{font-family:var(--f-display);font-weight:800;font-size:24px;line-height:.94;letter-spacing:-0.02em;text-transform:uppercase}
+  .album-mini .ttl .yr{display:block;font-size:28px;margin-top:2px}
+  .album-mini .status-pill{
+    position:absolute;top:14px;right:14px;
+    font-family:var(--f-mono);font-size:9.5px;font-weight:700;
+    padding:4px 9px;border-radius:99px;
+    background:rgba(255,255,255,.22);color:#fff;
+    text-transform:uppercase;letter-spacing:0.1em;
+    backdrop-filter:blur(6px);
+  }
+  .album-mini .status-pill.done{background:var(--gold);color:var(--ink)}
+  .album-mini .status-pill.new{background:var(--accent);color:var(--accent-ink)}
+  .album-mini .status-pill.active{background:var(--good);color:#fff}
+
+  .album-mini .body{
+    padding:14px 16px 16px;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .album-mini .nm{font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:-0.01em;line-height:1.2}
+  .album-mini .row{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+  .album-mini .have{font-family:var(--f-display);font-weight:700;font-size:20px;letter-spacing:-0.02em}
+  .album-mini .pct{font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--ink)}
+  .album-mini .bar{height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+  .album-mini .bar > i{display:block;height:100%;background:linear-gradient(90deg, var(--c1,var(--accent)), var(--c2,#94e000));border-radius:99px}
+
+  /* ── TWO-PANELS ROW ────────────────────────────── */
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+
+  .panel{
+    background:var(--bg-elev);border:1px solid var(--line);
+    border-radius:var(--radius-lg);padding:22px 24px;
+  }
+  .panel h3{font-family:var(--f-display);font-weight:700;font-size:18px;letter-spacing:-0.01em;margin:0 0 4px;line-height:1.2}
+  .panel .panel-sub{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:18px}
+
+  /* Da fare oggi */
+  .todo-list{display:flex;flex-direction:column;gap:10px}
+  .todo-item{
+    display:grid;grid-template-columns:38px 1fr auto;gap:14px;align-items:center;
+    padding:14px 16px;border-radius:12px;
+    background:var(--bg);border:1px solid var(--line);
+    cursor:pointer;
+    transition:border-color .12s ease, transform .12s ease;
+  }
+  .todo-item:hover{border-color:var(--ink);transform:translateX(2px)}
+  .todo-item .ico{
+    width:38px;height:38px;border-radius:10px;
+    display:grid;place-items:center;
+    background:var(--bg-elev);border:1px solid var(--line);
+    font-family:var(--f-display);font-weight:700;color:var(--ink);
+  }
+  .todo-item.urgent .ico{background:var(--warn);color:#fff;border-color:var(--warn)}
+  .todo-item.meet .ico{background:var(--accent);color:var(--accent-ink);border-color:var(--accent-ink)}
+  .todo-item.add .ico{background:var(--good);color:#fff;border-color:var(--good)}
+  .todo-item .info{min-width:0}
+  .todo-item .info .label{font-weight:600;font-size:14px;line-height:1.2}
+  .todo-item .info .meta{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-top:3px}
+  .todo-item .info .meta b{color:var(--ink);font-weight:600}
+  .todo-item .chev{color:var(--muted);font-family:var(--f-mono);font-size:14px}
+  .todo-item:hover .chev{color:var(--ink)}
+
+  /* Match pronti */
+  .match-list{display:flex;flex-direction:column;gap:10px}
+  .match-item{
+    display:grid;grid-template-columns:42px 1fr auto;gap:14px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:var(--bg);border:1px solid var(--line);
+    cursor:pointer;
+    transition:border-color .12s ease;
+  }
+  .match-item:hover{border-color:var(--ink)}
+  .match-item .av{
+    width:42px;height:42px;border-radius:99px;color:#fff;
+    display:grid;place-items:center;
+    font-family:var(--f-display);font-weight:700;font-size:14px;
+    background:linear-gradient(135deg, var(--av1,#2a6fdb), var(--av2,#7a5ae0));
+  }
+  .match-item .name{font-weight:600;font-size:14px;line-height:1.2}
+  .match-item .deal{
+    font-family:var(--f-mono);font-size:10.5px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:0.08em;margin-top:3px;
+    display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  }
+  .match-item .deal b{color:var(--ink);font-weight:600}
+  .match-item .deal .pin{display:inline-flex;align-items:center;gap:3px}
+  .pill-match{
+    font-family:var(--f-mono);font-size:11px;font-weight:600;
+    padding:5px 9px;border-radius:99px;
+    background:var(--accent);color:var(--accent-ink);
+    white-space:nowrap;
+  }
+  .pill-match.warm{background:var(--gold);color:var(--ink)}
+  .pill-match.cool{background:color-mix(in srgb, var(--good) 22%, #fff);color:var(--good);border:1px solid color-mix(in srgb, var(--good) 50%, transparent)}
+
+  /* ── OBIETTIVI PER ALBUM (carousel) ─────────────── */
+  .objectives-wrap{
+    background:var(--bg-elev);border:1px solid var(--line);
+    border-radius:var(--radius-lg);overflow:hidden;
+  }
+  .obj-hero{
+    position:relative;overflow:hidden;
+    padding:24px 28px 22px;
+    color:#fff;
+    background:linear-gradient(135deg, var(--c1,#1f8a5b) 0%, var(--c2,#0a3a8b) 100%);
+    display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  }
+  .obj-hero::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(60% 90% at 100% 0%, rgba(255,255,255,.18), transparent 60%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0 2px, transparent 2px 14px);
+  }
+  .obj-hero > *{position:relative}
+  .obj-hero .eyebrow{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.12em;opacity:.85}
+  .obj-hero h2{font-family:var(--f-display);font-weight:800;font-size:30px;letter-spacing:-0.02em;line-height:1;margin:6px 0 4px}
+  .obj-hero .total{font-family:var(--f-mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em;opacity:.85}
+  .obj-hero .pct-block{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+  .obj-hero .pct-big{font-family:var(--f-display);font-weight:800;font-size:42px;line-height:1;letter-spacing:-0.02em}
+  .obj-hero .pct-lbl{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;opacity:.85}
+
+  .obj-body{
+    position:relative;
+    padding:22px 24px 16px;
+  }
+  .obj-list{display:grid;grid-template-columns:repeat(2, 1fr);gap:10px;margin-bottom:20px}
+  .obj-row{
+    display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;
+    padding:12px 14px;border-radius:10px;
+    background:var(--bg);border:1px solid var(--line);
+  }
+  .obj-row .crest{
+    width:28px;height:28px;border-radius:7px;
+    display:grid;place-items:center;
+    font-family:var(--f-mono);font-size:10px;font-weight:700;color:#fff;letter-spacing:0.04em;
+    background:linear-gradient(135deg, var(--tc1,#2a6fdb), var(--tc2,#0a3a8b));
+  }
+  .obj-row .team{min-width:0}
+  .obj-row .team .nm{font-weight:600;font-size:13.5px;line-height:1.2}
+  .obj-row .team .miss{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:3px}
+  .obj-row .team .miss b{color:var(--ink);font-weight:600}
+  .obj-row .progress-ring{
+    position:relative;
+    width:38px;height:38px;border-radius:99px;
+    background:conic-gradient(var(--c1) calc(var(--p,0) * 1%), var(--line) 0);
+    display:grid;place-items:center;
+  }
+  .obj-row .progress-ring i{
+    width:30px;height:30px;border-radius:99px;background:var(--bg);
+    display:grid;place-items:center;font-family:var(--f-mono);font-size:10px;font-weight:700;color:var(--ink);font-style:normal;
+  }
+
+  /* Carousel controls */
+  .obj-controls{
+    display:flex;align-items:center;justify-content:space-between;gap:18px;
+    padding:8px 0 0;
+  }
+  .obj-arrow{
+    width:36px;height:36px;border-radius:99px;
+    background:var(--bg);border:1px solid var(--line);
+    display:grid;place-items:center;color:var(--ink);cursor:pointer;
+  }
+  .obj-arrow:hover{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+  .obj-arrow:disabled{opacity:.3;cursor:default;background:var(--bg);border-color:var(--line);color:var(--muted)}
+  .obj-arrow:disabled:hover{background:var(--bg)}
+
+  .obj-dots{display:flex;gap:8px;align-items:center;flex:1;justify-content:center;flex-wrap:wrap}
+  .obj-dot{
+    width:18px;height:18px;border-radius:99px;
+    background:var(--bg);border:2px solid var(--c, var(--line));
+    cursor:pointer;
+    transition:transform .14s ease;
+  }
+  .obj-dot:hover{transform:scale(1.15)}
+  .obj-dot.active{background:var(--c, var(--ink));box-shadow:0 0 0 3px color-mix(in srgb, var(--c, var(--ink)) 30%, transparent)}
+
+  /* ── ATTIVITÀ ──────────────────────────────────── */
+  .activity{
+    background:var(--bg-elev);border:1px solid var(--line);
+    border-radius:var(--radius-lg);padding:0;
+    overflow:hidden;
+  }
+  .activity .panel-head{
+    padding:22px 24px 14px;
+    display:flex;justify-content:space-between;align-items:flex-end;gap:12px;
+    border-bottom:1px solid var(--line);
+  }
+  .activity .panel-head h3{font-family:var(--f-display);font-weight:700;font-size:18px;letter-spacing:-0.01em;margin:0}
+  .activity .panel-head .sub{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px}
+  .activity .panel-head .live{
+    display:inline-flex;align-items:center;gap:5px;
+    font-family:var(--f-mono);font-size:10.5px;color:var(--good);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;
+  }
+  .activity .panel-head .live::before{content:"";width:6px;height:6px;border-radius:99px;background:var(--good);animation:pulse 1.4s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+  .act-rows{display:flex;flex-direction:column}
+  .act-row{
+    display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;
+    padding:14px 24px;
+    border-bottom:1px solid var(--line);
+  }
+  .act-row:last-child{border-bottom:0}
+  .act-row .ic{
+    width:34px;height:34px;border-radius:9px;
+    display:grid;place-items:center;
+    background:var(--bg);border:1px solid var(--line);
+    font-family:var(--f-display);font-weight:700;color:var(--ink-2);font-size:14px;
+  }
+  .act-row.success .ic{background:color-mix(in srgb, var(--good) 16%, var(--bg-elev));border-color:color-mix(in srgb, var(--good) 35%, var(--line));color:var(--good)}
+  .act-row.badge .ic{background:color-mix(in srgb, var(--gold) 22%, var(--bg-elev));border-color:color-mix(in srgb, var(--gold) 45%, var(--line));color:#8a6700}
+  .act-row.sent .ic{background:color-mix(in srgb, #7a5ae0 14%, var(--bg-elev));border-color:color-mix(in srgb, #7a5ae0 40%, var(--line));color:#5a3aa0}
+  .act-row .text{font-size:14px;line-height:1.4}
+  .act-row .text b{font-weight:600}
+  .act-row .when{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap}
+
+  /* ── Variants ─────────────────────────────────── */
+  body[data-variant="stadio"]{
+    --bg:#0d1b2a;--bg-elev:#152736;--ink:#f4efe6;--ink-2:#cfd9e3;--muted:#7e90a3;
+    --line:#22384a;--line-strong:#f4efe6;--accent:#ff7a3d;--accent-ink:#0d1b2a;
+    --warn:#ff5b2e;--gold:#ffd25b;--good:#4ade80;
+  }
+  body[data-variant="stadio"] .nav-tab.active{background:var(--accent);color:var(--ink)}
+
+  body[data-variant="streetwear"]{
+    --bg:#ece9e2;--bg-elev:#fefcf7;--ink:#0a0a0a;--ink-2:#2a2a2a;--muted:#7d7a72;
+    --line:#d8d4ca;--line-strong:#0a0a0a;--accent:#ff3df5;--accent-ink:#0a0a0a;
+    --warn:#ff5b2e;--gold:#0ea5e9;--good:#0a8d3a;--f-display:'Space Grotesk', ui-sans-serif;
+  }
+  body[data-variant="streetwear"] .brand-mark{background:var(--accent);color:#0a0a0a}
+
+  /* ── Responsive ───────────────────────────────── */
+  @media (max-width:1000px){
+    .cols{grid-template-columns:1fr}
+    .obj-list{grid-template-columns:1fr}
+    .page-head h1{font-size:36px}
+  }
+  @media (max-width:600px){
+    .album-mini{flex:0 0 240px}
+  }
+
+  /* Toast */
+  .toast{
+    position:fixed;bottom:24px;left:24px;z-index:200;
+    padding:10px 18px;border-radius:99px;
+    background:var(--ink);color:var(--accent);
+    font-family:var(--f-mono);font-size:12px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.08em;
+    opacity:0;transform:translateY(10px);pointer-events:none;
+    transition:opacity .22s ease, transform .22s ease;
+    box-shadow:0 14px 32px -12px rgba(0,0,0,.5);
+  }
+  .toast.show{opacity:1;transform:translateY(0)}
+  html{background-color:#0d1b2a}
+
+  /* ── NOTIFICATION DROPDOWN ─────────────────────── */
+  .nav-dropdown{
+    position:absolute;top:calc(100% + 10px);right:0;
+    width:340px;
+    background:var(--bg-elev);border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    box-shadow:0 20px 60px -10px rgba(0,0,0,.45);
+    opacity:0;pointer-events:none;
+    transform:translateY(-8px) scale(.97);
+    transition:opacity .18s ease,transform .18s ease;
+    z-index:100;overflow:hidden;
+  }
+  .nav-dropdown.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+
+  /* ── SEARCH PANEL ──────────────────────────────── */
+  .search-panel{min-width:360px}
+  .search-input{width:100%;padding:12px 14px;background:var(--bg);border:0;border-bottom:1px solid var(--line);font-family:var(--f-body);font-size:14px;color:var(--ink);outline:0}
+  .search-hints{display:flex;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line)}
+  .search-hint{padding:5px 10px;border-radius:99px;background:var(--bg);border:1px solid var(--line);font-size:12px;font-weight:500;cursor:pointer;color:var(--ink-2)}
+  .search-hint:hover{border-color:var(--ink)}
+  .search-results{max-height:280px;overflow-y:auto}
+  .search-result-item{padding:9px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid var(--line)}
+  .search-result-item:last-child{border-bottom:0}
+  .search-result-item:hover{background:var(--bg)}
+  .search-result-code{font-family:var(--f-mono);font-size:12px;font-weight:700;color:var(--ink);min-width:44px}
+  .search-result-name{font-size:13px;flex:1}
+  .search-result-album{font-family:var(--f-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em}
+  .search-empty{padding:20px 14px;text-align:center;color:var(--muted);font-size:13px}
+  .demo-badge{display:inline-flex;align-items:center;font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);background:color-mix(in srgb, var(--gold) 15%, transparent);border:1px solid color-mix(in srgb, var(--gold) 40%, transparent);padding:1px 7px;border-radius:99px;vertical-align:middle;margin-left:8px}
+  .notif-head{
+    padding:14px 18px;
+    display:flex;justify-content:space-between;align-items:center;
+    border-bottom:1px solid var(--line);
+  }
+  .notif-head h4{font-family:var(--f-display);font-weight:700;font-size:16px;margin:0;line-height:1}
+  .notif-head .mark-read{font-family:var(--f-mono);font-size:10px;color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:0.08em;background:none;border:0;padding:0}
+  .notif-head .mark-read:hover{color:var(--ink)}
+  .notif-item{
+    display:flex;gap:12px;align-items:flex-start;
+    padding:12px 18px;border-bottom:1px solid var(--line);
+    cursor:pointer;transition:background .12s ease;
+  }
+  .notif-item:last-child{border-bottom:0}
+  .notif-item:hover{background:var(--bg)}
+  .notif-item.unread{background:color-mix(in srgb, var(--warn) 7%, transparent)}
+  .notif-ic{width:32px;height:32px;flex-shrink:0;border-radius:8px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;font-size:15px}
+  .notif-txt{flex:1;min-width:0}
+  .notif-txt .nm{font-size:13px;font-weight:600;line-height:1.2}
+  .notif-txt .info{font-family:var(--f-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:3px}
+  .notif-dot{width:8px;height:8px;flex-shrink:0;border-radius:99px;background:var(--warn);margin-top:4px}
+
+  /* ── PROFILE DROPDOWN ──────────────────────────── */
+  .profile-menu{
+    position:absolute;top:calc(100% + 10px);right:0;
+    width:200px;
+    background:var(--bg-elev);border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:0 20px 60px -10px rgba(0,0,0,.45);
+    opacity:0;pointer-events:none;
+    transform:translateY(-8px) scale(.97);
+    transition:opacity .18s ease,transform .18s ease;
+    z-index:100;overflow:hidden;
+  }
+  .profile-menu.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+  .profile-menu-item{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 16px;font-size:14px;font-weight:500;color:var(--ink-2);
+    cursor:pointer;transition:background .1s ease,color .1s ease;
+  }
+  .profile-menu-item:hover{background:var(--bg);color:var(--ink)}
+  .profile-menu-item.danger:hover{color:var(--warn)}
+  .profile-menu-sep{height:1px;background:var(--line)}
+
+  /* ── MESSAGES ICON BADGE ───────────────────────── */
+  .icon-btn .msg-badge{
+    position:absolute;top:5px;right:5px;
+    min-width:14px;height:14px;border-radius:99px;
+    background:var(--warn);color:#fff;
+    font-family:var(--f-mono);font-size:9px;font-weight:700;
+    display:grid;place-items:center;
+    box-shadow:0 0 0 2px var(--bg-elev);
+    padding:0 3px;line-height:1;
+  }
+
+  /* ── MESSAGES SIDE PANEL ───────────────────────── */
+  .msg-overlay{
+    position:fixed;inset:0;z-index:80;
+    background:rgba(20,17,13,.35);
+    backdrop-filter:blur(2px);
+    opacity:0;pointer-events:none;
+    transition:opacity .22s ease;
+  }
+  .msg-overlay.open{opacity:1;pointer-events:auto}
+  .msg-panel{
+    position:fixed;right:0;top:0;bottom:0;z-index:85;
+    width:min(400px,100vw);
+    background:var(--bg-elev);border-left:1px solid var(--line);
+    display:flex;flex-direction:column;
+    transform:translateX(100%);
+    transition:transform .26s cubic-bezier(0.25,0.46,0.45,0.94);
+    box-shadow:-20px 0 60px -20px rgba(0,0,0,.45);
+  }
+  .msg-panel.open{transform:translateX(0)}
+  .msg-panel-head{
+    padding:16px 20px;
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    border-bottom:1px solid var(--line);flex-shrink:0;
+  }
+  .msg-panel-title{font-family:var(--f-display);font-weight:700;font-size:18px}
+  .msg-back-btn{
+    display:none;align-items:center;gap:5px;
+    background:none;border:0;color:var(--ink-2);
+    font-family:var(--f-body);font-size:13.5px;font-weight:500;cursor:pointer;padding:0;
+  }
+  .msg-back-btn:hover{color:var(--ink)}
+  .msg-back-btn.visible{display:flex}
+  .msg-close-btn{
+    width:32px;height:32px;border-radius:99px;
+    background:var(--bg);border:1px solid var(--line);
+    display:grid;place-items:center;color:var(--ink);cursor:pointer;
+  }
+  .msg-close-btn:hover{border-color:var(--ink)}
+  .msg-conv-list{flex:1;overflow-y:auto;scrollbar-width:thin}
+  .msg-conv-item{
+    display:flex;align-items:center;gap:12px;
+    padding:14px 20px;border-bottom:1px solid var(--line);
+    cursor:pointer;transition:background .1s ease;
+  }
+  .msg-conv-item:hover{background:var(--bg)}
+  .msg-conv-av{
+    width:44px;height:44px;flex-shrink:0;border-radius:99px;color:#fff;
+    display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:16px;
+    background:linear-gradient(135deg,var(--av1,#2a6fdb),var(--av2,#7a5ae0));
+  }
+  .msg-conv-info{flex:1;min-width:0}
+  .msg-conv-name{font-weight:600;font-size:14px;line-height:1.2}
+  .msg-conv-last{font-size:12.5px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .msg-conv-meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+  .msg-conv-time{font-family:var(--f-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em}
+  .msg-unread-badge{
+    min-width:20px;height:20px;border-radius:99px;background:var(--warn);
+    color:#fff;font-family:var(--f-mono);font-size:10px;font-weight:700;
+    display:grid;place-items:center;padding:0 4px;
+  }
+  .msg-chat-view{display:none;flex:1;flex-direction:column;overflow:hidden}
+  .msg-chat-view.visible{display:flex}
+  .msg-chat-msgs{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin}
+  .msg-bubble{
+    max-width:80%;border-radius:14px;padding:10px 14px;
+    font-size:14px;line-height:1.4;word-break:break-word;
+  }
+  .msg-bubble.out{align-self:flex-end;background:var(--ink);color:var(--bg);border-bottom-right-radius:4px}
+  .msg-bubble.in{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:4px}
+  .msg-time-lbl{font-family:var(--f-mono);font-size:9px;color:var(--muted);margin-top:4px;display:block;text-transform:uppercase;letter-spacing:0.05em}
+  .msg-bubble.out .msg-time-lbl{color:color-mix(in srgb,var(--bg) 60%,transparent)}
+  .msg-input-row{
+    display:flex;align-items:center;gap:10px;
+    padding:14px 16px;border-top:1px solid var(--line);flex-shrink:0;
+  }
+  .msg-input{
+    flex:1;background:var(--bg);border:1px solid var(--line);
+    border-radius:99px;padding:10px 16px;
+    font-family:var(--f-body);font-size:14px;color:var(--ink);outline:none;
+  }
+  .msg-input::placeholder{color:var(--muted)}
+  .msg-input:focus{border-color:var(--ink)}
+  .msg-send-btn{
+    width:38px;height:38px;border-radius:99px;
+    background:var(--ink);color:var(--accent);border:0;
+    display:grid;place-items:center;cursor:pointer;flex-shrink:0;
+  }
+  .msg-send-btn:hover{filter:brightness(1.1)}
+
+  /* ── OBJECTIVES LINK (replaces ring) ──────────── */
+  .obj-row .obj-link{
+    font-family:var(--f-mono);font-size:11px;font-weight:600;
+    color:var(--ink-2);text-decoration:none;
+    padding:5px 10px;border-radius:99px;
+    background:var(--bg-elev);border:1px solid var(--line);
+    white-space:nowrap;
+    transition:border-color .12s ease,color .12s ease,background .12s ease;
+    display:inline-flex;align-items:center;
+  }
+  .obj-row .obj-link:hover{border-color:var(--ink);color:var(--ink);background:var(--bg)}
+  .obj-row .obj-link-na{
+    font-family:var(--f-mono);font-size:11px;color:var(--muted);
+    white-space:nowrap;padding:5px 0;
+  }
+</style>
+</head>
+<body data-variant="stadio">
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="FiguBook Dashboard.html"><span class="brand-mark">F</span><span>FiguBook</span></a>
+    <div class="nav-tabs">
+      <a class="nav-tab active" href="FiguBook Dashboard.html">Dashboard</a>
+      <a class="nav-tab" href="FiguBook Album.html">Album</a>
+      <a class="nav-tab" href="FiguBook Scambia.html">Scambia</a>
+      <a class="nav-tab" href="#">Community</a>
+    </div>
+    <div class="nav-actions">
+      <!-- Cerca -->
+      <div style="position:relative">
+        <button class="icon-btn" id="searchBtn" aria-label="Cerca">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </button>
+        <div class="nav-dropdown search-panel" id="searchPanel">
+          <input class="search-input" id="searchInput" placeholder="Cerca numero carta o album..." autocomplete="off" />
+          <div class="search-hints">
+            <button class="search-hint" data-hint="carta">🃏 Numero carta</button>
+            <button class="search-hint" data-hint="album">📚 Album</button>
+          </div>
+          <div class="search-results" id="searchResults"></div>
+        </div>
+      </div>
+      <!-- Messaggi -->
+      <div style="position:relative">
+        <button class="icon-btn" id="msgBtn" aria-label="Messaggi">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </button>
+      </div>
+      <!-- Notifiche -->
+      <div style="position:relative">
+        <button class="icon-btn" id="notifBtn" aria-label="Notifiche">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+          <span class="dot"></span>
+        </button>
+        <div class="nav-dropdown" id="notifPanel">
+          <div class="notif-head">
+            <h4>Notifiche</h4>
+            <button class="mark-read" id="markReadBtn">Segna tutte lette</button>
+          </div>
+          <div class="notif-item unread" data-href="FiguBook Scambia.html">
+            <div class="notif-ic">🔄</div>
+            <div class="notif-txt">
+              <div class="nm">Proposta di scambio da Marco</div>
+              <div class="info">3 ↔ 3 figurine · Calciatori 25/26 · 4h fa</div>
+            </div>
+            <div class="notif-dot"></div>
+          </div>
+          <div class="notif-item unread" data-href="FiguBook Scambia.html">
+            <div class="notif-ic">🔄</div>
+            <div class="notif-txt">
+              <div class="nm">Proposta di scambio da Anna</div>
+              <div class="info">2 ↔ 2 figurine · Calciatori 25/26 · 5h fa</div>
+            </div>
+            <div class="notif-dot"></div>
+          </div>
+          <div class="notif-item unread" data-href="FiguBook Scambia.html">
+            <div class="notif-ic">🔄</div>
+            <div class="notif-txt">
+              <div class="nm">Proposta di scambio da Luca</div>
+              <div class="info">1 ↔ 1 figurine · Calciatori 25/26 · 6h fa</div>
+            </div>
+            <div class="notif-dot"></div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-ic">★</div>
+            <div class="notif-txt">
+              <div class="nm">Badge sbloccato: "Reparto Difesa"</div>
+              <div class="info">Calciatori 25/26 · Ieri</div>
+            </div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-ic">✓</div>
+            <div class="notif-txt">
+              <div class="nm">Scambio completato con Giada</div>
+              <div class="info">3 figurine ricevute · 2h fa</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Profilo -->
+      <div style="position:relative">
+        <div class="avatar" id="avatarBtn" style="cursor:pointer">L</div>
+        <div class="profile-menu" id="profileMenu">
+          <div class="profile-menu-item" id="pmProfilo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+            Il mio profilo
+          </div>
+          <div class="profile-menu-sep"></div>
+          <div class="profile-menu-item" id="pmImpostazioni">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Impostazioni
+          </div>
+          <div class="profile-menu-sep"></div>
+          <div class="profile-menu-item danger" id="pmEsci">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Esci
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="slogan-bar">
+  <div class="inner">
+    <span class="badge">FiguBook</span>
+    <span>La piattaforma sicura per famiglie e collezionisti di tutte le età</span>
+  </div>
+</div>
+
+<main>
+
+  <div class="page-head">
+    <div>
+      <h1>Ciao Luca, <em>oggi che si fa?</em></h1>
+    </div>
+    <div class="quick-stats">
+      <div class="qstat">
+        <div class="v" id="qstatFigurine">0</div>
+        <div class="l">Figurine totali</div>
+      </div>
+      <div class="qstat">
+        <div class="v" id="qstatDoppie">0</div>
+        <div class="l">Doppie</div>
+      </div>
+      <div class="qstat">
+        <div class="v" id="qstatMancanti">0</div>
+        <div class="l">Mancanti</div>
+      </div>
+      <div class="qstat">
+        <div class="v">0</div>
+        <div class="l">Scambi attivi</div>
+      </div>
+      <div class="qstat">
+        <div class="v">0</div>
+        <div class="l">Match pronti</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── I TUOI ALBUM ── -->
+  <div class="sec-head">
+    <div>
+      <h2>I tuoi album</h2>
+      <div class="sub">Scorri per vedere tutta la libreria</div>
+    </div>
+    <a class="more" href="FiguBook Album.html">Vedi tutti →</a>
+  </div>
+
+  <div class="albums-scroller" id="albumsScroller"></div>
+
+  <!-- ── DA FARE OGGI + MATCH PRONTI ── -->
+  <div class="cols" style="margin-top:18px">
+    <section class="panel">
+      <h3>Da fare oggi <span class="demo-badge">DATI DI ESEMPIO</span></h3>
+      <div class="panel-sub">Azioni in coda · ordinate per priorità</div>
+      <div class="todo-list">
+
+        <div class="todo-item meet">
+          <div class="ico">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          </div>
+          <div class="info">
+            <div class="label">Incontro con Giulia · oggi alle 17:30</div>
+            <div class="meta"><b>Piazza Duomo</b> · 4 figurine ↔ 4 · conferma 1h prima</div>
+          </div>
+          <div class="chev">→</div>
+        </div>
+
+        <div class="todo-item urgent">
+          <div class="ico">3</div>
+          <div class="info">
+            <div class="label">3 proposte di scambio in attesa</div>
+            <div class="meta">Marco, Anna e Luca aspettano una tua risposta</div>
+          </div>
+          <div class="chev">→</div>
+        </div>
+
+        <div class="todo-item add">
+          <div class="ico">+</div>
+          <div class="info">
+            <div class="label">Inserisci la bustina di stamattina</div>
+            <div class="meta"><b>14 figurine</b> non ancora registrate dall'edicola di stamani</div>
+          </div>
+          <div class="chev">→</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>Match pronti <span class="demo-badge">DATI DI ESEMPIO</span></h3>
+      <div class="panel-sub">Scambi consigliati nelle vicinanze</div>
+      <div class="match-list">
+
+        <a class="match-item" href="FiguBook Scambia.html">
+          <div class="av" style="--av1:#c8ff3d;--av2:#1f8a5b">G</div>
+          <div>
+            <div class="name">Giada · @giadaa</div>
+            <div class="deal">
+              <span class="pin">📍 340 m</span>
+              <span>·</span>
+              <span>tu hai <b>3</b>, lei ha <b>3</b></span>
+            </div>
+          </div>
+          <span class="pill-match">3 ↔ 3</span>
+        </a>
+
+        <a class="match-item" href="FiguBook Scambia.html">
+          <div class="av" style="--av1:#2a6fdb;--av2:#0ea5e9">F</div>
+          <div>
+            <div class="name">Federico · @fede10 · ⭐ amico</div>
+            <div class="deal">
+              <span class="pin">📍 1.1 km</span>
+              <span>·</span>
+              <span>tu hai <b>5</b>, lui ha <b>5</b></span>
+            </div>
+          </div>
+          <span class="pill-match">5 ↔ 5</span>
+        </a>
+
+        <a class="match-item" href="FiguBook Scambia.html">
+          <div class="av" style="--av1:#0a3a8b;--av2:#1a1a1a">S</div>
+          <div>
+            <div class="name">Stefano · @stef.inter</div>
+            <div class="deal">
+              <span class="pin">📍 2.3 km</span>
+              <span>·</span>
+              <span>tu hai <b>6</b>, lui ha <b>6</b></span>
+            </div>
+          </div>
+          <span class="pill-match warm">6 ↔ 6</span>
+        </a>
+
+        <a class="match-item" href="FiguBook Scambia.html">
+          <div class="av" style="--av1:#7a5ae0;--av2:#ff3df5">M</div>
+          <div>
+            <div class="name">Marco · @kicko</div>
+            <div class="deal">
+              <span class="pin">📍 610 m</span>
+              <span>·</span>
+              <span>tu hai <b>3</b>, lui ha <b>4</b></span>
+            </div>
+          </div>
+          <span class="pill-match cool">3 ↔ 4</span>
+        </a>
+
+      </div>
+    </section>
+  </div>
+
+  <!-- ── OBIETTIVI PER ALBUM ── -->
+  <div class="sec-head">
+    <div>
+      <h2>Obiettivi per album</h2>
+      <div class="sub">Cosa ti manca per chiudere ogni squadra. Naviga tra gli album coi pallini.</div>
+    </div>
+  </div>
+
+  <section class="objectives-wrap">
+    <div class="obj-hero" id="objHero">
+      <div>
+        <div class="eyebrow" id="objEditor">PANINI · STAGIONE</div>
+        <h2 id="objTitle">Calciatori Panini 25/26</h2>
+        <div class="total" id="objTotal">68 / 784 · 8.7%</div>
+      </div>
+      <div class="pct-block">
+        <span class="pct-big" id="objPct">8.7%</span>
+        <span class="pct-lbl">Completamento album</span>
+      </div>
+    </div>
+
+    <div class="obj-body">
+      <div class="obj-list" id="objList"></div>
+
+      <div class="obj-controls">
+        <button class="obj-arrow" id="objPrev" aria-label="Album precedente">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="obj-dots" id="objDots"></div>
+        <button class="obj-arrow" id="objNext" aria-label="Album successivo">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ATTIVITÀ ── -->
+  <section class="activity" style="margin-top:18px">
+    <div class="panel-head">
+      <div>
+        <h3>Attività recente <span class="demo-badge">DATI DI ESEMPIO</span></h3>
+        <div class="sub">Tutto quello che è successo nel tuo album e nei tuoi scambi</div>
+      </div>
+      <span class="live">In tempo reale</span>
+    </div>
+
+    <div class="act-rows">
+      <div class="act-row success">
+        <div class="ic">✓</div>
+        <div class="text"><b>Scambio completato</b> con Giada · 3 figurine ricevute (#178, #PAR-09, #STY3)</div>
+        <div class="when">2h fa</div>
+      </div>
+      <div class="act-row sent">
+        <div class="ic">→</div>
+        <div class="text">Hai proposto uno scambio a <b>Marco</b> · 3 ↔ 3 figurine</div>
+        <div class="when">4h fa</div>
+      </div>
+      <div class="act-row badge">
+        <div class="ic">★</div>
+        <div class="text">Hai sbloccato il badge <b>"Reparto Difesa"</b> · Calciatori 25-26</div>
+        <div class="when">Ieri</div>
+      </div>
+      <div class="act-row">
+        <div class="ic">+</div>
+        <div class="text">Aggiunte <b>11 figurine</b> dalla bustina di Lunedì · +1 doppia</div>
+        <div class="when">Ieri</div>
+      </div>
+      <div class="act-row success">
+        <div class="ic">✓</div>
+        <div class="text"><b>Scambio completato</b> con Federico · 5 figurine ricevute · ⭐ amico</div>
+        <div class="when">2 g fa</div>
+      </div>
+      <div class="act-row">
+        <div class="ic">+</div>
+        <div class="text">Hai iniziato un nuovo album · <b>FIFA World Cup 2026™</b></div>
+        <div class="when">4 g fa</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<!-- MESSAGES PANEL -->
+<div class="msg-overlay" id="msgOverlay"></div>
+<div class="msg-panel" id="msgPanel" role="dialog" aria-label="Messaggi">
+  <div class="msg-panel-head">
+    <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
+      <button class="msg-back-btn" id="msgBackBtn" aria-label="Torna alla lista">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        Indietro
+      </button>
+      <span class="msg-panel-title" id="msgPanelTitle">Messaggi</span>
+      <span class="demo-badge" style="flex-shrink:0">DATI DI ESEMPIO</span>
+    </div>
+    <button class="msg-close-btn" id="msgCloseBtn" aria-label="Chiudi">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <!-- Lista conversazioni -->
+  <div id="msgConvListView" style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+    <div class="msg-conv-list" id="msgConvList"></div>
+  </div>
+  <!-- Chat -->
+  <div class="msg-chat-view" id="msgChatView">
+    <div class="msg-chat-msgs" id="msgChatMsgs"></div>
+    <div class="msg-input-row">
+      <input class="msg-input" id="msgInput" type="text" placeholder="Scrivi un messaggio…" autocomplete="off" />
+      <button class="msg-send-btn" id="msgSendBtn" aria-label="Invia">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="figubook-core.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+
+<script>
+// ── Session guard ─────────────────────────────────
+(function(){
+  FiguBookCore.requireSession();
+})();
+
+// ── Albums data — mirrors Album.html master list (Album.html is source of truth) ──
+const ALBUMS = [
+  { id:'calciatori-25-26', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'25/26', name:'Calciatori 25-26',  have:0, total:784, doubles:0, status:'active', c1:'#1f8a5b', c2:'#0a3a8b', featured:true, href:'FiguBook Calciatori 2025-2026.html',
+    objectives:[
+      {team:'Atalanta',   crest:'AT', tc1:'#0a4a8b', tc2:'#1a1a1a', have:0, total:22},
+      {team:'Inter',      crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:22},
+      {team:'Juventus',   crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:22},
+      {team:'Milan',      crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:22},
+      {team:'Napoli',     crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:22},
+      {team:'Roma',       crest:'RO', tc1:'#a01d2e', tc2:'#fcc500', have:0, total:22},
+    ]
+  },
+  { id:'calciatori-24-25', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'24/25', name:'Calciatori 24-25', have:0, total:886, doubles:0, status:'active', c1:'#f5b800', c2:'#7a5a00', href:'FiguBook Calciatori 2024-2025.html',
+    objectives:[
+      {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:27},
+      {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:27},
+      {team:'Juventus', crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:27},
+      {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:27},
+    ]
+  },
+  { id:'calciatori-23-24', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'23/24', name:'Calciatori 23-24', have:0, total:682, doubles:0, status:'active', c1:'#5a5a5a', c2:'#2a2a2a', href:'FiguBook Calciatori 2023-2024.html',
+    objectives:[
+      {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:22},
+      {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:22},
+      {team:'Juventus', crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:22},
+      {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:22},
+    ]
+  },
+  { id:'calciatori-22-23', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'22/23', name:'Calciatori 22-23', have:0, total:650, doubles:0, status:'active', c1:'#c8851f', c2:'#7a3a00', href:'FiguBook Calciatori 2022-2023.html',
+    objectives:[
+      {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:22},
+      {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:22},
+      {team:'Juventus', crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:22},
+      {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:22},
+    ]
+  },
+  { id:'mondiali-qatar-22', editor:'PANINI · FIFA',  coverTitle:'QATAR', coverYear:'2022', name:'Qatar 2022', have:0, total:670, doubles:0, status:'active', c1:'#a01d2e', c2:'#5a1a0a', href:'#',
+    objectives:[
+      {team:'Francia',   crest:'FR', tc1:'#0a3a8b', tc2:'#a01d2e', have:0, total:28},
+      {team:'Argentina', crest:'AR', tc1:'#8ec5ed', tc2:'#f4f4f4', have:0, total:28},
+      {team:'Brasile',   crest:'BR', tc1:'#1f8a5b', tc2:'#fcc500', have:0, total:28},
+      {team:'Marocco',   crest:'MA', tc1:'#1f8a5b', tc2:'#a01d2e', have:0, total:28},
+    ]
+  },
+  { id:'mondiali-2026', editor:'PANINI · FIFA',  coverTitle:'FIFA', coverYear:'2026', name:'FIFA World Cup 2026', have:0, total:720, doubles:0, status:'new', c1:'#0a3a8b', c2:'#a01d2e', href:'FiguBook FIFA World Cup 2026.html',
+    objectives:[
+      {team:'Italia',      crest:'IT', tc1:'#1f8a5b', tc2:'#a01d2e', have:0, total:26},
+      {team:'Brasile',     crest:'BR', tc1:'#1f8a5b', tc2:'#fcc500', have:0, total:26},
+      {team:'Argentina',   crest:'AR', tc1:'#8ec5ed', tc2:'#f4f4f4', have:0, total:26},
+      {team:'Francia',     crest:'FR', tc1:'#0a3a8b', tc2:'#a01d2e', have:0, total:26},
+      {team:'Spagna',      crest:'SP', tc1:'#a01d2e', tc2:'#fcc500', have:0, total:26},
+      {team:'Inghilterra', crest:'EN', tc1:'#a01d2e', tc2:'#f4f4f4', have:0, total:26},
+    ]
+  },
+  { id:'calb-25-26', editor:'PANINI · SERIE B',  coverTitle:'SERIE B', coverYear:'25/26', name:'Serie B 25-26', have:0, total:440, doubles:0, status:'new', c1:'#1f8a5b', c2:'#14110d', href:'FiguBook Serie B 2025-2026.html',
+    objectives:[
+      {team:'Spezia',    crest:'SP', tc1:'#1f8a5b', tc2:'#1a1a1a', have:0, total:18},
+      {team:'Pisa',      crest:'PI', tc1:'#1a1a1a', tc2:'#0a4a8b', have:0, total:18},
+      {team:'Sassuolo',  crest:'SA', tc1:'#1f8a5b', tc2:'#1a1a1a', have:0, total:18},
+      {team:'Bari',      crest:'BA', tc1:'#a01d2e', tc2:'#f4f4f4', have:0, total:18},
+    ]
+  },
+  { id:'adrenalyn-25-26', editor:'PANINI · ADRENALYN', coverTitle:'ADRENALYN', coverYear:'XL 25/26', name:'Adrenalyn XL 25-26', have:0, total:450, doubles:0, status:'active', c1:'#7a5ae0', c2:'#0a3a8b', href:'FiguBook Adrenalyn XL 2025-2026.html',
+    objectives:[
+      {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:25},
+      {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:25},
+      {team:'Juventus', crest:'JU', tc1:'#1a1a1a', tc2:'#f4f4f4', have:0, total:25},
+      {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:25},
+    ]
+  },
+  { id:'match-attax-ucl', editor:'TOPPS · UCL', coverTitle:'MATCH ATTAX', coverYear:'25/26', name:'Match Attax UCL', have:0, total:584, doubles:0, status:'active', c1:'#0a4a8b', c2:'#14110d', href:'FiguBook Match Attax UCL 2025-2026.html',
+    objectives:[
+      {team:'Real Madrid', crest:'RM', tc1:'#f4f4f4', tc2:'#fcc500', have:0, total:18},
+      {team:'Man. City',   crest:'MC', tc1:'#8ec5ed', tc2:'#1a4a8b', have:0, total:18},
+      {team:'PSG',         crest:'PS', tc1:'#0a3a8b', tc2:'#a01d2e', have:0, total:18},
+      {team:'Bayern',      crest:'BA', tc1:'#a01d2e', tc2:'#1a4a8b', have:0, total:18},
+    ]
+  },
+];
+
+// ── Master backup (used to re-filter on live sync) ─────────────────────────
+const _DASH_ALBUMS_MASTER = ALBUMS.map(a => ({...a, objectives: a.objectives ? a.objectives.map(o=>({...o})) : undefined}));
+
+// ── Catalog-ID → album-ID map (mirrors Album.html CATALOG_EXISTING_MAP) ──────
+const _DASH_CATALOG_MAP = {
+  'cal-22-23':'calciatori-22-23', 'cal-23-24':'calciatori-23-24',
+  'cal-24-25':'calciatori-24-25', 'cal-25-26':'calciatori-25-26',
+  'calb-25-26':'calb-25-26',      'adr-25-26':'adrenalyn-25-26',
+  'ma-25-26':'match-attax-ucl',   'fwc-26':'mondiali-2026',
+  'qatar-22-2':'mondiali-qatar-22',
+};
+
+// ── Re-derive ALBUMS from master using current localStorage state ───────────
+// Called on initial load and on every storage/visibilitychange event.
+function _reloadDashboardAlbums(){
+  // 1. Reset to master
+  ALBUMS.length = 0;
+  _DASH_ALBUMS_MASTER.forEach(a => ALBUMS.push({...a, objectives: a.objectives ? a.objectives.map(o=>({...o})) : undefined}));
+  // 2. Apply removed-albums filter
+  try {
+    const removed = JSON.parse(localStorage.getItem('figubook-removed-albums-v1') || '[]');
+    for (let i = ALBUMS.length - 1; i >= 0; i--) {
+      if (removed.includes(ALBUMS[i].id)) ALBUMS.splice(i, 1);
+    }
+  } catch(e) {}
+  // 3. Apply my-albums filter — EXCLUSIVE source of truth
+  const myAlbums = FiguBookCore.getMyAlbums();
+  const keepIds = new Set(myAlbums.map(cid => _DASH_CATALOG_MAP[cid] || cid));
+  for (let i = ALBUMS.length - 1; i >= 0; i--) {
+    if (!keepIds.has(ALBUMS[i].id)) ALBUMS.splice(i, 1);
+  }
+}
+
+// Initial load — filter immediately
+_reloadDashboardAlbums();
+
+// ── Dashboard live stats from localStorage ────────────────────
+function loadDashboardLiveStats(){
+  // Update albums that have a dedicated storage key
+  Object.entries(FiguBookCore.ALBUM_STORAGE_KEYS).forEach(([albumId, storageKey]) => {
+    const s = FiguBookCore.getAlbumStats(storageKey);
+    const a = ALBUMS.find(x => x.id === albumId);
+    if (a) {
+      a.have = s.have;
+      a.doubles = s.doubles;
+      // Auto-compute status — never hardcode
+      a.status = (a.have >= a.total && a.total > 0) ? 'done' : 'active';
+    }
+  });
+  // For albums without a storage key, also auto-compute status from their current values
+  ALBUMS.forEach(a => {
+    if (!FiguBookCore.ALBUM_STORAGE_KEYS[a.id]) {
+      a.status = (a.have >= a.total && a.total > 0) ? 'done' : 'active';
+    }
+  });
+}
+
+// ── Quick-stats (header): figurine/doppie/mancanti live; scambi/match = 0 ──
+function renderDashboardQuickStats(){
+  let totalHave = 0, totalDoubles = 0, totalMissing = 0;
+  ALBUMS.forEach(a => {
+    totalHave    += (a.have || 0);
+    totalDoubles += (a.doubles || 0);
+    totalMissing += Math.max(0, a.total - (a.have || 0));
+  });
+  const elF = document.getElementById('qstatFigurine');
+  const elD = document.getElementById('qstatDoppie');
+  const elM = document.getElementById('qstatMancanti');
+  if (elF) elF.textContent = totalHave.toLocaleString('it-IT');
+  if (elD) elD.textContent = totalDoubles.toLocaleString('it-IT');
+  if (elM) elM.textContent = totalMissing.toLocaleString('it-IT');
+}
+
+// ── Render albums scroller ────────────────────────
+function escapeHtml(s){ return String(s).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
+const STATUS_LABEL = { active:'IN CORSO', done:'COMPLETATO', new:'NUOVO' };
+
+function renderAlbumsScroller(){
+  const root = document.getElementById('albumsScroller');
+  root.innerHTML = '';
+  ALBUMS.forEach(a => {
+    const pct = +(a.have / a.total * 100).toFixed(1);
+    const card = document.createElement('a');
+    card.className = 'album-mini' + (a.featured ? ' featured' : '');
+    card.href = a.href;
+    if (a.href === '#') card.title = 'In arrivo';
+    card.innerHTML = `
+      <div class="cover" style="--c1:${a.c1};--c2:${a.c2}">
+        <span class="status-pill ${a.status}">${STATUS_LABEL[a.status] || a.status}</span>
+        <div class="editor">${escapeHtml(a.editor)}</div>
+        <div class="ttl">${escapeHtml(a.coverTitle)}<span class="yr">${escapeHtml(a.coverYear)}</span></div>
+      </div>
+      <div class="body" style="--c1:${a.c1};--c2:${a.c2}">
+        <div class="nm">${escapeHtml(a.name)}</div>
+        <div class="row">
+          <span class="have">${a.have}<span style="color:var(--muted);font-size:14px;font-weight:500"> / ${a.total}</span></span>
+          <span class="pct">${pct}%</span>
+        </div>
+        <div class="bar"><i style="width:${pct}%"></i></div>
+      </div>
+    `;
+    root.appendChild(card);
+  });
+}
+loadDashboardLiveStats();
+renderAlbumsScroller();
+renderDashboardQuickStats();
+
+// ── Render objectives carousel ────────────────────
+let activeObjIdx = 0;
+function renderObjectives(){
+  if (!ALBUMS.length) return; // no albums in collection
+  const a = ALBUMS[activeObjIdx];
+  const hero = document.getElementById('objHero');
+  hero.style.setProperty('--c1', a.c1);
+  hero.style.setProperty('--c2', a.c2);
+  document.getElementById('objEditor').textContent = a.editor;
+  document.getElementById('objTitle').textContent = a.name;
+  const pct = +(a.have / a.total * 100).toFixed(1);
+  document.getElementById('objTotal').textContent = `${a.have} / ${a.total} · ${pct}%`;
+  document.getElementById('objPct').textContent = pct + '%';
+
+  const list = document.getElementById('objList');
+  list.innerHTML = '';
+  a.objectives.forEach(o => {
+    const p = Math.round(o.have / o.total * 100);
+    const missing = o.total - o.have;
+    const labelText = missing === 0 ? 'Squadra completa ✓' : `mancano ${missing} figurine`;
+    const row = document.createElement('div');
+    row.className = 'obj-row';
+    const albumPage = (a.href && a.href !== '#') ? a.href : null;
+    row.innerHTML = `
+      <div class="crest" style="--tc1:${o.tc1};--tc2:${o.tc2}">${escapeHtml(o.crest)}</div>
+      <div class="team">
+        <div class="nm">${escapeHtml(o.team)}</div>
+        <div class="miss"><b>${o.have}/${o.total}</b> · ${labelText}</div>
+      </div>
+      ${albumPage
+        ? `<a href="${albumPage}" class="obj-link">Vai →</a>`
+        : `<span class="obj-link-na">In arrivo</span>`
+      }
+    `;
+    list.appendChild(row);
+  });
+
+  // Dots
+  const dots = document.getElementById('objDots');
+  dots.innerHTML = '';
+  ALBUMS.forEach((al, i) => {
+    const d = document.createElement('button');
+    d.className = 'obj-dot' + (i === activeObjIdx ? ' active' : '');
+    d.style.setProperty('--c', al.c1);
+    d.setAttribute('aria-label', al.name);
+    d.title = al.name;
+    d.addEventListener('click', () => { activeObjIdx = i; renderObjectives(); });
+    dots.appendChild(d);
+  });
+
+  document.getElementById('objPrev').disabled = activeObjIdx === 0;
+  document.getElementById('objNext').disabled = activeObjIdx === ALBUMS.length - 1;
+}
+document.getElementById('objPrev').addEventListener('click', () => {
+  if (activeObjIdx > 0){ activeObjIdx--; renderObjectives(); }
+});
+document.getElementById('objNext').addEventListener('click', () => {
+  if (activeObjIdx < ALBUMS.length - 1){ activeObjIdx++; renderObjectives(); }
+});
+loadDashboardLiveStats();
+renderObjectives();
+renderDashboardQuickStats();
+
+// ── Live stats refresh on page focus + cross-tab storage sync ──
+FiguBookCore.initAutoSync(() => {
+  _reloadDashboardAlbums();       // re-filter ALBUMS from source of truth
+  loadDashboardLiveStats();       // update have/doubles/status from localStorage
+  renderAlbumsScroller();
+  renderDashboardQuickStats();
+  if (activeObjIdx >= ALBUMS.length) activeObjIdx = Math.max(0, ALBUMS.length - 1);
+  renderObjectives();
+});
+
+// Toast
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove('show'), 1600);
+}
+
+// ── Todo item handlers — navigazione mirata ──────────────────
+document.querySelector('.todo-item.meet').addEventListener('click', () => {
+  window.location.href = 'FiguBook Scambia.html';
+});
+document.querySelector('.todo-item.urgent').addEventListener('click', () => {
+  window.location.href = 'FiguBook Scambia.html';
+});
+document.querySelector('.todo-item.add').addEventListener('click', () => {
+  window.location.href = 'FiguBook Calciatori 2025-2026.html';
+});
+
+// ── Notification panel ────────────────────────────────────────
+function clearNotifDot(){
+  const dot = document.querySelector('#notifBtn .dot');
+  if (dot) dot.remove();
+  try { FiguBookCore.setNotifRead(); } catch(e){}
+}
+// Apply saved read state on load
+(function initNotifDot(){
+  try {
+    if (FiguBookCore.getNotifRead()){
+      const dot = document.querySelector('#notifBtn .dot');
+      if (dot) dot.remove();
+    }
+  } catch(e){}
+})();
+function openNotifPanel(){
+  document.getElementById('notifPanel').classList.add('open');
+  clearNotifDot();
+  closeProfileMenu();
+  closeMsgPanel();
+}
+function closeNotifPanel(){
+  document.getElementById('notifPanel').classList.remove('open');
+}
+document.getElementById('notifBtn').addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('notifPanel').classList.contains('open') ? closeNotifPanel() : openNotifPanel();
+});
+document.getElementById('notifPanel').addEventListener('click', e => e.stopPropagation());
+document.getElementById('markReadBtn').addEventListener('click', e => {
+  e.stopPropagation();
+  document.querySelectorAll('#notifPanel .notif-item.unread').forEach(el => {
+    el.classList.remove('unread');
+    const dot = el.querySelector('.notif-dot');
+    if (dot) dot.remove();
+  });
+  clearNotifDot();
+  showToast('Tutte le notifiche segnate come lette');
+});
+document.querySelectorAll('#notifPanel .notif-item[data-href]').forEach(el => {
+  el.addEventListener('click', () => { window.location.href = el.dataset.href; });
+});
+
+// ── Profile menu ──────────────────────────────────────────────
+function openProfileMenu(){
+  document.getElementById('profileMenu').classList.add('open');
+  closeNotifPanel();
+  closeMsgPanel();
+}
+function closeProfileMenu(){
+  document.getElementById('profileMenu').classList.remove('open');
+}
+document.getElementById('avatarBtn').addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('profileMenu').classList.contains('open') ? closeProfileMenu() : openProfileMenu();
+});
+document.getElementById('profileMenu').addEventListener('click', e => e.stopPropagation());
+document.getElementById('pmProfilo').addEventListener('click', () => { showToast('Profilo — in arrivo'); closeProfileMenu(); });
+document.getElementById('pmImpostazioni').addEventListener('click', () => { showToast('Impostazioni — in arrivo'); closeProfileMenu(); });
+document.getElementById('pmEsci').addEventListener('click', () => {
+  FiguBookCore.clearSession();
+  window.location.href = 'FiguBook Benvenuto.html';
+});
+
+// Close panels clicking outside
+document.addEventListener('click', () => { closeNotifPanel(); closeProfileMenu(); });
+
+// ── Messages panel ────────────────────────────────────────────
+const DEFAULT_CONVERSATIONS = [
+  { id:'giulia',   name:'Giulia',     av1:'#c8ff3d', av2:'#1f8a5b', lastMsg:'Ok ci vediamo in piazza alle 17:30 👍', time:'14:22', unread:0,
+    messages:[
+      {from:'them', text:'Ciao! Hai ancora la #178 di Kvara?',          time:'11:30'},
+      {from:'me',   text:"Sì ce l'ho doppia, la vuoi?",                 time:'11:32'},
+      {from:'them', text:'Perfetto! Io ho la #312 Lautaro, ti interessa?', time:'11:33'},
+      {from:'me',   text:'Sì esatto! Domani in piazza?',                time:'11:45'},
+      {from:'them', text:'Ok ci vediamo in piazza alle 17:30 👍',        time:'14:22'},
+    ]},
+  { id:'marco',    name:'Marco',      av1:'#7a5ae0', av2:'#ff3df5', lastMsg:'Ho 3 doppie del Milan per te', time:'10:15', unread:2,
+    messages:[
+      {from:'them', text:"Ehi hai doppie dell'Inter?",  time:'09:50'},
+      {from:'me',   text:'Sì ne ho 4, cosa offri?',     time:'10:00'},
+      {from:'them', text:'Ho 3 doppie del Milan per te',time:'10:15'},
+    ]},
+  { id:'federico', name:'Federico ⭐', av1:'#2a6fdb', av2:'#0ea5e9', lastMsg:'Scambio completato! Grazie mille 🙌', time:'Ieri', unread:0,
+    messages:[
+      {from:'me',   text:'Ciao Fede! Ho le 5 figurine pronte', time:'Ieri 15:00'},
+      {from:'them', text:'Ottimo! Anche io. Quando ci vediamo?',time:'Ieri 15:30'},
+      {from:'me',   text:'Domani mattina?',               time:'Ieri 15:31'},
+      {from:'them', text:'Scambio completato! Grazie mille 🙌',time:'Ieri 17:00'},
+    ]},
+  { id:'anna',     name:'Anna',       av1:'#ff5b2e', av2:'#f5b800', lastMsg:'Quando puoi farmi sapere?', time:'2g fa', unread:1,
+    messages:[
+      {from:'them', text:'Ciao! Cerco la figurina di Vlahovic', time:'2g fa'},
+      {from:'them', text:'Quando puoi farmi sapere?',           time:'2g fa'},
+    ]},
+];
+
+function loadMsgConversations(){
+  const r = FiguBookCore.getMessages();
+  if (r) return r;
+  return DEFAULT_CONVERSATIONS.map(c => ({...c, messages:[...c.messages]}));
+}
+function saveMsgConversations(convs){
+  FiguBookCore.saveMessages(convs);
+}
+
+let msgConversations = loadMsgConversations();
+let activeChatId = null;
+
+function updateMsgBadge(){
+  const count = msgConversations.reduce((s,c) => s + (c.unread||0), 0);
+  const btn = document.getElementById('msgBtn');
+  let badge = btn.querySelector('.msg-badge');
+  if (count > 0){
+    if (!badge){ badge = document.createElement('span'); badge.className = 'msg-badge'; btn.appendChild(badge); }
+    badge.textContent = count;
+  } else if (badge) badge.remove();
+}
+
+function renderMsgConvList(){
+  const list = document.getElementById('msgConvList');
+  list.innerHTML = '';
+  msgConversations.forEach(c => {
+    const item = document.createElement('div');
+    item.className = 'msg-conv-item';
+    item.innerHTML = `
+      <div class="msg-conv-av" style="--av1:${c.av1};--av2:${c.av2}">${escapeHtml(c.name[0])}</div>
+      <div class="msg-conv-info">
+        <div class="msg-conv-name">${escapeHtml(c.name)}</div>
+        <div class="msg-conv-last">${escapeHtml(c.lastMsg)}</div>
+      </div>
+      <div class="msg-conv-meta">
+        <span class="msg-conv-time">${escapeHtml(c.time)}</span>
+        ${c.unread ? `<span class="msg-unread-badge">${c.unread}</span>` : ''}
+      </div>
+    `;
+    item.addEventListener('click', () => openMsgChat(c.id));
+    list.appendChild(item);
+  });
+}
+
+function openMsgChat(id){
+  const conv = msgConversations.find(c => c.id === id);
+  if (!conv) return;
+  activeChatId = id;
+  conv.unread = 0;
+  saveMsgConversations(msgConversations);
+  updateMsgBadge();
+  document.getElementById('msgPanelTitle').textContent = conv.name;
+  document.getElementById('msgBackBtn').classList.add('visible');
+  document.getElementById('msgConvListView').style.display = 'none';
+  document.getElementById('msgChatView').classList.add('visible');
+  const msgsEl = document.getElementById('msgChatMsgs');
+  msgsEl.innerHTML = '';
+  conv.messages.forEach(m => {
+    const b = document.createElement('div');
+    b.className = `msg-bubble ${m.from === 'me' ? 'out' : 'in'}`;
+    b.innerHTML = `${escapeHtml(m.text)}<span class="msg-time-lbl">${escapeHtml(m.time)}</span>`;
+    msgsEl.appendChild(b);
+  });
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+  document.getElementById('msgInput').focus();
+}
+
+function backToMsgConvList(){
+  activeChatId = null;
+  document.getElementById('msgPanelTitle').textContent = 'Messaggi';
+  document.getElementById('msgBackBtn').classList.remove('visible');
+  document.getElementById('msgConvListView').style.display = 'flex';
+  document.getElementById('msgChatView').classList.remove('visible');
+  renderMsgConvList();
+}
+
+function sendMsg(){
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text || !activeChatId) return;
+  const conv = msgConversations.find(c => c.id === activeChatId);
+  if (!conv) return;
+  const now = new Date();
+  const t = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  conv.messages.push({from:'me', text, time:t});
+  conv.lastMsg = text;
+  conv.time = t;
+  saveMsgConversations(msgConversations);
+  input.value = '';
+  const msgsEl = document.getElementById('msgChatMsgs');
+  const b = document.createElement('div');
+  b.className = 'msg-bubble out';
+  b.innerHTML = `${escapeHtml(text)}<span class="msg-time-lbl">${t}</span>`;
+  msgsEl.appendChild(b);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+
+function openMsgPanel(){
+  document.getElementById('msgPanel').classList.add('open');
+  document.getElementById('msgOverlay').classList.add('open');
+  closeNotifPanel();
+  closeProfileMenu();
+  backToMsgConvList();
+}
+function closeMsgPanel(){
+  document.getElementById('msgPanel').classList.remove('open');
+  document.getElementById('msgOverlay').classList.remove('open');
+}
+
+document.getElementById('msgBtn').addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('msgPanel').classList.contains('open') ? closeMsgPanel() : openMsgPanel();
+});
+document.getElementById('msgOverlay').addEventListener('click', closeMsgPanel);
+document.getElementById('msgCloseBtn').addEventListener('click', closeMsgPanel);
+document.getElementById('msgBackBtn').addEventListener('click', backToMsgConvList);
+document.getElementById('msgSendBtn').addEventListener('click', sendMsg);
+document.getElementById('msgInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); }
+});
+
+updateMsgBadge();
+
+// ── Search panel ──────────────────────────────────────────────
+const SEARCH_ALBUM_DATA = [
+  { id:'calciatori-25-26', name:'Calciatori 25-26', href:'FiguBook Calciatori 2025-2026.html', storageKey:'figubook-calciatori-2526-v1' },
+  { id:'calciatori-24-25', name:'Calciatori 24-25', href:'FiguBook Calciatori 2024-2025.html', storageKey:'figubook-calciatori-2425-v1' },
+  { id:'calciatori-23-24', name:'Calciatori 23-24', href:'FiguBook Calciatori 2023-2024.html', storageKey:'figubook-calciatori-2324-v1' },
+  { id:'calciatori-22-23', name:'Calciatori 22-23', href:'FiguBook Calciatori 2022-2023.html', storageKey:'figubook-calciatori-2223-v1' },
+  { id:'mondiali-2026',    name:'FIFA World Cup 2026', href:'FiguBook FIFA World Cup 2026.html', storageKey:'figubook-fwc2026-v1' },
+  { id:'calb-25-26',       name:'Serie B 25-26',    href:'FiguBook Serie B 2025-2026.html', storageKey:'figubook-serieb-2526-v1' },
+  { id:'match-attax-ucl', name:'Match Attax UCL 25/26', href:'FiguBook Match Attax UCL 2025-2026.html', storageKey:'figubook-matchattax-ucl-2526-v1' },
+  { id:'adrenalyn-25-26', name:'Adrenalyn XL 25/26',  href:'FiguBook Adrenalyn XL 2025-2026.html',   storageKey:'figubook-adrenalyn-2526-v1' },
+];
+function buildSearchIndex(){
+  const idx = [];
+  SEARCH_ALBUM_DATA.forEach(al => {
+    idx.push({ type:'album', code:'', name:al.name, album:al.name, href:al.href });
+    try {
+      const raw = localStorage.getItem(al.storageKey);
+      if (raw){
+        const {names} = JSON.parse(raw);
+        if (names) Object.entries(names).forEach(([code, name]) => {
+          if (name) idx.push({ type:'card', code, name, album:al.name, href:al.href });
+        });
+      }
+    } catch(e){}
+  });
+  return idx;
+}
+function renderSearchResults(query){
+  const resultsEl = document.getElementById('searchResults');
+  if (!resultsEl) return;
+  if (!query.trim()){ resultsEl.innerHTML = ''; return; }
+  const q = query.trim().toLowerCase();
+  const matches = buildSearchIndex().filter(item =>
+    item.code.toLowerCase().includes(q) ||
+    item.name.toLowerCase().includes(q) ||
+    item.album.toLowerCase().includes(q)
+  ).slice(0, 12);
+  if (!matches.length){
+    resultsEl.innerHTML = `<div class="search-empty">Nessun risultato per "${escapeHtml(query)}"</div>`;
+    return;
+  }
+  resultsEl.innerHTML = matches.map(m => `
+    <div class="search-result-item" data-href="${escapeHtml(m.href)}">
+      <span class="search-result-code">${m.type === 'card' ? escapeHtml(m.code) : '📚'}</span>
+      <div style="min-width:0">
+        <div class="search-result-name">${escapeHtml(m.name)}</div>
+        <div class="search-result-album">${escapeHtml(m.album)}</div>
+      </div>
+    </div>
+  `).join('');
+  resultsEl.querySelectorAll('.search-result-item[data-href]').forEach(el => {
+    el.addEventListener('click', () => { window.location.href = el.dataset.href; });
+  });
+}
+(function initSearchPanel(){
+  const btn = document.getElementById('searchBtn');
+  const panel = document.getElementById('searchPanel');
+  const input = document.getElementById('searchInput');
+  if (!btn || !panel) return;
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const isOpen = panel.classList.contains('open');
+    // Close other panels
+    document.getElementById('notifPanel').classList.remove('open');
+    document.getElementById('profileMenu').classList.remove('open');
+    if (!isOpen){ panel.classList.add('open'); setTimeout(()=>input && input.focus(), 50); }
+    else panel.classList.remove('open');
+  });
+  panel.addEventListener('click', e => e.stopPropagation());
+  if (input){
+    input.addEventListener('input', () => renderSearchResults(input.value));
+    input.addEventListener('keydown', e => { if(e.key==='Escape') panel.classList.remove('open'); });
+  }
+  document.querySelectorAll('.search-hint').forEach(h => {
+    h.addEventListener('click', () => {
+      if (input){ input.value = h.dataset.hint === 'carta' ? '' : ''; input.focus(); renderSearchResults(input.value); }
+    });
+  });
+  // Also close search panel on outside click
+  document.addEventListener('click', () => panel.classList.remove('open'));
+})();
+</script>
+
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "variant": "stadio",
+  "fontDisplay": "Space Grotesk"
+}/*EDITMODE-END*/;
+const VARIANTS = ["pitch", "stadio", "streetwear"];
+function App(){
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  React.useEffect(() => { document.body.dataset.variant = t.variant; }, [t.variant]);
+  React.useEffect(() => { document.documentElement.style.setProperty('--f-display', `'${t.fontDisplay}', ui-sans-serif`); }, [t.fontDisplay]);
+  return (
+    <TweaksPanel title="Tweaks">
+      <TweakSection label="Stile" />
+      <TweakRadio label="Variante" value={t.variant} options={VARIANTS} onChange={(v) => setTweak('variant', v)} />
+      <TweakSelect label="Font display" value={t.fontDisplay} options={['Bricolage Grotesque', 'Space Grotesk', 'Instrument Serif', 'Geist']} onChange={(v) => setTweak('fontDisplay', v)} />
+    </TweaksPanel>
+  );
+}
+const mount = document.createElement('div');
+document.body.appendChild(mount);
+ReactDOM.createRoot(mount).render(<App />);
+</script>
+
+</body>
+</html>
