@@ -586,11 +586,11 @@
 
 <nav class="nav">
   <div class="nav-inner">
-    <a class="brand" href="FiguBook Dashboard.html"><span class="brand-mark">F</span><span>FiguBook</span></a>
+    <a class="brand" href="figubook-dashboard.html"><span class="brand-mark">F</span><span>FiguBook</span></a>
     <div class="nav-tabs">
-      <a class="nav-tab active" href="FiguBook Dashboard.html">Dashboard</a>
-      <a class="nav-tab" href="FiguBook Album.html">Album</a>
-      <a class="nav-tab" href="FiguBook Scambia.html">Scambia</a>
+      <a class="nav-tab active" href="figubook-dashboard.html">Dashboard</a>
+      <a class="nav-tab" href="figubook-album.html">Album</a>
+      <a class="nav-tab" href="figubook-scambia.html">Scambia</a>
       <a class="nav-tab" href="#">Community</a>
     </div>
     <div class="nav-actions">
@@ -625,7 +625,7 @@
             <h4>Notifiche</h4>
             <button class="mark-read" id="markReadBtn">Segna tutte lette</button>
           </div>
-          <div class="notif-item unread" data-href="FiguBook Scambia.html">
+          <div class="notif-item unread" data-href="figubook-scambia.html">
             <div class="notif-ic">🔄</div>
             <div class="notif-txt">
               <div class="nm">Proposta di scambio da Marco</div>
@@ -633,7 +633,7 @@
             </div>
             <div class="notif-dot"></div>
           </div>
-          <div class="notif-item unread" data-href="FiguBook Scambia.html">
+          <div class="notif-item unread" data-href="figubook-scambia.html">
             <div class="notif-ic">🔄</div>
             <div class="notif-txt">
               <div class="nm">Proposta di scambio da Anna</div>
@@ -641,7 +641,7 @@
             </div>
             <div class="notif-dot"></div>
           </div>
-          <div class="notif-item unread" data-href="FiguBook Scambia.html">
+          <div class="notif-item unread" data-href="figubook-scambia.html">
             <div class="notif-ic">🔄</div>
             <div class="notif-txt">
               <div class="nm">Proposta di scambio da Luca</div>
@@ -732,7 +732,7 @@
       <h2>I tuoi album</h2>
       <div class="sub">Scorri per vedere tutta la libreria</div>
     </div>
-    <a class="more" href="FiguBook Album.html">Vedi tutti →</a>
+    <a class="more" href="figubook-album.html">Vedi tutti →</a>
   </div>
 
   <div class="albums-scroller" id="albumsScroller"></div>
@@ -781,7 +781,7 @@
       <div class="panel-sub">Scambi consigliati nelle vicinanze</div>
       <div class="match-list">
 
-        <a class="match-item" href="FiguBook Scambia.html">
+        <a class="match-item" href="figubook-scambia.html">
           <div class="av" style="--av1:#c8ff3d;--av2:#1f8a5b">G</div>
           <div>
             <div class="name">Giada · @giadaa</div>
@@ -794,7 +794,7 @@
           <span class="pill-match">3 ↔ 3</span>
         </a>
 
-        <a class="match-item" href="FiguBook Scambia.html">
+        <a class="match-item" href="figubook-scambia.html">
           <div class="av" style="--av1:#2a6fdb;--av2:#0ea5e9">F</div>
           <div>
             <div class="name">Federico · @fede10 · ⭐ amico</div>
@@ -807,7 +807,7 @@
           <span class="pill-match">5 ↔ 5</span>
         </a>
 
-        <a class="match-item" href="FiguBook Scambia.html">
+        <a class="match-item" href="figubook-scambia.html">
           <div class="av" style="--av1:#0a3a8b;--av2:#1a1a1a">S</div>
           <div>
             <div class="name">Stefano · @stef.inter</div>
@@ -820,7 +820,7 @@
           <span class="pill-match warm">6 ↔ 6</span>
         </a>
 
-        <a class="match-item" href="FiguBook Scambia.html">
+        <a class="match-item" href="figubook-scambia.html">
           <div class="av" style="--av1:#7a5ae0;--av2:#ff3df5">M</div>
           <div>
             <div class="name">Marco · @kicko</div>
@@ -967,7 +967,7 @@
 
 // ── Albums data — mirrors Album.html master list (Album.html is source of truth) ──
 const ALBUMS = [
-  { id:'calciatori-25-26', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'25/26', name:'Calciatori 25-26',  have:0, total:784, doubles:0, status:'active', c1:'#1f8a5b', c2:'#0a3a8b', featured:true, href:'FiguBook Calciatori 2025-2026.html',
+  { id:'calciatori-25-26', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'25/26', name:'Calciatori 25-26',  have:0, total:784, doubles:0, status:'active', c1:'#1f8a5b', c2:'#0a3a8b', featured:true, href:'figubook-calciatori-2526.html',
     objectives:[
       {team:'Atalanta',   crest:'AT', tc1:'#0a4a8b', tc2:'#1a1a1a', have:0, total:22},
       {team:'Inter',      crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:22},
@@ -977,7 +977,7 @@ const ALBUMS = [
       {team:'Roma',       crest:'RO', tc1:'#a01d2e', tc2:'#fcc500', have:0, total:22},
     ]
   },
-  { id:'calciatori-24-25', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'24/25', name:'Calciatori 24-25', have:0, total:886, doubles:0, status:'active', c1:'#f5b800', c2:'#7a5a00', href:'FiguBook Calciatori 2024-2025.html',
+  { id:'calciatori-24-25', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'24/25', name:'Calciatori 24-25', have:0, total:886, doubles:0, status:'active', c1:'#f5b800', c2:'#7a5a00', href:'figubook-calciatori-2425.html',
     objectives:[
       {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:27},
       {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:27},
@@ -985,7 +985,7 @@ const ALBUMS = [
       {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:27},
     ]
   },
-  { id:'calciatori-23-24', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'23/24', name:'Calciatori 23-24', have:0, total:682, doubles:0, status:'active', c1:'#5a5a5a', c2:'#2a2a2a', href:'FiguBook Calciatori 2023-2024.html',
+  { id:'calciatori-23-24', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'23/24', name:'Calciatori 23-24', have:0, total:682, doubles:0, status:'active', c1:'#5a5a5a', c2:'#2a2a2a', href:'figubook-calciatori-2324.html',
     objectives:[
       {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:22},
       {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:22},
@@ -993,7 +993,7 @@ const ALBUMS = [
       {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:22},
     ]
   },
-  { id:'calciatori-22-23', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'22/23', name:'Calciatori 22-23', have:0, total:650, doubles:0, status:'active', c1:'#c8851f', c2:'#7a3a00', href:'FiguBook Calciatori 2022-2023.html',
+  { id:'calciatori-22-23', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'22/23', name:'Calciatori 22-23', have:0, total:650, doubles:0, status:'active', c1:'#c8851f', c2:'#7a3a00', href:'figubook-calciatori-2223.html',
     objectives:[
       {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:22},
       {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:22},
@@ -1009,7 +1009,7 @@ const ALBUMS = [
       {team:'Marocco',   crest:'MA', tc1:'#1f8a5b', tc2:'#a01d2e', have:0, total:28},
     ]
   },
-  { id:'mondiali-2026', editor:'PANINI · FIFA',  coverTitle:'FIFA', coverYear:'2026', name:'FIFA World Cup 2026', have:0, total:720, doubles:0, status:'new', c1:'#0a3a8b', c2:'#a01d2e', href:'FiguBook FIFA World Cup 2026.html',
+  { id:'mondiali-2026', editor:'PANINI · FIFA',  coverTitle:'FIFA', coverYear:'2026', name:'FIFA World Cup 2026', have:0, total:720, doubles:0, status:'new', c1:'#0a3a8b', c2:'#a01d2e', href:'figubook-fwc2026.html',
     objectives:[
       {team:'Italia',      crest:'IT', tc1:'#1f8a5b', tc2:'#a01d2e', have:0, total:26},
       {team:'Brasile',     crest:'BR', tc1:'#1f8a5b', tc2:'#fcc500', have:0, total:26},
@@ -1019,7 +1019,7 @@ const ALBUMS = [
       {team:'Inghilterra', crest:'EN', tc1:'#a01d2e', tc2:'#f4f4f4', have:0, total:26},
     ]
   },
-  { id:'calb-25-26', editor:'PANINI · SERIE B',  coverTitle:'SERIE B', coverYear:'25/26', name:'Serie B 25-26', have:0, total:440, doubles:0, status:'new', c1:'#1f8a5b', c2:'#14110d', href:'FiguBook Serie B 2025-2026.html',
+  { id:'calb-25-26', editor:'PANINI · SERIE B',  coverTitle:'SERIE B', coverYear:'25/26', name:'Serie B 25-26', have:0, total:440, doubles:0, status:'new', c1:'#1f8a5b', c2:'#14110d', href:'figubook-serieb-2526.html',
     objectives:[
       {team:'Spezia',    crest:'SP', tc1:'#1f8a5b', tc2:'#1a1a1a', have:0, total:18},
       {team:'Pisa',      crest:'PI', tc1:'#1a1a1a', tc2:'#0a4a8b', have:0, total:18},
@@ -1027,7 +1027,7 @@ const ALBUMS = [
       {team:'Bari',      crest:'BA', tc1:'#a01d2e', tc2:'#f4f4f4', have:0, total:18},
     ]
   },
-  { id:'adrenalyn-25-26', editor:'PANINI · ADRENALYN', coverTitle:'ADRENALYN', coverYear:'XL 25/26', name:'Adrenalyn XL 25-26', have:0, total:450, doubles:0, status:'active', c1:'#7a5ae0', c2:'#0a3a8b', href:'FiguBook Adrenalyn XL 2025-2026.html',
+  { id:'adrenalyn-25-26', editor:'PANINI · ADRENALYN', coverTitle:'ADRENALYN', coverYear:'XL 25/26', name:'Adrenalyn XL 25-26', have:0, total:450, doubles:0, status:'active', c1:'#7a5ae0', c2:'#0a3a8b', href:'figubook-adrenalyn-2526.html',
     objectives:[
       {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:25},
       {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:25},
@@ -1035,7 +1035,7 @@ const ALBUMS = [
       {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:25},
     ]
   },
-  { id:'match-attax-ucl', editor:'TOPPS · UCL', coverTitle:'MATCH ATTAX', coverYear:'25/26', name:'Match Attax UCL', have:0, total:584, doubles:0, status:'active', c1:'#0a4a8b', c2:'#14110d', href:'FiguBook Match Attax UCL 2025-2026.html',
+  { id:'match-attax-ucl', editor:'TOPPS · UCL', coverTitle:'MATCH ATTAX', coverYear:'25/26', name:'Match Attax UCL', have:0, total:584, doubles:0, status:'active', c1:'#0a4a8b', c2:'#14110d', href:'figubook-matchattax-2526.html',
     objectives:[
       {team:'Real Madrid', crest:'RM', tc1:'#f4f4f4', tc2:'#fcc500', have:0, total:18},
       {team:'Man. City',   crest:'MC', tc1:'#8ec5ed', tc2:'#1a4a8b', have:0, total:18},
@@ -1237,13 +1237,13 @@ function showToast(msg){
 
 // ── Todo item handlers — navigazione mirata ──────────────────
 document.querySelector('.todo-item.meet').addEventListener('click', () => {
-  window.location.href = 'FiguBook Scambia.html';
+  window.location.href = 'figubook-scambia.html';
 });
 document.querySelector('.todo-item.urgent').addEventListener('click', () => {
-  window.location.href = 'FiguBook Scambia.html';
+  window.location.href = 'figubook-scambia.html';
 });
 document.querySelector('.todo-item.add').addEventListener('click', () => {
-  window.location.href = 'FiguBook Calciatori 2025-2026.html';
+  window.location.href = 'figubook-calciatori-2526.html';
 });
 
 // ── Notification panel ────────────────────────────────────────
@@ -1307,7 +1307,7 @@ document.getElementById('pmProfilo').addEventListener('click', () => { showToast
 document.getElementById('pmImpostazioni').addEventListener('click', () => { showToast('Impostazioni — in arrivo'); closeProfileMenu(); });
 document.getElementById('pmEsci').addEventListener('click', () => {
   FiguBookCore.clearSession();
-  window.location.href = 'FiguBook Benvenuto.html';
+  window.location.href = 'figubook-benvenuto.html';
 });
 
 // Close panels clicking outside
@@ -1468,14 +1468,14 @@ updateMsgBadge();
 
 // ── Search panel ──────────────────────────────────────────────
 const SEARCH_ALBUM_DATA = [
-  { id:'calciatori-25-26', name:'Calciatori 25-26', href:'FiguBook Calciatori 2025-2026.html', storageKey:'figubook-calciatori-2526-v1' },
-  { id:'calciatori-24-25', name:'Calciatori 24-25', href:'FiguBook Calciatori 2024-2025.html', storageKey:'figubook-calciatori-2425-v1' },
-  { id:'calciatori-23-24', name:'Calciatori 23-24', href:'FiguBook Calciatori 2023-2024.html', storageKey:'figubook-calciatori-2324-v1' },
-  { id:'calciatori-22-23', name:'Calciatori 22-23', href:'FiguBook Calciatori 2022-2023.html', storageKey:'figubook-calciatori-2223-v1' },
-  { id:'mondiali-2026',    name:'FIFA World Cup 2026', href:'FiguBook FIFA World Cup 2026.html', storageKey:'figubook-fwc2026-v1' },
-  { id:'calb-25-26',       name:'Serie B 25-26',    href:'FiguBook Serie B 2025-2026.html', storageKey:'figubook-serieb-2526-v1' },
-  { id:'match-attax-ucl', name:'Match Attax UCL 25/26', href:'FiguBook Match Attax UCL 2025-2026.html', storageKey:'figubook-matchattax-ucl-2526-v1' },
-  { id:'adrenalyn-25-26', name:'Adrenalyn XL 25/26',  href:'FiguBook Adrenalyn XL 2025-2026.html',   storageKey:'figubook-adrenalyn-2526-v1' },
+  { id:'calciatori-25-26', name:'Calciatori 25-26', href:'figubook-calciatori-2526.html', storageKey:'figubook-calciatori-2526-v1' },
+  { id:'calciatori-24-25', name:'Calciatori 24-25', href:'figubook-calciatori-2425.html', storageKey:'figubook-calciatori-2425-v1' },
+  { id:'calciatori-23-24', name:'Calciatori 23-24', href:'figubook-calciatori-2324.html', storageKey:'figubook-calciatori-2324-v1' },
+  { id:'calciatori-22-23', name:'Calciatori 22-23', href:'figubook-calciatori-2223.html', storageKey:'figubook-calciatori-2223-v1' },
+  { id:'mondiali-2026',    name:'FIFA World Cup 2026', href:'figubook-fwc2026.html', storageKey:'figubook-fwc2026-v1' },
+  { id:'calb-25-26',       name:'Serie B 25-26',    href:'figubook-serieb-2526.html', storageKey:'figubook-serieb-2526-v1' },
+  { id:'match-attax-ucl', name:'Match Attax UCL 25/26', href:'figubook-matchattax-2526.html', storageKey:'figubook-matchattax-ucl-2526-v1' },
+  { id:'adrenalyn-25-26', name:'Adrenalyn XL 25/26',  href:'figubook-adrenalyn-2526.html',   storageKey:'figubook-adrenalyn-2526-v1' },
 ];
 function buildSearchIndex(){
   const idx = [];

@@ -428,11 +428,11 @@
 
 <nav class="nav">
   <div class="nav-inner">
-    <a class="brand" href="FiguBook Dashboard.html"><span class="brand-mark">F</span><span>FiguBook</span></a>
+    <a class="brand" href="figubook-dashboard.html"><span class="brand-mark">F</span><span>FiguBook</span></a>
     <div class="nav-tabs">
-      <a class="nav-tab" href="FiguBook Dashboard.html">Dashboard</a>
-      <a class="nav-tab" href="FiguBook Album.html">Album</a>
-      <a class="nav-tab active" href="FiguBook Scambia.html">Scambia</a>
+      <a class="nav-tab" href="figubook-dashboard.html">Dashboard</a>
+      <a class="nav-tab" href="figubook-album.html">Album</a>
+      <a class="nav-tab active" href="figubook-scambia.html">Scambia</a>
       <a class="nav-tab" href="#">Community</a>
     </div>
     <div class="nav-actions">
@@ -457,8 +457,8 @@
         <button class="icon-btn" id="notifBtn" aria-label="Notifiche"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="dot" id="notifDot"></span></button>
         <div class="nav-dropdown" id="notifPanel">
           <div class="notif-head"><h4>Notifiche</h4><button class="mark-read" id="markReadBtn">Segna tutte lette</button></div>
-          <div class="notif-item unread" data-href="FiguBook Scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Marco</div><div class="info">3 &#8596; 3 figurine &middot; Calciatori 25/26 &middot; 4h fa</div></div><div class="notif-dot"></div></div>
-          <div class="notif-item unread" data-href="FiguBook Scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Anna</div><div class="info">2 &#8596; 2 figurine &middot; Calciatori 25/26 &middot; 5h fa</div></div><div class="notif-dot"></div></div>
+          <div class="notif-item unread" data-href="figubook-scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Marco</div><div class="info">3 &#8596; 3 figurine &middot; Calciatori 25/26 &middot; 4h fa</div></div><div class="notif-dot"></div></div>
+          <div class="notif-item unread" data-href="figubook-scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Anna</div><div class="info">2 &#8596; 2 figurine &middot; Calciatori 25/26 &middot; 5h fa</div></div><div class="notif-dot"></div></div>
           <div class="notif-item"><div class="notif-ic">&#9733;</div><div class="notif-txt"><div class="nm">Badge sbloccato: &ldquo;Reparto Difesa&rdquo;</div><div class="info">Calciatori 25/26 &middot; Ieri</div></div></div>
         </div>
       </div>
@@ -480,14 +480,14 @@
 <div class="page-head">
   <div>
     <div class="crumb">
-      <a href="FiguBook Dashboard.html">Dashboard</a><span class="sep">/</span>
-      <a href="FiguBook Scambia.html">Scambia</a><span class="sep">/</span>
+      <a href="figubook-dashboard.html">Dashboard</a><span class="sep">/</span>
+      <a href="figubook-scambia.html">Scambia</a><span class="sep">/</span>
       <span style="color:var(--ink)">Dettaglio proposta</span>
     </div>
     <h1 id="dealTitle">Scambio con Giada</h1>
     <div class="sub" id="dealSub">Proposta · Calciatori 25/26 · 340 m da te</div>
   </div>
-  <a class="back-btn" href="FiguBook Scambia.html">
+  <a class="back-btn" href="figubook-scambia.html">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
     Torna a Scambia
   </a>
@@ -900,7 +900,7 @@ document.getElementById('acceptBtn').addEventListener('click', () => {
 document.getElementById('declineBtn').addEventListener('click', () => {
   if (confirm('Vuoi davvero rifiutare questo scambio?')){
     showToast('Scambio rifiutato');
-    setTimeout(() => window.location.href = 'FiguBook Scambia.html', 800);
+    setTimeout(() => window.location.href = 'figubook-scambia.html', 800);
   }
 });
 
@@ -982,12 +982,12 @@ document.getElementById('reportBtn').addEventListener('click', () => {
 
   // SEARCH
   var SEARCH_ALBUM_DATA = [
-    { id:'calciatori-25-26', name:'Calciatori 25-26',    href:'FiguBook Calciatori 2025-2026.html',  storageKey:'figubook-calciatori-2526-v1' },
-    { id:'calciatori-24-25', name:'Calciatori 24-25',    href:'FiguBook Calciatori 2024-2025.html',  storageKey:'figubook-calciatori-2425-v1' },
-    { id:'calciatori-23-24', name:'Calciatori 23-24',    href:'FiguBook Calciatori 2023-2024.html',  storageKey:'figubook-calciatori-2324-v1' },
-    { id:'calciatori-22-23', name:'Calciatori 22-23',    href:'FiguBook Calciatori 2022-2023.html',  storageKey:'figubook-calciatori-2223-v1' },
-    { id:'mondiali-2026',    name:'FIFA World Cup 2026', href:'FiguBook FIFA World Cup 2026.html',   storageKey:'figubook-fwc2026-v1' },
-    { id:'calb-25-26',       name:'Serie B 25-26',       href:'FiguBook Serie B 2025-2026.html',     storageKey:'figubook-serieb-2526-v1' },
+    { id:'calciatori-25-26', name:'Calciatori 25-26',    href:'figubook-calciatori-2526.html',  storageKey:'figubook-calciatori-2526-v1' },
+    { id:'calciatori-24-25', name:'Calciatori 24-25',    href:'figubook-calciatori-2425.html',  storageKey:'figubook-calciatori-2425-v1' },
+    { id:'calciatori-23-24', name:'Calciatori 23-24',    href:'figubook-calciatori-2324.html',  storageKey:'figubook-calciatori-2324-v1' },
+    { id:'calciatori-22-23', name:'Calciatori 22-23',    href:'figubook-calciatori-2223.html',  storageKey:'figubook-calciatori-2223-v1' },
+    { id:'mondiali-2026',    name:'FIFA World Cup 2026', href:'figubook-fwc2026.html',   storageKey:'figubook-fwc2026-v1' },
+    { id:'calb-25-26',       name:'Serie B 25-26',       href:'figubook-serieb-2526.html',     storageKey:'figubook-serieb-2526-v1' },
   ];
   function buildSearchIndex(){
     var idx=[];
@@ -1052,7 +1052,7 @@ document.getElementById('reportBtn').addEventListener('click', () => {
   // MESSAGES
   var msgBtn=document.getElementById('msgBtn');
   if(msgBtn){
-    msgBtn.addEventListener('click',function(){window.location.href='FiguBook Dashboard.html#messages';});
+    msgBtn.addEventListener('click',function(){window.location.href='figubook-dashboard.html#messages';});
   }
 
   // NOTIFICATIONS
@@ -1110,7 +1110,7 @@ document.getElementById('reportBtn').addEventListener('click', () => {
   if(pmEsci){
     pmEsci.addEventListener('click',function(){
       FiguBookCore.clearSession();
-      window.location.href='FiguBook Benvenuto.html';
+      window.location.href='figubook-benvenuto.html';
     });
   }
 

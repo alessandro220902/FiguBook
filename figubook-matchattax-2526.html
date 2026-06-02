@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FiguBook — Calciatori 2024-2025</title>
+<title>FiguBook — Match Attax UCL 2025-2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -341,9 +341,9 @@
     transition:background .14s ease;
   }
   .sticker.missing .counter-chip{background:var(--warn)}
-  /* counter-chip resta VERDE anche sulle doppie — non sovrascrivere */
+  /* counter-chip resta VERDE anche sulle doppie — non cambia colore */
 
-  /* Doubles chip — top-right, shows extra copies count */
+  /* Doubles chip — top-right, shows extra copies count — testo NERO sempre */
   .sticker .double-chip{
     position:absolute;top:6px;right:6px;
     padding:2px 7px;border-radius:99px;
@@ -415,7 +415,6 @@
   }
   .sticker.double .num{ color:#fff }
   .sticker.double .player-name{ color:#fff }
-  /* Counter chip per le doppie: cerchio arancione/scuro con bordo per massimo contrasto sopra qualsiasi sfondo */
   /* Counter chip per le doppie: resta VERDE come per le carte possedute */
   .sticker.double .counter-chip{
     background:var(--good);color:#fff;
@@ -672,14 +671,14 @@
 
 <nav class="nav">
   <div class="nav-inner">
-    <a class="brand" href="FiguBook Dashboard.html">
+    <a class="brand" href="figubook-dashboard.html">
       <span class="brand-mark">F</span>
       <span>FiguBook</span>
     </a>
     <div class="nav-tabs">
-      <a class="nav-tab" href="FiguBook Dashboard.html">Dashboard</a>
-      <a class="nav-tab active" href="FiguBook Album.html">Album</a>
-      <a class="nav-tab" href="FiguBook Scambia.html">Scambia</a>
+      <a class="nav-tab" href="figubook-dashboard.html">Dashboard</a>
+      <a class="nav-tab active" href="figubook-album.html">Album</a>
+      <a class="nav-tab" href="figubook-scambia.html">Scambia</a>
       <a class="nav-tab" href="#">Community</a>
     </div>
     <div class="nav-actions">
@@ -704,8 +703,8 @@
         <button class="icon-btn" id="notifBtn" aria-label="Notifiche"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="dot" id="notifDot"></span></button>
         <div class="nav-dropdown" id="notifPanel">
           <div class="notif-head"><h4>Notifiche</h4><button class="mark-read" id="markReadBtn">Segna tutte lette</button></div>
-          <div class="notif-item unread" data-href="FiguBook Scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Marco</div><div class="info">3 &#8596; 3 figurine &middot; Calciatori 25/26 &middot; 4h fa</div></div><div class="notif-dot"></div></div>
-          <div class="notif-item unread" data-href="FiguBook Scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Anna</div><div class="info">2 &#8596; 2 figurine &middot; Calciatori 25/26 &middot; 5h fa</div></div><div class="notif-dot"></div></div>
+          <div class="notif-item unread" data-href="figubook-scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Marco</div><div class="info">3 &#8596; 3 figurine &middot; Calciatori 25/26 &middot; 4h fa</div></div><div class="notif-dot"></div></div>
+          <div class="notif-item unread" data-href="figubook-scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Anna</div><div class="info">2 &#8596; 2 figurine &middot; Calciatori 25/26 &middot; 5h fa</div></div><div class="notif-dot"></div></div>
           <div class="notif-item"><div class="notif-ic">&#9733;</div><div class="notif-txt"><div class="nm">Badge sbloccato: &ldquo;Reparto Difesa&rdquo;</div><div class="info">Calciatori 25/26 &middot; Ieri</div></div></div>
         </div>
       </div>
@@ -727,22 +726,22 @@
 <div class="subhead">
   <div>
     <div class="crumb">
-      <a href="FiguBook Dashboard.html">Dashboard</a>
+      <a href="figubook-dashboard.html">Dashboard</a>
       <span class="sep">/</span>
-      <a href="FiguBook Album.html">Album</a>
+      <a href="figubook-album.html">Album</a>
       <span class="sep">/</span>
-      <span style="color:var(--ink)">Calciatori 24-25</span>
+      <span style="color:var(--ink)">Match Attax UCL 25/26</span>
       <span class="sep">/</span>
-      <span style="color:var(--ink)" id="bcSection">—</span>
+      <span style="color:var(--ink)" id="bcSection">UCL TOTS</span>
     </div>
-    <h1>Calciatori Panini 2024–2025</h1>
-    <div class="meta">Stagione 2024/25 · 580 figurine tracciate · 26 sezioni</div>
+    <h1>Match Attax UCL 2025–2026</h1>
+    <div class="meta">Topps · UEFA Champions League · 584 figurine totali · 44 sezioni</div>
   </div>
   <div class="subhead-actions">
-    <a class="missing-link" href="FiguBook Mancanti.html?album=2425">
+    <a class="missing-link" href="figubook-mancanti.html?album=matchattax2526">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
       Tutte le figurine mancanti
-      <span class="count-pill" id="missingCountPill">716</span>
+      <span class="count-pill" id="missingCountPill">584</span>
     </a>
     <button class="fb-doubles-btn" id="fbDblTrigger">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
@@ -752,8 +751,8 @@
     <div class="album-progress" style="--p:9">
     <div class="ring"><i id="headerPctRing">9%</i></div>
     <div style="display:flex;flex-direction:column;gap:2px">
-      <span class="big" id="headerCount">68<span style="color:var(--muted);font-size:18px"> / 784</span></span>
-      <span class="pct"><span id="headerMiss">716</span> mancanti · <span id="headerDouble">1</span> doppia</span>
+      <span class="big" id="headerCount">0<span style="color:var(--muted);font-size:18px"> / 584</span></span>
+      <span class="pct"><span id="headerMiss">584</span> mancanti · <span id="headerDouble">0</span> doppia</span>
     </div>
     <div class="bar"><i id="headerBar" style="width:8.7%"></i></div>
     </div>
@@ -880,7 +879,7 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 <script type="text/babel" src="tweaks-panel.jsx"></script>
 
-<script src="album-data-2425.js"></script>
+<script src="album-data-matchattax-2526.js"></script>
 <script>
 /* Patch: scroll to sec-hero with navbar offset instead of raw top:0 */
 (function(){
@@ -914,14 +913,14 @@
 
   // SEARCH
   var SEARCH_ALBUM_DATA = [
-    { id:'calciatori-25-26', name:'Calciatori 25-26',    href:'FiguBook Calciatori 2025-2026.html',  storageKey:'figubook-calciatori-2526-v1' },
-    { id:'calciatori-24-25', name:'Calciatori 24-25',    href:'FiguBook Calciatori 2024-2025.html',  storageKey:'figubook-calciatori-2425-v1' },
-    { id:'calciatori-23-24', name:'Calciatori 23-24',    href:'FiguBook Calciatori 2023-2024.html',  storageKey:'figubook-calciatori-2324-v1' },
-    { id:'calciatori-22-23', name:'Calciatori 22-23',    href:'FiguBook Calciatori 2022-2023.html',  storageKey:'figubook-calciatori-2223-v1' },
-    { id:'mondiali-2026',    name:'FIFA World Cup 2026', href:'FiguBook FIFA World Cup 2026.html',   storageKey:'figubook-fwc2026-v1' },
-    { id:'calb-25-26',       name:'Serie B 25-26',       href:'FiguBook Serie B 2025-2026.html',     storageKey:'figubook-serieb-2526-v1' },
-    { id:'match-attax-ucl', name:'Match Attax UCL 25/26', href:'FiguBook Match Attax UCL 2025-2026.html', storageKey:'figubook-matchattax-ucl-2526-v1' },
-    { id:'adrenalyn-25-26', name:'Adrenalyn XL 25/26', href:'FiguBook Adrenalyn XL 2025-2026.html', storageKey:'figubook-adrenalyn-2526-v1' },
+    { id:'calciatori-25-26', name:'Calciatori 25-26',    href:'figubook-calciatori-2526.html',  storageKey:'figubook-calciatori-2526-v1' },
+    { id:'calciatori-24-25', name:'Calciatori 24-25',    href:'figubook-calciatori-2425.html',  storageKey:'figubook-calciatori-2425-v1' },
+    { id:'calciatori-23-24', name:'Calciatori 23-24',    href:'figubook-calciatori-2324.html',  storageKey:'figubook-calciatori-2324-v1' },
+    { id:'calciatori-22-23', name:'Calciatori 22-23',    href:'figubook-calciatori-2223.html',  storageKey:'figubook-calciatori-2223-v1' },
+    { id:'mondiali-2026',    name:'FIFA World Cup 2026', href:'figubook-fwc2026.html',   storageKey:'figubook-fwc2026-v1' },
+    { id:'calb-25-26',       name:'Serie B 25-26',       href:'figubook-serieb-2526.html',     storageKey:'figubook-serieb-2526-v1' },
+    { id:'match-attax-ucl', name:'Match Attax UCL 25/26',href:'figubook-matchattax-2526.html', storageKey:'figubook-matchattax-ucl-2526-v1' },
+    { id:'adrenalyn-25-26', name:'Adrenalyn XL 25/26', href:'figubook-adrenalyn-2526.html', storageKey:'figubook-adrenalyn-2526-v1' },
   ];
   function buildSearchIndex(){
     var idx=[];
@@ -986,7 +985,7 @@
   // MESSAGES
   var msgBtn=document.getElementById('msgBtn');
   if(msgBtn){
-    msgBtn.addEventListener('click',function(){window.location.href='FiguBook Dashboard.html#messages';});
+    msgBtn.addEventListener('click',function(){window.location.href='figubook-dashboard.html#messages';});
   }
 
   // NOTIFICATIONS
@@ -1044,7 +1043,7 @@
   if(pmEsci){
     pmEsci.addEventListener('click',function(){
       FiguBookCore.clearSession();
-      window.location.href='FiguBook Benvenuto.html';
+      window.location.href='figubook-benvenuto.html';
     });
   }
 
@@ -1061,8 +1060,9 @@
 document.getElementById('fbDblTrigger').addEventListener('click', function(){
   if (window._fbDblOpen) window._fbDblOpen();
 });
+// Init after album-data.js and album-app.js have loaded (both are synchronous)
 if (typeof FiguBookDoubles !== 'undefined') {
-  FiguBookDoubles.init('figubook-calciatori-2425-v1', 'Calciatori 24-25');
+  FiguBookDoubles.init('figubook-matchattax-ucl-2526-v1', 'Match Attax UCL 25/26');
 }
 </script>
 

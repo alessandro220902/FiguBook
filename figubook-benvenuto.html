@@ -412,7 +412,7 @@
   <section class="left">
     <div class="grain"></div>
 
-    <a class="brand" href="FiguBook Dashboard.html">
+    <a class="brand" href="figubook-dashboard.html">
       <span class="brand-mark">F</span>
       <span>FiguBook</span>
     </a>
@@ -710,7 +710,7 @@ function handleSubmit(mode){
       return;
     }
     saveSession(email);
-    window.location.href = 'FiguBook Dashboard.html';
+    window.location.href = 'figubook-dashboard.html';
   } else {
     clearAuthError('regError');
     const email = (document.getElementById('regEmail').value || '').trim();
@@ -724,12 +724,12 @@ function handleSubmit(mode){
       return;
     }
     saveSession(email);
-    window.location.href = 'FiguBook Dashboard.html';
+    window.location.href = 'figubook-dashboard.html';
   }
 }
 function handleGoogle(mode){
   saveSession('utente@google.com');
-  window.location.href = 'FiguBook Dashboard.html';
+  window.location.href = 'figubook-dashboard.html';
 }
 function togglePass(id, btn){
   const input = document.getElementById(id);

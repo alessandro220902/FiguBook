@@ -19,7 +19,7 @@
   }
 
   function requireSession(){
-    if (!getSession()) window.location.replace('FiguBook Benvenuto.html');
+    if (!getSession()) window.location.replace('figubook-benvenuto.html');
   }
 
   // ── 2. ALBUM IN RACCOLTA ─────────────────────────────────────

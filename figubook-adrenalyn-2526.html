@@ -671,14 +671,14 @@
 
 <nav class="nav">
   <div class="nav-inner">
-    <a class="brand" href="FiguBook Dashboard.html">
+    <a class="brand" href="figubook-dashboard.html">
       <span class="brand-mark">F</span>
       <span>FiguBook</span>
     </a>
     <div class="nav-tabs">
-      <a class="nav-tab" href="FiguBook Dashboard.html">Dashboard</a>
-      <a class="nav-tab active" href="FiguBook Album.html">Album</a>
-      <a class="nav-tab" href="FiguBook Scambia.html">Scambia</a>
+      <a class="nav-tab" href="figubook-dashboard.html">Dashboard</a>
+      <a class="nav-tab active" href="figubook-album.html">Album</a>
+      <a class="nav-tab" href="figubook-scambia.html">Scambia</a>
       <a class="nav-tab" href="#">Community</a>
     </div>
     <div class="nav-actions">
@@ -703,8 +703,8 @@
         <button class="icon-btn" id="notifBtn" aria-label="Notifiche"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="dot" id="notifDot"></span></button>
         <div class="nav-dropdown" id="notifPanel">
           <div class="notif-head"><h4>Notifiche</h4><button class="mark-read" id="markReadBtn">Segna tutte lette</button></div>
-          <div class="notif-item unread" data-href="FiguBook Scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Marco</div><div class="info">3 &#8596; 3 figurine &middot; Calciatori 25/26 &middot; 4h fa</div></div><div class="notif-dot"></div></div>
-          <div class="notif-item unread" data-href="FiguBook Scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Anna</div><div class="info">2 &#8596; 2 figurine &middot; Calciatori 25/26 &middot; 5h fa</div></div><div class="notif-dot"></div></div>
+          <div class="notif-item unread" data-href="figubook-scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Marco</div><div class="info">3 &#8596; 3 figurine &middot; Calciatori 25/26 &middot; 4h fa</div></div><div class="notif-dot"></div></div>
+          <div class="notif-item unread" data-href="figubook-scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Anna</div><div class="info">2 &#8596; 2 figurine &middot; Calciatori 25/26 &middot; 5h fa</div></div><div class="notif-dot"></div></div>
           <div class="notif-item"><div class="notif-ic">&#9733;</div><div class="notif-txt"><div class="nm">Badge sbloccato: &ldquo;Reparto Difesa&rdquo;</div><div class="info">Calciatori 25/26 &middot; Ieri</div></div></div>
         </div>
       </div>
@@ -726,9 +726,9 @@
 <div class="subhead">
   <div>
     <div class="crumb">
-      <a href="FiguBook Dashboard.html">Dashboard</a>
+      <a href="figubook-dashboard.html">Dashboard</a>
       <span class="sep">/</span>
-      <a href="FiguBook Album.html">Album</a>
+      <a href="figubook-album.html">Album</a>
       <span class="sep">/</span>
       <span style="color:var(--ink)">Adrenalyn XL 25/26</span>
       <span class="sep">/</span>
@@ -738,7 +738,7 @@
     <div class="meta">Panini · Adrenalyn XL Serie A · 52 sezioni</div>
   </div>
   <div class="subhead-actions">
-    <a class="missing-link" href="FiguBook Mancanti.html?album=adrenalyn2526">
+    <a class="missing-link" href="figubook-mancanti.html?album=adrenalyn2526">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
       Tutte le figurine mancanti
       <span class="count-pill" id="missingCountPill">716</span>
@@ -913,14 +913,14 @@
 
   // SEARCH
   var SEARCH_ALBUM_DATA = [
-    { id:'calciatori-25-26', name:'Calciatori 25-26',    href:'FiguBook Calciatori 2025-2026.html',  storageKey:'figubook-calciatori-2526-v1' },
-    { id:'calciatori-24-25', name:'Calciatori 24-25',    href:'FiguBook Calciatori 2024-2025.html',  storageKey:'figubook-calciatori-2425-v1' },
-    { id:'calciatori-23-24', name:'Calciatori 23-24',    href:'FiguBook Calciatori 2023-2024.html',  storageKey:'figubook-calciatori-2324-v1' },
-    { id:'calciatori-22-23', name:'Calciatori 22-23',    href:'FiguBook Calciatori 2022-2023.html',  storageKey:'figubook-calciatori-2223-v1' },
-    { id:'mondiali-2026',    name:'FIFA World Cup 2026', href:'FiguBook FIFA World Cup 2026.html',   storageKey:'figubook-fwc2026-v1' },
-    { id:'calb-25-26',       name:'Serie B 25-26',       href:'FiguBook Serie B 2025-2026.html',     storageKey:'figubook-serieb-2526-v1' },
-    { id:'match-attax-ucl', name:'Match Attax UCL 25/26', href:'FiguBook Match Attax UCL 2025-2026.html', storageKey:'figubook-matchattax-ucl-2526-v1' },
-    { id:'adrenalyn-25-26', name:'Adrenalyn XL 25/26',  href:'FiguBook Adrenalyn XL 2025-2026.html', storageKey:'figubook-adrenalyn-2526-v1' },
+    { id:'calciatori-25-26', name:'Calciatori 25-26',    href:'figubook-calciatori-2526.html',  storageKey:'figubook-calciatori-2526-v1' },
+    { id:'calciatori-24-25', name:'Calciatori 24-25',    href:'figubook-calciatori-2425.html',  storageKey:'figubook-calciatori-2425-v1' },
+    { id:'calciatori-23-24', name:'Calciatori 23-24',    href:'figubook-calciatori-2324.html',  storageKey:'figubook-calciatori-2324-v1' },
+    { id:'calciatori-22-23', name:'Calciatori 22-23',    href:'figubook-calciatori-2223.html',  storageKey:'figubook-calciatori-2223-v1' },
+    { id:'mondiali-2026',    name:'FIFA World Cup 2026', href:'figubook-fwc2026.html',   storageKey:'figubook-fwc2026-v1' },
+    { id:'calb-25-26',       name:'Serie B 25-26',       href:'figubook-serieb-2526.html',     storageKey:'figubook-serieb-2526-v1' },
+    { id:'match-attax-ucl', name:'Match Attax UCL 25/26', href:'figubook-matchattax-2526.html', storageKey:'figubook-matchattax-ucl-2526-v1' },
+    { id:'adrenalyn-25-26', name:'Adrenalyn XL 25/26',  href:'figubook-adrenalyn-2526.html', storageKey:'figubook-adrenalyn-2526-v1' },
   ];
   function buildSearchIndex(){
     var idx=[];
@@ -985,7 +985,7 @@
   // MESSAGES
   var msgBtn=document.getElementById('msgBtn');
   if(msgBtn){
-    msgBtn.addEventListener('click',function(){window.location.href='FiguBook Dashboard.html#messages';});
+    msgBtn.addEventListener('click',function(){window.location.href='figubook-dashboard.html#messages';});
   }
 
   // NOTIFICATIONS
@@ -1043,7 +1043,7 @@
   if(pmEsci){
     pmEsci.addEventListener('click',function(){
       FiguBookCore.clearSession();
-      window.location.href='FiguBook Benvenuto.html';
+      window.location.href='figubook-benvenuto.html';
     });
   }
 
