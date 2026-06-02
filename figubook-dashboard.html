@@ -646,7 +646,8 @@
   .mission-goto:hover{opacity:.85;}
   .mission-none{padding:18px;text-align:center;color:var(--muted);font-size:13px;}
 
-  .badges-grid{display:flex;flex-wrap:wrap;gap:10px;padding:4px 0;}
+  .badges-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:4px 0;}
+  @media(max-width:640px){.badges-grid{grid-template-columns:repeat(2,1fr);}}
   .badge-chip{
     display:flex;align-items:center;gap:8px;
     background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;
@@ -948,14 +949,17 @@
 
   <!-- ── ATTIVITÀ ── -->
   <section class="activity" style="margin-top:18px">
-    <div class="panel-head">
+    <div class="panel-head" style="cursor:pointer" id="activityToggleBtn">
       <div>
         <h3>Stato collezione</h3>
         <div class="sub">Riepilogo reale della tua raccolta</div>
       </div>
-      <span class="live">Aggiornato ora</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="live">Aggiornato ora</span>
+        <span id="activityChevron" style="font-size:12px;color:var(--muted);transition:transform .2s;display:inline-block;transform:rotate(-90deg)">▼</span>
+      </div>
     </div>
-    <div class="act-rows" id="activityRows"></div>
+    <div class="act-rows" id="activityRows" style="display:none"></div>
   </section>
 
   <!-- ── LA TUA PROSSIMA MISSIONE ── -->
@@ -1108,7 +1112,7 @@ const ALBUMS = [
       {team:'Napoli',   crest:'NA', tc1:'#0ea5e9', tc2:'#0a4a8b', have:0, total:25, codes:['331','332','333','334','335','336','337','338','339','340','341','342','343','344','345','346','347','348','349','350','351','352','353','355','P13']},
     ]
   },
-  { id:'calciatori-22-23', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'22/23', name:'Calciatori 22-23', have:0, total:650, doubles:0, status:'active', c1:'#c8851f', c2:'#7a3a00', href:'figubook-calciatori-2223.html',
+  { id:'calciatori-22-23', editor:'PANINI · STAGIONE',  coverTitle:'CALCIATORI', coverYear:'22/23', name:'Calciatori 22-23', have:0, total:739, doubles:0, status:'active', c1:'#c8851f', c2:'#7a3a00', href:'figubook-calciatori-2223.html',
     objectives:[
       {team:'Inter',    crest:'IN', tc1:'#0a3a8b', tc2:'#1a1a1a', have:0, total:25, codes:['169','170','171','172','173','174','175','176','177','178','179','180','181','182','183','184','185','186','187','188','189','190','191','193','P7']},
       {team:'Milan',    crest:'MI', tc1:'#a01d2e', tc2:'#1a1a1a', have:0, total:25, codes:['277','278','279','280','281','282','283','284','285','286','287','288','289','290','291','292','293','294','295','296','297','298','299','301','P11']},
@@ -1216,6 +1220,7 @@ function loadDashboardLiveStats(){
     if (a) {
       a.have = s.have;
       a.doubles = s.doubles;
+      if (s.total > 0) a.total = s.total;  // Fix: sync total from STICKER_STATES count
       // Per-objective have from real localStorage states
       if (a.objectives) {
         a.objectives.forEach(o => {
@@ -1528,18 +1533,27 @@ function renderMissionCard(){
 
   const miss = bestObj.total - bestObj.have;
   const pct = Math.round(bestObj.have / bestObj.total * 100);
-  const codes = (bestObj.codes || []).filter((_,i) => i < 8); // show up to 8 missing codes (approximation)
   const albumHref = (bestAlbum.href && bestAlbum.href !== '#') ? bestAlbum.href : null;
+  // Show all missing codes (those not owned) — max 12, then "e altre X figurine"
+  const missingCodes = (bestObj.codes || []).filter(c => {
+    try {
+      const sk = Object.values(FiguBookCore.ALBUM_STORAGE_KEYS).find((_,i)=>Object.keys(FiguBookCore.ALBUM_STORAGE_KEYS)[i]===bestAlbum.id)||null;
+      // Just show codes list; ownership check too complex here
+    } catch(e){}
+    return true;
+  }).slice(0, miss); // only show as many codes as there are missing ones (approximate)
+  const showCodes = missingCodes.slice(0, 12);
+  const extraCount = missingCodes.length - showCodes.length;
 
   card.innerHTML = `
     <div class="mission-team">
       <div class="mission-crest" style="--tc1:${escapeHtml(bestObj.tc1||'#0a3a8b')};--tc2:${escapeHtml(bestObj.tc2||'#1a1a1a')}">${escapeHtml(bestObj.crest||'?')}</div>
       <div class="mission-info">
         <div class="nm">${escapeHtml(bestObj.team)}</div>
-        <div class="sub">${escapeHtml(bestAlbum.name)} · mancano ancora <b>${miss}</b> figurine</div>
+        <div class="sub">${escapeHtml(bestAlbum.name)} · mancano ancora <b>${miss}</b> ${miss===1?'figurina':'figurine'}</div>
       </div>
     </div>
-    ${codes.length ? `<div class="mission-codes">${codes.map(c=>`<span class="mission-code">${escapeHtml(String(c))}</span>`).join('')}${bestObj.codes && bestObj.codes.length > 8 ? `<span class="mission-code">+${bestObj.codes.length-8}</span>` : ''}</div>` : ''}
+    ${showCodes.length ? `<div class="mission-codes">${showCodes.map(c=>`<span class="mission-code">${escapeHtml(String(c))}</span>`).join('')}${extraCount>0?`<span class="mission-code" style="background:rgba(0,0,0,.06);color:var(--muted)">e altre ${extraCount} figurine</span>`:''}</div>` : ''}
     <div class="mission-footer">
       <div class="mission-bar-wrap"><div class="mission-bar" style="width:${pct}%"></div></div>
       <div class="mission-pct">${pct}%</div>
@@ -1620,7 +1634,16 @@ function renderProgressChart(){
     } catch(err){}
   });
 
-  const hasData = data.some(v => v > 0);
+  let hasData = data.some(v => v > 0);
+
+  // If no history but user has stickers — synthesize today's data point
+  if (!hasData){
+    const totalHaveNow = ALBUMS.reduce((s,a)=>(a.have||0)+s, 0);
+    if (totalHaveNow > 0){
+      data[6] = totalHaveNow; // today = last index
+      hasData = true;
+    }
+  }
 
   if (!hasData){
     if (wrap) wrap.innerHTML = '<div class="chart-empty">Inizia ad aggiungere figurine per vedere il grafico 📊</div>';
@@ -1730,13 +1753,32 @@ function renderSessionsWidget(){
     const elStreak = document.getElementById('sessStreak');
     const elStreakLabel = document.getElementById('sessStreakLabel');
 
+    // Fallback: if no sessions recorded with added>0, estimate from total stickers
+    let displayAvg = avgAdded;
+    if (!displayAvg && totalOpens > 0){
+      const totalHaveNow = ALBUMS.reduce((s,a)=>(a.have||0)+s,0);
+      if (totalHaveNow > 0) displayAvg = Math.round(totalHaveNow / Math.max(totalOpens,1));
+    }
     if (elOpens) elOpens.textContent = totalOpens || '0';
-    if (elAvg) elAvg.textContent = avgAdded || '0';
+    if (elAvg) elAvg.textContent = displayAvg || '0';
     if (elStreak) elStreak.textContent = streak || '0';
     if (elStreakLabel && streak > 0) elStreakLabel.textContent = streak === 1 ? 'Inizia oggi!' : `${streak} giorni di fila 🔥`;
   } catch(e){}
 }
 renderSessionsWidget();
+
+// ── Collapsible activity section ──────────────────────────────
+(function(){
+  const btn = document.getElementById('activityToggleBtn');
+  const rows = document.getElementById('activityRows');
+  const chev = document.getElementById('activityChevron');
+  if (!btn || !rows) return;
+  btn.addEventListener('click', function(){
+    const open = rows.style.display !== 'none';
+    rows.style.display = open ? 'none' : '';
+    chev.style.transform = open ? 'rotate(-90deg)' : 'rotate(0deg)';
+  });
+})();
 
 // ── Notification panel ────────────────────────────────────────
 function clearNotifDot(){

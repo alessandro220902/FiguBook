@@ -275,8 +275,9 @@ function _teamClr(sec){
       else if (f === 'have') v = c.have;
       else if (f === 'missing') v = c.missing;
       else if (f === 'double') v = c.double;
-      chip.querySelector('.ct').textContent = v;
-      chip.classList.toggle('active', f === activeFilter);
+      const ctEl = chip.querySelector('.ct');
+      if (ctEl) ctEl.textContent = v;
+      chip.classList.toggle('active', f === activeFilter && f !== undefined);
     });
   }
 

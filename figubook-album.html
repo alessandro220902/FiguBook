@@ -119,6 +119,30 @@
     font-size:14px;font-weight:600;
   }
   .btn-add:hover{filter:brightness(1.1)}
+  .btn-share-coll{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 18px;border-radius:99px;
+    background:var(--bg-elev);color:var(--ink-2);border:1px solid var(--line);
+    font-size:14px;font-weight:600;cursor:pointer;font-family:var(--f-body);
+    transition:background .15s;
+  }
+  .btn-share-coll:hover{background:var(--line);}
+  /* Collection share modal */
+  .coll-share-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s;}
+  .coll-share-backdrop.open{opacity:1;pointer-events:auto;}
+  .coll-share-modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.95);
+    width:min(520px,calc(100vw - 32px));max-height:85vh;overflow:auto;
+    background:var(--bg-elev);border-radius:var(--radius);padding:24px;
+    z-index:1001;opacity:0;pointer-events:none;transition:all .2s;
+    font-family:var(--f-body);
+  }
+  .coll-share-modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1);}
+  .coll-share-text{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px;font-family:var(--f-mono);font-size:12px;white-space:pre-wrap;line-height:1.6;margin:12px 0;max-height:220px;overflow:auto;}
+  .coll-share-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .coll-share-btn{padding:9px 16px;border-radius:10px;border:1px solid var(--line);background:var(--bg-elev);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--f-body);transition:background .12s;}
+  .coll-share-btn:hover{background:var(--line);}
+  .coll-share-btn.primary{background:var(--ink);color:var(--accent);border-color:var(--ink);}
 
   /* Albums grid */
   .albums-wrap{max-width:1480px;margin:0 auto 60px;padding:0 28px}
@@ -624,6 +648,10 @@
     <button class="chip" data-filter="new">Appena usciti <span class="ct">1</span></button>
     <button class="chip" data-filter="archived">Archivio <span class="ct">1</span></button>
   </div>
+  <button class="btn-share-coll" id="shareCollBtn" title="Condividi la tua collezione">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    Condividi
+  </button>
   <button class="btn-add" id="addAlbumBtn">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
     Aggiungi album
@@ -639,6 +667,26 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- COLLECTION SHARE MODAL -->
+<div class="coll-share-backdrop" id="collShareBackdrop"></div>
+<div class="coll-share-modal" id="collShareModal" aria-hidden="true">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+    <div>
+      <div style="font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:4px">Condividi</div>
+      <h2 style="margin:0;font-size:20px;font-weight:700">La tua collezione</h2>
+    </div>
+    <button id="collShareClose" style="background:none;border:1px solid var(--line);border-radius:8px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0" aria-label="Chiudi">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="coll-share-text" id="collShareText"></div>
+  <div class="coll-share-actions">
+    <button class="coll-share-btn primary" id="collShareCopy">📋 Copia</button>
+    <button class="coll-share-btn" id="collShareWA">💬 WhatsApp</button>
+    <button class="coll-share-btn" id="collShareMail">✉️ Mail</button>
+  </div>
+</div>
 
 <!-- SHARE MODAL -->
 <div class="share-backdrop" id="shareBackdrop"></div>
@@ -1679,6 +1727,86 @@ function openShareMissingModal(album){
     const inNotif  = notifPanel  && notifPanel.contains(e.target);
     const inProfile = profileMenu && profileMenu.contains(e.target);
     if (!inSearch && !inNotif && !inProfile) closeAllPanels();
+  });
+})();
+</script>
+
+<script>
+// ── Condividi Collezione ───────────────────────────────────────
+(function(){
+  function _getStats(storageKey){
+    try {
+      var raw = localStorage.getItem(storageKey);
+      if (!raw) return {have:0,total:0};
+      var saved = JSON.parse(raw);
+      var states = saved.states || saved;
+      var have=0,total=0;
+      Object.values(states).forEach(function(v){ total++; if(v==='have'||v==='double') have++; });
+      return {have:have,total:total};
+    } catch(e){ return {have:0,total:0}; }
+  }
+
+  function buildCollectionText(){
+    var CATALOG=[
+      {name:'Calciatori 25-26',   key:'figubook-calciatori-2526-v1'},
+      {name:'Calciatori 24-25',   key:'figubook-calciatori-2425-v1'},
+      {name:'Calciatori 23-24',   key:'figubook-calciatori-2324-v1'},
+      {name:'Calciatori 22-23',   key:'figubook-calciatori-2223-v1'},
+      {name:'Adrenalyn XL 25-26', key:'figubook-adrenalyn-2526-v1'},
+      {name:'Match Attax UCL',    key:'figubook-matchattax-ucl-2526-v1'},
+      {name:'FIFA World Cup 2026',key:'figubook-fwc2026-v1'},
+      {name:'Serie B 25-26',      key:'figubook-serieb-2526-v1'},
+    ];
+    var lines = ['🃏 La mia collezione FiguBook', ''];
+    var grandTotal=0, grandHave=0;
+    CATALOG.forEach(function(a){
+      var s = _getStats(a.key);
+      if (s.total > 0){
+        var pct = (s.have/s.total*100).toFixed(1);
+        lines.push(a.name + ': ' + s.have + '/' + s.total + ' (' + pct + '%)');
+        grandHave += s.have; grandTotal += s.total;
+      }
+    });
+    if (grandTotal > 0){
+      lines.push('');
+      lines.push('Totale: ' + grandHave + ' figurine raccolte');
+    }
+    lines.push('');
+    lines.push('Generato con FiguBook 🌟');
+    return lines.join('\n');
+  }
+
+  function openCollShare(){
+    var text = buildCollectionText();
+    document.getElementById('collShareText').textContent = text;
+    document.getElementById('collShareBackdrop').classList.add('open');
+    document.getElementById('collShareModal').classList.add('open');
+  }
+  function closeCollShare(){
+    document.getElementById('collShareBackdrop').classList.remove('open');
+    document.getElementById('collShareModal').classList.remove('open');
+  }
+
+  document.getElementById('shareCollBtn').addEventListener('click', openCollShare);
+  document.getElementById('collShareClose').addEventListener('click', closeCollShare);
+  document.getElementById('collShareBackdrop').addEventListener('click', closeCollShare);
+
+  document.getElementById('collShareCopy').addEventListener('click', function(){
+    var txt = document.getElementById('collShareText').textContent;
+    if (navigator.clipboard){
+      navigator.clipboard.writeText(txt).then(function(){
+        var t = document.getElementById('toast');
+        if (t){ t.textContent='✓ Copiato!'; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); },1500); }
+      });
+    }
+  });
+  document.getElementById('collShareWA').addEventListener('click', function(){
+    var txt = encodeURIComponent(document.getElementById('collShareText').textContent);
+    window.open('https://wa.me/?text='+txt,'_blank');
+  });
+  document.getElementById('collShareMail').addEventListener('click', function(){
+    var txt = encodeURIComponent(document.getElementById('collShareText').textContent);
+    window.location.href = 'mailto:?subject=La%20mia%20collezione%20FiguBook&body='+txt;
   });
 })();
 </script>
