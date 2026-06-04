@@ -793,7 +793,7 @@ const ALBUMS = [
     eyebrow: 'PANINI · STAGIONE',
     coverTitle: 'CALCIATORI',
     coverYear: '24/25',
-    have: 720, total: 720, doubles: 0,
+    have: 720, total: 886, doubles: 0,
     status: 'done', statusLabel: 'Completato ✓',
     lastUpdate: '3 mesi fa',
     c1: '#f5b800', c2: '#7a5a00',
@@ -808,7 +808,7 @@ const ALBUMS = [
     eyebrow: 'PANINI · STAGIONE',
     coverTitle: 'CALCIATORI',
     coverYear: '23/24',
-    have: 612, total: 682, doubles: 8,
+    have: 612, total: 826, doubles: 8,
     status: 'archived', statusLabel: 'Archiviato',
     lastUpdate: '1 anno fa',
     c1: '#5a5a5a', c2: '#2a2a2a',
@@ -823,7 +823,7 @@ const ALBUMS = [
     eyebrow: 'PANINI · STAGIONE',
     coverTitle: 'CALCIATORI',
     coverYear: '22/23',
-    have: 650, total: 650, doubles: 0,
+    have: 650, total: 739, doubles: 0,
     status: 'done', statusLabel: 'Completato ✓',
     lastUpdate: '2 anni fa',
     c1: '#c8851f', c2: '#7a3a00',
@@ -1827,6 +1827,44 @@ function openShareMissingModal(album){
 
 // ── Sync lista album con Firestore ────────────────────────────
 if (window.FiguBookFirebase) FiguBookFirebase.initMyAlbumsSync();
+
+// ── Pull dati figurine mancanti da Firestore (nuovo browser) ──
+// Quando il localStorage è vuoto (primo accesso su un nuovo dispositivo)
+// scarica i dati di ogni album da Firestore prima di fare il render,
+// così le percentuali sono subito corrette senza dover aprire ogni album.
+if (window.FiguBookFirebase && window.firebase) {
+  firebase.auth().onAuthStateChanged(function (user) {
+    if (!user) return;
+    var pullFlag = 'fbStatsPulled';
+    if (sessionStorage.getItem(pullFlag)) return;
+    sessionStorage.setItem(pullFlag, '1');
+
+    var myAlbums = FiguBookCore.getMyAlbums();
+    var storageMap = FiguBookCore.ALBUM_STORAGE_KEYS;
+    var promises = [];
+
+    myAlbums.forEach(function (albumId) {
+      var storageKey = storageMap[albumId];
+      if (!storageKey) return;
+      if (localStorage.getItem(storageKey)) return; // dati già presenti localmente
+
+      promises.push(
+        FiguBookFirebase.loadAlbumFromFirebase(albumId)
+          .then(function (data) {
+            if (data) localStorage.setItem(storageKey, JSON.stringify(data));
+          })
+          .catch(function () {})
+      );
+    });
+
+    if (!promises.length) return; // niente da scaricare
+
+    Promise.all(promises).then(function () {
+      loadLiveStats();
+      renderAlbums();
+    });
+  });
+}
 </script>
 
 <script type="text/babel">

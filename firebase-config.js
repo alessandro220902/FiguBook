@@ -187,21 +187,27 @@
           }
 
           var fbIds = snap.data().ids || [];
-          var localIds = FiguBookCore.getMyAlbums();
 
-          // Union: add any IDs from Firestore that aren't local yet
-          var added = false;
-          fbIds.forEach(function (id) {
-            if (!localIds.includes(id)) {
-              localIds.push(id);
-              added = true;
+          if (fbIds.length > 0) {
+            // Firestore è la fonte di verità — sostituisce il localStorage locale
+            var localIds = FiguBookCore.getMyAlbums();
+            var isDifferent = fbIds.length !== localIds.length ||
+              fbIds.some(function (id) { return localIds.indexOf(id) === -1; });
+            if (isDifferent) {
+              // Scrivi la lista di Firestore nel localStorage e ricarica
+              _prevSave.call(FiguBookCore, fbIds);
+              location.reload();
             }
-          });
-
-          if (added) {
-            // Use the original (unwrapped) save to avoid a Firestore round-trip
-            _prevSave.call(FiguBookCore, localIds);
-            location.reload();
+            // Se uguale, nessuna azione necessaria
+          } else {
+            // Firestore ha una lista vuota — push quella locale
+            var localList = FiguBookCore.getMyAlbums();
+            if (localList.length) {
+              db.collection('users').doc(user.uid)
+                .collection('albums').doc(albumId)
+                .set({ ids: localList, ts: Date.now() })
+                .catch(function (e) {});
+            }
           }
         })
         .catch(function (e) {
