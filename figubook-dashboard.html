@@ -1071,53 +1071,116 @@
   FiguBookCore.requireSession();
 })();
 
-// ── Greeting: nome e stato da Firebase Auth (onAuthStateChanged) ─
-// Usa onAuthStateChanged perché currentUser è null al caricamento sincrono.
-(function(){
+// ── Bootstrap Dashboard da Firebase ─────────────────────────────
+// REGOLA ASSOLUTA: tutti i dati vengono da Firestore per l'uid corrente.
+// Il localStorage NON viene usato per l'init — evita contaminazione da altri utenti.
+// onAuthStateChanged è l'unico entry-point corretto: currentUser è null al load sincrono.
+
+firebase.auth().onAuthStateChanged(async function _dashFirebaseInit(fbUser) {
+  if (!fbUser) return;
+
   const escHtml = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const h1 = document.getElementById('greetingH1');
   const av = document.getElementById('avatarBtn');
+  const db = firebase.firestore();
+  const uid = fbUser.uid;
 
-  firebase.auth().onAuthStateChanged(async function(user) {
-    if (!user) return;
+  // ── 1. Nome reale da Firebase Auth (mai hardcoded) ──────────
+  let name;
+  if (fbUser.displayName && fbUser.displayName.trim()) {
+    name = fbUser.displayName.trim().split(/\s+/)[0];
+  } else {
+    const prefix = fbUser.email.split('@')[0];
+    const clean  = prefix.replace(/[._\-0-9]/g, ' ').trim().split(/\s+/)[0] || prefix;
+    name = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+  }
+  if (av) av.textContent = name.charAt(0).toUpperCase();
+  // Placeholder veloce (verrà corretto al punto 4)
+  if (h1) h1.innerHTML = `Ciao ${escHtml(name)}, <em>oggi che si fa?</em>`;
 
-    // Nome reale da Firebase Auth — mai "Collezionista"
-    let name;
-    if (user.displayName && user.displayName.trim()) {
-      name = user.displayName.trim().split(/\s+/)[0];
-    } else {
-      // Prendi la parte prima della @ e pulisci da numeri e separatori
-      const prefix = user.email.split('@')[0];
-      const clean  = prefix.replace(/[._\-0-9]/g, ' ').trim().split(/\s+/)[0] || prefix;
-      name = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+  // ── 2. Lista album da Firestore ─────────────────────────────
+  let fbAlbumIds = [];
+  try {
+    const listSnap = await db.collection('users').doc(uid)
+      .collection('albums').doc('_my-albums').get();
+    fbAlbumIds = listSnap.exists ? (listSnap.data().ids || []) : [];
+  } catch(e) { /* rete non disponibile: resta array vuoto */ }
+
+  // ── 3. Ricostruisce ALBUMS SOLO da Firestore ─────────────────
+  // Azzerare e ricostruire garantisce zero contaminazione da localStorage
+  ALBUMS.length = 0;
+  if (fbAlbumIds.length > 0) {
+    _DASH_ALBUMS_MASTER.forEach(a => ALBUMS.push({
+      ...a,
+      objectives: a.objectives ? a.objectives.map(o => ({...o})) : undefined
+    }));
+    const keepIds = new Set(fbAlbumIds.map(cid => _DASH_CATALOG_MAP[cid] || cid));
+    for (let i = ALBUMS.length - 1; i >= 0; i--) {
+      if (!keepIds.has(ALBUMS[i].id)) ALBUMS.splice(i, 1);
     }
 
-    if (av) av.textContent = name.charAt(0).toUpperCase();
+    // Carica statistiche di ogni album da Firestore
+    await Promise.all(ALBUMS.map(async a => {
+      try {
+        const snap = await db.collection('users').doc(uid)
+          .collection('albums').doc(a.id).get();
+        if (!snap.exists) return;
+        const data   = snap.data() || {};
+        const states = data.states || {};
+        const counts = data.counts || {};
+        let have = 0, doubles = 0;
+        Object.keys(states).forEach(code => {
+          const st = states[code];
+          if (st === 'have')   { have++; }
+          else if (st === 'double') { have++; doubles += (counts[code] || 2) - 1; }
+        });
+        a.have    = have;
+        a.doubles = doubles;
+        if (a.objectives) {
+          a.objectives.forEach(o => {
+            if (o.codes && o.codes.length) {
+              o.have = o.codes.filter(c => states[c] === 'have' || states[c] === 'double').length;
+            } else {
+              o.have = a.total > 0 ? Math.round(o.total * (have / a.total)) : 0;
+            }
+          });
+        }
+        if (have === 0) a.status = 'not-started';
+        else if (have >= a.total && a.total > 0) a.status = 'done';
+        else a.status = 'active';
+      } catch(e) {}
+    }));
+  }
 
-    // Controlla flag everHadAlbum su Firestore
-    try {
-      const metaRef = firebase.firestore()
-        .collection('users').doc(user.uid)
-        .collection('meta').doc('firstAlbum');
-      const doc = await metaRef.get();
-      const everHadAlbum = doc.exists && doc.data().everHadAlbum === true;
-
-      if (h1) {
-        h1.innerHTML = everHadAlbum
-          ? `Ciao ${escHtml(name)}, <em>oggi che si fa?</em>`
-          : `Benvenuto ${escHtml(name)}, <em>inizia la tua collezione!</em>`;
-      }
-
-      // Imposta il flag se l'utente ha già album
-      if (!everHadAlbum && ALBUMS.length > 0) {
-        metaRef.set({ everHadAlbum: true }).catch(() => {});
-        if (h1) h1.innerHTML = `Ciao ${escHtml(name)}, <em>oggi che si fa?</em>`;
-      }
-    } catch(e) {
-      if (h1) h1.innerHTML = `Ciao ${escHtml(name)}, <em>oggi che si fa?</em>`;
+  // ── 4. Benvenuto vs Ciao (everHadAlbum su Firestore) ─────────
+  try {
+    const metaRef = db.collection('users').doc(uid)
+      .collection('meta').doc('firstAlbum');
+    const metaSnap = await metaRef.get();
+    let everHadAlbum = metaSnap.exists && metaSnap.data().everHadAlbum === true;
+    if (!everHadAlbum && ALBUMS.length > 0) {
+      metaRef.set({ everHadAlbum: true }).catch(() => {});
+      everHadAlbum = true;
     }
-  });
-})();
+    if (h1) {
+      h1.innerHTML = everHadAlbum
+        ? `Ciao ${escHtml(name)}, <em>oggi che si fa?</em>`
+        : `Benvenuto ${escHtml(name)}, <em>inizia la tua collezione!</em>`;
+    }
+  } catch(e) { /* mantieni il placeholder "Ciao" */ }
+
+  // ── 5. Render di tutte le sezioni con dati reali ─────────────
+  renderAlbumsScroller();
+  renderDashboardQuickStats();
+  if (activeObjIdx >= ALBUMS.length) activeObjIdx = 0;
+  renderObjectives();
+  renderTodoList();
+  renderActivityRows();
+  renderMatchSection();
+  renderMissionCard();
+  renderBadges();
+  renderSessionsWidget();
+});
 
 // Footer year
 (function(){ const el = document.getElementById('footerYear'); if(el) el.textContent = new Date().getFullYear(); })();
@@ -1239,8 +1302,9 @@ function _reloadDashboardAlbums(){
   }
 }
 
-// Initial load — filter immediately
-_reloadDashboardAlbums();
+// ALBUMS parte vuoto: Firebase lo popola in _dashFirebaseInit.
+// Il localStorage non viene usato qui — zero rischio dati di altri utenti.
+ALBUMS.length = 0;
 
 // ── Per-team have count from localStorage states ──────────────
 function _computeObjHave(storageKey, codes){
@@ -2176,32 +2240,10 @@ function renderSearchResults(query){
   document.addEventListener('click', () => panel.classList.remove('open'));
 })();
 
-// ── Sincronizzazione Firebase ─────────────────────────────────
-// Chiama initMyAlbumsSync così la dashboard partecipa al ciclo di
-// sincronizzazione Firebase esattamente come figubook-album.html.
-// Quando Firebase risponde con la lista album dell'utente:
-//   - se diversa da localStorage → location.reload() (dati corretti)
-//   - se uguale → dispatcha 'figubook:my-albums-synced' → re-render
-if (window.FiguBookFirebase) {
-  FiguBookFirebase.initMyAlbumsSync();
-}
-
-// Dopo che Firebase ha aggiornato la lista album senza reload,
-// ri-renderizza tutte le sezioni con i dati aggiornati.
-document.addEventListener('figubook:my-albums-synced', function() {
-  _reloadDashboardAlbums();
-  loadDashboardLiveStats();
-  renderAlbumsScroller();
-  renderDashboardQuickStats();
-  if (activeObjIdx >= ALBUMS.length) activeObjIdx = 0;
-  renderObjectives();
-  renderTodoList();
-  renderActivityRows();
-  renderMatchSection();
-  renderMissionCard();
-  renderBadges();
-  renderSessionsWidget();
-});
+// Nota: initMyAlbumsSync NON viene chiamato qui.
+// Il bootstrap Firestore è gestito da _dashFirebaseInit (onAuthStateChanged).
+// initAutoSync gestisce gli aggiornamenti cross-tab via localStorage
+// (che a quel punto è già sincronizzato da Firebase nelle pagine album).
 </script>
 
 <script type="text/babel">
