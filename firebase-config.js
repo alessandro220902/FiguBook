@@ -136,27 +136,18 @@
         .get()
         .then(function (snap) {
           if (!snap.exists) {
-            // Nothing on Firestore yet — push what we have locally
-            pushKeyToFirebase(storageKey);
+            // Nuovo album / nuovo utente: nessun dato su Firestore.
+            // Non pushare il localStorage vuoto — aspetta che l'utente inserisca dati.
+            sessionStorage.setItem(mergeFlag, '1');
             return;
           }
 
+          // Firestore ha dati → scrivi SEMPRE su localStorage (per compatibilità
+          // con le pagine album singole che leggono da localStorage), poi ricarica.
           var fbData = snap.data();
-          var fbTs = fbData.ts || 0;
-
-          var localRaw = localStorage.getItem(storageKey);
-          var localTs = localRaw ? (JSON.parse(localRaw).ts || 0) : 0;
-
-          if (fbTs > localTs) {
-            // Firestore is more recent: write to localStorage then reload once
-            localStorage.setItem(storageKey, JSON.stringify(fbData));
-            sessionStorage.setItem(mergeFlag, '1');
-            location.reload();
-          } else {
-            // localStorage is up-to-date (or empty): push to Firestore
-            sessionStorage.setItem(mergeFlag, '1');
-            pushKeyToFirebase(storageKey);
-          }
+          localStorage.setItem(storageKey, JSON.stringify(fbData));
+          sessionStorage.setItem(mergeFlag, '1');
+          location.reload();
         })
         .catch(function (e) {
           console.warn('[FiguBook] Firestore pull error:', e);

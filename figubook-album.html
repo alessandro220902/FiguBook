@@ -1285,21 +1285,6 @@ const _ALBUM_TO_CATALOG_ID = {};
 Object.entries(CATALOG_EXISTING_MAP).forEach(([cid, aid]) => { _ALBUM_TO_CATALOG_ID[aid] = cid; });
 
 
-// ── One-time migration: remove stale template-only IDs added by old code ──
-// Template-only albums (no dedicated page, no storage key) should never
-// appear silently. This runs once to clean up legacy localStorage data.
-(function _cleanupTemplateAlbums(){
-  const MIGR_KEY = 'figubook-migration-cleanup-v1';
-  try { if (localStorage.getItem(MIGR_KEY)) return; } catch(e){ return; }
-  try { localStorage.setItem(MIGR_KEY, '1'); } catch(e){}
-  // These IDs only have a template — no dedicated tracking page or storage key
-  const TEMPLATE_ONLY = ['adr-22-23','adr-23-24','adr-24-25','fifa-23','fifa-24','fifa-25','ma-24-25','euro-24','qatar-22'];
-  try {
-    const ids = FiguBookCore.getMyAlbums();
-    const cleaned = ids.filter(id => !TEMPLATE_ONLY.includes(id));
-    if (cleaned.length !== ids.length) FiguBookCore.saveMyAlbums(cleaned);
-  } catch(e){}
-})();
 
 // ── Filter ALBUMS to only user-added ones ─────────────────────
 (function applyOnlyUserAlbums(){

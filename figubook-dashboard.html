@@ -723,42 +723,11 @@
             <h4>Notifiche</h4>
             <button class="mark-read" id="markReadBtn">Segna tutte lette</button>
           </div>
-          <div class="notif-item unread" data-href="figubook-scambia.html">
-            <div class="notif-ic">🔄</div>
-            <div class="notif-txt">
-              <div class="nm">Proposta di scambio da Marco</div>
-              <div class="info">3 ↔ 3 figurine · Calciatori 25/26 · 4h fa</div>
-            </div>
-            <div class="notif-dot"></div>
-          </div>
-          <div class="notif-item unread" data-href="figubook-scambia.html">
-            <div class="notif-ic">🔄</div>
-            <div class="notif-txt">
-              <div class="nm">Proposta di scambio da Anna</div>
-              <div class="info">2 ↔ 2 figurine · Calciatori 25/26 · 5h fa</div>
-            </div>
-            <div class="notif-dot"></div>
-          </div>
-          <div class="notif-item unread" data-href="figubook-scambia.html">
-            <div class="notif-ic">🔄</div>
-            <div class="notif-txt">
-              <div class="nm">Proposta di scambio da Luca</div>
-              <div class="info">1 ↔ 1 figurine · Calciatori 25/26 · 6h fa</div>
-            </div>
-            <div class="notif-dot"></div>
-          </div>
           <div class="notif-item">
-            <div class="notif-ic">★</div>
+            <div class="notif-ic">ℹ️</div>
             <div class="notif-txt">
-              <div class="nm">Badge sbloccato: "Reparto Difesa"</div>
-              <div class="info">Calciatori 25/26 · Ieri</div>
-            </div>
-          </div>
-          <div class="notif-item">
-            <div class="notif-ic">✓</div>
-            <div class="notif-txt">
-              <div class="nm">Scambio completato con Giada</div>
-              <div class="info">3 figurine ricevute · 2h fa</div>
+              <div class="nm">Nessuna notifica</div>
+              <div class="info">Le notifiche reali appariranno qui</div>
             </div>
           </div>
         </div>
@@ -844,65 +813,12 @@
     </section>
 
     <section class="panel" id="matchPanel">
-      <h3>Match pronti <span class="demo-badge">DATI DI ESEMPIO</span></h3>
+      <h3>Match pronti</h3>
       <div class="panel-sub">Scambi consigliati nelle vicinanze</div>
       <div id="matchEmptyMsg" style="display:none;padding:8px 0 4px;font-size:14px;color:var(--muted);line-height:1.5">
         Segna le tue doppie e trova collezionisti vicino a te pronti a scambiarle!
       </div>
       <div class="match-list" id="matchListContainer" style="display:none">
-
-        <a class="match-item" href="figubook-scambia.html">
-          <div class="av" style="--av1:#c8ff3d;--av2:#1f8a5b">G</div>
-          <div>
-            <div class="name">Giada · @giadaa</div>
-            <div class="deal">
-              <span class="pin">📍 340 m</span>
-              <span>·</span>
-              <span>tu hai <b>3</b>, lei ha <b>3</b></span>
-            </div>
-          </div>
-          <span class="pill-match">3 ↔ 3</span>
-        </a>
-
-        <a class="match-item" href="figubook-scambia.html">
-          <div class="av" style="--av1:#2a6fdb;--av2:#0ea5e9">F</div>
-          <div>
-            <div class="name">Federico · @fede10 · ⭐ amico</div>
-            <div class="deal">
-              <span class="pin">📍 1.1 km</span>
-              <span>·</span>
-              <span>tu hai <b>5</b>, lui ha <b>5</b></span>
-            </div>
-          </div>
-          <span class="pill-match">5 ↔ 5</span>
-        </a>
-
-        <a class="match-item" href="figubook-scambia.html">
-          <div class="av" style="--av1:#0a3a8b;--av2:#1a1a1a">S</div>
-          <div>
-            <div class="name">Stefano · @stef.inter</div>
-            <div class="deal">
-              <span class="pin">📍 2.3 km</span>
-              <span>·</span>
-              <span>tu hai <b>6</b>, lui ha <b>6</b></span>
-            </div>
-          </div>
-          <span class="pill-match warm">6 ↔ 6</span>
-        </a>
-
-        <a class="match-item" href="figubook-scambia.html">
-          <div class="av" style="--av1:#7a5ae0;--av2:#ff3df5">M</div>
-          <div>
-            <div class="name">Marco · @kicko</div>
-            <div class="deal">
-              <span class="pin">📍 610 m</span>
-              <span>·</span>
-              <span>tu hai <b>3</b>, lui ha <b>4</b></span>
-            </div>
-          </div>
-          <span class="pill-match cool">3 ↔ 4</span>
-        </a>
-
       </div>
     </section>
   </div>
@@ -1033,7 +949,6 @@
         Indietro
       </button>
       <span class="msg-panel-title" id="msgPanelTitle">Messaggi</span>
-      <span class="demo-badge" style="flex-shrink:0">DATI DI ESEMPIO</span>
     </div>
     <button class="msg-close-btn" id="msgCloseBtn" aria-label="Chiudi">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
@@ -1282,77 +1197,17 @@ const _DASH_CATALOG_MAP = {
   'qatar-22-2':'mondiali-qatar-22',
 };
 
-// ── Re-derive ALBUMS from master using current localStorage state ───────────
-// Called on initial load and on every storage/visibilitychange event.
-function _reloadDashboardAlbums(){
-  // Se Firebase ha già caricato, non usare localStorage
-  if (window._dashFirebaseLoaded) return;
-  // 1. Reset to master
-  ALBUMS.length = 0;
-  _DASH_ALBUMS_MASTER.forEach(a => ALBUMS.push({...a, objectives: a.objectives ? a.objectives.map(o=>({...o})) : undefined}));
-  // 2. Apply removed-albums filter
-  try {
-    const removed = JSON.parse(localStorage.getItem('figubook-removed-albums-v1') || '[]');
-    for (let i = ALBUMS.length - 1; i >= 0; i--) {
-      if (removed.includes(ALBUMS[i].id)) ALBUMS.splice(i, 1);
-    }
-  } catch(e) {}
-  // 3. Apply my-albums filter — EXCLUSIVE source of truth
-  const myAlbums = FiguBookCore.getMyAlbums();
-  const keepIds = new Set(myAlbums.map(cid => _DASH_CATALOG_MAP[cid] || cid));
-  for (let i = ALBUMS.length - 1; i >= 0; i--) {
-    if (!keepIds.has(ALBUMS[i].id)) ALBUMS.splice(i, 1);
-  }
-}
+// Stub: Firebase è la fonte di verità, localStorage non viene usato per ALBUMS.
+// Mantenuta per compatibilità con eventuali chiamate residue.
+function _reloadDashboardAlbums(){ return; }
 
 // ALBUMS parte vuoto: Firebase lo popola in _dashFirebaseInit.
 // Il localStorage non viene usato qui — zero rischio dati di altri utenti.
 ALBUMS.length = 0;
 
-// ── Per-team have count from localStorage states ──────────────
-function _computeObjHave(storageKey, codes){
-  try {
-    const raw = localStorage.getItem(storageKey);
-    if (!raw) return 0;
-    const { states } = JSON.parse(raw);
-    if (!states) return 0;
-    return codes.filter(c => states[c] === 'have' || states[c] === 'double').length;
-  } catch(e){ return 0; }
-}
-
-// ── Dashboard live stats from localStorage ────────────────────
-function loadDashboardLiveStats(){
-  // Se Firebase ha già caricato, non usare localStorage
-  if (window._dashFirebaseLoaded) return;
-  // Update albums that have a dedicated storage key
-  Object.entries(FiguBookCore.ALBUM_STORAGE_KEYS).forEach(([albumId, storageKey]) => {
-    const s = FiguBookCore.getAlbumStats(storageKey);
-    const a = ALBUMS.find(x => x.id === albumId);
-    if (a) {
-      a.have = s.have;
-      a.doubles = s.doubles;
-      if (s.total > 0) a.total = s.total;  // Fix: sync total from STICKER_STATES count
-      // Per-objective have from real localStorage states
-      if (a.objectives) {
-        a.objectives.forEach(o => {
-          if (o.codes && o.codes.length) {
-            o.have = _computeObjHave(storageKey, o.codes);
-            o.total = o.codes.length;
-          } else {
-            // proportional fallback for objectives without codes
-            o.have = a.total > 0 ? Math.round(o.total * (a.have / a.total)) : 0;
-          }
-        });
-      }
-    }
-  });
-  // Auto-compute status for all albums
-  ALBUMS.forEach(a => {
-    if (a.have === 0) a.status = 'not-started';
-    else if (a.have >= a.total && a.total > 0) a.status = 'done';
-    else a.status = 'active';
-  });
-}
+// Stub: ALBUMS è popolato da Firebase in _dashFirebaseInit, non da localStorage.
+function _computeObjHave(){ return 0; }
+function loadDashboardLiveStats(){ return; }
 
 // ── Quick-stats (header): figurine/doppie/mancanti live; scambi/match = 0 ──
 function renderDashboardQuickStats(){
@@ -1525,21 +1380,7 @@ document.getElementById('objFilterComplete').addEventListener('click', () => {
   document.getElementById('objFilterMissing').classList.remove('active');
   renderObjectives();
 });
-// ── Live stats refresh on page focus + cross-tab storage sync ──
-FiguBookCore.initAutoSync(() => {
-  _reloadDashboardAlbums();       // re-filter ALBUMS from source of truth
-  loadDashboardLiveStats();       // update have/doubles/status from localStorage
-  renderAlbumsScroller();
-  renderDashboardQuickStats();
-  if (activeObjIdx >= ALBUMS.length) activeObjIdx = Math.max(0, ALBUMS.length - 1);
-  renderObjectives();
-  renderTodoList();
-  renderActivityRows();
-  renderMatchSection();
-  renderMissionCard();
-  renderBadges();
-  renderSessionsWidget();
-});
+// initAutoSync rimosso: Firebase onAuthStateChanged gestisce tutti gli aggiornamenti.
 
 // Toast
 function showToast(msg){
@@ -1759,12 +1600,14 @@ function renderBadges(){
 }
 
 // ── Feature 3: Progressione 7 giorni ─────────────────────────
+// La cronologia verrà letta da Firestore (users/{uid}/history/{albumId})
+// quando il sistema di tracking sarà pronto.
+// Per ora mostra il messaggio compatto se non ci sono dati.
 function renderProgressChart(){
   const wrap = document.getElementById('chartWrap');
   const canvas = document.getElementById('progressChart');
   if (!canvas) return;
 
-  // Build last-7-days labels + data from all albums' history
   const days = [];
   const labels = [];
   for (let i=6; i>=0; i--){
@@ -1773,37 +1616,39 @@ function renderProgressChart(){
     labels.push(d.toLocaleDateString('it-IT',{weekday:'short'}));
   }
 
-  // Collect data from each active album's history key
-  const data = new Array(7).fill(0);
-  const ALBUM_KEY_MAP = {
-    'calciatori-25-26': 'figubook-history-calciatori-25-26-v1',
-    'calciatori-24-25': 'figubook-history-calciatori-24-25-v1',
-    'calciatori-23-24': 'figubook-history-calciatori-23-24-v1',
-    'calciatori-22-23': 'figubook-history-calciatori-22-23-v1',
-    'adrenalyn-25-26':  'figubook-history-adrenalyn-25-26-v1',
-    'match-attax-ucl':  'figubook-history-match-attax-ucl-v1',
-    'mondiali-2026':    'figubook-history-mondiali-2026-v1',
-    'calb-25-26':       'figubook-history-calb-25-26-v1',
-  };
-  Object.values(ALBUM_KEY_MAP).forEach(hKey => {
-    try {
-      const hist = JSON.parse(localStorage.getItem(hKey) || 'null') || [];
-      hist.forEach(e => {
-        const dk = new Date(e.ts).toISOString().slice(0,10);
-        const idx = days.indexOf(dk);
-        if (idx !== -1) data[idx] += (e.added || 0);
-      });
-    } catch(err){}
-  });
+  // Leggi cronologia da Firestore se disponibile, altrimenti empty state
+  const uid = window.firebase && firebase.auth().currentUser
+    ? firebase.auth().currentUser.uid : null;
 
-  const hasData = data.some(v => v > 0);
-
-  if (!hasData){
-    if (wrap) wrap.innerHTML = '<div class="chart-empty">Inizia ad aggiungere figurine per vedere il grafico 📊</div>';
+  if (!uid || !ALBUMS.length) {
+    if (wrap) wrap.innerHTML = '<div class="chart-empty">Inizia ad aggiungere figurine per vedere la tua progressione 📊</div>';
     const leg = document.getElementById('chartLegend');
     if (leg) leg.textContent = '';
     return;
   }
+
+  const data = new Array(7).fill(0);
+  const db = firebase.firestore();
+  const histPromises = ALBUMS.map(a =>
+    db.collection('users').doc(uid).collection('history').doc(a.id).get()
+      .then(snap => {
+        if (!snap.exists) return;
+        (snap.data().entries || []).forEach(e => {
+          const dk = new Date(e.ts).toISOString().slice(0,10);
+          const idx = days.indexOf(dk);
+          if (idx !== -1) data[idx] += (e.added || 0);
+        });
+      }).catch(() => {})
+  );
+
+  Promise.all(histPromises).then(() => {
+    const hasData = data.some(v => v > 0);
+    if (!hasData){
+      if (wrap) wrap.innerHTML = '<div class="chart-empty">Inizia ad aggiungere figurine per vedere la tua progressione 📊</div>';
+      const leg = document.getElementById('chartLegend');
+      if (leg) leg.textContent = '';
+      return;
+    }
 
   // Draw with Chart.js if available, else simple canvas bars
   if (typeof Chart !== 'undefined'){
@@ -1855,9 +1700,10 @@ function renderProgressChart(){
     });
   }
 
-  const total7 = data.reduce((a,b)=>a+b,0);
-  const leg = document.getElementById('chartLegend');
-  if (leg) leg.textContent = total7 > 0 ? `+${total7} figurine negli ultimi 7 giorni` : 'Nessun inserimento nell\'ultima settimana';
+    const total7 = data.reduce((a,b)=>a+b,0);
+    const leg = document.getElementById('chartLegend');
+    if (leg) leg.textContent = total7 > 0 ? `+${total7} figurine negli ultimi 7 giorni` : 'Nessun inserimento nell\'ultima settimana';
+  }); // end Promise.all
 }
 
 // Load Chart.js then render
@@ -1874,44 +1720,38 @@ function renderProgressChart(){
 })();
 
 // ── Feature 4: Sessioni di inserimento ───────────────────────
+// I dati di sessione verranno letti da Firestore (users/{uid}/meta/sessions)
+// quando il sistema di tracking sarà pronto. Per ora mostra 0 reali.
 function renderSessionsWidget(){
-  try {
-    const sessions = JSON.parse(localStorage.getItem('figubook-sessions-v1') || 'null') || [];
-    const today = new Date().toISOString().slice(0,10);
-
-    // Last 7 days
-    const days7 = [];
-    for (let i=6; i>=0; i--){
-      const d = new Date(); d.setDate(d.getDate()-i);
-      days7.push(d.toISOString().slice(0,10));
-    }
-
-    const sessWeek = sessions.filter(s => days7.includes(s.date));
-    const totalOpens = sessWeek.reduce((s,x) => s+(x.opens||0), 0);
-    const sessWithAdded = sessWeek.filter(s => (s.added||0) > 0);
-    const avgAdded = sessWithAdded.length ? Math.round(sessWithAdded.reduce((s,x)=>s+(x.added||0),0)/sessWithAdded.length) : 0;
-
-    // Streak: consecutive days with at least one session open
-    let streak = 0;
-    for (let i=0; i<30; i++){
-      const d = new Date(); d.setDate(d.getDate()-i);
-      const dk = d.toISOString().slice(0,10);
-      const found = sessions.some(s => s.date === dk);
-      if (found) streak++;
-      else if (i > 0) break;
-    }
-
-    const elOpens = document.getElementById('sessOpens');
-    const elAvg = document.getElementById('sessAvg');
-    const elStreak = document.getElementById('sessStreak');
-    const elStreakLabel = document.getElementById('sessStreakLabel');
-
-    const displayAvg = avgAdded; // solo dati reali, mai stime
-    if (elOpens) elOpens.textContent = totalOpens || '0';
-    if (elAvg) elAvg.textContent = displayAvg || '0';
-    if (elStreak) elStreak.textContent = streak || '0';
-    if (elStreakLabel && streak > 0) elStreakLabel.textContent = streak === 1 ? 'Inizia oggi!' : `${streak} giorni di fila 🔥`;
-  } catch(e){}
+  const uid = window.firebase && firebase.auth().currentUser
+    ? firebase.auth().currentUser.uid : null;
+  const elOpens = document.getElementById('sessOpens');
+  const elAvg   = document.getElementById('sessAvg');
+  const elStreak = document.getElementById('sessStreak');
+  if (!uid) {
+    if (elOpens) elOpens.textContent = '0';
+    if (elAvg)   elAvg.textContent   = '0';
+    if (elStreak) elStreak.textContent = '0';
+    return;
+  }
+  firebase.firestore()
+    .collection('users').doc(uid)
+    .collection('meta').doc('sessions')
+    .get()
+    .then(snap => {
+      const s = snap.exists ? snap.data() : {};
+      if (elOpens) elOpens.textContent = s.opensThisWeek || '0';
+      if (elAvg)   elAvg.textContent   = s.avgAdded      || '0';
+      if (elStreak) elStreak.textContent = s.streak       || '0';
+      const lbl = document.getElementById('sessStreakLabel');
+      if (lbl && (s.streak || 0) > 0)
+        lbl.textContent = s.streak === 1 ? 'Inizia oggi!' : `${s.streak} giorni di fila 🔥`;
+    })
+    .catch(() => {
+      if (elOpens) elOpens.textContent = '0';
+      if (elAvg)   elAvg.textContent   = '0';
+      if (elStreak) elStreak.textContent = '0';
+    });
 }
 
 // ── Collapsible activity section ──────────────────────────────
@@ -1996,39 +1836,13 @@ document.getElementById('pmEsci').addEventListener('click', async () => {
 document.addEventListener('click', () => { closeNotifPanel(); closeProfileMenu(); });
 
 // ── Messages panel ────────────────────────────────────────────
-const DEFAULT_CONVERSATIONS = [
-  { id:'giulia',   name:'Giulia',     av1:'#c8ff3d', av2:'#1f8a5b', lastMsg:'Ok ci vediamo in piazza alle 17:30 👍', time:'14:22', unread:0,
-    messages:[
-      {from:'them', text:'Ciao! Hai ancora la #178 di Kvara?',          time:'11:30'},
-      {from:'me',   text:"Sì ce l'ho doppia, la vuoi?",                 time:'11:32'},
-      {from:'them', text:'Perfetto! Io ho la #312 Lautaro, ti interessa?', time:'11:33'},
-      {from:'me',   text:'Sì esatto! Domani in piazza?',                time:'11:45'},
-      {from:'them', text:'Ok ci vediamo in piazza alle 17:30 👍',        time:'14:22'},
-    ]},
-  { id:'marco',    name:'Marco',      av1:'#7a5ae0', av2:'#ff3df5', lastMsg:'Ho 3 doppie del Milan per te', time:'10:15', unread:2,
-    messages:[
-      {from:'them', text:"Ehi hai doppie dell'Inter?",  time:'09:50'},
-      {from:'me',   text:'Sì ne ho 4, cosa offri?',     time:'10:00'},
-      {from:'them', text:'Ho 3 doppie del Milan per te',time:'10:15'},
-    ]},
-  { id:'federico', name:'Federico ⭐', av1:'#2a6fdb', av2:'#0ea5e9', lastMsg:'Scambio completato! Grazie mille 🙌', time:'Ieri', unread:0,
-    messages:[
-      {from:'me',   text:'Ciao Fede! Ho le 5 figurine pronte', time:'Ieri 15:00'},
-      {from:'them', text:'Ottimo! Anche io. Quando ci vediamo?',time:'Ieri 15:30'},
-      {from:'me',   text:'Domani mattina?',               time:'Ieri 15:31'},
-      {from:'them', text:'Scambio completato! Grazie mille 🙌',time:'Ieri 17:00'},
-    ]},
-  { id:'anna',     name:'Anna',       av1:'#ff5b2e', av2:'#f5b800', lastMsg:'Quando puoi farmi sapere?', time:'2g fa', unread:1,
-    messages:[
-      {from:'them', text:'Ciao! Cerco la figurina di Vlahovic', time:'2g fa'},
-      {from:'them', text:'Quando puoi farmi sapere?',           time:'2g fa'},
-    ]},
-];
+// Messaggi: nessun dato demo — le conversazioni reali arriveranno da Firebase.
+const DEFAULT_CONVERSATIONS = [];
 
 function loadMsgConversations(){
   const r = FiguBookCore.getMessages();
-  if (r) return r;
-  return DEFAULT_CONVERSATIONS.map(c => ({...c, messages:[...c.messages]}));
+  if (r && r.length) return r;
+  return [];
 }
 function saveMsgConversations(convs){
   FiguBookCore.saveMessages(convs);
