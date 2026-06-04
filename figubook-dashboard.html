@@ -1170,6 +1170,7 @@ firebase.auth().onAuthStateChanged(async function _dashFirebaseInit(fbUser) {
   } catch(e) { /* mantieni il placeholder "Ciao" */ }
 
   // ── 5. Render di tutte le sezioni con dati reali ─────────────
+  window._dashFirebaseLoaded = true;
   renderAlbumsScroller();
   renderDashboardQuickStats();
   if (activeObjIdx >= ALBUMS.length) activeObjIdx = 0;
@@ -1284,6 +1285,8 @@ const _DASH_CATALOG_MAP = {
 // ── Re-derive ALBUMS from master using current localStorage state ───────────
 // Called on initial load and on every storage/visibilitychange event.
 function _reloadDashboardAlbums(){
+  // Se Firebase ha già caricato, non usare localStorage
+  if (window._dashFirebaseLoaded) return;
   // 1. Reset to master
   ALBUMS.length = 0;
   _DASH_ALBUMS_MASTER.forEach(a => ALBUMS.push({...a, objectives: a.objectives ? a.objectives.map(o=>({...o})) : undefined}));
@@ -1319,6 +1322,8 @@ function _computeObjHave(storageKey, codes){
 
 // ── Dashboard live stats from localStorage ────────────────────
 function loadDashboardLiveStats(){
+  // Se Firebase ha già caricato, non usare localStorage
+  if (window._dashFirebaseLoaded) return;
   // Update albums that have a dedicated storage key
   Object.entries(FiguBookCore.ALBUM_STORAGE_KEYS).forEach(([albumId, storageKey]) => {
     const s = FiguBookCore.getAlbumStats(storageKey);
