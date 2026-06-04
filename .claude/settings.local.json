@@ -3,7 +3,15 @@
     "allow": [
       "Bash(python3 -c ' *)",
       "Bash(awk '{print $5, $9}')",
-      "Bash(grep album-data *)"
+      "Bash(grep album-data *)",
+      "Bash(sed -n '874,876p' /Users/alessandrogelo/Desktop/FiguBook/figubook-calciatori-2526.html)",
+      "Bash(sed -n '875,877p' /Users/alessandrogelo/Desktop/FiguBook/figubook-calciatori-2425.html)",
+      "Bash(sed -n '875,877p' /Users/alessandrogelo/Desktop/FiguBook/figubook-calciatori-2324.html)",
+      "Bash(sed -n '875,877p' /Users/alessandrogelo/Desktop/FiguBook/figubook-calciatori-2223.html)",
+      "Bash(sed -n '875,877p' /Users/alessandrogelo/Desktop/FiguBook/figubook-fwc2026.html)",
+      "Bash(sed -n '875,877p' /Users/alessandrogelo/Desktop/FiguBook/figubook-serieb-2526.html)",
+      "Bash(sed -n '874,876p' /Users/alessandrogelo/Desktop/FiguBook/figubook-adrenalyn-2526.html)",
+      "Bash(sed -n '874,876p' /Users/alessandrogelo/Desktop/FiguBook/figubook-matchattax-2526.html)"
     ]
   }
 }

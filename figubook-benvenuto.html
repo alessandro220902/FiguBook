@@ -570,6 +570,9 @@
 
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script src="figubook-core.js"></script>
 <script>
 // ── Rotating slogans ─────────────────────────────────────
@@ -682,7 +685,7 @@ document.querySelectorAll('#tabs .tab').forEach(btn => {
 });
 document.getElementById('topGoRegister').addEventListener('click', e => { e.preventDefault(); setMode('register'); });
 
-// ── Auth handlers ──────────────────────────────────────
+// ── Auth helpers ───────────────────────────────────────
 function showAuthError(id, msg){
   const el = document.getElementById(id);
   if (!el) return;
@@ -693,43 +696,80 @@ function clearAuthError(id){
   const el = document.getElementById(id);
   if (el) el.style.display = 'none';
 }
-function saveSession(email){
-  FiguBookCore.setSession(email);
+function setButtonLoading(btn, loading){
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.style.opacity = loading ? '0.6' : '';
 }
-function handleSubmit(mode){
+function mapFirebaseError(code){
+  const msgs = {
+    'auth/user-not-found':        'Nessun account trovato con questa email.',
+    'auth/wrong-password':        'Password errata. Riprova.',
+    'auth/invalid-credential':    'Email o password non corretti.',
+    'auth/email-already-in-use':  'Questa email è già registrata. Accedi oppure usa un\'altra email.',
+    'auth/weak-password':         'La password deve avere almeno 6 caratteri.',
+    'auth/invalid-email':         'Inserisci un indirizzo email valido.',
+    'auth/popup-closed-by-user':  'Login annullato.',
+    'auth/network-request-failed':'Errore di rete. Controlla la connessione.',
+    'auth/too-many-requests':     'Troppi tentativi. Attendi qualche minuto e riprova.',
+  };
+  return msgs[code] || 'Errore durante l\'accesso. Riprova.';
+}
+function saveSession(user){
+  FiguBookCore.setSession({
+    uid:         user.uid,
+    email:       user.email,
+    displayName: user.displayName || null,
+  });
+}
+
+async function handleSubmit(mode){
   if (mode === 'login'){
     clearAuthError('loginError');
     const email = (document.getElementById('loginEmail').value || '').trim();
     const pass  = document.getElementById('loginPassword').value || '';
-    if (!email.includes('@') || !email.includes('.')){
-      showAuthError('loginError', 'Inserisci un indirizzo email valido (es. nome@esempio.com).');
-      return;
+    const btn   = document.querySelector('[data-panel="login"] .btn-primary');
+    setButtonLoading(btn, true);
+    try {
+      const cred = await firebase.auth().signInWithEmailAndPassword(email, pass);
+      saveSession(cred.user);
+      window.location.href = 'figubook-dashboard.html';
+    } catch(e){
+      showAuthError('loginError', mapFirebaseError(e.code));
+      setButtonLoading(btn, false);
     }
-    if (pass.length < 6){
-      showAuthError('loginError', 'La password deve contenere almeno 6 caratteri.');
-      return;
-    }
-    saveSession(email);
-    window.location.href = 'figubook-dashboard.html';
   } else {
     clearAuthError('regError');
-    const email = (document.getElementById('regEmail').value || '').trim();
-    const pass  = document.getElementById('regPassword').value || '';
-    if (!email.includes('@') || !email.includes('.')){
-      showAuthError('regError', 'Inserisci un indirizzo email valido (es. nome@esempio.com).');
-      return;
+    const username = (document.getElementById('regUsername').value || '').trim();
+    const email    = (document.getElementById('regEmail').value || '').trim();
+    const pass     = document.getElementById('regPassword').value || '';
+    const btn      = document.getElementById('registerBtn');
+    setButtonLoading(btn, true);
+    try {
+      const cred = await firebase.auth().createUserWithEmailAndPassword(email, pass);
+      if (username) await cred.user.updateProfile({ displayName: username });
+      saveSession({ uid: cred.user.uid, email: cred.user.email, displayName: username || null });
+      window.location.href = 'figubook-dashboard.html';
+    } catch(e){
+      showAuthError('regError', mapFirebaseError(e.code));
+      setButtonLoading(btn, false);
     }
-    if (pass.length < 6){
-      showAuthError('regError', 'La password deve contenere almeno 6 caratteri.');
-      return;
-    }
-    saveSession(email);
-    window.location.href = 'figubook-dashboard.html';
   }
 }
-function handleGoogle(mode){
-  saveSession('utente@google.com');
-  window.location.href = 'figubook-dashboard.html';
+
+async function handleGoogle(mode){
+  const errId = (mode === 'register') ? 'regError' : 'loginError';
+  clearAuthError(errId);
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    const cred = await firebase.auth().signInWithPopup(provider);
+    saveSession(cred.user);
+    window.location.href = 'figubook-dashboard.html';
+  } catch(e){
+    if (e.code !== 'auth/popup-closed-by-user'){
+      showAuthError(errId, mapFirebaseError(e.code));
+    }
+  }
 }
 function togglePass(id, btn){
   const input = document.getElementById(id);

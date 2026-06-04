@@ -740,6 +740,10 @@
   <div class="modal-body" id="catalogBody"></div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script src="figubook-core.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
@@ -751,6 +755,16 @@
 // ── Session guard ─────────────────────────────────
 (function(){
   FiguBookCore.requireSession();
+  const session = FiguBookCore.getSession();
+  if (session) {
+    let name = session.displayName
+      ? session.displayName.split(' ')[0]
+      : (session.email || '').split('@')[0].replace(/[._\-0-9].*/, '');
+    if (name) {
+      const av = document.getElementById('avatarBtn');
+      if (av) av.textContent = name.charAt(0).toUpperCase();
+    }
+  }
 })();
 
 // ── Albums library ──────────────────────────────────────────
@@ -1715,7 +1729,8 @@ function openShareMissingModal(album){
   if (pmImpostazioni) pmImpostazioni.addEventListener('click', () => { closeAllPanels(); showToast('Impostazioni in arrivo'); });
   const pmEsci = document.getElementById('pmEsci');
   if (pmEsci){
-    pmEsci.addEventListener('click', () => {
+    pmEsci.addEventListener('click', async () => {
+      try { await firebase.auth().signOut(); } catch(e){}
       FiguBookCore.clearSession();
       window.location.href = 'figubook-benvenuto.html';
     });
@@ -1809,6 +1824,9 @@ function openShareMissingModal(album){
     window.location.href = 'mailto:?subject=La%20mia%20collezione%20FiguBook&body='+txt;
   });
 })();
+
+// ── Sync lista album con Firestore ────────────────────────────
+if (window.FiguBookFirebase) FiguBookFirebase.initMyAlbumsSync();
 </script>
 
 <script type="text/babel">

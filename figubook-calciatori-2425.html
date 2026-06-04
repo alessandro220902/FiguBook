@@ -873,6 +873,10 @@
 <!-- Toast persistenza -->
 <div class="toast" id="toast">✓ Salvato</div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script src="figubook-core.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 <script src="figubook-doubles.js"></script>
@@ -1065,6 +1069,7 @@ document.getElementById('fbDblTrigger').addEventListener('click', function(){
 });
 if (typeof FiguBookDoubles !== 'undefined') {
   FiguBookDoubles.init('figubook-calciatori-2425-v1', 'Calciatori 24-25');
+  if (window.FiguBookFirebase) FiguBookFirebase.initAlbumSync('figubook-calciatori-2425-v1');
 }
 </script>
 

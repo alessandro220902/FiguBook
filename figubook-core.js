@@ -10,8 +10,13 @@
     try { const r = localStorage.getItem('figubook-session-v1'); return r ? JSON.parse(r) : null; } catch(e){ return null; }
   }
 
-  function setSession(email){
-    try { localStorage.setItem('figubook-session-v1', JSON.stringify({ email, ts: Date.now() })); } catch(e){}
+  function setSession(emailOrObj){
+    try {
+      var data = (typeof emailOrObj === 'string')
+        ? { email: emailOrObj, ts: Date.now() }
+        : Object.assign({}, emailOrObj, { ts: Date.now() });
+      localStorage.setItem('figubook-session-v1', JSON.stringify(data));
+    } catch(e){}
   }
 
   function clearSession(){

@@ -872,6 +872,10 @@
 <!-- Toast persistenza -->
 <div class="toast" id="toast">✓ Salvato</div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script src="figubook-core.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 <script src="figubook-doubles.js"></script>
@@ -1065,6 +1069,7 @@ document.getElementById('fbDblTrigger').addEventListener('click', function(){
 // Init after album-data.js and album-app.js have loaded (both are synchronous)
 if (typeof FiguBookDoubles !== 'undefined') {
   FiguBookDoubles.init('figubook-matchattax-ucl-2526-v1', 'Match Attax UCL 25/26');
+  if (window.FiguBookFirebase) FiguBookFirebase.initAlbumSync('figubook-matchattax-ucl-2526-v1');
 }
 </script>
 
