@@ -21,6 +21,30 @@
   var auth = firebase.auth();
   var db   = firebase.firestore();
 
+  // ── Rilevamento cambio utente ────────────────────────────────
+  // Garantisce che ogni utente parta sempre da zero.
+  // Questo listener viene registrato PRIMA di tutti gli altri
+  // così il localStorage è pulito prima che qualsiasi altro
+  // listener lo legga.
+  auth.onAuthStateChanged(function (user) {
+    var prevUid = sessionStorage.getItem('figubook-current-uid');
+
+    if (!user) {
+      // Logout: pulisce tutto e rimuove l'uid
+      if (window.FiguBookCore) FiguBookCore.clearAllUserData();
+      sessionStorage.removeItem('figubook-current-uid');
+      return;
+    }
+
+    if (prevUid && prevUid !== user.uid) {
+      // Cambio account: pulisce i dati del vecchio utente
+      if (window.FiguBookCore) FiguBookCore.clearAllUserData();
+    }
+
+    // Salva sempre l'uid corrente per il confronto al prossimo caricamento
+    sessionStorage.setItem('figubook-current-uid', user.uid);
+  });
+
   // ── Mapping: localStorage key → Firestore album document ID ──
   var KEY_TO_ID = {
     'figubook-calciatori-2526-v1':     'calciatori-25-26',
@@ -175,6 +199,7 @@
         .get()
         .then(function (snap) {
           sessionStorage.setItem(mergeFlag, '1');
+          window._albumFirebaseReady = true; // Firebase ha risposto per questo utente
 
           // Firebase è la fonte di verità:
           // - se ha dati → usa quelli
@@ -218,14 +243,8 @@
 
   async function clearUserData() {
     try { await auth.signOut(); } catch (e) {}
-    if (window.FiguBookCore) FiguBookCore.clearSession();
-    // Rimuove le chiavi localStorage legate all'utente
-    ['figubook-my-albums-v1', 'figubook-removed-albums-v1', 'figubook-album-states-v1']
-      .forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
-    // Rimuove tutti i flag sessionStorage Firebase (sync flags)
-    Object.keys(sessionStorage)
-      .filter(function (k) { return k.startsWith('fb'); })
-      .forEach(function (k) { sessionStorage.removeItem(k); });
+    // Pulizia completa: tutte le chiavi figubook-* e i flag sessionStorage
+    if (window.FiguBookCore) FiguBookCore.clearAllUserData();
   }
 
   // ── Keep localStorage session in sync with Firebase Auth ─────

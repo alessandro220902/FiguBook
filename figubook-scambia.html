@@ -635,6 +635,9 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script src="figubook-core.js"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -683,40 +686,12 @@ function _buildAlbumsRef(){
 const ALBUMS_REF = _buildAlbumsRef();
 
 // ─── USERS ──────────────────────────────────────────────────
-const USERS = {
-  giada:    {name:'Giada',     handle:'@giadaa',     av1:'#c8ff3d', av2:'#1f8a5b', initial:'G', rep:4.9, totalTrades:34},
-  marco:    {name:'Marco',     handle:'@kicko',      av1:'#7a5ae0', av2:'#ff3df5', initial:'M', rep:4.6, totalTrades:18},
-  fede:     {name:'Federico',  handle:'@fede10',     av1:'#2a6fdb', av2:'#0ea5e9', initial:'F', rep:5.0, totalTrades:62, friend:true},
-  sara:     {name:'Sara',      handle:'@ssarah',     av1:'#ff5b2e', av2:'#ffce5b', initial:'S', rep:4.3, totalTrades:12},
-  stefano:  {name:'Stefano',   handle:'@stef.inter', av1:'#0a3a8b', av2:'#1a1a1a', initial:'ST', rep:4.7, totalTrades:27},
-  anna:     {name:'Anna',      handle:'@annette',    av1:'#7a1212', av2:'#fcc500', initial:'A', rep:4.8, totalTrades:41},
-  luca:     {name:'Luca',      handle:'@lucone98',   av1:'#a01d2e', av2:'#fcc500', initial:'L', rep:3.9, totalTrades:9},
-  giulia:   {name:'Giulia',    handle:'@giulia.pm',  av1:'#7a5ae0', av2:'#0a3a8b', initial:'GI', rep:5.0, totalTrades:88, friend:true},
-  tommaso:  {name:'Tommaso',   handle:'@tomtom',     av1:'#1f8a5b', av2:'#0a4a8b', initial:'T', rep:4.5, totalTrades:23},
-};
+// Nessun utente demo — i dati reali arriveranno da Firebase.
+const USERS = {};
 
 // ─── PROPOSALS ──────────────────────────────────────────────
-const PROPOSALS = [
-  // Match consigliati
-  { id:'m1', tab:'match', user:'giada',   distance:'340 m',  album:'calciatori-25-26', give:['220','345','401'], get:['178','PAR-09','STY3'], status:'match', statusLabel:'Match 3 ↔ 3', balance:'pari' },
-  { id:'m2', tab:'match', user:'fede',    distance:'1.1 km', album:'calciatori-25-26', give:['245','267','412','490','503'], get:['401','455','UPG-12','STY8','78'], status:'match', statusLabel:'Match 5 ↔ 5', balance:'pari' },
-  { id:'m3', tab:'match', user:'stefano', distance:'2.3 km', album:'adrenalyn-25-26',  give:['340','350','360','380','394','410'], get:['12','45','67','89','102','155'], status:'match', statusLabel:'Match 6 ↔ 6', balance:'pari' },
-  { id:'m4', tab:'match', user:'marco',   distance:'610 m',  album:'calciatori-25-26', give:['UPG-12','UPG-44','UPG-67'], get:['82','155','312','421'], status:'match', statusLabel:'Match 3 ↔ 4', balance:'skew' },
-  { id:'m5', tab:'match', user:'sara',    distance:'1.4 km', album:'fwc-26',           give:['CEL-12','CEL-34'], get:['K-2','K-4'], status:'match', statusLabel:'Match 2 ↔ 2', balance:'pari' },
-
-  // Ricevute
-  { id:'r1', tab:'received', user:'marco', distance:'610 m',  album:'calciatori-25-26', give:['220','345','401'], get:['178','PAR-09','STY3'], status:'pending', statusLabel:'In attesa', when:'18h fa', balance:'pari' },
-  { id:'r2', tab:'received', user:'anna',  distance:'2.0 km', album:'calciatori-25-26', give:['514'], get:['UPG-12','UPG-44'], status:'counter', statusLabel:'Contro-proposta', when:'1 g fa', balance:'skew' },
-  { id:'r3', tab:'received', user:'luca',  distance:'3.4 km', album:'match-attax',      give:['441'], get:['390'], status:'pending', statusLabel:'In attesa', when:'2 g fa', balance:'pari' },
-
-  // Inviate
-  { id:'s1', tab:'sent', user:'giada',   distance:'340 m',  album:'calciatori-25-26', give:['245','267','412'], get:['74','89','120'], status:'pending', statusLabel:'In attesa lei', when:'4h fa', balance:'pari' },
-  { id:'s2', tab:'sent', user:'fede',    distance:'1.1 km', album:'calciatori-25-26', give:['490','503','512','601','612'], get:['401','455','UPG-12','STY8','78'], status:'accepted', statusLabel:'Accettato', when:'Ieri', balance:'pari' },
-
-  // Confermati
-  { id:'c1', tab:'confirmed', user:'giulia',  distance:'500 m',  album:'calciatori-25-26', give:['220','345','401','CEL-12'], get:['178','PAR-09','STY3','K-2'], status:'confirmed', statusLabel:'Incontro programmato', when:'Oggi',   meet:'Piazza Duomo · 17:30', balance:'pari' },
-  { id:'c2', tab:'confirmed', user:'tommaso', distance:'1.8 km', album:'adrenalyn-25-26',  give:['340','350','360','UPG-44','UPG-67','UPG-78','STY10'], get:['12','45','67','89','102','155','198'], status:'confirmed', statusLabel:'Incontro programmato', when:'Domani', meet:'Stazione Centrale · 10:00', balance:'pari' },
-];
+// Nessuna proposta demo — i dati reali arriveranno da Firebase.
+const PROPOSALS = [];
 
 let activeTab = 'match';
 let activeFilter = 'all';
@@ -795,18 +770,7 @@ const ALBUM_PAGE = {
   'match-attax-ucl':   'figubook-matchattax-2526.html',
 };
 
-// ─── DEMO USER STATUS (simulated) ───────────────────────────
-const USER_STATUS = {
-  giada:   { label:'Online ora',      cls:'online' },
-  marco:   { label:'Attivo 2h fa',    cls:'recent' },
-  fede:    { label:'Online ora',      cls:'online' },
-  sara:    { label:'Attivo 3h fa',    cls:'recent' },
-  stefano: { label:'Attivo 1 giorno fa', cls:'away' },
-  anna:    { label:'Attivo 5h fa',    cls:'recent' },
-  luca:    { label:'Attivo 2 giorni fa', cls:'away' },
-  giulia:  { label:'Online ora',      cls:'online' },
-  tommaso: { label:'Attivo 4h fa',    cls:'recent' },
-};
+// USER_STATUS rimossa (nessun utente demo)
 
 // ─── UTIL: format distance lowercase ────────────────────────
 function fmtDist(d){ return d.replace(/ M$/,' m').replace(/ KM$/,' km').replace(/ Km$/,' km'); }
@@ -852,7 +816,7 @@ function renderCards(){
   // Tab-specific empty states
   if (list.length === 0){
     const emptyMsgs = {
-      match:    { ico:'🔍', h:'Nessun match trovato',           sub:'Non ci sono match per il filtro selezionato.' },
+      match:    { ico:'🔍', h:'Non ci sono ancora match disponibili', sub:'Aggiungi figurine e doppie per trovare collezionisti vicino a te pronti a scambiarle!' },
       received: { ico:'📬', h:'Nessuna proposta ricevuta ancora', sub:'Quando qualcuno ti manderà una proposta, apparirà qui.' },
       sent:     { ico:'📤', h:'Non hai ancora inviato proposte',  sub:'Usa "+ Nuova proposta" per iniziare uno scambio.' },
       confirmed:{ ico:'✅', h:'Nessuno scambio confermato ancora', sub:'Gli scambi confermati e gli incontri programmati appariranno qui.' },
@@ -1225,9 +1189,23 @@ FiguBookCore.initAutoSync(_refreshScambia);
   if(pmImpostazioni)pmImpostazioni.addEventListener('click',function(){closeAllPanels();showToast('Impostazioni in arrivo');});
   var pmEsci=document.getElementById('pmEsci');
   if(pmEsci){
-    pmEsci.addEventListener('click',function(){
-      FiguBookCore.clearSession();
+    pmEsci.addEventListener('click',async function(){
+      if(window.FiguBookFirebase) await FiguBookFirebase.clearUserData();
+      else FiguBookCore.clearSession();
       window.location.href='figubook-benvenuto.html';
+    });
+  }
+
+  // Nome e avatar da Firebase Auth (mai hardcoded)
+  if(window.firebase){
+    firebase.auth().onAuthStateChanged(function(user){
+      if(!user) return;
+      var name = user.displayName && user.displayName.trim()
+        ? user.displayName.trim().split(/\s+/)[0]
+        : (user.email.split('@')[0].replace(/[._\-0-9]/g,' ').trim().split(/\s+/)[0] || user.email.split('@')[0]);
+      name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+      var av = document.getElementById('avatarBtn');
+      if(av) av.textContent = name.charAt(0).toUpperCase();
     });
   }
 

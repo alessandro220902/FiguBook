@@ -131,6 +131,24 @@
     try { localStorage.setItem('figubook-messages-v1', JSON.stringify(data)); } catch(e){}
   }
 
+  // ── 6. PULIZIA COMPLETA DATI UTENTE ─────────────────────────
+  // Rimuove TUTTE le chiavi figubook-* dal localStorage e
+  // tutti i flag sessionStorage fb*/figubook*.
+  // Da chiamare ad ogni cambio utente o logout.
+
+  function clearAllUserData(){
+    try {
+      Object.keys(localStorage)
+        .filter(function(k){ return k.startsWith('figubook-'); })
+        .forEach(function(k){ localStorage.removeItem(k); });
+    } catch(e){}
+    try {
+      Object.keys(sessionStorage)
+        .filter(function(k){ return k.startsWith('fb') || k.startsWith('figubook'); })
+        .forEach(function(k){ sessionStorage.removeItem(k); });
+    } catch(e){}
+  }
+
   // ── Export ───────────────────────────────────────────────────
 
   w.FiguBookCore = {
@@ -145,6 +163,8 @@
     onStatsUpdate, fireStatsUpdate, initAutoSync,
     // notif & messages
     getNotifRead, setNotifRead, getMessages, saveMessages,
+    // pulizia
+    clearAllUserData,
   };
 
 }(window));
