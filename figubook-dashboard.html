@@ -717,7 +717,6 @@
       <div style="position:relative">
         <button class="icon-btn" id="notifBtn" aria-label="Notifiche">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
-          <span class="dot"></span>
         </button>
         <div class="nav-dropdown" id="notifPanel">
           <div class="notif-head">
@@ -844,10 +843,13 @@
       <div class="todo-list" id="todoList"></div>
     </section>
 
-    <section class="panel">
+    <section class="panel" id="matchPanel">
       <h3>Match pronti <span class="demo-badge">DATI DI ESEMPIO</span></h3>
       <div class="panel-sub">Scambi consigliati nelle vicinanze</div>
-      <div class="match-list">
+      <div id="matchEmptyMsg" style="display:none;padding:8px 0 4px;font-size:14px;color:var(--muted);line-height:1.5">
+        Segna le tue doppie e trova collezionisti vicino a te pronti a scambiarle!
+      </div>
+      <div class="match-list" id="matchListContainer">
 
         <a class="match-item" href="figubook-scambia.html">
           <div class="av" style="--av1:#c8ff3d;--av2:#1f8a5b">G</div>
@@ -906,14 +908,17 @@
   </div>
 
   <!-- ── OBIETTIVI PER ALBUM ── -->
-  <div class="sec-head">
+  <div class="sec-head" id="objSecHead">
     <div>
       <h2>Obiettivi per album</h2>
       <div class="sub">Cosa ti manca per chiudere ogni squadra. Naviga tra gli album coi pallini.</div>
     </div>
   </div>
 
-  <section class="objectives-wrap">
+  <section class="objectives-wrap" id="objectivesWrap">
+    <div id="objEmptyMsg" style="display:none;padding:20px 24px">
+      <a href="figubook-album.html" style="font-size:14px;font-weight:600;color:var(--ink);text-decoration:none">Aggiungi un album per vedere i tuoi obiettivi →</a>
+    </div>
     <div class="obj-hero" id="objHero">
       <div>
         <div class="eyebrow" id="objEditor">PANINI · STAGIONE</div>
@@ -926,7 +931,7 @@
       </div>
     </div>
 
-    <div class="obj-body">
+    <div class="obj-body" id="objBody">
       <div class="obj-filter-bar">
         <button class="obj-filter-btn active" id="objFilterMissing" data-filter="missing">Più mancanti</button>
         <button class="obj-filter-btn" id="objFilterComplete" data-filter="complete">Quasi complete</button>
@@ -963,7 +968,7 @@
   </section>
 
   <!-- ── LA TUA PROSSIMA MISSIONE ── -->
-  <div class="sec-head" style="margin-top:18px">
+  <div class="sec-head" style="margin-top:18px" id="missionSecHead">
     <div>
       <h2>La tua prossima missione</h2>
       <div class="sub">La squadra più vicina al completamento</div>
@@ -1066,24 +1071,51 @@
   FiguBookCore.requireSession();
 })();
 
-// ── Greeting from session ─────────────────────────
+// ── Greeting from session + Firebase everHadAlbum check ──────
 (function(){
   const session = FiguBookCore.getSession();
-  if (session && session.email) {
-    let name;
-    if (session.displayName) {
-      name = session.displayName.split(' ')[0];
-    } else {
-      const raw = session.email.split('@')[0];
-      const firstName = raw.replace(/[._\-0-9].*/, '');
-      name = firstName ? firstName.charAt(0).toUpperCase() + firstName.slice(1) : 'Collezionista';
-    }
-    function escapeHtmlInline(s){ return String(s).replace(/[&<>"]/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
-    const h1 = document.getElementById('greetingH1');
-    if (h1) h1.innerHTML = `Ciao ${escapeHtmlInline(name)}, <em>oggi che si fa?</em>`;
-    const av = document.getElementById('avatarBtn');
-    if (av) av.textContent = name.charAt(0).toUpperCase();
+  if (!session || !session.email) return;
+
+  let name;
+  if (session.displayName) {
+    name = session.displayName.split(' ')[0];
+  } else {
+    const raw = session.email.split('@')[0];
+    const firstName = raw.replace(/[._\-0-9].*/, '');
+    name = firstName ? firstName.charAt(0).toUpperCase() + firstName.slice(1) : 'Collezionista';
   }
+  function escapeHtmlInline(s){ return String(s).replace(/[&<>"]/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
+
+  const h1 = document.getElementById('greetingH1');
+  const av = document.getElementById('avatarBtn');
+  if (av) av.textContent = name.charAt(0).toUpperCase();
+
+  // Imposta subito "Ciao" come default veloce; Firebase correggerà se serve
+  if (h1) h1.innerHTML = `Ciao ${escapeHtmlInline(name)}, <em>oggi che si fa?</em>`;
+
+  // Async: controlla il flag everHadAlbum su Firebase
+  (async function checkFirstAlbum(){
+    try {
+      const user = firebase.auth().currentUser;
+      if (!user) return;
+      const metaRef = firebase.firestore()
+        .collection('users').doc(user.uid)
+        .collection('meta').doc('firstAlbum');
+      const doc = await metaRef.get();
+      const everHadAlbum = doc.exists && doc.data().everHadAlbum === true;
+
+      if (!everHadAlbum && h1) {
+        // Primo accesso senza album: saluto di benvenuto
+        h1.innerHTML = `Benvenuto ${escapeHtmlInline(name)}, <em>inizia la tua collezione!</em>`;
+      }
+
+      // Se l'utente ha già album, imposta il flag (se non già impostato)
+      if (!everHadAlbum && ALBUMS.length > 0) {
+        metaRef.set({ everHadAlbum: true }).catch(() => {});
+        if (h1) h1.innerHTML = `Ciao ${escapeHtmlInline(name)}, <em>oggi che si fa?</em>`;
+      }
+    } catch(e) {}
+  })();
 })();
 
 // Footer year
@@ -1322,7 +1354,26 @@ let activeObjIdx = 0;
 let activeObjFilter = 'missing'; // 'missing' | 'complete'
 
 function renderObjectives(){
-  if (!ALBUMS.length) return;
+  const emptyMsg = document.getElementById('objEmptyMsg');
+  const hero     = document.getElementById('objHero');
+  const body     = document.getElementById('objBody');
+  const secHead  = document.getElementById('objSecHead');
+
+  if (!ALBUMS.length) {
+    // Messaggio compatto, niente spazio vuoto
+    if (emptyMsg) emptyMsg.style.display = '';
+    if (hero)     hero.style.display     = 'none';
+    if (body)     body.style.display     = 'none';
+    if (secHead)  secHead.style.display  = 'none';
+    return;
+  }
+
+  // Ripristina visibilità
+  if (emptyMsg) emptyMsg.style.display = 'none';
+  if (hero)     hero.style.display     = '';
+  if (body)     body.style.display     = '';
+  if (secHead)  secHead.style.display  = '';
+
   const a = ALBUMS[activeObjIdx];
   const hero = document.getElementById('objHero');
   hero.style.setProperty('--c1', a.c1);
@@ -1422,6 +1473,7 @@ FiguBookCore.initAutoSync(() => {
   renderObjectives();
   renderTodoList();
   renderActivityRows();
+  renderMatchSection();
   renderMissionCard();
   renderBadges();
   renderSessionsWidget();
@@ -1441,6 +1493,24 @@ function renderTodoList(){
   const root = document.getElementById('todoList');
   if (!root) return;
   root.innerHTML = '';
+
+  // Zero album: CTA compatta, niente spazio vuoto
+  if (!ALBUMS.length) {
+    const el = document.createElement('div');
+    el.className = 'todo-item add';
+    el.style.cursor = 'pointer';
+    el.innerHTML = `
+      <div class="ico">📚</div>
+      <div class="info">
+        <div class="label">Che aspetti? Aggiungi un album e segna le tue figurine!</div>
+        <div class="meta">Vai agli album per iniziare la tua raccolta</div>
+      </div>
+      <div class="chev">→</div>
+    `;
+    el.addEventListener('click', () => { window.location.href = 'figubook-album.html'; });
+    root.appendChild(el);
+    return;
+  }
 
   let totalDoubles = 0, totalMissing = 0;
   ALBUMS.forEach(a => { totalDoubles += (a.doubles||0); totalMissing += Math.max(0, a.total-(a.have||0)); });
@@ -1516,10 +1586,37 @@ function renderActivityRows(){
 renderTodoList();
 renderActivityRows();
 
+// ── Match pronti: mostra/nascondi basandosi sulle doppie reali ─
+function renderMatchSection(){
+  const container = document.getElementById('matchListContainer');
+  const empty     = document.getElementById('matchEmptyMsg');
+  if (!container || !empty) return;
+  let totalDoubles = 0;
+  ALBUMS.forEach(a => { totalDoubles += (a.doubles || 0); });
+  if (totalDoubles === 0) {
+    container.style.display = 'none';
+    empty.style.display = '';
+  } else {
+    container.style.display = '';
+    empty.style.display = 'none';
+  }
+}
+renderMatchSection();
+
 // ── Feature 1: La tua prossima missione ───────────────────────
 function renderMissionCard(){
-  const card = document.getElementById('missionCard');
+  const card    = document.getElementById('missionCard');
+  const secHead = document.getElementById('missionSecHead');
   if (!card) return;
+
+  // Nessun album → nasconde l'intera sezione
+  if (!ALBUMS.length) {
+    card.style.display    = 'none';
+    if (secHead) secHead.style.display = 'none';
+    return;
+  }
+  card.style.display    = '';
+  if (secHead) secHead.style.display = '';
 
   // Find best mission across all ALBUMS.objectives: min missing 1-3, max have%
   let bestAlbum = null, bestObj = null;
@@ -1643,16 +1740,7 @@ function renderProgressChart(){
     } catch(err){}
   });
 
-  let hasData = data.some(v => v > 0);
-
-  // If no history but user has stickers — synthesize today's data point
-  if (!hasData){
-    const totalHaveNow = ALBUMS.reduce((s,a)=>(a.have||0)+s, 0);
-    if (totalHaveNow > 0){
-      data[6] = totalHaveNow; // today = last index
-      hasData = true;
-    }
-  }
+  const hasData = data.some(v => v > 0);
 
   if (!hasData){
     if (wrap) wrap.innerHTML = '<div class="chart-empty">Inizia ad aggiungere figurine per vedere il grafico 📊</div>';
@@ -1762,12 +1850,7 @@ function renderSessionsWidget(){
     const elStreak = document.getElementById('sessStreak');
     const elStreakLabel = document.getElementById('sessStreakLabel');
 
-    // Fallback: if no sessions recorded with added>0, estimate from total stickers
-    let displayAvg = avgAdded;
-    if (!displayAvg && totalOpens > 0){
-      const totalHaveNow = ALBUMS.reduce((s,a)=>(a.have||0)+s,0);
-      if (totalHaveNow > 0) displayAvg = Math.round(totalHaveNow / Math.max(totalOpens,1));
-    }
+    const displayAvg = avgAdded; // solo dati reali, mai stime
     if (elOpens) elOpens.textContent = totalOpens || '0';
     if (elAvg) elAvg.textContent = displayAvg || '0';
     if (elStreak) elStreak.textContent = streak || '0';
