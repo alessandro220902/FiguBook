@@ -1849,8 +1849,8 @@ document.getElementById('profileMenu').addEventListener('click', e => e.stopProp
 document.getElementById('pmProfilo').addEventListener('click', () => { showToast('Profilo — in arrivo'); closeProfileMenu(); });
 document.getElementById('pmImpostazioni').addEventListener('click', () => { showToast('Impostazioni — in arrivo'); closeProfileMenu(); });
 document.getElementById('pmEsci').addEventListener('click', async () => {
-  try { await firebase.auth().signOut(); } catch(e){}
-  FiguBookCore.clearSession();
+  if (window.FiguBookFirebase) await FiguBookFirebase.clearUserData();
+  else FiguBookCore.clearSession();
   window.location.href = 'figubook-benvenuto.html';
 });
 

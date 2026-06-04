@@ -145,12 +145,14 @@
   // Wraps FiguBookCore.saveMyAlbums so the album list is mirrored
   // to Firestore. On first auth resolve, pulls and unions the lists.
 
+  // Firebase è SEMPRE la fonte di verità per la lista album.
+  // Il localStorage è solo una cache — viene SEMPRE sovrascritto da Firebase.
+
   function initMyAlbumsSync() {
     if (!window.FiguBookCore) return;
-    var storageKey = 'figubook-my-albums-v1';
-    var albumId    = '_my-albums';
+    var albumId = '_my-albums';
 
-    // Wrap FiguBookCore.saveMyAlbums
+    // Wrap FiguBookCore.saveMyAlbums: ogni modifica locale viene specchiata su Firestore
     var _prevSave = FiguBookCore.saveMyAlbums;
     FiguBookCore.saveMyAlbums = function (ids) {
       _prevSave.call(FiguBookCore, ids);
@@ -162,7 +164,7 @@
         .catch(function (e) { console.warn('[FiguBook] myAlbums Firestore error:', e); });
     };
 
-    // On auth state change: union local + Firestore list
+    // Al login: Firebase decide cosa mostrare, non il localStorage
     auth.onAuthStateChanged(function (user) {
       if (!user) return;
       var mergeFlag = 'fbMerged__my-albums';
@@ -174,46 +176,56 @@
         .then(function (snap) {
           sessionStorage.setItem(mergeFlag, '1');
 
-          if (!snap.exists) {
-            // Push current local list to Firestore
-            var localList = FiguBookCore.getMyAlbums();
-            if (localList.length) {
-              db.collection('users').doc(user.uid)
-                .collection('albums').doc(albumId)
-                .set({ ids: localList, ts: Date.now() })
-                .catch(function (e) {});
-            }
-            return;
-          }
+          // Firebase è la fonte di verità:
+          // - se ha dati → usa quelli
+          // - se non ha dati → lista vuota (nuovo utente, niente da mostrare)
+          var fbIds = snap.exists ? (snap.data().ids || []) : [];
 
-          var fbIds = snap.data().ids || [];
+          var localIds = FiguBookCore.getMyAlbums();
+          var isDifferent = fbIds.length !== localIds.length ||
+            fbIds.some(function (id) { return localIds.indexOf(id) === -1; }) ||
+            localIds.some(function (id) { return fbIds.indexOf(id) === -1; });
 
-          if (fbIds.length > 0) {
-            // Firestore è la fonte di verità — sostituisce il localStorage locale
-            var localIds = FiguBookCore.getMyAlbums();
-            var isDifferent = fbIds.length !== localIds.length ||
-              fbIds.some(function (id) { return localIds.indexOf(id) === -1; });
-            if (isDifferent) {
-              // Scrivi la lista di Firestore nel localStorage e ricarica
-              _prevSave.call(FiguBookCore, fbIds);
-              location.reload();
-            }
-            // Se uguale, nessuna azione necessaria
+          // Sovrascrive SEMPRE il localStorage con la lista Firebase
+          _prevSave.call(FiguBookCore, fbIds);
+
+          if (isDifferent) {
+            // La lista è cambiata → ricarica per mostrare dati corretti
+            location.reload();
           } else {
-            // Firestore ha una lista vuota — push quella locale
-            var localList = FiguBookCore.getMyAlbums();
-            if (localList.length) {
-              db.collection('users').doc(user.uid)
-                .collection('albums').doc(albumId)
-                .set({ ids: localList, ts: Date.now() })
-                .catch(function (e) {});
-            }
+            // Lista uguale → notifica la pagina (rimuove spinner se visibile)
+            try {
+              document.dispatchEvent(new CustomEvent('figubook:my-albums-synced', {
+                detail: { ids: fbIds }
+              }));
+            } catch (e) {}
           }
         })
         .catch(function (e) {
           console.warn('[FiguBook] myAlbums pull error:', e);
+          // In caso di errore di rete, notifica comunque la pagina
+          try {
+            document.dispatchEvent(new CustomEvent('figubook:my-albums-synced', {
+              detail: { ids: [] }
+            }));
+          } catch (err) {}
         });
     });
+  }
+
+  // Logout: pulisce tutti i dati utente dal browser.
+  // Garantisce che il prossimo utente parta da zero.
+
+  async function clearUserData() {
+    try { await auth.signOut(); } catch (e) {}
+    if (window.FiguBookCore) FiguBookCore.clearSession();
+    // Rimuove le chiavi localStorage legate all'utente
+    ['figubook-my-albums-v1', 'figubook-removed-albums-v1', 'figubook-album-states-v1']
+      .forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+    // Rimuove tutti i flag sessionStorage Firebase (sync flags)
+    Object.keys(sessionStorage)
+      .filter(function (k) { return k.startsWith('fb'); })
+      .forEach(function (k) { sessionStorage.removeItem(k); });
   }
 
   // ── Keep localStorage session in sync with Firebase Auth ─────
@@ -243,5 +255,6 @@
     // Page-level sync bootstrappers
     initAlbumSync: initAlbumSync,
     initMyAlbumsSync: initMyAlbumsSync,
+    clearUserData: clearUserData,
   };
 }());

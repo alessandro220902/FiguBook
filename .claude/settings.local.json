@@ -18,7 +18,9 @@
       "Bash(sed -n '799,808p' /Users/alessandrogelo/Desktop/FiguBook/figubook-calciatori-2425.html)",
       "Bash(sed -n '799,808p' /Users/alessandrogelo/Desktop/FiguBook/figubook-adrenalyn-2526.html)",
       "Bash(sed -n '747,753p' /Users/alessandrogelo/Desktop/FiguBook/figubook-calciatori-2526.html)",
-      "Bash(sed -n '747,754p' /Users/alessandrogelo/Desktop/FiguBook/figubook-adrenalyn-2526.html)"
+      "Bash(sed -n '747,754p' /Users/alessandrogelo/Desktop/FiguBook/figubook-adrenalyn-2526.html)",
+      "Bash(xxd)",
+      "Bash(python3)"
     ]
   }
 }

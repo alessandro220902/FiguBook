@@ -1056,8 +1056,9 @@
   if(pmImpostazioni)pmImpostazioni.addEventListener('click',function(){closeAllPanels();showToast('Impostazioni in arrivo');});
   var pmEsci=document.getElementById('pmEsci');
   if(pmEsci){
-    pmEsci.addEventListener('click',function(){
-      FiguBookCore.clearSession();
+    pmEsci.addEventListener('click',async function(){
+      if(window.FiguBookFirebase) await FiguBookFirebase.clearUserData();
+      else FiguBookCore.clearSession();
       window.location.href='figubook-benvenuto.html';
     });
   }

@@ -1284,15 +1284,6 @@ const CATALOG_EXISTING_MAP = {
 const _ALBUM_TO_CATALOG_ID = {};
 Object.entries(CATALOG_EXISTING_MAP).forEach(([cid, aid]) => { _ALBUM_TO_CATALOG_ID[aid] = cid; });
 
-// ── Initialize figubook-my-albums-v1 if not set (first visit) ─
-(function _initMyAlbums(){
-  let stored;
-  try { stored = localStorage.getItem('figubook-my-albums-v1'); } catch(e){}
-  if (stored !== null) return; // already set
-  // Auto-populate from current ALBUMS (already filtered by applyRemovedAlbums)
-  const initIds = ALBUMS.map(a => _ALBUM_TO_CATALOG_ID[a.id] || a.id);
-  saveUserAlbums(initIds);
-})();
 
 // ── One-time migration: remove stale template-only IDs added by old code ──
 // Template-only albums (no dedicated page, no storage key) should never
@@ -1340,10 +1331,21 @@ function updateHeaderStats(){
   if (elC) elC.textContent = completati;
 }
 
-loadLiveStats();        // update statuses from localStorage FIRST
-updateFilterCounts();   // then count — ensures chip counts match real data
-updateHeaderStats();
-renderAlbums();
+// Se il localStorage non ha ancora la lista album (primo accesso sul dispositivo),
+// mostra uno spinner e aspetta che Firebase invii i dati.
+// Se il localStorage esiste (anche con []), renderizza subito.
+(function initialRender(){
+  var hasLocalList = localStorage.getItem('figubook-my-albums-v1') !== null;
+  if (hasLocalList) {
+    loadLiveStats();
+    updateFilterCounts();
+    updateHeaderStats();
+    renderAlbums();
+  } else {
+    var _g = document.getElementById('albumsGrid');
+    if (_g) _g.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;padding:56px 24px;gap:12px;color:var(--muted);font-family:var(--f-mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em">Caricamento album...</div>';
+  }
+})();
 
 // ── Live stats refresh on page focus + cross-tab sync ─────────
 FiguBookCore.initAutoSync(() => {
@@ -1730,8 +1732,8 @@ function openShareMissingModal(album){
   const pmEsci = document.getElementById('pmEsci');
   if (pmEsci){
     pmEsci.addEventListener('click', async () => {
-      try { await firebase.auth().signOut(); } catch(e){}
-      FiguBookCore.clearSession();
+      if (window.FiguBookFirebase) await FiguBookFirebase.clearUserData();
+      else FiguBookCore.clearSession();
       window.location.href = 'figubook-benvenuto.html';
     });
   }
@@ -1827,6 +1829,15 @@ function openShareMissingModal(album){
 
 // ── Sync lista album con Firestore ────────────────────────────
 if (window.FiguBookFirebase) FiguBookFirebase.initMyAlbumsSync();
+
+// Quando Firebase risolve la lista (senza reload), aggiorna la UI.
+// Rimuove lo spinner nel caso di nuovo utente senza album.
+document.addEventListener('figubook:my-albums-synced', function () {
+  loadLiveStats();
+  updateFilterCounts();
+  updateHeaderStats();
+  renderAlbums();
+});
 
 // ── Pull dati figurine mancanti da Firestore (nuovo browser) ──
 // Quando il localStorage è vuoto (primo accesso su un nuovo dispositivo)
