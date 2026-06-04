@@ -849,7 +849,7 @@
       <div id="matchEmptyMsg" style="display:none;padding:8px 0 4px;font-size:14px;color:var(--muted);line-height:1.5">
         Segna le tue doppie e trova collezionisti vicino a te pronti a scambiarle!
       </div>
-      <div class="match-list" id="matchListContainer">
+      <div class="match-list" id="matchListContainer" style="display:none">
 
         <a class="match-item" href="figubook-scambia.html">
           <div class="av" style="--av1:#c8ff3d;--av2:#1f8a5b">G</div>
@@ -1410,10 +1410,6 @@ function renderAlbumsScroller(){
     root.appendChild(card);
   });
 }
-loadDashboardLiveStats();
-renderAlbumsScroller();
-renderDashboardQuickStats();
-
 // ── Render objectives carousel ────────────────────
 let activeObjIdx = 0;
 let activeObjFilter = 'missing'; // 'missing' | 'complete'
@@ -1524,10 +1520,6 @@ document.getElementById('objFilterComplete').addEventListener('click', () => {
   document.getElementById('objFilterMissing').classList.remove('active');
   renderObjectives();
 });
-loadDashboardLiveStats();
-renderObjectives();
-renderDashboardQuickStats();
-
 // ── Live stats refresh on page focus + cross-tab storage sync ──
 FiguBookCore.initAutoSync(() => {
   _reloadDashboardAlbums();       // re-filter ALBUMS from source of truth
@@ -1648,9 +1640,6 @@ function renderActivityRows(){
   });
 }
 
-renderTodoList();
-renderActivityRows();
-
 // ── Match pronti: mostra/nascondi basandosi sulle doppie reali ─
 function renderMatchSection(){
   const container = document.getElementById('matchListContainer');
@@ -1666,7 +1655,6 @@ function renderMatchSection(){
     empty.style.display = 'none';
   }
 }
-renderMatchSection();
 
 // ── Feature 1: La tua prossima missione ───────────────────────
 function renderMissionCard(){
@@ -1732,7 +1720,6 @@ function renderMissionCard(){
     </div>
   `;
 }
-renderMissionCard();
 
 // ── Feature 2: Traguardi sbloccati ────────────────────────────
 function renderBadges(){
@@ -1765,7 +1752,6 @@ function renderBadges(){
     grid.appendChild(chip);
   });
 }
-renderBadges();
 
 // ── Feature 3: Progressione 7 giorni ─────────────────────────
 function renderProgressChart(){
@@ -1922,7 +1908,6 @@ function renderSessionsWidget(){
     if (elStreakLabel && streak > 0) elStreakLabel.textContent = streak === 1 ? 'Inizia oggi!' : `${streak} giorni di fila 🔥`;
   } catch(e){}
 }
-renderSessionsWidget();
 
 // ── Collapsible activity section ──────────────────────────────
 (function(){
