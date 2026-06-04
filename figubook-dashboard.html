@@ -1002,9 +1002,9 @@
       <h3>Sessioni di inserimento</h3>
       <div class="panel-sub">Statistiche dalle tue sessioni</div>
       <div class="sessions-grid" id="sessionsGrid">
-        <div class="sess-stat"><div class="v" id="sessOpens">—</div><div class="l">Aperture questa settimana</div></div>
-        <div class="sess-stat"><div class="v" id="sessAvg">—</div><div class="l">Figurine per sessione (media)</div></div>
-        <div class="sess-stat"><div class="v" id="sessStreak">—</div><div class="l">Giorni di fila attivi</div><div class="sess-streak" id="sessStreakLabel"></div></div>
+        <div class="sess-stat"><div class="v" id="sessOpens">0</div><div class="l">Aperture questa settimana</div></div>
+        <div class="sess-stat"><div class="v" id="sessAvg">0</div><div class="l">Figurine per sessione (media)</div></div>
+        <div class="sess-stat"><div class="v" id="sessStreak">0</div><div class="l">Giorni di fila attivi</div><div class="sess-streak" id="sessStreakLabel"></div></div>
       </div>
     </section>
   </div>
@@ -1071,51 +1071,52 @@
   FiguBookCore.requireSession();
 })();
 
-// ── Greeting from session + Firebase everHadAlbum check ──────
+// ── Greeting: nome e stato da Firebase Auth (onAuthStateChanged) ─
+// Usa onAuthStateChanged perché currentUser è null al caricamento sincrono.
 (function(){
-  const session = FiguBookCore.getSession();
-  if (!session || !session.email) return;
-
-  let name;
-  if (session.displayName) {
-    name = session.displayName.split(' ')[0];
-  } else {
-    const raw = session.email.split('@')[0];
-    const firstName = raw.replace(/[._\-0-9].*/, '');
-    name = firstName ? firstName.charAt(0).toUpperCase() + firstName.slice(1) : 'Collezionista';
-  }
-  function escapeHtmlInline(s){ return String(s).replace(/[&<>"]/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
-
+  const escHtml = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const h1 = document.getElementById('greetingH1');
   const av = document.getElementById('avatarBtn');
-  if (av) av.textContent = name.charAt(0).toUpperCase();
 
-  // Imposta subito "Ciao" come default veloce; Firebase correggerà se serve
-  if (h1) h1.innerHTML = `Ciao ${escapeHtmlInline(name)}, <em>oggi che si fa?</em>`;
+  firebase.auth().onAuthStateChanged(async function(user) {
+    if (!user) return;
 
-  // Async: controlla il flag everHadAlbum su Firebase
-  (async function checkFirstAlbum(){
+    // Nome reale da Firebase Auth — mai "Collezionista"
+    let name;
+    if (user.displayName && user.displayName.trim()) {
+      name = user.displayName.trim().split(/\s+/)[0];
+    } else {
+      // Prendi la parte prima della @ e pulisci da numeri e separatori
+      const prefix = user.email.split('@')[0];
+      const clean  = prefix.replace(/[._\-0-9]/g, ' ').trim().split(/\s+/)[0] || prefix;
+      name = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+    }
+
+    if (av) av.textContent = name.charAt(0).toUpperCase();
+
+    // Controlla flag everHadAlbum su Firestore
     try {
-      const user = firebase.auth().currentUser;
-      if (!user) return;
       const metaRef = firebase.firestore()
         .collection('users').doc(user.uid)
         .collection('meta').doc('firstAlbum');
       const doc = await metaRef.get();
       const everHadAlbum = doc.exists && doc.data().everHadAlbum === true;
 
-      if (!everHadAlbum && h1) {
-        // Primo accesso senza album: saluto di benvenuto
-        h1.innerHTML = `Benvenuto ${escapeHtmlInline(name)}, <em>inizia la tua collezione!</em>`;
+      if (h1) {
+        h1.innerHTML = everHadAlbum
+          ? `Ciao ${escHtml(name)}, <em>oggi che si fa?</em>`
+          : `Benvenuto ${escHtml(name)}, <em>inizia la tua collezione!</em>`;
       }
 
-      // Se l'utente ha già album, imposta il flag (se non già impostato)
+      // Imposta il flag se l'utente ha già album
       if (!everHadAlbum && ALBUMS.length > 0) {
         metaRef.set({ everHadAlbum: true }).catch(() => {});
-        if (h1) h1.innerHTML = `Ciao ${escapeHtmlInline(name)}, <em>oggi che si fa?</em>`;
+        if (h1) h1.innerHTML = `Ciao ${escHtml(name)}, <em>oggi che si fa?</em>`;
       }
-    } catch(e) {}
-  })();
+    } catch(e) {
+      if (h1) h1.innerHTML = `Ciao ${escHtml(name)}, <em>oggi che si fa?</em>`;
+    }
+  });
 })();
 
 // Footer year
@@ -2174,6 +2175,33 @@ function renderSearchResults(query){
   // Also close search panel on outside click
   document.addEventListener('click', () => panel.classList.remove('open'));
 })();
+
+// ── Sincronizzazione Firebase ─────────────────────────────────
+// Chiama initMyAlbumsSync così la dashboard partecipa al ciclo di
+// sincronizzazione Firebase esattamente come figubook-album.html.
+// Quando Firebase risponde con la lista album dell'utente:
+//   - se diversa da localStorage → location.reload() (dati corretti)
+//   - se uguale → dispatcha 'figubook:my-albums-synced' → re-render
+if (window.FiguBookFirebase) {
+  FiguBookFirebase.initMyAlbumsSync();
+}
+
+// Dopo che Firebase ha aggiornato la lista album senza reload,
+// ri-renderizza tutte le sezioni con i dati aggiornati.
+document.addEventListener('figubook:my-albums-synced', function() {
+  _reloadDashboardAlbums();
+  loadDashboardLiveStats();
+  renderAlbumsScroller();
+  renderDashboardQuickStats();
+  if (activeObjIdx >= ALBUMS.length) activeObjIdx = 0;
+  renderObjectives();
+  renderTodoList();
+  renderActivityRows();
+  renderMatchSection();
+  renderMissionCard();
+  renderBadges();
+  renderSessionsWidget();
+});
 </script>
 
 <script type="text/babel">
