@@ -56,27 +56,16 @@ window.SECTIONS = [
 // Group order (preserves album reading order)
 window.GROUPS = ['Apertura', 'Squadre Serie A', 'Calciatori IA', 'Altre Serie', 'Bonus'];
 
-// ── Deterministic seeded state distribution ──────────────────
-// Target: ~68 owned, 1 double, rest missing (to match doppy demo numbers)
-function hash32(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0)}
-
 window.STICKER_STATES = {};
 window.STICKER_COUNTS = {};
 window.STICKER_NAMES  = {};
 
+// Default: tutte le figurine iniziano come "mancanti" (non possedute)
 window.SECTIONS.forEach(sec => {
   sec.codes.forEach(code => {
-    // ~9% have rate (gives ~70 of 784)
-    const h = hash32('fb-seed-25-26-' + code);
-    if ((h % 100) < 9) window.STICKER_STATES[code] = 'have';
-    else window.STICKER_STATES[code] = 'missing';
+    window.STICKER_STATES[code] = 'missing';
   });
 });
-
-// One demo double — make it visible by picking a memorable celebration card
-window.STICKER_STATES['CEL12'] = 'double';
-window.STICKER_COUNTS['CEL12'] = 2;
-// Also ensure CEL12 isn't already counted as missing in totals — it's owned (double = owned + extra)
 
 // Compute initial counts
 window.albumStats = function(){

@@ -11,7 +11,14 @@
       "Bash(sed -n '875,877p' /Users/alessandrogelo/Desktop/FiguBook/figubook-fwc2026.html)",
       "Bash(sed -n '875,877p' /Users/alessandrogelo/Desktop/FiguBook/figubook-serieb-2526.html)",
       "Bash(sed -n '874,876p' /Users/alessandrogelo/Desktop/FiguBook/figubook-adrenalyn-2526.html)",
-      "Bash(sed -n '874,876p' /Users/alessandrogelo/Desktop/FiguBook/figubook-matchattax-2526.html)"
+      "Bash(sed -n '874,876p' /Users/alessandrogelo/Desktop/FiguBook/figubook-matchattax-2526.html)",
+      "Bash(sed -n '803,807p' /Users/alessandrogelo/Desktop/FiguBook/figubook-calciatori-2425.html)",
+      "Bash(sed -n '803,807p' /Users/alessandrogelo/Desktop/FiguBook/figubook-adrenalyn-2526.html)",
+      "Bash(sed -n '799,808p' /Users/alessandrogelo/Desktop/FiguBook/figubook-calciatori-2526.html)",
+      "Bash(sed -n '799,808p' /Users/alessandrogelo/Desktop/FiguBook/figubook-calciatori-2425.html)",
+      "Bash(sed -n '799,808p' /Users/alessandrogelo/Desktop/FiguBook/figubook-adrenalyn-2526.html)",
+      "Bash(sed -n '747,753p' /Users/alessandrogelo/Desktop/FiguBook/figubook-calciatori-2526.html)",
+      "Bash(sed -n '747,754p' /Users/alessandrogelo/Desktop/FiguBook/figubook-adrenalyn-2526.html)"
     ]
   }
 }

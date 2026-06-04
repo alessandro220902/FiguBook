@@ -749,6 +749,18 @@
       Tutti i doppioni
       <span class="count-pill" id="fbDblCountPill">0</span>
     </button>
+    <div class="album-menu-wrap">
+      <button class="album-menu-btn" id="albumMenuBtn" aria-label="Opzioni album" title="Opzioni album">
+        <svg width="14" height="18" viewBox="0 0 14 18" fill="currentColor"><circle cx="7" cy="2" r="1.8"/><circle cx="7" cy="9" r="1.8"/><circle cx="7" cy="16" r="1.8"/></svg>
+      </button>
+      <div class="album-menu" id="albumMenu" hidden>
+        <button class="album-menu-item" id="albumMenuStats">📊 Statistiche</button>
+        <button class="album-menu-item" id="albumMenuDbl">📤 Condividi doppie</button>
+        <button class="album-menu-item" id="albumMenuMiss">📋 Condividi mancanti</button>
+        <div class="album-menu-sep"></div>
+        <button class="album-menu-item album-menu-danger" id="albumMenuReset">↩ Reimposta album</button>
+      </div>
+    </div>
     <div class="album-progress" style="--p:9">
     <div class="ring"><i id="headerPctRing">9%</i></div>
     <div style="display:flex;flex-direction:column;gap:2px">
@@ -800,9 +812,6 @@
           <button class="active" data-view="grid">Griglia</button>
           <button data-view="list">Lista</button>
         </div>
-        <button class="reset-btn" id="resetBtn" title="Reset demo — cancella stato locale">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
-        </button>
       </div>
     </section>
 

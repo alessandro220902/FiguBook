@@ -705,11 +705,45 @@ function _teamClr(sec){
     });
   });
 
-  // Reset
-  document.getElementById('resetBtn').addEventListener('click', () => {
-    if (confirm('Azzerare lo stato dell\'album sul tuo dispositivo? L\'azione non si può annullare.')){
-      window.resetAlbum();
-    }
+  // ── Menu ⋯ ──────────────────────────────────────────────────
+  const albumMenuBtn  = document.getElementById('albumMenuBtn');
+  const albumMenu     = document.getElementById('albumMenu');
+
+  function openAlbumMenu(){  if (albumMenu) albumMenu.removeAttribute('hidden'); }
+  function closeAlbumMenu(){ if (albumMenu) albumMenu.setAttribute('hidden',''); }
+  function toggleAlbumMenu(){ albumMenu && albumMenu.hasAttribute('hidden') ? openAlbumMenu() : closeAlbumMenu(); }
+
+  if (albumMenuBtn) albumMenuBtn.addEventListener('click', e => { e.stopPropagation(); toggleAlbumMenu(); });
+  document.addEventListener('click', () => closeAlbumMenu());
+
+  // "Reimposta album" — azzeramento in memoria senza reload
+  const albumMenuReset = document.getElementById('albumMenuReset');
+  if (albumMenuReset) albumMenuReset.addEventListener('click', () => {
+    closeAlbumMenu();
+    if (!confirm('Sei sicuro? Questa azione azzera tutto l\'album e non può essere annullata.')) return;
+    // Azzera tutti gli stati in memoria
+    Object.keys(STATES).forEach(code => { STATES[code] = 'missing'; });
+    Object.keys(COUNTS).forEach(code => { delete COUNTS[code]; });
+    // Salva + ri-renderizza
+    if (typeof window.saveAlbum === 'function') window.saveAlbum();
+    renderAll();
+    showToast('Album azzerato');
+  });
+
+  // "Condividi doppie" → apre overlay doppioni esistente
+  const albumMenuDbl = document.getElementById('albumMenuDbl');
+  if (albumMenuDbl) albumMenuDbl.addEventListener('click', () => {
+    closeAlbumMenu();
+    const trigger = document.getElementById('fbDblTrigger');
+    if (trigger) trigger.click();
+  });
+
+  // "Condividi mancanti" → naviga alla pagina mancanti
+  const albumMenuMiss = document.getElementById('albumMenuMiss');
+  if (albumMenuMiss) albumMenuMiss.addEventListener('click', () => {
+    closeAlbumMenu();
+    const link = document.querySelector('a.missing-link');
+    if (link) window.location.href = link.href;
   });
 
   // ── Wrap saveAlbum to fire custom event ─────────────────────
@@ -726,6 +760,9 @@ function _teamClr(sec){
   window.addEventListener('storage', e => {
     if (e.key && e.key.startsWith('figubook-')) renderHeader();
   });
+
+  // Espone renderAll per uso esterno (es. reset da album-data.js)
+  window.renderAlbum = renderAll;
 
   // Boot
   renderAll();

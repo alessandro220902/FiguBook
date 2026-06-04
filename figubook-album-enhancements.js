@@ -506,14 +506,16 @@
   var _statsVisible = false;
 
   function injectStatsTab(){
-    var chips = document.getElementById('filterChips');
-    if (!chips || document.getElementById('fbStatsTab')) return;
-    var btn = document.createElement('button');
-    btn.id = 'fbStatsTab';
-    btn.className = 'chip';
-    btn.innerHTML = '📊 Statistiche';
-    btn.addEventListener('click', function(){ toggleStats(); });
-    chips.appendChild(btn);
+    // Cablaggio del bottone Statistiche nel menu ⋯ (già presente nell'HTML)
+    var menuBtn = document.getElementById('albumMenuStats');
+    if (!menuBtn || menuBtn.dataset.fbWired) return;
+    menuBtn.dataset.fbWired = '1';
+    menuBtn.addEventListener('click', function(){
+      // Chiudi il menu ⋯ prima di aprire le statistiche
+      var menu = document.getElementById('albumMenu');
+      if (menu) menu.setAttribute('hidden', '');
+      toggleStats();
+    });
   }
 
   function toggleStats(){
@@ -522,12 +524,14 @@
     if (!albumView) return;
 
     _statsVisible = !_statsVisible;
-    var tab = document.getElementById('fbStatsTab');
-    if (tab) tab.classList.toggle('active', _statsVisible);
 
-    // Deactivate other chips when stats active
+    // Evidenzia la voce di menu quando le statistiche sono aperte
+    var menuBtn = document.getElementById('albumMenuStats');
+    if (menuBtn) menuBtn.classList.toggle('active', _statsVisible);
+
+    // Deactivate filter chips when stats active (non tocca il menu ⋯)
     if (_statsVisible){
-      document.querySelectorAll('#filterChips .chip').forEach(function(c){ if(c.id !== 'fbStatsTab') c.classList.remove('active'); });
+      document.querySelectorAll('#filterChips .chip').forEach(function(c){ c.classList.remove('active'); });
     }
 
     if (!panel){
