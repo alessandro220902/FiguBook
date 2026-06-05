@@ -767,7 +767,7 @@
 
   <div class="page-head">
     <div>
-      <h1 id="greetingH1">Ciao Collezionista, <em>oggi che si fa?</em></h1>
+      <h1 id="greetingH1">Ciao…</h1>
     </div>
     <div class="quick-stats">
       <div class="qstat">
@@ -984,6 +984,30 @@
 // ── Session guard ─────────────────────────────────
 (function(){
   FiguBookCore.requireSession();
+})();
+
+// ── Fast-path nome utente da sessione cached ──────
+// Mostra il nome subito (da localStorage session) prima che Firebase risponda.
+// Firebase sovrascriverà con il dato canonico in _dashFirebaseInit.
+(function(){
+  try {
+    const session = FiguBookCore.getSession();
+    if (!session) return;
+    const h1 = document.getElementById('greetingH1');
+    const av = document.getElementById('avatarBtn');
+    let name;
+    if (session.displayName && session.displayName.trim()) {
+      name = session.displayName.trim().split(/\s+/)[0];
+    } else if (session.email) {
+      const prefix = session.email.split('@')[0];
+      const clean  = prefix.replace(/[._\-0-9]/g, ' ').trim().split(/\s+/)[0] || prefix;
+      name = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+    }
+    if (!name) return;
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    if (h1) h1.innerHTML = `Ciao ${esc(name)}, <em>oggi che si fa?</em>`;
+    if (av) av.textContent = name.charAt(0).toUpperCase();
+  } catch(e) {}
 })();
 
 // ── Bootstrap Dashboard da Firebase ─────────────────────────────

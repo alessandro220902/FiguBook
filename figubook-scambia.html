@@ -556,14 +556,11 @@
 </div>
 
 <!-- TAB BAR -->
-<div style="max-width:1480px;margin:18px auto 0;padding:0 28px">
-  <span style="font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);background:color-mix(in srgb, var(--gold) 15%, transparent);border:1px solid color-mix(in srgb, var(--gold) 40%, transparent);padding:2px 8px;border-radius:99px">DATI DI ESEMPIO</span>
-</div>
 <div class="tab-bar" id="tabBar">
-  <button class="tab-btn active" data-tab="match">Match consigliati <span class="count">5</span></button>
-  <button class="tab-btn" data-tab="received">Ricevute <span class="count">3</span></button>
-  <button class="tab-btn" data-tab="sent">Inviate <span class="count">2</span></button>
-  <button class="tab-btn" data-tab="confirmed">Confermati <span class="count">2</span></button>
+  <button class="tab-btn active" data-tab="match">Match consigliati <span class="count" id="tabCountMatch">0</span></button>
+  <button class="tab-btn" data-tab="received">Ricevute <span class="count" id="tabCountReceived">0</span></button>
+  <button class="tab-btn" data-tab="sent">Inviate <span class="count" id="tabCountSent">0</span></button>
+  <button class="tab-btn" data-tab="confirmed">Confermati <span class="count" id="tabCountConfirmed">0</span></button>
 </div>
 
 <div class="filter-row">
@@ -806,11 +803,18 @@ function computeFilterCounts(){
   };
 }
 
-// ─── UPDATE FILTER CHIP COUNTS ──────────────────────────────
+// ─── UPDATE FILTER CHIP COUNTS + TAB COUNTS ────────────────
 function updateFilterCounts(){
   const c = computeFilterCounts();
   const ct = (id,n) => { const el=document.getElementById(id); if(el) el.textContent=n; };
   ct('ctAll', c.all); ct('ctNearby', c.nearby); ct('ctFriends', c.friends);
+  // Aggiorna conteggi tab dal set PROPOSALS reali
+  const tabCounts = { match:0, received:0, sent:0, confirmed:0 };
+  PROPOSALS.forEach(p => { if (tabCounts[p.tab] !== undefined) tabCounts[p.tab]++; });
+  ct('tabCountMatch',    tabCounts.match);
+  ct('tabCountReceived', tabCounts.received);
+  ct('tabCountSent',     tabCounts.sent);
+  ct('tabCountConfirmed',tabCounts.confirmed);
 }
 
 // ─── CARDS ─────────────────────────────────────────────────

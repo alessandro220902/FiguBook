@@ -1824,39 +1824,55 @@ document.addEventListener('figubook:my-albums-synced', function () {
   renderAlbums();
 });
 
-// ── Pull dati figurine mancanti da Firestore (nuovo browser) ──
-// Quando il localStorage è vuoto (primo accesso su un nuovo dispositivo)
-// scarica i dati di ogni album da Firestore prima di fare il render,
-// così le percentuali sono subito corrette senza dover aprire ogni album.
+// ── Carica stats album da Firestore (sempre, per tutti gli album) ────────────
+// Non usa il localStorage come cache — legge sempre da Firestore per l'utente
+// corrente. Questo garantisce che le percentuali siano corrette anche in
+// finestre incognito o dopo cambio account.
 if (window.FiguBookFirebase && window.firebase) {
   firebase.auth().onAuthStateChanged(function (user) {
     if (!user) return;
-    var pullFlag = 'fbStatsPulled';
-    if (sessionStorage.getItem(pullFlag)) return;
-    sessionStorage.setItem(pullFlag, '1');
 
+    var db = firebase.firestore();
+    var uid = user.uid;
     var myAlbums = FiguBookCore.getMyAlbums();
-    var storageMap = FiguBookCore.ALBUM_STORAGE_KEYS;
-    var promises = [];
+    if (!myAlbums.length) return;
 
-    myAlbums.forEach(function (albumId) {
-      var storageKey = storageMap[albumId];
-      if (!storageKey) return;
-      if (localStorage.getItem(storageKey)) return; // dati già presenti localmente
-
-      promises.push(
-        FiguBookFirebase.loadAlbumFromFirebase(albumId)
-          .then(function (data) {
-            if (data) localStorage.setItem(storageKey, JSON.stringify(data));
-          })
-          .catch(function () {})
-      );
+    // Carica tutti gli album in parallelo da Firestore
+    var promises = myAlbums.map(function (albumId) {
+      return db.collection('users').doc(uid)
+        .collection('albums').doc(albumId)
+        .get()
+        .then(function (snap) {
+          var a = ALBUMS.find(function (x) { return x.id === albumId; });
+          if (!snap.exists || !a) return;
+          var data   = snap.data() || {};
+          var states = data.states || {};
+          var counts = data.counts || {};
+          var have = 0, doubles = 0;
+          Object.keys(states).forEach(function (code) {
+            var st = states[code];
+            if (st === 'have') { have++; }
+            else if (st === 'double') { have++; doubles += (counts[code] || 2) - 1; }
+          });
+          a.have    = have;
+          a.doubles = doubles;
+          if (a.status !== 'archived') {
+            if (have >= a.total && a.total > 0) { a.status = 'done';        a.statusLabel = 'Completato ✓'; }
+            else if (have === 0)               { a.status = 'not-started';  a.statusLabel = 'Non iniziato'; }
+            else                               { a.status = 'active';       a.statusLabel = 'In corso'; }
+          }
+          // Aggiorna anche localStorage per compatibilità con le pagine album singole
+          var storageKey = FiguBookCore.ALBUM_STORAGE_KEYS[albumId];
+          if (storageKey && data.states) {
+            try { localStorage.setItem(storageKey, JSON.stringify(data)); } catch(e) {}
+          }
+        })
+        .catch(function () {});
     });
 
-    if (!promises.length) return; // niente da scaricare
-
     Promise.all(promises).then(function () {
-      loadLiveStats();
+      updateFilterCounts();
+      updateHeaderStats();
       renderAlbums();
     });
   });

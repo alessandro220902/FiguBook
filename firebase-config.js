@@ -36,8 +36,9 @@
       return;
     }
 
-    if (prevUid && prevUid !== user.uid) {
-      // Cambio account: pulisce i dati del vecchio utente
+    // Pulisce SEMPRE quando l'uid è diverso — incluso il caso incognito
+    // dove prevUid è null ma il localStorage potrebbe avere dati di un altro utente.
+    if (prevUid !== user.uid) {
       if (window.FiguBookCore) FiguBookCore.clearAllUserData();
     }
 
