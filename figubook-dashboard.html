@@ -1999,17 +1999,9 @@ const SEARCH_ALBUM_DATA = [
 ];
 function buildSearchIndex(){
   const idx = [];
+  // Solo nomi album — i nomi delle carte non sono più letti dal localStorage
   SEARCH_ALBUM_DATA.forEach(al => {
     idx.push({ type:'album', code:'', name:al.name, album:al.name, href:al.href });
-    try {
-      const raw = localStorage.getItem(al.storageKey);
-      if (raw){
-        const {names} = JSON.parse(raw);
-        if (names) Object.entries(names).forEach(([code, name]) => {
-          if (name) idx.push({ type:'card', code, name, album:al.name, href:al.href });
-        });
-      }
-    } catch(e){}
   });
   return idx;
 }

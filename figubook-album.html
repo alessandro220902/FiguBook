@@ -1122,44 +1122,9 @@ function loadLiveStats(){
 let _shareText = '';
 
 function getDoublesText(album){
+  // Usa i valori have/doubles già presenti in memoria (caricati da Firebase)
   const lines = [`Le mie doppie — ${album.title}`];
-  const storageKey = ALBUM_STORAGE_KEYS[album.id];
-  if (storageKey){
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (raw){
-        const {states, counts, names} = JSON.parse(raw);
-        if (states){
-          const entries = Object.entries(states)
-            .filter(([, st]) => st === 'double')
-            .map(([code]) => ({
-              code,
-              name: (names && names[code]) ? names[code] : '',
-              extra: (counts && counts[code]) ? counts[code] - 1 : 1
-            }))
-            .sort((a, b) => {
-              const na = parseInt(a.code.replace(/\D/g, ''), 10) || 0;
-              const nb = parseInt(b.code.replace(/\D/g, ''), 10) || 0;
-              return na - nb || a.code.localeCompare(b.code);
-            });
-          if (entries.length === 0){
-            lines.push('Nessuna doppia');
-          } else {
-            entries.forEach(({code, name, extra}) => {
-              const label = `${code}${name ? ' · ' + name : ''}`;
-              for (let i = 0; i < extra; i++) lines.push(label);
-            });
-          }
-        }
-      } else {
-        lines.push(album.doubles > 0 ? `${album.doubles} doppie totali` : 'Nessuna doppia');
-      }
-    } catch(e) {
-      lines.push(album.doubles > 0 ? `${album.doubles} doppie totali` : 'Nessuna doppia');
-    }
-  } else {
-    lines.push(album.doubles > 0 ? `${album.doubles} doppie totali` : 'Nessuna doppia');
-  }
+  lines.push(album.doubles > 0 ? `${album.doubles} doppie totali` : 'Nessuna doppia');
   lines.push('');
   lines.push('Generato con FiguBook');
   return lines.join('\n');
@@ -1230,13 +1195,21 @@ document.getElementById('shareMailBtn').addEventListener('click', () => {
   window.location.href = 'mailto:?subject=' + encodeURIComponent('Le mie doppie FiguBook') + '&body=' + encodeURIComponent(_shareText);
 });
 
-// ── Removal persistence ───────────────────────────────────────
-function loadRemovedAlbums(){
-  try { const r = localStorage.getItem('figubook-removed-albums-v1'); if (r) return JSON.parse(r); } catch(e){}
-  return [];
-}
+// ── Removal persistence → Firestore ──────────────────────────
+// La lista degli album rimossi è ora su Firestore (users/{uid}/albums/_removed-albums).
+// loadRemovedAlbums() ritorna [] in modo sincrono (Firebase ha già filtrato la lista
+// via initMyAlbumsSync); l'aggiornamento avviene in modo asincrono.
+function loadRemovedAlbums(){ return []; }
 function saveRemovedAlbums(ids){
-  try { localStorage.setItem('figubook-removed-albums-v1', JSON.stringify(ids)); } catch(e){}
+  try {
+    var user = window.firebase && firebase.auth().currentUser;
+    if (!user) return;
+    firebase.firestore()
+      .collection('users').doc(user.uid)
+      .collection('albums').doc('_removed-albums')
+      .set({ ids: ids, ts: Date.now() })
+      .catch(function(e){ console.warn('[FiguBook] saveRemovedAlbums error:', e); });
+  } catch(e) {}
 }
 // NOTE: figubook-removed-albums-v1 is separate from figubook-my-albums-v1; kept as-is
 // Filter out previously removed albums on load
@@ -1248,15 +1221,23 @@ function saveRemovedAlbums(ids){
   }
 })();
 
-// ── Archival persistence ──────────────────────────────────────
-function loadAlbumStates(){
-  try { const r = localStorage.getItem('figubook-album-states-v1'); if (r) return JSON.parse(r); } catch(e){}
-  return {};
-}
+// ── Archival persistence → Firestore ─────────────────────────
+// Gli stati album sono ora su Firestore (users/{uid}/albums/_album-states).
+// loadAlbumStates() ritorna {} in modo sincrono; Firebase popola gli stati
+// tramite _dashFirebaseInit / initMyAlbumsSync.
+function loadAlbumStates(){ return {}; }
 function saveAlbumStates(){
-  const map = {};
-  ALBUMS.forEach(a => { map[a.id] = a.status; });
-  try { localStorage.setItem('figubook-album-states-v1', JSON.stringify(map)); } catch(e){}
+  try {
+    var user = window.firebase && firebase.auth().currentUser;
+    if (!user) return;
+    var map = {};
+    ALBUMS.forEach(function(a){ map[a.id] = a.status; });
+    firebase.firestore()
+      .collection('users').doc(user.uid)
+      .collection('albums').doc('_album-states')
+      .set({ states: map, ts: Date.now() })
+      .catch(function(e){ console.warn('[FiguBook] saveAlbumStates error:', e); });
+  } catch(e) {}
 }
 // Restore saved statuses on load
 (function applyAlbumStates(){
@@ -1320,7 +1301,9 @@ function updateHeaderStats(){
 // mostra uno spinner e aspetta che Firebase invii i dati.
 // Se il localStorage esiste (anche con []), renderizza subito.
 (function initialRender(){
-  var hasLocalList = localStorage.getItem('figubook-my-albums-v1') !== null;
+  // Usa il flag impostato da initMyAlbumsSync() quando Firebase ha risposto,
+  // invece di controllare il localStorage (che potrebbe avere dati di un altro utente).
+  var hasLocalList = window._albumFirebaseReady === true;
   if (hasLocalList) {
     loadLiveStats();
     updateFilterCounts();
@@ -1515,42 +1498,10 @@ document.getElementById('catalogSearch').addEventListener('input', e => renderCa
 
 // ── Share MISSING modal ───────────────────────────────────────
 function getMissingText(album){
+  // Usa i valori have/total già presenti in memoria (caricati da Firebase)
   const lines = [`Le mie mancanti — ${album.title}`];
-  const storageKey = ALBUM_STORAGE_KEYS[album.id];
-  if (storageKey){
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (raw){
-        const {states, names} = JSON.parse(raw);
-        if (states){
-          const entries = Object.entries(states)
-            .filter(([, st]) => st === 'missing')
-            .map(([code]) => ({
-              code,
-              name: (names && names[code]) ? names[code] : ''
-            }))
-            .sort((a, b) => {
-              const na = parseInt(a.code.replace(/\D/g, ''), 10) || 0;
-              const nb = parseInt(b.code.replace(/\D/g, ''), 10) || 0;
-              return na - nb || a.code.localeCompare(b.code);
-            });
-          if (entries.length === 0){
-            lines.push('Nessuna mancante');
-          } else {
-            entries.forEach(({code, name}) => {
-              lines.push(`${code}${name ? ' · ' + name : ''}`);
-            });
-          }
-        }
-      } else {
-        lines.push(album.missing > 0 ? `${album.missing} mancanti totali` : 'Nessuna mancante');
-      }
-    } catch(e) {
-      lines.push(album.missing > 0 ? `${album.missing} mancanti totali` : 'Nessuna mancante');
-    }
-  } else {
-    lines.push(album.missing > 0 ? `${album.missing} mancanti totali` : 'Nessuna mancante');
-  }
+  const missing = Math.max(0, (album.total || 0) - (album.have || 0));
+  lines.push(missing > 0 ? `${missing} mancanti totali` : 'Nessuna mancante');
   lines.push('');
   lines.push('Generato con FiguBook');
   return lines.join('\n');
@@ -1589,18 +1540,10 @@ function openShareMissingModal(album){
   ];
 
   function buildSearchIndex(){
+    // Solo nomi album — i nomi delle carte non sono più letti dal localStorage
     const idx = [];
     SEARCH_ALBUM_DATA.forEach(alb => {
       idx.push({ type:'album', code:'', name:alb.name, album:alb.name, href:alb.href });
-      try {
-        const raw = localStorage.getItem(alb.storageKey);
-        if (!raw) return;
-        const {names} = JSON.parse(raw);
-        if (!names) return;
-        Object.entries(names).forEach(([code, name]) => {
-          if (name) idx.push({ type:'card', code, name, album:alb.name, href:alb.href + '#card-' + code });
-        });
-      } catch(e){}
     });
     return idx;
   }
@@ -1736,33 +1679,12 @@ function openShareMissingModal(album){
 <script>
 // ── Condividi Collezione ───────────────────────────────────────
 (function(){
-  function _getStats(storageKey){
-    try {
-      var raw = localStorage.getItem(storageKey);
-      if (!raw) return {have:0,total:0};
-      var saved = JSON.parse(raw);
-      var states = saved.states || saved;
-      var have=0,total=0;
-      Object.values(states).forEach(function(v){ total++; if(v==='have'||v==='double') have++; });
-      return {have:have,total:total};
-    } catch(e){ return {have:0,total:0}; }
-  }
-
   function buildCollectionText(){
-    var CATALOG=[
-      {name:'Calciatori 25-26',   key:'figubook-calciatori-2526-v1'},
-      {name:'Calciatori 24-25',   key:'figubook-calciatori-2425-v1'},
-      {name:'Calciatori 23-24',   key:'figubook-calciatori-2324-v1'},
-      {name:'Calciatori 22-23',   key:'figubook-calciatori-2223-v1'},
-      {name:'Adrenalyn XL 25-26', key:'figubook-adrenalyn-2526-v1'},
-      {name:'Match Attax UCL',    key:'figubook-matchattax-ucl-2526-v1'},
-      {name:'FIFA World Cup 2026',key:'figubook-fwc2026-v1'},
-      {name:'Serie B 25-26',      key:'figubook-serieb-2526-v1'},
-    ];
+    // Usa i valori have/total già presenti in ALBUMS (caricati da Firebase)
     var lines = ['🃏 La mia collezione FiguBook', ''];
     var grandTotal=0, grandHave=0;
-    CATALOG.forEach(function(a){
-      var s = _getStats(a.key);
+    ALBUMS.forEach(function(a){
+      var s = { have: a.have || 0, total: a.total || 0 };
       if (s.total > 0){
         var pct = (s.have/s.total*100).toFixed(1);
         lines.push(a.name + ': ' + s.have + '/' + s.total + ' (' + pct + '%)');

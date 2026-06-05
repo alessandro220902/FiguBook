@@ -1101,18 +1101,10 @@ if (window.firebase) {
     { id:'calb-25-26',       name:'Serie B 25-26',       href:'figubook-serieb-2526.html',     storageKey:'figubook-serieb-2526-v1' },
   ];
   function buildSearchIndex(){
+    // Solo nomi album — i nomi delle carte non sono più letti dal localStorage
     var idx=[];
     SEARCH_ALBUM_DATA.forEach(function(alb){
       idx.push({type:'album',code:'',name:alb.name,album:alb.name,href:alb.href});
-      try{
-        var raw=localStorage.getItem(alb.storageKey);
-        if(!raw)return;
-        var parsed=JSON.parse(raw),names=parsed.names;
-        if(!names)return;
-        Object.keys(names).forEach(function(code){
-          if(names[code])idx.push({type:'card',code:code,name:names[code],album:alb.name,href:alb.href+'#card-'+code});
-        });
-      }catch(e){}
     });
     return idx;
   }
