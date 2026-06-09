@@ -1024,17 +1024,20 @@ firebase.auth().onAuthStateChanged(async function _dashFirebaseInit(fbUser) {
   const db = firebase.firestore();
   const uid = fbUser.uid;
 
-  // ── 1. Nome reale da Firebase Auth (mai hardcoded) ──────────
+  // ── 1. Nome reale da Firebase Auth — IMMEDIATAMENTE, prima di qualsiasi await ─
+  // Garantisce che il nome sia sempre visibile, anche in caso di errori Firestore.
   let name;
-  if (fbUser.displayName && fbUser.displayName.trim()) {
-    name = fbUser.displayName.trim().split(/\s+/)[0];
-  } else {
-    const prefix = fbUser.email.split('@')[0];
-    const clean  = prefix.replace(/[._\-0-9]/g, ' ').trim().split(/\s+/)[0] || prefix;
-    name = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
-  }
+  try {
+    if (fbUser.displayName && fbUser.displayName.trim()) {
+      name = fbUser.displayName.trim().split(/\s+/)[0];
+    } else if (fbUser.email) {
+      const prefix = fbUser.email.split('@')[0];
+      const clean  = prefix.replace(/[._\-0-9]/g, ' ').trim().split(/\s+/)[0] || prefix;
+      name = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+    }
+  } catch(e) {}
+  if (!name || !name.trim()) name = fbUser.email ? fbUser.email.split('@')[0] : 'Utente';
   if (av) av.textContent = name.charAt(0).toUpperCase();
-  // Placeholder veloce (verrà corretto al punto 4)
   if (h1) h1.innerHTML = `Ciao ${escHtml(name)}, <em>oggi che si fa?</em>`;
 
   // ── 2. Lista album da Firestore ─────────────────────────────
@@ -1228,6 +1231,16 @@ function _reloadDashboardAlbums(){ return; }
 // ALBUMS parte vuoto: Firebase lo popola in _dashFirebaseInit.
 // Il localStorage non viene usato qui — zero rischio dati di altri utenti.
 ALBUMS.length = 0;
+
+// Fix 3: se Firebase non risponde entro 5 secondi, nascondi "Caricamento..."
+setTimeout(function(){
+  if (!window._dashFirebaseLoaded) {
+    var card    = document.getElementById('missionCard');
+    var secHead = document.getElementById('missionSecHead');
+    if (card)    card.style.display    = 'none';
+    if (secHead) secHead.style.display = 'none';
+  }
+}, 5000);
 
 // Stub: ALBUMS è popolato da Firebase in _dashFirebaseInit, non da localStorage.
 function _computeObjHave(){ return 0; }

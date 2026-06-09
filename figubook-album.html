@@ -1097,26 +1097,9 @@ function updateFilterCounts(){
 // ── Live stats from localStorage — tutti gli album collegati ──
 const ALBUM_STORAGE_KEYS = FiguBookCore.ALBUM_STORAGE_KEYS;
 
-function loadLiveStats(){
-  Object.entries(ALBUM_STORAGE_KEYS).forEach(([albumId, storageKey]) => {
-    const s = FiguBookCore.getAlbumStats(storageKey);
-    const a = ALBUMS.find(x => x.id === albumId);
-    if (a) {
-      a.have = s.have;
-      a.doubles = s.doubles;
-      // Auto-compute status from real data — never use hardcoded states
-      if (a.status !== 'archived') {
-        if (a.have >= a.total && a.total > 0) {
-          a.status = 'done'; a.statusLabel = 'Completato ✓';
-        } else if (a.have === 0) {
-          a.status = 'not-started'; a.statusLabel = 'Non iniziato';
-        } else {
-          a.status = 'active'; a.statusLabel = 'In corso';
-        }
-      }
-    }
-  });
-}
+// Stub: le statistiche album vengono caricate da Firebase in loadStatsFromFirestore().
+// Non leggere dal localStorage — i dati potrebbero essere di un altro utente.
+function loadLiveStats(){ return; }
 
 // ── Share doubles modal ──────────────────────────────────────
 let _shareText = '';
@@ -1747,16 +1730,21 @@ document.addEventListener('figubook:my-albums-synced', function () {
 });
 
 // ── Carica stats album da Firestore (sempre, per tutti gli album) ────────────
-// Non usa il localStorage come cache — legge sempre da Firestore per l'utente
-// corrente. Questo garantisce che le percentuali siano corrette anche in
-// finestre incognito o dopo cambio account.
+// Legge gli album IDs direttamente da Firestore (non localStorage) per evitare
+// race condition con clearAllUserData e per garantire dati corretti.
 if (window.FiguBookFirebase && window.firebase) {
-  firebase.auth().onAuthStateChanged(function (user) {
+  firebase.auth().onAuthStateChanged(async function (user) {
     if (!user) return;
 
-    var db = firebase.firestore();
+    var db  = firebase.firestore();
     var uid = user.uid;
-    var myAlbums = FiguBookCore.getMyAlbums();
+
+    // Legge la lista album da Firestore (non localStorage)
+    var myAlbumsSnap = await db.collection('users').doc(uid)
+      .collection('albums').doc('_my-albums').get()
+      .catch(function(){ return null; });
+    var myAlbums = (myAlbumsSnap && myAlbumsSnap.exists)
+      ? (myAlbumsSnap.data().ids || []) : FiguBookCore.getMyAlbums();
     if (!myAlbums.length) return;
 
     // Carica tutti gli album in parallelo da Firestore
