@@ -885,10 +885,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
-<script src="figubook-core.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-<script src="figubook-doubles.js"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
@@ -912,175 +909,11 @@
   };
 })();
 </script>
-<script src="album-app.js"></script>
-<script src="figubook-album-enhancements.js"></script>
 
 
 <script>
-// ── Navbar JS ─────────────────────────────────────────────────
-(function initNavbar(){
-  function _esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function closeAllPanels(){
-    var sp=document.getElementById('searchPanel'),np=document.getElementById('notifPanel'),pm=document.getElementById('profileMenu');
-    if(sp)sp.classList.remove('open');
-    if(np)np.classList.remove('open');
-    if(pm)pm.classList.remove('open');
-  }
-
-  // SEARCH
-  var SEARCH_ALBUM_DATA = [
-    { id:'calciatori-25-26', name:'Calciatori 25-26',    href:'figubook-calciatori-2526.html',  storageKey:'figubook-calciatori-2526-v1' },
-    { id:'calciatori-24-25', name:'Calciatori 24-25',    href:'figubook-calciatori-2425.html',  storageKey:'figubook-calciatori-2425-v1' },
-    { id:'calciatori-23-24', name:'Calciatori 23-24',    href:'figubook-calciatori-2324.html',  storageKey:'figubook-calciatori-2324-v1' },
-    { id:'calciatori-22-23', name:'Calciatori 22-23',    href:'figubook-calciatori-2223.html',  storageKey:'figubook-calciatori-2223-v1' },
-    { id:'mondiali-2026',    name:'FIFA World Cup 2026', href:'figubook-fwc2026.html',   storageKey:'figubook-fwc2026-v1' },
-    { id:'calb-25-26',       name:'Serie B 25-26',       href:'figubook-serieb-2526.html',     storageKey:'figubook-serieb-2526-v1' },
-    { id:'match-attax-ucl', name:'Match Attax UCL 25/26', href:'figubook-matchattax-2526.html', storageKey:'figubook-matchattax-ucl-2526-v1' },
-    { id:'adrenalyn-25-26', name:'Adrenalyn XL 25/26', href:'figubook-adrenalyn-2526.html', storageKey:'figubook-adrenalyn-2526-v1' },
-  ];
-  function buildSearchIndex(){
-    var idx=[];
-    SEARCH_ALBUM_DATA.forEach(function(alb){
-      idx.push({type:'album',code:'',name:alb.name,album:alb.name,href:alb.href});
-      try{
-        var raw=localStorage.getItem(alb.storageKey);
-        if(!raw)return;
-        var parsed=JSON.parse(raw),names=parsed.names;
-        if(!names)return;
-        Object.keys(names).forEach(function(code){
-          if(names[code])idx.push({type:'card',code:code,name:names[code],album:alb.name,href:alb.href+'#card-'+code});
-        });
-      }catch(e){}
-    });
-    return idx;
-  }
-  function renderSearchResults(query){
-    var res=document.getElementById('searchResults');
-    if(!res)return;
-    var q=query.trim().toLowerCase();
-    if(!q){res.innerHTML='';return;}
-    var idx=buildSearchIndex();
-    var hits=idx.filter(function(it){
-      return it.code.toLowerCase().indexOf(q)>=0||it.name.toLowerCase().indexOf(q)>=0||it.album.toLowerCase().indexOf(q)>=0;
-    }).slice(0,12);
-    if(!hits.length){
-      res.innerHTML='<div class="search-empty">Nessun risultato per "'+_esc(query)+'"</div>';
-      return;
-    }
-    res.innerHTML=hits.map(function(it){
-      return '<div class="search-result-item" data-href="'+_esc(it.href)+'">'
-        +(it.type==='card'?'<span class="search-result-code">'+_esc(it.code)+'</span>':'<span class="search-result-code">&#128218;</span>')
-        +'<div><div class="search-result-name">'+_esc(it.name)+'</div>'
-        +'<div class="search-result-album">'+_esc(it.album)+'</div></div></div>';
-    }).join('');
-    res.querySelectorAll('.search-result-item').forEach(function(el){
-      el.addEventListener('click',function(){window.location.href=el.dataset.href;});
-    });
-  }
-  var searchBtn=document.getElementById('searchBtn');
-  var searchPanel=document.getElementById('searchPanel');
-  var searchInput=document.getElementById('searchInput');
-  if(searchBtn&&searchPanel){
-    searchBtn.addEventListener('click',function(e){
-      e.stopPropagation();
-      var isOpen=searchPanel.classList.contains('open');
-      closeAllPanels();
-      if(!isOpen){searchPanel.classList.add('open');setTimeout(function(){if(searchInput)searchInput.focus();},60);}
-    });
-  }
-  if(searchInput){
-    searchInput.addEventListener('input',function(e){renderSearchResults(e.target.value);});
-  }
-  document.querySelectorAll('.search-hint').forEach(function(btn){
-    btn.addEventListener('click',function(e){
-      e.stopPropagation();
-      if(searchInput){searchInput.value=btn.dataset.hint;renderSearchResults(btn.dataset.hint);searchInput.focus();}
-    });
-  });
-
-  // MESSAGES
-  var msgBtn=document.getElementById('msgBtn');
-  if(msgBtn){
-    msgBtn.addEventListener('click',function(){window.location.href='figubook-dashboard.html#messages';});
-  }
-
-  // NOTIFICATIONS
-  // notif handled via FiguBookCore
-  var notifBtn=document.getElementById('notifBtn');
-  var notifPanel=document.getElementById('notifPanel');
-  var notifDot=document.getElementById('notifDot');
-  var markReadBtn=document.getElementById('markReadBtn');
-  function updateNotifDot(){
-    if(!notifDot)return;
-    notifDot.style.display=(FiguBookCore.getNotifRead())?'none':'';
-  }
-  updateNotifDot();
-  if(notifBtn&&notifPanel){
-    notifBtn.addEventListener('click',function(e){
-      e.stopPropagation();
-      var isOpen=notifPanel.classList.contains('open');
-      closeAllPanels();
-      if(!isOpen){
-        notifPanel.classList.add('open');
-        FiguBookCore.setNotifRead();
-        updateNotifDot();
-      }
-    });
-  }
-  if(markReadBtn){
-    markReadBtn.addEventListener('click',function(e){
-      e.stopPropagation();
-      document.querySelectorAll('.notif-item.unread').forEach(function(el){el.classList.remove('unread');});
-      document.querySelectorAll('.notif-dot').forEach(function(el){el.remove();});
-      FiguBookCore.setNotifRead();
-      updateNotifDot();
-    });
-  }
-  document.querySelectorAll('.notif-item[data-href]').forEach(function(el){
-    el.addEventListener('click',function(){window.location.href=el.dataset.href;});
-  });
-
-  // PROFILE
-  var avatarBtn=document.getElementById('avatarBtn');
-  var profileMenu=document.getElementById('profileMenu');
-  if(avatarBtn&&profileMenu){
-    avatarBtn.addEventListener('click',function(e){
-      e.stopPropagation();
-      var isOpen=profileMenu.classList.contains('open');
-      closeAllPanels();
-      if(!isOpen)profileMenu.classList.add('open');
-    });
-  }
-  var pmProfilo=document.getElementById('pmProfilo');
-  if(pmProfilo)pmProfilo.addEventListener('click',function(){closeAllPanels();showToast('Profilo in arrivo');});
-  var pmImpostazioni=document.getElementById('pmImpostazioni');
-  if(pmImpostazioni)pmImpostazioni.addEventListener('click',function(){closeAllPanels();showToast('Impostazioni in arrivo');});
-  var pmEsci=document.getElementById('pmEsci');
-  if(pmEsci){
-    pmEsci.addEventListener('click',async function(){
-      if(window.FiguBookFirebase) await FiguBookFirebase.clearUserData();
-      else FiguBookCore.clearSession();
-      window.location.href='figubook-benvenuto.html';
-    });
-  }
-
-  // Close on outside click
-  document.addEventListener('click',function(e){
-    var inSearch=searchPanel&&searchPanel.contains(e.target);
-    var inNotif=notifPanel&&notifPanel.contains(e.target);
-    var inProfile=profileMenu&&profileMenu.contains(e.target);
-    if(!inSearch&&!inNotif&&!inProfile)closeAllPanels();
-  });
-})();
-
-// ── Tutti i doppioni overlay ──────────────────────────────────
-document.getElementById('fbDblTrigger').addEventListener('click', function(){
-  if (window._fbDblOpen) window._fbDblOpen();
-});
-if (typeof FiguBookDoubles !== 'undefined') {
-  FiguBookDoubles.init('figubook-calciatori-2425-v1', 'Calciatori 24-25');
-  if (window.FiguBookFirebase) FiguBookFirebase.initAlbumSync('figubook-calciatori-2425-v1');
-}
+// TODO S3: ricostruire — funzioni: initNavbar, buildSearchIndex, renderSearchResults, updateNotifDot, openProfileMenu, closeAllPanels, FiguBookDoubles.init, FiguBookFirebase.initAlbumSync
+// ID DOM toccati: #searchBtn, #searchPanel, #searchInput, #searchResults, #msgBtn, #notifBtn, #notifPanel, #notifDot, #markReadBtn, #avatarBtn, #profileMenu, #pmProfilo, #pmImpostazioni, #pmEsci, #fbDblTrigger
 </script>
 
 <script type="text/babel">
@@ -1106,5 +939,9 @@ document.body.appendChild(mount);
 ReactDOM.createRoot(mount).render(<App />);
 </script>
 
+
+<script src="firebase-init.js"></script>
+<script src="figubook-db.js"></script>
+<script src="figubook-album-single.js"></script>
 </body>
 </html>
