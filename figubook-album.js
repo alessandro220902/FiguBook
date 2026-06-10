@@ -80,7 +80,7 @@
     // Header totali.
     let all = { totalHave: 0, totalDoubles: 0, totalMissing: 0 };
     try { all = await window.DB.getAllStats(); } catch (e) {}
-    if ($('statFigurine')) $('statFigurine').textContent = all.totalHave;
+    if ($('statFigurine')) { $('statFigurine').textContent = all.totalHave; $('statFigurine').classList.remove('is-loading'); }
     if ($('albumHeaderSub')) $('albumHeaderSub').textContent =
       ids.length + (ids.length === 1 ? ' album in raccolta' : ' album in raccolta');
 
@@ -93,7 +93,7 @@
         '<div style="grid-column:1/-1;padding:24px;text-align:center;color:var(--muted);font-size:14px">' +
         'Non hai ancora album. ' +
         '<a href="figubook-catalogo.html" style="color:var(--ink);font-weight:600;text-decoration:none">Aggiungine uno dal catalogo →</a></div>';
-      if ($('statCompletati')) $('statCompletati').textContent = '0';
+      if ($('statCompletati')) { $('statCompletati').textContent = '0'; $('statCompletati').classList.remove('is-loading'); }
       // Azzera i contatori dei filtri.
       setChipCount('all', 0); setChipCount('active', 0); setChipCount('done', 0);
       setChipCount('new', 0); setChipCount('archived', 0);
@@ -118,7 +118,7 @@
       if ((r.meta.tags || []).indexOf('2526') >= 0) neu++;
     });
 
-    if ($('statCompletati')) $('statCompletati').textContent = completed;
+    if ($('statCompletati')) { $('statCompletati').textContent = completed; $('statCompletati').classList.remove('is-loading'); }
 
     // Contatori filtri reali.
     setChipCount('all', rows.length);

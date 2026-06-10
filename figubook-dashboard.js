@@ -51,8 +51,10 @@
     let everHad = false;
     try { everHad = await window.DB.getEverHadAlbum(); } catch (e) {}
     const h1 = $('greetingH1');
-    if (h1) h1.innerHTML = (everHad ? 'Ciao ' : 'Benvenuto ') + esc(name) +
-      ', <em>oggi che si fa?</em>';
+    if (h1) {
+      h1.innerHTML = (everHad ? 'Ciao ' : 'Benvenuto ') + esc(name) + ', <em>oggi che si fa?</em>';
+      h1.classList.remove('is-loading');
+    }
     const av = $('avatarBtn');
     if (av) av.textContent = window.DB.getUserInitial();
 
@@ -65,6 +67,10 @@
     if ($('qstatFigurine')) $('qstatFigurine').textContent = all.totalHave;
     if ($('qstatDoppie'))   $('qstatDoppie').textContent   = all.totalDoubles;
     if ($('qstatMancanti')) $('qstatMancanti').textContent = all.totalMissing;
+    ['qstatFigurine', 'qstatDoppie', 'qstatMancanti'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.remove('is-loading');
+    });
 
     // ── Album posseduti ──────────────────────────────────────────
     let ids = [];

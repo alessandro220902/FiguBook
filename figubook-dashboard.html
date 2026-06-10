@@ -679,6 +679,7 @@
   }
   .site-footer .footer-row{display:flex;gap:18px;align-items:center;flex-wrap:wrap;justify-content:center}
   .site-footer .footer-dot{opacity:.4}
+  .is-loading{opacity:.35}
 </style>
 </head>
 <body data-variant="stadio">
@@ -767,19 +768,19 @@
 
   <div class="page-head">
     <div>
-      <h1 id="greetingH1">Ciao…</h1>
+      <h1 id="greetingH1" class="is-loading">&nbsp;</h1>
     </div>
     <div class="quick-stats">
       <div class="qstat">
-        <div class="v" id="qstatFigurine">0</div>
+        <div class="v is-loading" id="qstatFigurine">—</div>
         <div class="l">Figurine totali</div>
       </div>
       <div class="qstat">
-        <div class="v" id="qstatDoppie">0</div>
+        <div class="v is-loading" id="qstatDoppie">—</div>
         <div class="l">Doppie</div>
       </div>
       <div class="qstat">
-        <div class="v" id="qstatMancanti">0</div>
+        <div class="v is-loading" id="qstatMancanti">—</div>
         <div class="l">Mancanti</div>
       </div>
       <div class="qstat">

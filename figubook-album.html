@@ -565,6 +565,7 @@
   .share-btn.primary{background:var(--ink);color:var(--accent);border-color:var(--ink);grid-column:span 2}
   .share-btn.primary:hover{filter:brightness(1.1)}
   .share-btn.copied{background:var(--good);color:#fff;border-color:var(--good)}
+  .is-loading{opacity:.35}
 </style>
 </head>
 <body data-variant="stadio">
@@ -634,8 +635,8 @@
     <div class="sub" id="albumHeaderSub">0 album in raccolta</div>
   </div>
   <div class="strip-stats">
-    <div class="stat"><span class="big" id="statFigurine">0</span><span class="lbl">Figurine totali</span></div>
-    <div class="stat"><span class="big" id="statCompletati">0</span><span class="lbl">Completati</span></div>
+    <div class="stat"><span class="big is-loading" id="statFigurine">—</span><span class="lbl">Figurine totali</span></div>
+    <div class="stat"><span class="big is-loading" id="statCompletati">—</span><span class="lbl">Completati</span></div>
     <div class="stat" id="statScambi" style="display:none"><span class="big" id="statScambiVal">0</span><span class="lbl">Scambi totali</span></div>
   </div>
 </div>
