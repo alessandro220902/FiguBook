@@ -25,15 +25,18 @@
     const a = document.createElement('a');
     a.href = meta.href;
     a.className = 'album-mini';
-    a.style.cssText = 'display:block;min-width:200px;text-decoration:none;color:inherit;' +
-      'background:var(--card,#fff);border:1px solid rgba(0,0,0,.08);border-radius:16px;' +
+    const c1 = meta.c1 || '#2a2a2a', c2 = meta.c2 || '#1a1a1a';
+    a.style.cssText = 'display:block;min-width:200px;text-decoration:none;color:#fff;' +
+      'text-shadow:0 1px 2px rgba(0,0,0,.35);' +
+      'background:linear-gradient(135deg, ' + c1 + ' 0%, ' + c2 + ' 100%);' +
+      'border:1px solid rgba(0,0,0,.08);border-radius:16px;' +
       'padding:16px;margin-right:12px';
     a.innerHTML =
-      '<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">' +
+      '<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.04em">' +
         esc(meta.editor) + ' · ' + esc(meta.season) + '</div>' +
       '<div style="font-size:16px;font-weight:700;margin:4px 0 10px">' + esc(meta.title) + '</div>' +
-      '<div style="height:8px;background:rgba(0,0,0,.06);border-radius:99px;overflow:hidden">' +
-        '<i style="display:block;height:100%;width:' + stats.pct + '%;background:linear-gradient(90deg,#1f8a5b,#0a3a8b)"></i>' +
+      '<div style="height:8px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden">' +
+        '<i style="display:block;height:100%;width:' + stats.pct + '%;background:#fff"></i>' +
       '</div>' +
       '<div style="display:flex;justify-content:space-between;margin-top:8px;font-size:13px">' +
         '<span>' + stats.have + ' / ' + stats.total + '</span>' +

@@ -31,18 +31,21 @@
     const div = document.createElement('div');
     div.className = 'cat-card';
     div.dataset.tags = (meta.tags || []).join(',');
-    div.style.cssText = 'background:var(--card,#fff);border:1px solid rgba(0,0,0,.08);' +
+    const c1 = meta.c1 || '#2a2a2a', c2 = meta.c2 || '#1a1a1a';
+    div.style.cssText = 'color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);' +
+      'background:linear-gradient(135deg, ' + c1 + ' 0%, ' + c2 + ' 100%);' +
+      'border:1px solid rgba(0,0,0,.08);' +
       'border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px';
     div.innerHTML =
-      '<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">' +
+      '<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.04em">' +
         esc(meta.editor) + ' · ' + esc(meta.season) + '</div>' +
       '<div style="font-size:18px;font-weight:700">' + esc(meta.title) + '</div>' +
-      '<div style="font-size:13px;color:var(--muted)">' + meta.total + ' figurine</div>' +
+      '<div style="font-size:13px;color:rgba(255,255,255,.85)">' + meta.total + ' figurine</div>' +
       '<button class="cat-toggle" style="margin-top:auto;border:none;cursor:pointer;border-radius:10px;' +
-        'padding:10px 14px;font-weight:600;font-size:14px;' +
+        'padding:10px 14px;font-weight:600;font-size:14px;text-shadow:none;' +
         (isOwned
-          ? 'background:rgba(0,0,0,.06);color:var(--ink)">Rimuovi'
-          : 'background:linear-gradient(90deg,#1f8a5b,#0a3a8b);color:#fff">+ Aggiungi') +
+          ? 'background:rgba(255,255,255,.22);color:#fff">Rimuovi'
+          : 'background:#fff;color:#1a1a1a">+ Aggiungi') +
       '</button>';
     const btn = div.querySelector('.cat-toggle');
     btn.addEventListener('click', async function () {
