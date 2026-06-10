@@ -16,26 +16,24 @@
 
 (function () {
 
-  // Storage key (dal file dati) → albumId Firestore. Differenze volute.
-  const KEY_TO_ALBUM_ID = {
-    'figubook-calciatori-2526-v1':     'calciatori-25-26',
-    'figubook-calciatori-2425-v1':     'calciatori-24-25',
-    'figubook-calciatori-2324-v1':     'calciatori-23-24',
-    'figubook-calciatori-2223-v1':     'calciatori-22-23',
-    'figubook-fwc2026-v1':             'mondiali-2026',
-    'figubook-serieb-2526-v1':         'calb-25-26',
-    'figubook-adrenalyn-2526-v1':      'adrenalyn-25-26',
-    'figubook-matchattax-ucl-2526-v1': 'match-attax-ucl',
+  // Nome pagina HTML → albumId Firestore. Differenze volute.
+  // (La const FB_STORAGE_KEY del file dati NON è leggibile da qui: una const
+  //  top-level di uno script classico non finisce su window né è visibile da
+  //  un altro file. Risolviamo quindi dall'URL della pagina corrente.)
+  const PAGE_TO_ALBUM_ID = {
+    'figubook-calciatori-2526.html': 'calciatori-25-26',
+    'figubook-calciatori-2425.html': 'calciatori-24-25',
+    'figubook-calciatori-2324.html': 'calciatori-23-24',
+    'figubook-calciatori-2223.html': 'calciatori-22-23',
+    'figubook-fwc2026.html':         'mondiali-2026',
+    'figubook-serieb-2526.html':     'calb-25-26',
+    'figubook-adrenalyn-2526.html':  'adrenalyn-25-26',
+    'figubook-matchattax-2526.html': 'match-attax-ucl',
   };
 
-  // FB_STORAGE_KEY è un `const` top-level del file dati: vive nello scope
-  // lessicale globale condiviso tra script classici, leggibile come identificatore
-  // nudo (non come window.FB_STORAGE_KEY). Lo leggiamo in modo robusto.
-  function resolveStorageKey() {
-    try {
-      if (typeof FB_STORAGE_KEY !== 'undefined' && FB_STORAGE_KEY) return FB_STORAGE_KEY;
-    } catch (e) { /* non definita su questa pagina */ }
-    return null;
+  function resolveAlbumId() {
+    var page = (window.location.pathname.split('/').pop() || '').toLowerCase();
+    return PAGE_TO_ALBUM_ID[page] || null;
   }
 
   // Inietta album-app.js dopo che i globali sono pronti. Restituisce una Promise.
@@ -112,11 +110,10 @@
   window.FB.onReady(async function () {
     initNavbar();
 
-    const storageKey = resolveStorageKey();
-    const albumId = storageKey ? KEY_TO_ALBUM_ID[storageKey] : null;
+    const albumId = resolveAlbumId();
 
     if (!albumId) {
-      console.error('FiguBook: albumId non risolto (FB_STORAGE_KEY=' + storageKey + ')');
+      console.error('FiguBook: albumId non risolto per pagina ' + window.location.pathname);
       await injectAlbumApp(); // carica comunque il motore (tutto mancante)
       return;
     }
