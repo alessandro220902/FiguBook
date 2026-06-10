@@ -2,14 +2,42 @@
 // Espone window.DB. Dipende da window.FB (firebase-init.js già caricato).
 // MAI localStorage. Solo Firestore.
 
-// TODO S3: collegare alla variabile dati reale per ogni album.
-// Mappa albumId → totale carte (incluse speciali). Da riempire in S3
-// quando si conosce la variabile globale esposta dai file album-data*.js.
-const ALBUM_TOTALS = {
-  // 'calciatori-25-26': 784,
-  // 'calciatori-24-25': 680,
-  // ...
-};
+// ── Catalogo album condiviso ───────────────────────────────────────────────
+// Fonte unica di verità per nome, editore, pagina e file dati di ogni album.
+// Usato da dashboard, lista album e catalogo. Esposto come window.ALBUM_CATALOG.
+//
+// `total` NON è un numero arbitrario: è il conteggio delle carte definite nel
+// file dati corrispondente (album-data*.js), incluse tutte le speciali
+// (UPD, C, U, STY, UPG, CEL, ecc.). I valori qui sotto sono stati CONTATI dai
+// file dati in S3 (Object.keys(STICKER_STATES).length, che il file dati
+// popola con ogni codice). Dove il file dati è caricato a runtime
+// (pagine album singolo / mancanti) il totale viene ricalcolato live da
+// _getAlbumTotal e ha la precedenza, così non resta mai disallineato.
+const ALBUM_CATALOG = [
+  { id:'calciatori-25-26', title:'Calciatori 2025/26',  editor:'Panini', season:'2025/26', total:784, href:'figubook-calciatori-2526.html', missingParam:'2526',    storageKey:'figubook-calciatori-2526-v1',     tags:['panini','2526'] },
+  { id:'calciatori-24-25', title:'Calciatori 2024/25',  editor:'Panini', season:'2024/25', total:655, href:'figubook-calciatori-2425.html', missingParam:'2425',    storageKey:'figubook-calciatori-2425-v1',     tags:['panini','2425'] },
+  { id:'calciatori-23-24', title:'Calciatori 2023/24',  editor:'Panini', season:'2023/24', total:686, href:'figubook-calciatori-2324.html', missingParam:'2324',    storageKey:'figubook-calciatori-2324-v1',     tags:['panini'] },
+  { id:'calciatori-22-23', title:'Calciatori 2022/23',  editor:'Panini', season:'2022/23', total:649, href:'figubook-calciatori-2223.html', missingParam:'2223',    storageKey:'figubook-calciatori-2223-v1',     tags:['panini'] },
+  { id:'mondiali-2026',    title:'FIFA World Cup 2026',  editor:'Panini', season:'2026',    total:992, href:'figubook-fwc2026.html',        missingParam:'fwc2026', storageKey:'figubook-fwc2026-v1',             tags:['panini','2526'] },
+  { id:'calb-25-26',       title:'Calciatori Serie B 2025/26', editor:'Panini', season:'2025/26', total:440, href:'figubook-serieb-2526.html', missingParam:'serieb', storageKey:'figubook-serieb-2526-v1',         tags:['panini','2526'] },
+  { id:'adrenalyn-25-26',  title:'Adrenalyn XL 2025/26', editor:'Panini', season:'2025/26', total:649, href:'figubook-adrenalyn-2526.html', missingParam:null,      storageKey:'figubook-adrenalyn-2526-v1',      tags:['panini','2526'] },
+  { id:'match-attax-ucl',  title:'Match Attax UCL 25/26',editor:'Topps',  season:'2025/26', total:584, href:'figubook-matchattax-2526.html',missingParam:null,      storageKey:'figubook-matchattax-ucl-2526-v1', tags:['topps','2526'] },
+];
+
+// Mappa albumId → totale (derivata dal catalogo, nessun numero a mano sciolto).
+const ALBUM_TOTALS = ALBUM_CATALOG.reduce(function (acc, a) {
+  acc[a.id] = a.total;
+  return acc;
+}, {});
+
+// Lookup veloce id → entry di catalogo.
+const ALBUM_BY_ID = ALBUM_CATALOG.reduce(function (acc, a) {
+  acc[a.id] = a;
+  return acc;
+}, {});
+
+window.ALBUM_CATALOG = ALBUM_CATALOG;
+window.ALBUM_BY_ID = ALBUM_BY_ID;
 
 (function () {
 
@@ -27,17 +55,32 @@ const ALBUM_TOTALS = {
     return window.FB.db.collection('users').doc(_uid()).collection('meta');
   }
 
-  // Calcola il totale carte di un album.
-  // TODO S3: collegare alla variabile dati reale (es. ALBUM_DATA, albumCards, ecc.)
-  // ed alla mappa albumId → variabile globale del file dati corrispondente.
-  // Per ora usa ALBUM_TOTALS come fonte primaria e le chiavi di states come fallback
-  // provvisorio (PROVVISORIO: sottostima se l'utente non ha ancora toccato tutte le carte).
+  // Calcola il totale carte di un album, incluse le speciali.
+  // Priorità:
+  //  1. Variabile dati LIVE: se il file dati dell'album corrente è caricato
+  //     (pagine album singolo / mancanti), window.STICKER_STATES contiene una
+  //     chiave per OGNI carta dell'album → è il conteggio reale e autorevole.
+  //     Lo usiamo solo se corrisponde all'album richiesto (via FB_STORAGE_KEY).
+  //  2. ALBUM_TOTALS (derivato dal catalogo, a sua volta contato dai file dati).
+  //  3. Fallback provvisorio: numero di chiavi negli states salvati su Firestore
+  //     (PROVVISORIO: sottostima finché l'utente non tocca tutte le carte).
   function _getAlbumTotal(albumId, states) {
+    // 1. Variabile dati live, se siamo sulla pagina di QUESTO album.
+    try {
+      if (typeof FB_STORAGE_KEY !== 'undefined' &&
+          window.STICKER_STATES &&
+          ALBUM_BY_ID[albumId] &&
+          ALBUM_BY_ID[albumId].storageKey === FB_STORAGE_KEY) {
+        return Object.keys(window.STICKER_STATES).length;
+      }
+    } catch (e) { /* FB_STORAGE_KEY non definita su questa pagina: ok */ }
+
+    // 2. Totale da catalogo.
     if (ALBUM_TOTALS[albumId] !== undefined) {
       return ALBUM_TOTALS[albumId];
     }
-    // Fallback provvisorio: conta le chiavi in states.
-    // PROVVISORIO — sostituire in S3 con il conteggio reale da album-data*.js.
+
+    // 3. Fallback provvisorio.
     return states ? Object.keys(states).length : 0;
   }
 

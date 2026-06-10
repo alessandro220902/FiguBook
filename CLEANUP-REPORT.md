@@ -319,3 +319,105 @@ Nessuna modifica — la pagina è la landing/login con solo React/Babel CDN e fi
 | `figubook-catalogo.js` | `// figubook-catalogo.js — S3` |
 | `figubook-album-single.js` | `// figubook-album-single.js — S3` |
 | `figubook-doubles.js` | **NON sovrascritto** — file esistente mantenuto |
+
+---
+
+# S3 — Collegamenti al data layer Firestore
+
+Sessione 3: ogni pagina è collegata a `window.FB` (firebase-init.js) e
+`window.DB` (figubook-db.js). Nessun localStorage/sessionStorage in alcun
+file `figubook-*.js` (verificato: solo occorrenze in commenti). Ogni pagina
+attende `window.FB.onReady(...)` prima di leggere/scrivere o aggiornare la UI.
+Nome utente sempre da `DB.getUserName()` / `DB.getUserInitial()`.
+
+## Infrastruttura condivisa (figubook-db.js)
+- Aggiunto `window.ALBUM_CATALOG` (fonte unica: id, title, editor, season,
+  total, href, missingParam, storageKey, tags) e `window.ALBUM_BY_ID`.
+- `ALBUM_TOTALS` ora derivato dal catalogo. I `total` sono stati **contati**
+  dai file `album-data*.js` (`Object.keys(STICKER_STATES).length`, che il file
+  dati popola con OGNI codice, incluse le speciali). Valori:
+  calciatori-25-26=784, 24-25=655, 23-24=686, 22-23=649, mondiali-2026=992,
+  calb-25-26=440, adrenalyn-25-26=649, match-attax-ucl=584.
+- `_getAlbumTotal` ricalcola il totale **live** dalla variabile dati
+  (`FB_STORAGE_KEY` + `window.STICKER_STATES`) quando il file dati dell'album
+  è caricato nella pagina; altrimenti usa `ALBUM_TOTALS`.
+
+## figubook-album-single.js
+(calciatori-2526/2425/2324/2223, fwc2026, serieb-2526, adrenalyn-2526, matchattax-2526)
+- **Costante condivisa** `KEY_TO_ALBUM_ID` (storage key → albumId Firestore).
+- AlbumId risolto leggendo il globale `FB_STORAGE_KEY` (scope lessicale del
+  file dati) via `typeof`.
+- Funzioni DB: `getAlbumData`, `saveCardState`, `resetAlbum`, `getUserInitial`.
+  Lettura nomi: doc `users/{uid}/albums/{albumId}` campo `names`.
+- Override runtime dei globali del file dati (NON editati): `window.saveAlbum`
+  (no-op localStorage → diff per-carta su Firestore), `window.resetAlbum`
+  (DB.resetAlbum + azzera globali + re-render).
+- **album-app.js reiniettato dinamicamente** (era stato rimosso in S2): viene
+  caricato DOPO il popolamento dei globali, così avvolge la nostra `saveAlbum`
+  e fa il primo render coi dati veri. Chiamato `window.renderAlbum()`.
+- ID DOM popolati: `#avatarBtn` (iniziale), `#pmEsci` (logout). Tutta la griglia
+  è renderizzata da album-app.js sui globali.
+- Persistenza nomi: merge diretto campo `names` (saveCardState non gestisce i nomi).
+
+## figubook-dashboard.js
+- Funzioni DB: `getEverHadAlbum`, `getUserName`, `getUserInitial`,
+  `getAllStats`, `getMyAlbums`, `getAlbumStats`.
+- ID popolati: `#greetingH1` (Benvenuto/Ciao + nome), `#avatarBtn`,
+  `#footerYear`, `#qstatFigurine`, `#qstatDoppie`, `#qstatMancanti`,
+  `#albumsScroller` (card reali), `#todoList` (suggerimenti reali o empty
+  compatto), `#activityRows` (riepilogo reale).
+- Empty state compatto se 0 album. Niente dati demo: nascosti
+  `#objectivesWrap`, `#missionCard`, `#badgesGrid` e la riga `.cols` di
+  grafico/sessioni (dati non disponibili lato dashboard); `#matchListContainer`
+  nascosto, `#matchEmptyMsg` mostrato.
+
+## figubook-album.js (lista "I miei album")
+- Funzioni DB: `getMyAlbums`, `getAllStats`, `getAlbumStats`, `addAlbum`
+  (via redirect al catalogo), `removeAlbum`, `getUserInitial`.
+- ID popolati (REALI, il report S2 aveva id obsoleti): `#avatarBtn`,
+  `#albumsGrid` (card), `#statFigurine`, `#statCompletati`, `#albumHeaderSub`,
+  contatori filtro in `#filterChips .chip[data-filter] .ct`.
+- Rimozione album dalla card (× → DB.removeAlbum + re-render). "Aggiungi album"
+  (`#addAlbumBtn`) → figubook-catalogo.html. Filtri (all/active/done/new/archived)
+  calcolati dai dati reali (archived sempre 0: nessun sistema d'archivio).
+- Empty state compatto con link al catalogo.
+
+## figubook-catalogo.js
+- Funzioni DB: `getMyAlbums`, `addAlbum`, `removeAlbum`, `getUserInitial`.
+- ID popolati: `#avatarBtn`, `#footerYear`, `#catGrid` (card da ALBUM_CATALOG),
+  filtri `#filterBar .filter-btn[data-f]`.
+- Ogni card mostra stato posseduto/non e bottone Aggiungi/Rimuovi → re-render.
+
+## figubook-mancanti.js
+- AlbumId risolto come album-single (`FB_STORAGE_KEY` + `KEY_TO_ALBUM_ID`).
+- Funzioni DB: `getAlbumData`, `saveCardState` (state 'have'), `getUserInitial`.
+- ID popolati: `#avatarBtn`, `#crumbAlbum`, `#totalMissing`, `#totalSquads`,
+  `#checkedToday`, `#missingWrap` (lista carte mancanti), ricerca `#searchEl`,
+  toggle `#groupChips .chip[data-group]`, copia `#copiaMancanti`.
+- "Trovata" → STICKER_STATES[code]='have' + DB.saveCardState + UI update.
+- Empty state compatto: "Album completo" quando non manca nulla.
+
+## figubook-scambia.js (hub + dettaglio)
+- Caricato sia da figubook-scambia.html sia da figubook-scambia-dettaglio.html
+  (rilevamento pagina via `#dealTitle`). Nessun file dettaglio separato.
+- Funzioni DB: `getUserInitial`.
+- ID popolati: `#avatarBtn`, `#pmEsci` (logout), `#cards` (empty state onesto),
+  contatori tab/chips azzerati (`#tabCountMatch/Received/Sent/Confirmed`,
+  `#ctAll/ctNearby/ctFriends`). Dettaglio: `<main>` → "Funzione in arrivo".
+- Rimosso ogni dato demo (Giada/Federico/… ) — nessun matching multi-utente ancora.
+
+## figubook-benvenuto.js (login/registrazione)
+- Unica pagina accessibile da non autenticati. `FB.onReady` → redirect a
+  dashboard se già loggato; redirect esplicito dopo login/registrazione.
+- Auth: `signInWithEmailAndPassword`, `createUserWithEmailAndPassword` +
+  `updateProfile({displayName})` + doc `users/{uid}/meta/profile`
+  `{displayName, username, ts}`, Google `signInWithPopup(GoogleAuthProvider)`.
+- Funzioni globali per gli handler inline dell'HTML: `window.handleSubmit`,
+  `window.handleGoogle`, `window.togglePass`, `window.updateRegisterEnabled`.
+- UI: `renderSlogan`/`buildDots`/`tick` (slogan rotante), `setMode` (tabs).
+- ID toccati: `#slogan`, `#slogCount`, `#slogDots`, `#tabs`, `#authTitle`,
+  `#authSub`, `.top-meta` (#topGoRegister/#topGoLogin), `#loginEmail`,
+  `#loginPassword`, `#loginError`, `#regUsername`, `#regEmail`, `#regPassword`,
+  `#regError`, `#registerBtn`, `#regTerms`.
+- Errori Firebase mappati in italiano (wrong-password, user-not-found,
+  invalid-credential, email-already-in-use, invalid-email, weak-password, …).
