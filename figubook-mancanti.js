@@ -5,27 +5,20 @@
 
 (function () {
 
-  const KEY_TO_ALBUM_ID = {
-    'figubook-calciatori-2526-v1':     'calciatori-25-26',
-    'figubook-calciatori-2425-v1':     'calciatori-24-25',
-    'figubook-calciatori-2324-v1':     'calciatori-23-24',
-    'figubook-calciatori-2223-v1':     'calciatori-22-23',
-    'figubook-fwc2026-v1':             'mondiali-2026',
-    'figubook-serieb-2526-v1':         'calb-25-26',
-    'figubook-adrenalyn-2526-v1':      'adrenalyn-25-26',
-    'figubook-matchattax-ucl-2526-v1': 'match-attax-ucl',
-  };
-
   function $(id) { return document.getElementById(id); }
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
     });
   }
-  function resolveStorageKey() {
-    try { if (typeof FB_STORAGE_KEY !== 'undefined' && FB_STORAGE_KEY) return FB_STORAGE_KEY; }
-    catch (e) {}
-    return null;
+  // Risolve l'albumId Firestore dal parametro ?album= dell'URL, tramite il
+  // missingParam del catalogo condiviso (window.ALBUM_CATALOG).
+  function resolveAlbumId() {
+    var p = new URLSearchParams(window.location.search).get('album') || '2526';
+    var entry = (window.ALBUM_CATALOG || []).find(function (a) {
+      return a.missingParam === p;
+    });
+    return entry ? entry.id : null;
   }
 
   let albumId = null;
@@ -139,8 +132,7 @@
     const av = $('avatarBtn');
     if (av) av.textContent = window.DB.getUserInitial();
 
-    const storageKey = resolveStorageKey();
-    albumId = storageKey ? KEY_TO_ALBUM_ID[storageKey] : null;
+    albumId = resolveAlbumId();
 
     // Intestazione album.
     const meta = albumId ? window.ALBUM_BY_ID[albumId] : null;
