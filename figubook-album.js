@@ -33,7 +33,7 @@
     div.dataset.status = status;
     div.dataset.tags = (meta.tags || []).join(',');
     const c1 = meta.c1 || '#2a2a2a', c2 = meta.c2 || '#1a1a1a';
-    div.style.cssText = 'position:relative;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);' +
+    div.style.cssText = 'position:relative;cursor:pointer;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);' +
       'background:linear-gradient(135deg, ' + c1 + ' 0%, ' + c2 + ' 100%);' +
       'border:1px solid rgba(0,0,0,.08);border-radius:18px;padding:18px';
     div.innerHTML =
@@ -51,6 +51,12 @@
         '<span>' + stats.have + ' / ' + stats.total + ' · ' + stats.doubles + ' doppie</span>' +
         '<span style="font-weight:700">' + stats.pct + '%</span>' +
       '</div>';
+    // Tutta la card è cliccabile, tranne la × di rimozione e il titolo <a>.
+    div.addEventListener('click', function (e) {
+      if (e.target.closest('.card-remove')) return; // la × rimuove, non apre
+      if (e.target.closest('a')) return;            // il titolo <a> naviga da solo
+      window.location.href = meta.href;
+    });
     return div;
   }
 
