@@ -26,6 +26,7 @@
     'figubook-calciatori-2324.html': 'calciatori-23-24',
     'figubook-calciatori-2223.html': 'calciatori-22-23',
     'figubook-fwc2026.html':         'mondiali-2026',
+    'figubook-fwc2022.html':         'mondiali-2022',
     'figubook-serieb-2526.html':     'calb-25-26',
     'figubook-adrenalyn-2526.html':  'adrenalyn-25-26',
     'figubook-matchattax-2526.html': 'match-attax-ucl',
