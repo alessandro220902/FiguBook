@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FiguBook — Tutti i doppioni</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#f4efe6; --bg-elev:#fbf8f1;
+    --ink:#14110d; --ink-2:#3a342a; --muted:#8a8275;
+    --line:#e3dccd; --line-strong:#14110d;
+    --accent:#c8ff3d; --accent-ink:#14110d;
+    --warn:#ff5b2e; --gold:#f5b800; --good:#1f8a5b;
+    --f-display:'Bricolage Grotesque', ui-sans-serif, system-ui;
+    --f-body:'Geist', ui-sans-serif, system-ui;
+    --f-mono:'Geist Mono', ui-monospace, Menlo, monospace;
+    --radius:14px; --radius-lg:22px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer}
+
+  /* NAV */
+  .nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb, var(--bg) 88%, transparent);backdrop-filter:blur(14px) saturate(140%);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:1480px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:28px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:-0.02em}
+  .brand-mark{width:32px;height:32px;border-radius:9px;background:var(--ink);color:var(--accent);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:18px;transform:rotate(-6deg)}
+  .nav-tabs{display:flex;gap:4px;flex:1;margin-left:12px}
+  .nav-tab{padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--ink-2);border:1px solid transparent}
+  .nav-tab.active{background:var(--ink);color:var(--bg)}
+  .nav-tab:hover:not(.active){background:rgba(20,17,13,0.06)}
+  .nav-actions{display:flex;align-items:center;gap:10px}
+  .icon-btn{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--bg-elev);display:grid;place-items:center;color:var(--ink);position:relative}
+  .icon-btn:hover{border-color:var(--ink)}
+  .icon-btn .dot{position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:99px;background:var(--warn);box-shadow:0 0 0 2px var(--bg-elev)}
+  .avatar{width:38px;height:38px;border-radius:999px;background:linear-gradient(135deg,#ffce5b,#ff5b2e);display:grid;place-items:center;font-family:var(--f-display);font-weight:700;color:#fff;font-size:14px;box-shadow:inset 0 0 0 2px var(--bg-elev), 0 0 0 1px var(--ink)}
+
+  /* ── Nav dropdowns — hidden by default, shown on .open ── */
+  .nav-dropdown{
+    position:absolute;top:calc(100% + 8px);right:0;min-width:320px;
+    background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius,14px);
+    box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:200;
+    opacity:0;pointer-events:none;transform:translateY(-4px) scale(.98);
+    transition:opacity .14s,transform .14s;overflow:hidden;
+  }
+  .nav-dropdown.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+  .search-panel{min-width:360px}
+  .profile-menu{
+    position:absolute;top:calc(100% + 10px);right:0;width:200px;
+    background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius,14px);
+    box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:200;
+    opacity:0;pointer-events:none;transform:translateY(-4px) scale(.98);
+    transition:opacity .14s,transform .14s;padding:4px 0;
+  }
+  .profile-menu.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+  .profile-menu-item{padding:9px 14px;font-size:13.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:9px;color:var(--ink-2)}
+  .profile-menu-item:hover{background:var(--bg);color:var(--ink)}
+  .profile-menu-item.danger:hover{color:var(--warn)}
+  .profile-menu-sep{height:1px;background:var(--line)}
+
+  /* ── Nav search panel internals ── */
+  .search-box{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+  .search-box input,.search-input{flex:1;width:100%;padding:12px 16px;border:0;border-bottom:1px solid var(--line);background:transparent;outline:none;font-family:inherit;font-size:14px;color:var(--ink);display:block}
+  .search-box input::placeholder,.search-input::placeholder{color:var(--muted)}
+  .search-results{max-height:320px;overflow-y:auto;padding:4px 0}
+  .search-result-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer}
+  .search-result-item:hover{background:var(--bg)}
+  .search-result-code{font-family:var(--f-mono,monospace);font-size:11px;background:var(--bg);padding:2px 6px;border-radius:5px;border:1px solid var(--line);color:var(--muted)}
+  .search-result-name{font-size:13.5px;font-weight:500;color:var(--ink)}
+  .search-result-album{font-size:11.5px;color:var(--muted)}
+  .search-empty{padding:16px;text-align:center;font-size:13px;color:var(--muted)}
+  .search-hints{padding:8px 12px 10px;display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line)}
+  .search-hint{padding:4px 10px;border-radius:99px;background:var(--bg);border:1px solid var(--line);font-size:12px;color:var(--ink-2);cursor:pointer}
+  .search-hint:hover{border-color:var(--ink)}
+
+  /* ── Notif panel internals ── */
+  .notif-head{padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+  .notif-head h3{font-family:var(--f-display,inherit);font-weight:700;font-size:16px;margin:0}
+  .mark-read-btn{font-size:12px;color:var(--muted);background:none;border:0;cursor:pointer;font-family:inherit}
+  .mark-read-btn:hover{color:var(--ink)}
+  .notif-list{max-height:340px;overflow-y:auto;padding:4px 0}
+  .notif-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;cursor:pointer;position:relative}
+  .notif-item:hover{background:var(--bg)}
+  .notif-item.unread{background:color-mix(in srgb, var(--accent) 8%, var(--bg-elev))}
+  .notif-dot{position:absolute;top:14px;left:6px;width:6px;height:6px;border-radius:99px;background:var(--warn)}
+  .notif-icon{width:32px;height:32px;border-radius:8px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;flex-shrink:0}
+  .notif-body{flex:1;min-width:0}
+  .notif-title{font-size:13px;font-weight:600;color:var(--ink);line-height:1.3}
+  .notif-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+  /* Page head */
+  .page-head{max-width:1480px;margin:0 auto;padding:24px 28px 0;display:flex;justify-content:space-between;gap:32px;align-items:flex-end;flex-wrap:wrap}
+  .crumb{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;display:flex;gap:6px;align-items:center}
+  .crumb .sep{opacity:.5}
+  .crumb a:hover{color:var(--ink)}
+  .page-head h1{font-family:var(--f-display);font-weight:700;font-size:46px;letter-spacing:-0.025em;margin:8px 0 0;line-height:1}
+  .page-head .sub{color:var(--muted);font-size:14px;margin-top:6px}
+
+  .head-stats{display:flex;gap:14px;flex-wrap:wrap}
+  .stat{background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:14px 20px;min-width:120px}
+  .stat .v{font-family:var(--f-display);font-weight:700;font-size:28px;line-height:1;letter-spacing:-0.02em}
+  .stat .l{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-top:4px}
+  .stat.warn .v{color:var(--warn)}
+
+  /* Toolbar */
+  .toolbar{
+    max-width:1480px;margin:22px auto 18px;padding:0 28px;
+    display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;
+  }
+  .search{
+    flex:1;min-width:240px;max-width:520px;
+    display:flex;align-items:center;gap:10px;
+    padding:10px 16px;border-radius:99px;
+    background:var(--bg-elev);border:1px solid var(--line);
+    color:var(--muted);
+  }
+  .search input{
+    flex:1;border:0;background:transparent;outline:none;
+    font-family:var(--f-body);font-size:14px;color:var(--ink);
+  }
+  .search input::placeholder{color:var(--muted)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{padding:7px 13px;border-radius:99px;background:var(--bg-elev);border:1px solid var(--line);font-size:13px;font-weight:500;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+  .chip.active{background:var(--ink);color:var(--bg-elev);border-color:var(--ink)}
+  .chip:hover:not(.active){border-color:var(--ink)}
+
+  /* Grid */
+  .wrap{max-width:1480px;margin:0 auto 60px;padding:0 28px}
+  .grid{
+    display:grid;grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));gap:12px;
+  }
+
+  .miss-card{
+    position:relative;overflow:hidden;
+    aspect-ratio:3/4;
+    border-radius:12px;
+    background:linear-gradient(180deg, var(--card-c1,#0a3a8b) 0%, color-mix(in srgb, var(--card-c1,#0a3a8b) 70%, #14110d) 100%);
+    color:#fff;
+    display:flex;flex-direction:column;justify-content:space-between;
+    padding:14px 14px 12px;
+    transition:transform .14s ease, box-shadow .14s ease;
+    cursor:pointer;
+  }
+  .miss-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 18px 36px -16px rgba(0,0,0,.4);
+  }
+  .miss-card::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(60% 90% at 100% 0%, rgba(255,255,255,.18), transparent 60%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0 2px, transparent 2px 12px);
+  }
+  .miss-card > *{position:relative;z-index:1}
+
+  .miss-card .team-line{
+    font-family:var(--f-mono);font-size:10.5px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.12em;
+    opacity:.95;line-height:1.2;
+  }
+  .miss-card .num{
+    font-family:var(--f-display);font-weight:800;
+    font-size:clamp(34px, 4vw, 48px);
+    letter-spacing:-0.03em;line-height:.9;
+    text-align:center;
+    margin-top:8px;
+  }
+  .miss-card .section-hint{
+    font-family:var(--f-mono);font-size:10px;
+    text-transform:uppercase;letter-spacing:0.08em;
+    opacity:.7;text-align:center;
+  }
+  .miss-card .found-btn{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    width:100%;padding:8px 10px;
+    border:0;border-radius:8px;
+    background:var(--good);color:#fff;
+    font-family:var(--f-body);font-size:12.5px;font-weight:700;
+    text-transform:uppercase;letter-spacing:0.06em;
+    cursor:pointer;
+    box-shadow:0 2px 8px -1px rgba(0,0,0,.25);
+    transition:filter .12s ease, transform .08s ease;
+  }
+  .miss-card .found-btn:hover{filter:brightness(1.12)}
+  .miss-card .found-btn:active{transform:scale(.96)}
+
+  /* When marked found (state transition) */
+  .miss-card.found{
+    animation:found-flash .6s ease forwards;
+  }
+  @keyframes found-flash{
+    0%   { transform:scale(1); }
+    30%  { transform:scale(1.08); box-shadow:0 0 0 8px color-mix(in srgb, var(--good) 35%, transparent); }
+    100% { transform:scale(0); opacity:0; height:0; padding:0; margin:0;
+           grid-row:span 0; }
+  }
+
+  /* Section grouping (optional, switchable via filters) */
+  .grouped-section{margin-bottom:30px}
+  .grouped-section .gh{
+    font-family:var(--f-mono);font-size:11px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);
+    margin:0 0 10px;display:flex;align-items:center;gap:8px;
+  }
+  .grouped-section .gh .ct{
+    font-family:var(--f-mono);font-size:10.5px;font-weight:700;
+    padding:2px 8px;border-radius:99px;
+    background:var(--bg-elev);border:1px solid var(--line);color:var(--ink-2);
+  }
+
+  /* Toast */
+  .toast{
+    position:fixed;bottom:24px;left:24px;z-index:200;
+    padding:10px 18px;border-radius:99px;
+    background:var(--ink);color:var(--accent);
+    font-family:var(--f-mono);font-size:12px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.08em;
+    opacity:0;transform:translateY(10px);pointer-events:none;
+    transition:opacity .22s ease, transform .22s ease;
+    box-shadow:0 14px 32px -12px rgba(0,0,0,.5);
+  }
+  .toast.show{opacity:1;transform:translateY(0)}
+
+  /* Variants */
+  body[data-variant="stadio"]{
+    --bg:#0d1b2a;--bg-elev:#152736;--ink:#f4efe6;--ink-2:#cfd9e3;--muted:#7e90a3;
+    --line:#22384a;--line-strong:#f4efe6;--accent:#ff7a3d;--accent-ink:#0d1b2a;
+    --warn:#ff5b2e;--gold:#ffd25b;--good:#4ade80;
+  }
+  body[data-variant="stadio"] .nav-tab.active{background:var(--accent);color:var(--ink)}
+  body[data-variant="streetwear"]{
+    --bg:#ece9e2;--bg-elev:#fefcf7;--ink:#0a0a0a;--ink-2:#2a2a2a;--muted:#7d7a72;
+    --line:#d8d4ca;--line-strong:#0a0a0a;--accent:#ff3df5;--accent-ink:#0a0a0a;
+    --warn:#ff5b2e;--gold:#0ea5e9;--good:#0a8d3a;--f-display:'Space Grotesk', ui-sans-serif;
+  }
+
+  /* Empty state */
+  .empty{padding:60px 28px;text-align:center;color:var(--muted);background:var(--bg-elev);border:1px dashed var(--line);border-radius:var(--radius-lg);max-width:1480px;margin:0 auto 60px}
+  .empty .ico{font-family:var(--f-display);font-size:48px;color:var(--muted);margin-bottom:8px}
+  .empty h3{font-family:var(--f-display);font-weight:700;font-size:20px;margin:0 0 6px;color:var(--ink)}
+  .empty p{margin:0;font-size:14px}
+
+  /* Disclaimer */
+  .disclaimer{max-width:1480px;margin:30px auto 80px;padding:20px 28px 0;font-family:var(--f-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;line-height:1.6;border-top:1px solid var(--line)}
+  html{background-color:#0d1b2a}
+
+  /* ── COPIA MANCANTI — SHARE MODAL ─────────────── */
+  .miss-share-backdrop{
+    position:fixed;inset:0;z-index:110;
+    background:rgba(20,17,13,.55);
+    backdrop-filter:blur(4px);
+    opacity:0;pointer-events:none;
+    transition:opacity .22s ease;
+  }
+  .miss-share-backdrop.open{opacity:1;pointer-events:auto}
+  .miss-share-modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.96);
+    z-index:120;
+    width:min(620px,92vw);
+    background:var(--bg-elev);border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    display:flex;flex-direction:column;overflow:hidden;
+    opacity:0;pointer-events:none;
+    transition:opacity .22s ease,transform .22s ease;
+    box-shadow:0 30px 80px -20px rgba(0,0,0,.5);
+  }
+  .miss-share-modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .miss-share-head{
+    padding:20px 24px;
+    display:flex;align-items:flex-start;justify-content:space-between;gap:18px;
+    border-bottom:1px solid var(--line);
+  }
+  .miss-share-head .eyebrow{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:4px}
+  .miss-share-head h2{font-family:var(--f-display);font-weight:700;font-size:20px;letter-spacing:-0.01em;margin:0;line-height:1.1}
+  .miss-share-close{width:34px;height:34px;border-radius:99px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink);cursor:pointer}
+  .miss-share-close:hover{border-color:var(--ink)}
+  .miss-share-text-box{
+    margin:18px 24px 8px;
+    padding:14px 16px;border-radius:12px;
+    background:var(--bg);border:1px solid var(--line);
+    font-family:var(--f-mono);font-size:12px;line-height:1.7;color:var(--ink);
+    white-space:pre-wrap;max-height:220px;overflow-y:auto;
+    scrollbar-width:thin;
+  }
+  .miss-share-actions{
+    display:grid;grid-template-columns:1fr 1fr;gap:8px;
+    padding:12px 24px 22px;
+  }
+  .miss-share-btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:11px 14px;border-radius:10px;
+    background:var(--bg);border:1px solid var(--line);
+    font-family:var(--f-body);font-size:13px;font-weight:600;color:var(--ink);
+    cursor:pointer;transition:border-color .12s ease,background .12s ease;
+    white-space:nowrap;
+  }
+  .miss-share-btn:hover{border-color:var(--ink);background:var(--bg-elev)}
+  .miss-share-btn.primary{background:var(--ink);color:var(--accent);border-color:var(--ink);grid-column:span 2}
+  .miss-share-btn.primary:hover{filter:brightness(1.1)}
+  .miss-share-btn.copied{background:var(--good);color:#fff;border-color:var(--good)}
+</style>
+</head>
+<body data-variant="stadio">
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="figubook-dashboard.html"><span class="brand-mark">F</span><span>FiguBook</span></a>
+    <div class="nav-tabs">
+      <a class="nav-tab" href="figubook-dashboard.html">Dashboard</a>
+      <a class="nav-tab active" href="figubook-album.html">Album</a>
+      <a class="nav-tab" href="figubook-scambia.html">Scambia</a>
+      <a class="nav-tab" href="#">Community</a>
+    </div>
+    <div class="nav-actions">
+      <!-- Cerca -->
+      <div style="position:relative">
+        <button class="icon-btn" id="searchBtn" aria-label="Cerca"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+        <div class="nav-dropdown search-panel" id="searchPanel">
+          <input class="search-input" id="searchInput" placeholder="Cerca numero carta o album..." autocomplete="off" />
+          <div class="search-hints">
+            <button class="search-hint" data-hint="carta">&#127183; Numero carta</button>
+            <button class="search-hint" data-hint="album">&#128218; Album</button>
+          </div>
+          <div class="search-results" id="searchResults"></div>
+        </div>
+      </div>
+      <!-- Messaggi -->
+      <div style="position:relative">
+        <button class="icon-btn" id="msgBtn" aria-label="Messaggi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button>
+      </div>
+      <!-- Notifiche -->
+      <div style="position:relative">
+        <button class="icon-btn" id="notifBtn" aria-label="Notifiche"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="dot" id="notifDot"></span></button>
+        <div class="nav-dropdown" id="notifPanel">
+          <div class="notif-head"><h4>Notifiche</h4><button class="mark-read" id="markReadBtn">Segna tutte lette</button></div>
+          <div class="notif-item unread" data-href="figubook-scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Marco</div><div class="info">3 &#8596; 3 figurine &middot; Calciatori 25/26 &middot; 4h fa</div></div><div class="notif-dot"></div></div>
+          <div class="notif-item unread" data-href="figubook-scambia.html"><div class="notif-ic">&#128260;</div><div class="notif-txt"><div class="nm">Proposta di scambio da Anna</div><div class="info">2 &#8596; 2 figurine &middot; Calciatori 25/26 &middot; 5h fa</div></div><div class="notif-dot"></div></div>
+          <div class="notif-item"><div class="notif-ic">&#9733;</div><div class="notif-txt"><div class="nm">Badge sbloccato: &ldquo;Reparto Difesa&rdquo;</div><div class="info">Calciatori 25/26 &middot; Ieri</div></div></div>
+        </div>
+      </div>
+      <!-- Profilo -->
+      <div style="position:relative">
+        <div class="avatar" id="avatarBtn" style="cursor:pointer">L</div>
+        <div class="profile-menu" id="profileMenu">
+          <div class="profile-menu-item" id="pmProfilo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>Il mio profilo</div>
+          <div class="profile-menu-sep"></div>
+          <div class="profile-menu-item" id="pmImpostazioni"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Impostazioni</div>
+          <div class="profile-menu-sep"></div>
+          <div class="profile-menu-item danger" id="pmEsci"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Esci</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="page-head">
+  <div>
+    <div class="crumb">
+      <a href="figubook-dashboard.html">Dashboard</a><span class="sep">/</span>
+      <a href="figubook-album.html">Album</a><span class="sep">/</span>
+      <a id="crumbAlbum" href="figubook-calciatori-2526.html">Calciatori 25-26</a><span class="sep">/</span>
+      <span style="color:var(--ink)">Tutti i doppioni</span>
+    </div>
+    <h1>Le mie doppie</h1>
+    <div class="sub" id="pageSubtitle">Tutte le figurine che hai in doppia in questo album, con quante copie extra hai di ciascuna.</div>
+  </div>
+  <div class="head-stats">
+    <div class="stat warn"><div class="v" id="totalMissing">716</div><div class="l">Doppie extra</div></div>
+    <div class="stat"><div class="v" id="totalSquads">20</div><div class="l">Squadre interessate</div></div>
+    <div class="stat"><div class="v" id="checkedToday">0</div><div class="l">Carte in doppia</div></div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="searchEl" type="text" placeholder="Cerca numero figurina o squadra (es. 220, Inter, STY3)…" />
+  </div>
+  <div class="chips" id="groupChips">
+    <button class="chip active" data-group="flat">Lista unica</button>
+    <button class="chip" data-group="bySection">Raggruppa per sezione</button>
+    <button class="chip" id="copiaMancanti" style="background:var(--ink);color:var(--bg-elev);border-color:var(--ink)">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+      Condividi doppie
+    </button>
+  </div>
+</div>
+
+<div class="wrap" id="missingWrap"></div>
+
+<div class="disclaimer">
+  Sito non affiliato con Panini S.p.A. — strumento personale di tracking della collezione e scambio fra utenti.
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- COPIA MANCANTI MODAL -->
+<div class="miss-share-backdrop" id="missShareBackdrop"></div>
+<div class="miss-share-modal" id="missShareModal" aria-hidden="true">
+  <div class="miss-share-head">
+    <div>
+      <div class="eyebrow">Le mie doppie</div>
+      <h2>Condividi doppie</h2>
+    </div>
+    <button class="miss-share-close" id="missShareClose" aria-label="Chiudi">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="miss-share-text-box" id="missShareTextBox"></div>
+  <div class="miss-share-actions">
+    <button class="miss-share-btn primary" id="missShareCopyBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      <span>Copia negli appunti</span>
+    </button>
+    <button class="miss-share-btn" id="missShareTxtBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span>Salva .txt</span>
+    </button>
+    <button class="miss-share-btn" id="missShareXlsxBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      <span>Salva .xlsx</span>
+    </button>
+    <button class="miss-share-btn" id="missShareWhatsappBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <span>WhatsApp Web</span>
+    </button>
+    <button class="miss-share-btn" id="missShareMailBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <span>Mail</span>
+    </button>
+  </div>
+</div>
+
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+
+<!-- Routing: carica il file dati corretto in base al parametro ?album= dell'URL -->
+<script>
+(function(){
+  var p = new URLSearchParams(window.location.search).get('album') || '2526';
+  var map = {
+    '2526':   'album-data.js',
+    '2425':   'album-data-2425.js',
+    '2324':   'album-data-2324.js',
+    '2223':   'album-data-2223.js',
+    'serieb': 'album-data-serieb-2526.js',
+    'fwc2026':'album-data-fwc2026.js',
+    'fwc2022':'album-data-fwc2022.js',
+    'adrenalyn2526': 'album-data-adrenalyn-2526.js',
+    'matchattax2526':'album-data-matchattax-2526.js'
+  };
+  document.write('\x3Cscript src="' + (map[p] || 'album-data.js') + '">\x3C\x2Fscript>');
+})();
+</script>
+
+<script>
+// TODO S3: ricostruire — funzioni: (routing breadcrumb), getAllMissing, matchesSearch,
+// renderStats, buildCard, markFound, render, getMissingText, openMissShareModal,
+// closeMissShareModal, initNavbar, buildSearchIndex, renderSearchResults,
+// updateNotifDot, openProfileMenu, closeAllPanels
+// ID DOM toccati: #crumbAlbum, #pageSubtitle, #totalMissing, #totalSquads, #checkedToday,
+// #missingWrap, #searchEl, #groupChips, #copiaMancanti, #missShareModal, #missShareBackdrop,
+// #missShareClose, #missShareTextBox, #missShareCopyBtn, #missShareTxtBtn,
+// #missShareXlsxBtn, #missShareWhatsappBtn, #missShareMailBtn,
+// #searchBtn, #searchPanel, #searchInput, #searchResults, #notifBtn, #notifPanel,
+// #markReadBtn, #notifDot, #avatarBtn, #profileMenu, #pmProfilo, #pmImpostazioni, #pmEsci,
+// #msgBtn, #toast
+</script>
+
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "variant": "stadio",
+  "fontDisplay": "Space Grotesk"
+}/*EDITMODE-END*/;
+const VARIANTS = ["pitch", "stadio", "streetwear"];
+function App(){
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  React.useEffect(() => { document.body.dataset.variant = t.variant; }, [t.variant]);
+  React.useEffect(() => { document.documentElement.style.setProperty('--f-display', `'${t.fontDisplay}', ui-sans-serif`); }, [t.fontDisplay]);
+  return (
+    <TweaksPanel title="Tweaks">
+      <TweakSection label="Stile" />
+      <TweakRadio label="Variante" value={t.variant} options={VARIANTS} onChange={(v) => setTweak('variant', v)} />
+      <TweakSelect label="Font display" value={t.fontDisplay} options={['Bricolage Grotesque', 'Space Grotesk', 'Instrument Serif', 'Geist']} onChange={(v) => setTweak('fontDisplay', v)} />
+    </TweaksPanel>
+  );
+}
+const mount = document.createElement('div');
+document.body.appendChild(mount);
+ReactDOM.createRoot(mount).render(<App />);
+</script>
+
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script src="figubook-db.js"></script>
+<script src="figubook-doppioni.js"></script>
+</body>
+</html>
