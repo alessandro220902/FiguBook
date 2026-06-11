@@ -131,6 +131,7 @@
   window.FB.onReady(async function () {
     const av = $('avatarBtn');
     if (av) av.textContent = window.DB.getUserInitial();
+    window.DB.wireProfileMenu();
 
     albumId = resolveAlbumId();
 

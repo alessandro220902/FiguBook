@@ -10,6 +10,7 @@
   function setAvatar() {
     const av = $('avatarBtn');
     if (av) av.textContent = window.DB.getUserInitial();
+    window.DB.wireProfileMenu();
     const out = $('pmEsci');
     if (out) out.addEventListener('click', function () {
       window.FB.auth.signOut().then(function () { window.location.href = 'figubook-benvenuto.html'; });

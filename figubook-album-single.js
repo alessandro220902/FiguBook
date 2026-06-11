@@ -99,6 +99,7 @@
   function initNavbar() {
     const av = document.getElementById('avatarBtn');
     if (av) av.textContent = window.DB.getUserInitial();
+    window.DB.wireProfileMenu();
     const out = document.getElementById('pmEsci');
     if (out) out.addEventListener('click', function () {
       window.FB.auth.signOut().then(function () {

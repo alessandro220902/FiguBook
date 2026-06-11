@@ -225,11 +225,33 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     return snap.data().everHadAlbum === true;
   }
 
+  // ── Navbar: menu profilo condiviso ───────────────────────────────────────
+  // Aggancia l'apertura/chiusura di #profileMenu al click su #avatarBtn.
+  // Idempotente: non aggancia due volte sulla stessa pagina.
+  function wireProfileMenu() {
+    const avatar = document.getElementById('avatarBtn');
+    const menu = document.getElementById('profileMenu');
+    if (!avatar || !menu) return;
+    if (avatar.dataset.menuWired === '1') return;
+    avatar.dataset.menuWired = '1';
+
+    avatar.addEventListener('click', function (e) {
+      e.stopPropagation();
+      menu.classList.toggle('open');
+    });
+
+    document.addEventListener('click', function (e) {
+      if (avatar.contains(e.target) || menu.contains(e.target)) return;
+      menu.classList.remove('open');
+    });
+  }
+
   // ── Esposizione pubblica ─────────────────────────────────────────────────
 
   window.DB = {
     getUserName,
     getUserInitial,
+    wireProfileMenu,
 
     getMyAlbums,
     addAlbum,

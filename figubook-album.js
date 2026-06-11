@@ -79,6 +79,7 @@
     const grid = $('albumsGrid');
     const av = $('avatarBtn');
     if (av) av.textContent = window.DB.getUserInitial();
+    window.DB.wireProfileMenu();
 
     let ids = [];
     try { ids = await window.DB.getMyAlbums(); } catch (e) {}

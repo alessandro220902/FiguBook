@@ -57,6 +57,7 @@
     }
     const av = $('avatarBtn');
     if (av) av.textContent = window.DB.getUserInitial();
+    window.DB.wireProfileMenu();
 
     const fy = $('footerYear');
     if (fy) fy.textContent = new Date().getFullYear();
