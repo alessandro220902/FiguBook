@@ -49,15 +49,15 @@
   }
 
   function cardHtml(item) {
-    return '<div class="miss-card" data-code="' + esc(item.code) + '" ' +
-      'style="background:var(--card,#fff);border:1px solid rgba(0,0,0,.08);border-radius:14px;' +
-      'padding:12px;display:flex;align-items:center;gap:10px">' +
-      '<span style="font-family:var(--f-mono,monospace);font-weight:700;min-width:42px">' + esc(item.code) + '</span>' +
-      '<span style="flex:1;font-size:13px;color:var(--muted)">' +
-        (item.name ? esc(item.name) : esc(item.section.short || item.section.name)) + '</span>' +
-      '<button class="miss-found" style="border:none;cursor:pointer;border-radius:9px;padding:7px 12px;' +
-        'font-weight:600;font-size:13px;background:linear-gradient(90deg,#1f8a5b,#0a3a8b);color:#fff">Trovata</button>' +
-      '</div>';
+    var c1 = (item.section && item.section.c1) ? item.section.c1 : '#0a3a8b';
+    var team = esc(item.section.short || item.section.name || '');
+    var name = item.name ? esc(item.name) : '';
+    return '<div class="miss-card" data-code="' + esc(item.code) + '" style="--card-c1:' + c1 + '">' +
+      '<div class="team-line">' + team + '</div>' +
+      '<div><div class="num">' + esc(item.code) + '</div>' +
+      '<div class="section-hint">' + name + '</div></div>' +
+      '<button class="found-btn">Trovata</button>' +
+    '</div>';
   }
 
   function renderStats() {
@@ -84,7 +84,7 @@
     }
 
     if (!grouped) {
-      wrap.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px">' +
+      wrap.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">' +
         list.map(cardHtml).join('') + '</div>';
     } else {
       // Raggruppa per sezione.
@@ -97,7 +97,7 @@
         return '<div style="margin-bottom:18px">' +
           '<h3 style="font-size:14px;margin:0 0 8px">' + esc(g.sec.name) +
             ' <span style="color:var(--muted);font-weight:400">(' + g.items.length + ')</span></h3>' +
-          '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px">' +
+          '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">' +
           g.items.map(cardHtml).join('') + '</div></div>';
       }).join('');
     }
@@ -105,7 +105,7 @@
     // Wire "Trovata".
     wrap.querySelectorAll('.miss-card').forEach(function (card) {
       const code = card.dataset.code;
-      const btn = card.querySelector('.miss-found');
+      const btn = card.querySelector('.found-btn');
       if (btn) btn.addEventListener('click', async function () {
         window.STICKER_STATES[code] = 'have';
         foundToday++;
