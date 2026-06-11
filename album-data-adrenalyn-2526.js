@@ -288,20 +288,6 @@ window.albumStats = function(){
 
 const FB_STORAGE_KEY = 'figubook-adrenalyn-2526-v1';
 
-(function loadFromStorage(){
-  try {
-    const raw = localStorage.getItem(FB_STORAGE_KEY);
-    if (!raw) return;
-    const saved = JSON.parse(raw);
-    if (saved && typeof saved === 'object'){
-      if (saved.states) for (const c in saved.states) { if (c in window.STICKER_STATES) window.STICKER_STATES[c] = saved.states[c]; }
-      if (saved.counts) for (const c in saved.counts) { if (c in window.STICKER_STATES) window.STICKER_COUNTS[c] = saved.counts[c]; }
-      if (saved.names) Object.assign(window.STICKER_NAMES, saved.names);
-    }
-  } catch(e) {}
-})();
 
-window.saveAlbum = function(){
-  try { localStorage.setItem(FB_STORAGE_KEY, JSON.stringify({v:1,states:window.STICKER_STATES,counts:window.STICKER_COUNTS,names:window.STICKER_NAMES,ts:Date.now()})); } catch(e) {}
-};
-window.resetAlbum = function(){ try { localStorage.removeItem(FB_STORAGE_KEY); } catch(e) {} location.reload(); };
+window.saveAlbum = function(){ /* persistenza gestita da Firestore, vedi figubook-db.js */ };
+window.resetAlbum = function(){ /* reset gestito da figubook-album-single.js via Firestore */ };

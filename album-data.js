@@ -84,43 +84,6 @@ window.albumStats = function(){
 // così le modifiche sopravvivono ai refresh.
 const FB_STORAGE_KEY = 'figubook-calciatori-2526-v1';
 
-(function loadFromStorage(){
-  try {
-    const raw = localStorage.getItem(FB_STORAGE_KEY);
-    if (!raw) return;
-    const saved = JSON.parse(raw);
-    if (saved && typeof saved === 'object'){
-      if (saved.states && typeof saved.states === 'object'){
-        // Override only keys that exist in the current data set
-        for (const code in saved.states){
-          if (code in window.STICKER_STATES) window.STICKER_STATES[code] = saved.states[code];
-        }
-      }
-      if (saved.counts && typeof saved.counts === 'object'){
-        for (const code in saved.counts){
-          if (code in window.STICKER_STATES) window.STICKER_COUNTS[code] = saved.counts[code];
-        }
-      }
-      if (saved.names && typeof saved.names === 'object'){
-        Object.assign(window.STICKER_NAMES, saved.names);
-      }
-    }
-  } catch(e){ console.warn('FiguBook: errore nel ripristino dello stato', e); }
-})();
+window.saveAlbum = function(){ /* persistenza gestita da Firestore, vedi figubook-db.js */ };
 
-window.saveAlbum = function(){
-  try {
-    localStorage.setItem(FB_STORAGE_KEY, JSON.stringify({
-      v: 1,
-      states: window.STICKER_STATES,
-      counts: window.STICKER_COUNTS,
-      names: window.STICKER_NAMES,
-      ts: Date.now()
-    }));
-  } catch(e){ console.warn('FiguBook: errore nel salvataggio', e); }
-};
-
-window.resetAlbum = function(){
-  try { localStorage.removeItem(FB_STORAGE_KEY); } catch(e){}
-  location.reload();
-};
+window.resetAlbum = function(){ /* reset gestito da figubook-album-single.js via Firestore */ };
