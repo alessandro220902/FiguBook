@@ -173,11 +173,30 @@
       });
     });
 
-    // Copia mancanti.
-    const copyBtn = $('copiaMancanti');
-    if (copyBtn) copyBtn.addEventListener('click', function () {
-      const text = buildMissingText();
-      if (navigator.clipboard) navigator.clipboard.writeText(text).catch(function () {});
+    // ── Condividi mancanti ──
+    function showToast(msg){ var t=$('toast'); if(!t)return; t.textContent=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},1800); }
+    function downloadBlob(text, filename, mime){ var b=new Blob([text],{type:mime}); var u=URL.createObjectURL(b); var a=document.createElement('a'); a.href=u; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u); }
+    function openShare(){ var box=$('missShareTextBox'); if(box) box.textContent=buildMissingText(); var m=$('missShareModal'),bk=$('missShareBackdrop'); if(m)m.classList.add('open'); if(bk)bk.classList.add('open'); }
+    function closeShare(){ var m=$('missShareModal'),bk=$('missShareBackdrop'); if(m)m.classList.remove('open'); if(bk)bk.classList.remove('open'); }
+
+    if ($('copiaMancanti')) $('copiaMancanti').addEventListener('click', openShare);
+    if ($('missShareClose')) $('missShareClose').addEventListener('click', closeShare);
+    if ($('missShareBackdrop')) $('missShareBackdrop').addEventListener('click', closeShare);
+
+    if ($('missShareCopyBtn')) $('missShareCopyBtn').addEventListener('click', function(){
+      if (navigator.clipboard) navigator.clipboard.writeText(buildMissingText()).then(function(){ showToast('Copiato negli appunti'); }).catch(function(){});
+    });
+    if ($('missShareTxtBtn')) $('missShareTxtBtn').addEventListener('click', function(){ downloadBlob(buildMissingText(), 'mancanti.txt', 'text/plain'); });
+    if ($('missShareXlsxBtn')) $('missShareXlsxBtn').addEventListener('click', function(){
+      if (!window.XLSX) return;
+      var rows = [['Codice','Nome','Sezione']].concat(missingList().map(function(i){ return [i.code, i.name||'', i.section.name]; }));
+      var ws = XLSX.utils.aoa_to_sheet(rows); var wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Mancanti'); XLSX.writeFile(wb, 'mancanti.xlsx');
+    });
+    if ($('missShareWhatsappBtn')) $('missShareWhatsappBtn').addEventListener('click', function(){ window.open('https://wa.me/?text=' + encodeURIComponent(buildMissingText()), '_blank'); });
+    if ($('missShareMailBtn')) $('missShareMailBtn').addEventListener('click', function(){
+      var meta = window.ALBUM_BY_ID[albumId]; var subj = 'Figurine mancanti' + (meta ? ' — ' + meta.title : '');
+      window.location.href = 'mailto:?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(buildMissingText());
     });
 
     render();
