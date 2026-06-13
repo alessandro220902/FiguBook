@@ -151,6 +151,83 @@
     openOverlay((t.displayName || 'Collezionista') + ' · album in comune', body);
   }
 
+  function openProposeOverlay(uid) {
+    var t = (state.trades || []).find(function (x) { return x.uid === uid; });
+    if (!t || !t.perAlbum.length) { toast('Nessuno scambio possibile'); return; }
+    state.prop = { uid: uid, displayName: t.displayName, albumIdx: 0, sel: {} };
+    // sel: { albumId: { receive:{code:true}, give:{code:true} } }
+    t.perAlbum.forEach(function (a) { state.prop.sel[a.albumId] = { receive: {}, give: {} }; });
+    renderProposeOverlay();
+  }
+
+  function renderProposeOverlay() {
+    var t = (state.trades || []).find(function (x) { return x.uid === state.prop.uid; });
+    if (!t) return;
+    var a = t.perAlbum[state.prop.albumIdx];
+    var sel = state.prop.sel[a.albumId];
+
+    // selettore album (se più di uno)
+    var albumSel = t.perAlbum.length > 1
+      ? '<select id="propAlbum" style="width:100%;margin-bottom:14px;padding:10px 12px;border-radius:10px;background:var(--bg);border:1px solid var(--line);color:var(--ink);font-size:14px">' +
+        t.perAlbum.map(function (p, i) { return '<option value="' + i + '"' + (i === state.prop.albumIdx ? ' selected' : '') + '>' + esc(albumName(p.albumId)) + '</option>'; }).join('') + '</select>'
+      : '<div style="font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:14px">' + esc(albumName(a.albumId)) + '</div>';
+
+    function col(side, arr, title, color) {
+      var items = arr.map(function (c) {
+        var on = !!sel[side][c];
+        return '<label class="prop-item" data-side="' + side + '" data-code="' + esc(c) + '" style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;cursor:pointer;margin-bottom:4px;background:' + (on ? 'color-mix(in srgb,var(--good) 16%,var(--bg))' : 'var(--bg)') + '">' +
+          '<input type="checkbox"' + (on ? ' checked' : '') + ' style="width:auto" />' +
+          '<span style="font-family:var(--f-mono);font-size:13px;font-weight:600">' + esc(c) + '</span></label>';
+      }).join('');
+      return '<div style="flex:1 1 220px"><div style="font-size:13px;color:' + color + ';margin-bottom:8px;font-weight:600">' + title + '</div>' + (items || '<div style="font-size:12px;color:var(--muted)">Niente qui</div>') + '</div>';
+    }
+
+    var nRec = Object.keys(sel.receive).length;
+    var nGive = Object.keys(sel.give).length;
+    var balance = nRec === nGive ? '<span style="color:var(--good)">⚖ scambio pari</span>' : '<span style="color:var(--warn)">⚠ stai dando ' + (nGive - nRec > 0 ? (nGive - nRec) + ' in più' : (nRec - nGive) + ' in meno') + '</span>';
+
+    var body =
+      albumSel +
+      '<div style="display:flex;gap:20px;flex-wrap:wrap">' +
+        col('receive', a.receive, '↙ Prendi da ' + esc(t.displayName || 'lui') + ' (sue doppie che ti mancano)', 'var(--good)') +
+        '<div style="flex:1 1 220px"><div style="font-size:12px;color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,var(--bg));padding:8px 10px;border-radius:8px;margin-bottom:8px">💡 Queste servono a ' + esc(t.displayName || 'lui') + ' per ' + esc(albumName(a.albumId)) + '. Scegli quali dare.</div>' +
+        col('give', a.give, '↗ Dai a ' + esc(t.displayName || 'lui'), 'var(--warn)').replace('<div style="flex:1 1 220px">', '<div>') + '</div>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">' +
+        '<div style="font-size:14px">Ricevi <b>' + nRec + '</b> · Dai <b>' + nGive + '</b> · ' + balance + '</div>' +
+        '<button id="propSend" style="padding:10px 18px;border:0;border-radius:99px;background:var(--accent);color:var(--accent-ink,#0d1b2a);font-weight:600;font-size:14px;cursor:pointer">Invia proposta</button>' +
+      '</div>';
+
+    openOverlay('Proponi scambio a ' + (t.displayName || 'Collezionista'), body);
+
+    var asel = $('propAlbum');
+    if (asel) asel.addEventListener('change', function () { state.prop.albumIdx = parseInt(asel.value, 10); renderProposeOverlay(); });
+    document.querySelectorAll('.prop-item').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        var side = el.dataset.side, code = el.dataset.code;
+        if (sel[side][code]) delete sel[side][code]; else sel[side][code] = true;
+        renderProposeOverlay();
+      });
+    });
+    var send = $('propSend');
+    if (send) send.addEventListener('click', doSendProposal);
+  }
+
+  async function doSendProposal() {
+    var t = (state.trades || []).find(function (x) { return x.uid === state.prop.uid; });
+    var a = t.perAlbum[state.prop.albumIdx];
+    var sel = state.prop.sel[a.albumId];
+    var receive = Object.keys(sel.receive);
+    var give = Object.keys(sel.give);
+    if (!receive.length && !give.length) { toast('Seleziona almeno una carta'); return; }
+    try {
+      await window.DB.createProposal(state.prop.uid, state.activeId, a.albumId, give, receive);
+      closeOverlay();
+      toast('Proposta inviata');
+    } catch (e) { console.error(e); toast('Errore nell\'invio'); }
+  }
+
   async function renderMatches(groupId) {
     const ma = $('matchArea');
     if (!ma) return;
@@ -183,7 +260,7 @@
       b.addEventListener('click', function () { openAlbumsPopup(b.dataset.uid); });
     });
     document.querySelectorAll('.js-propose').forEach(function (b) {
-      b.addEventListener('click', function () { toast('Il flusso di proposta arriva nel prossimo passo'); });
+      b.addEventListener('click', function () { openProposeOverlay(b.dataset.uid); });
     });
   }
 
