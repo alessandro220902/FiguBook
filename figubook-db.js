@@ -473,6 +473,49 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     await window.FB.db.collection('proposals').doc(proposalId).update({ status: 'rejected', lastActionBy: _uid(), updatedAt: Date.now() });
   }
 
+  // ── Feedback e profili pubblici ──────────────────────────────────────────
+
+  // Una recensione sola per scambio: id ancorato a proposta + valutatore.
+  async function leaveFeedback(proposalId, ratedUid, rating, comment) {
+    const uid = _uid();
+    const db = window.FB.db;
+    const fid = proposalId + '__' + uid;
+    await db.collection('users').doc(ratedUid).collection('feedback').doc(fid).set({
+      fromUid: uid,
+      proposalId: proposalId,
+      rating: rating,
+      comment: comment || '',
+      at: Date.now()
+    });
+    // aggiorna il contatore scambi completati nel profilo pubblico del valutato
+    await db.collection('publicProfiles').doc(ratedUid).set({
+      completedTrades: firebase.firestore.FieldValue.increment(1)
+    }, { merge: true });
+  }
+
+  // Feedback di un utente (per media e reputazione).
+  async function getFeedback(uid) {
+    const snap = await window.FB.db.collection('users').doc(uid).collection('feedback').get();
+    const list = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+    let avg = 0;
+    if (list.length) avg = list.reduce(function (s, f) { return s + (f.rating || 0); }, 0) / list.length;
+    return { list: list, count: list.length, avg: avg };
+  }
+
+  // Profilo pubblico (per nome/colore/scambi nelle card).
+  async function getPublicProfile(uid) {
+    const snap = await window.FB.db.collection('publicProfiles').doc(uid).get();
+    return snap.exists ? Object.assign({ uid: uid }, snap.data()) : { uid: uid };
+  }
+
+  // Salva/aggiorna il MIO profilo pubblico (chiamato al login/onboarding).
+  async function setMyPublicProfile(data) {
+    await window.FB.db.collection('publicProfiles').doc(_uid()).set(
+      Object.assign({ displayName: getUserName() }, data || {}),
+      { merge: true }
+    );
+  }
+
   // ── Esposizione pubblica ─────────────────────────────────────────────────
 
   window.DB = {
@@ -509,7 +552,12 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     getMyProposals,
     reviseProposal,
     acceptProposal,
-    rejectProposal
+    rejectProposal,
+
+    leaveFeedback,
+    getFeedback,
+    getPublicProfile,
+    setMyPublicProfile
   };
 
 })();
