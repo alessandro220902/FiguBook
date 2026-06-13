@@ -325,7 +325,7 @@
 
     var uid = window.FB.auth.currentUser.uid;
     var props = (state.proposalsCache || []).filter(function (p) {
-      return p.groupId === groupId && p.status !== 'rejected' && p.status !== 'completed';
+      return p.groupId === groupId && p.status !== 'rejected' && p.status !== 'completed' && p.status !== 'cancelled';
     });
     function propsWith(otherUid) {
       return props.filter(function (p) { return p.fromUid === otherUid || p.toUid === otherUid; });
@@ -341,9 +341,15 @@
       var myProps = propsWith(t.uid);
       var badge = '';
       if (myProps.length) {
+        var nIncoming = myProps.filter(function (p) { return p.toUid === uid; }).length;
+        var nOutgoing = myProps.length - nIncoming;
+        var label;
+        if (nIncoming && !nOutgoing) label = nIncoming + (nIncoming === 1 ? ' proposta ricevuta' : ' proposte ricevute');
+        else if (nOutgoing && !nIncoming) label = nOutgoing + (nOutgoing === 1 ? ' proposta inviata' : ' proposte inviate');
+        else label = myProps.length + ' proposte';
         badge =
           '<div style="display:flex;align-items:center;gap:8px;margin:14px 0 10px"><span style="flex:1;height:1px;background:var(--line)"></span>' +
-          '<span style="font-size:11px;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);padding:3px 10px;border-radius:99px">🔔 ' + myProps.length + (myProps.length === 1 ? ' proposta in arrivo' : ' proposte in arrivo') + '</span>' +
+          '<span style="font-size:11px;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);padding:3px 10px;border-radius:99px">🔔 ' + label + '</span>' +
           '<span style="flex:1;height:1px;background:var(--line)"></span></div>' +
           '<button class="js-viewprops" data-uid="' + esc(t.uid) + '" style="width:100%;padding:9px;border:1px solid var(--accent);border-radius:10px;background:transparent;color:var(--accent);font-size:13px;font-weight:600;cursor:pointer">Visualizza proposta</button>';
       }
@@ -375,7 +381,7 @@
   function openProposalsOverlay(otherUid) {
     var uid = window.FB.auth.currentUser.uid;
     var props = (state.proposalsCache || []).filter(function (p) {
-      return p.groupId === state.activeId && p.status !== 'rejected' && p.status !== 'completed' && (p.fromUid === otherUid || p.toUid === otherUid);
+      return p.groupId === state.activeId && p.status !== 'rejected' && p.status !== 'completed' && p.status !== 'cancelled' && (p.fromUid === otherUid || p.toUid === otherUid);
     });
     if (!props.length) { toast('Nessuna proposta'); return; }
     var owned = {};
@@ -401,6 +407,10 @@
           '<button class="ov-accept" data-id="' + esc(p.id) + '" style="flex:1;padding:8px;border:0;border-radius:99px;background:var(--good);color:#fff;font-weight:600;font-size:13px;cursor:pointer">Accetta</button>' +
           '<button class="ov-revise" data-id="' + esc(p.id) + '" data-uid="' + esc(otherUid) + '" style="flex:1;padding:8px;border:1px solid var(--line);border-radius:99px;background:var(--bg);color:var(--ink);font-weight:600;font-size:13px;cursor:pointer">Modifica</button>' +
           '<button class="ov-reject" data-id="' + esc(p.id) + '" style="flex:1;padding:8px;border:1px solid var(--line);border-radius:99px;background:var(--bg);color:var(--warn);font-weight:600;font-size:13px;cursor:pointer">Rifiuta</button>';
+      } else if (!incoming && p.status === 'pending') {
+        actions =
+          '<button class="ov-revise" data-id="' + esc(p.id) + '" data-uid="' + esc(otherUid) + '" style="flex:1;padding:8px;border:1px solid var(--line);border-radius:99px;background:var(--bg);color:var(--ink);font-weight:600;font-size:13px;cursor:pointer">Modifica</button>' +
+          '<button class="ov-cancel" data-id="' + esc(p.id) + '" style="flex:1;padding:8px;border:1px solid var(--line);border-radius:99px;background:var(--bg);color:var(--warn);font-weight:600;font-size:13px;cursor:pointer">Annulla</button>';
       } else if (p.status === 'accepted') {
         var iConfirmed = (p.confirmedBy || []).indexOf(uid) >= 0;
         actions = iConfirmed ? '<span style="font-size:13px;color:var(--muted)">In attesa dell\'altro</span>' : '<button class="ov-accept" data-id="' + esc(p.id) + '" style="flex:1;padding:8px;border:0;border-radius:99px;background:var(--good);color:#fff;font-weight:600;font-size:13px;cursor:pointer">Conferma scambio</button>';
@@ -437,6 +447,12 @@
         var iGive = p.toUid === u ? p.receive : p.give;
         closeOverlay();
         openReviseOverlay(p.id, b.dataset.uid, p.albumId, iGive, iGet);
+      });
+    });
+    document.querySelectorAll('.ov-cancel').forEach(function (b) {
+      b.addEventListener('click', async function () {
+        try { await window.DB.cancelProposal(b.dataset.id); closeOverlay(); toast('Proposta annullata'); reload(); }
+        catch (e) { console.error(e); toast('Errore'); }
       });
     });
   }

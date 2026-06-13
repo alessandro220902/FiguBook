@@ -473,6 +473,12 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     await window.FB.db.collection('proposals').doc(proposalId).update({ status: 'rejected', lastActionBy: _uid(), updatedAt: Date.now() });
   }
 
+  async function cancelProposal(proposalId) {
+    await window.FB.db.collection('proposals').doc(proposalId).update({
+      status: 'cancelled', lastActionBy: _uid(), updatedAt: Date.now()
+    });
+  }
+
   // ── Feedback e profili pubblici ──────────────────────────────────────────
 
   // Una recensione sola per scambio: id ancorato a proposta + valutatore.
@@ -553,6 +559,7 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     reviseProposal,
     acceptProposal,
     rejectProposal,
+    cancelProposal,
 
     leaveFeedback,
     getFeedback,
