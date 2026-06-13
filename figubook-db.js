@@ -412,6 +412,67 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     return out;
   }
 
+  // ── Proposte di scambio ──────────────────────────────────────────────────
+
+  async function createProposal(toUid, groupId, albumId, give, receive) {
+    const uid = _uid();
+    const db = window.FB.db;
+    const ref = db.collection('proposals').doc();
+    await ref.set({
+      participants: [uid, toUid],
+      fromUid: uid,
+      toUid: toUid,
+      groupId: groupId,
+      albumId: albumId,
+      give: give || [],
+      receive: receive || [],
+      status: 'pending',
+      confirmedBy: [],
+      lastActionBy: uid,
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    });
+    await ref.collection('revisions').doc('0').set({ by: uid, give: give || [], receive: receive || [], at: Date.now() });
+    return { proposalId: ref.id };
+  }
+
+  async function getMyProposals() {
+    const uid = _uid();
+    const snap = await window.FB.db.collection('proposals').where('participants', 'array-contains', uid).get();
+    return snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+  }
+
+  async function reviseProposal(proposalId, give, receive) {
+    const uid = _uid();
+    const db = window.FB.db;
+    const ref = db.collection('proposals').doc(proposalId);
+    const snap = await ref.get();
+    if (!snap.exists) throw new Error('Proposta inesistente');
+    const revs = await ref.collection('revisions').get();
+    const n = String(revs.size);
+    await ref.collection('revisions').doc(n).set({ by: uid, give: give || [], receive: receive || [], at: Date.now() });
+    // chi rimanda inverte i lati: il suo "give" diventa il give della proposta
+    await ref.update({ give: give || [], receive: receive || [], status: 'pending', confirmedBy: [], lastActionBy: uid, updatedAt: Date.now() });
+  }
+
+  async function acceptProposal(proposalId) {
+    const uid = _uid();
+    const db = window.FB.db;
+    const ref = db.collection('proposals').doc(proposalId);
+    const snap = await ref.get();
+    if (!snap.exists) throw new Error('Proposta inesistente');
+    const data = snap.data();
+    const confirmed = (data.confirmedBy || []).slice();
+    if (confirmed.indexOf(uid) < 0) confirmed.push(uid);
+    const everyone = (data.participants || []).every(function (p) { return confirmed.indexOf(p) >= 0; });
+    await ref.update({ confirmedBy: confirmed, status: everyone ? 'completed' : 'accepted', lastActionBy: uid, updatedAt: Date.now() });
+    return { completed: everyone };
+  }
+
+  async function rejectProposal(proposalId) {
+    await window.FB.db.collection('proposals').doc(proposalId).update({ status: 'rejected', lastActionBy: _uid(), updatedAt: Date.now() });
+  }
+
   // ── Esposizione pubblica ─────────────────────────────────────────────────
 
   window.DB = {
@@ -442,7 +503,13 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
 
     getGroupInventories,
     getMyInventory,
-    getPossibleTrades
+    getPossibleTrades,
+
+    createProposal,
+    getMyProposals,
+    reviseProposal,
+    acceptProposal,
+    rejectProposal
   };
 
 })();
