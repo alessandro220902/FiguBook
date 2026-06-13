@@ -17,6 +17,7 @@
     const av = $('avatarBtn');
     if (av) av.textContent = window.DB.getUserInitial();
     window.DB.wireProfileMenu();
+    window.DB.wireNotifications();
     const out = $('pmEsci');
     if (out) out.addEventListener('click', function () {
       window.FB.auth.signOut().then(function () { window.location.href = 'figubook-benvenuto.html'; });
@@ -410,7 +411,7 @@
       } else if (!incoming && p.status === 'pending') {
         actions =
           '<button class="ov-revise" data-id="' + esc(p.id) + '" data-uid="' + esc(otherUid) + '" style="flex:1;padding:8px;border:1px solid var(--line);border-radius:99px;background:var(--bg);color:var(--ink);font-weight:600;font-size:13px;cursor:pointer">Modifica</button>' +
-          '<button class="ov-cancel" data-id="' + esc(p.id) + '" style="flex:1;padding:8px;border:1px solid var(--line);border-radius:99px;background:var(--bg);color:var(--warn);font-weight:600;font-size:13px;cursor:pointer">Annulla</button>';
+          '<button class="ov-cancel" data-id="' + esc(p.id) + '" style="flex:1;padding:8px;border:1px solid var(--line);border-radius:99px;background:var(--bg);color:var(--warn);font-weight:600;font-size:13px;cursor:pointer">Annulla proposta</button>';
       } else if (p.status === 'accepted') {
         var iConfirmed = (p.confirmedBy || []).indexOf(uid) >= 0;
         actions = iConfirmed ? '<span style="font-size:13px;color:var(--muted)">In attesa dell\'altro</span>' : '<button class="ov-accept" data-id="' + esc(p.id) + '" style="flex:1;padding:8px;border:0;border-radius:99px;background:var(--good);color:#fff;font-weight:600;font-size:13px;cursor:pointer">Conferma scambio</button>';

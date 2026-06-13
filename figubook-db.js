@@ -284,6 +284,50 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     });
   }
 
+  async function getIncomingProposals() {
+    try {
+      const uid = _uid();
+      const snap = await window.FB.db.collection('proposals').where('participants', 'array-contains', uid).get();
+      return snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); })
+        .filter(function (p) { return p.toUid === uid && p.status === 'pending'; });
+    } catch (e) { console.error(e); return []; }
+  }
+
+  async function wireNotifications() {
+    const btn = document.getElementById('notifBtn');
+    const panel = document.getElementById('notifPanel');
+    if (!btn || !panel) return;
+    if (btn.dataset.wired) return; btn.dataset.wired = '1';
+
+    btn.addEventListener('click', function (e) { e.stopPropagation(); panel.classList.toggle('open'); });
+    document.addEventListener('click', function (e) { if (!panel.contains(e.target) && e.target !== btn) panel.classList.remove('open'); });
+
+    let props = [];
+    try { props = await getIncomingProposals(); } catch (e) {}
+
+    // nomi dei mittenti dai profili pubblici
+    const names = {};
+    await Promise.all(props.map(async function (p) {
+      if (names[p.fromUid]) return;
+      try { const pr = await getPublicProfile(p.fromUid); names[p.fromUid] = pr.displayName || 'Un collezionista'; }
+      catch (e) { names[p.fromUid] = 'Un collezionista'; }
+    }));
+
+    const dot = document.getElementById('notifDot');
+    const head = '<div class="notif-head"><h4>Notifiche</h4></div>';
+    if (!props.length) {
+      panel.innerHTML = head + '<div class="notif-item"><div class="notif-ic">ℹ️</div><div class="notif-txt"><div class="nm">Nessuna notifica</div><div class="info">Le proposte di scambio appariranno qui</div></div></div>';
+      if (dot) dot.style.display = 'none';
+      return;
+    }
+    if (dot) dot.style.display = '';
+    panel.innerHTML = head + props.map(function (p) {
+      const nm = names[p.fromUid] || 'Un collezionista';
+      const album = (window.ALBUM_BY_ID && window.ALBUM_BY_ID[p.albumId] && window.ALBUM_BY_ID[p.albumId].title) ? window.ALBUM_BY_ID[p.albumId].title : p.albumId;
+      return '<a href="figubook-scambia.html" style="text-decoration:none;color:inherit"><div class="notif-item unread"><div class="notif-ic">🔄</div><div class="notif-txt"><div class="nm">1 proposta ricevuta da ' + (nm.replace(/[<>&]/g,'')) + '</div><div class="info">' + (String(album).replace(/[<>&]/g,'')) + ' · tocca per aprire</div></div></div></a>';
+    }).join('');
+  }
+
   // ── Gruppi di scambio ────────────────────────────────────────────────────
 
   // Genera un codice invito di 5 caratteri (helper interno, non esportato).
@@ -528,6 +572,8 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     getUserName,
     getUserInitial,
     wireProfileMenu,
+    getIncomingProposals,
+    wireNotifications,
 
     getMyAlbums,
     addAlbum,

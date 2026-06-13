@@ -80,6 +80,7 @@
     const av = $('avatarBtn');
     if (av) av.textContent = window.DB.getUserInitial();
     window.DB.wireProfileMenu();
+    window.DB.wireNotifications();
 
     let ids = [];
     try { ids = await window.DB.getMyAlbums(); } catch (e) {}
