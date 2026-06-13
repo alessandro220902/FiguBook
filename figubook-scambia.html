@@ -527,61 +527,7 @@
   </div>
 </nav>
 
-<div class="page-head">
-  <div>
-    <div class="crumb"><a href="figubook-dashboard.html">Dashboard</a><span class="sep">/</span><span style="color:var(--ink)">Scambia</span></div>
-    <h1>Scambia</h1>
-    <div class="sub">Le tue proposte, in arrivo e in uscita. Le doppie non si sprecano.</div>
-    <div style="margin-top:14px">
-      <button class="btn-new" id="newProposeTop">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-        Nuova proposta
-      </button>
-    </div>
-  </div>
-  <div class="strip-stats">
-    <div class="stat"><span class="big" id="statVicini"><span class="pulse-dot" id="pulseDot" style="display:none"></span><span id="viciniCount">0</span></span><span class="lbl">Vicini in zona</span></div>
-    <div class="stat"><span class="big">0</span><span class="lbl">Match pronti</span></div>
-    <div class="stat"><span class="big">0</span><span class="lbl">Scambi completati</span></div>
-  </div>
-</div>
-
-<!-- ALBUM CHIPS -->
-<div class="albums-strip">
-  <div class="ah">
-    <span>Filtra per album</span>
-    <span class="ln"></span>
-  </div>
-  <div class="album-chips" id="albumChips"></div>
-</div>
-
-<!-- TAB BAR -->
-<div class="tab-bar" id="tabBar">
-  <button class="tab-btn active" data-tab="match">Match consigliati <span class="count" id="tabCountMatch">0</span></button>
-  <button class="tab-btn" data-tab="received">Ricevute <span class="count" id="tabCountReceived">0</span></button>
-  <button class="tab-btn" data-tab="sent">Inviate <span class="count" id="tabCountSent">0</span></button>
-  <button class="tab-btn" data-tab="confirmed">Confermati <span class="count" id="tabCountConfirmed">0</span></button>
-</div>
-
-<div class="filter-row">
-  <div class="chips" id="chips">
-    <button class="chip active" data-filter="all">Tutti <span class="ct" id="ctAll"></span></button>
-    <button class="chip" data-filter="nearby">Vicini a me <span class="ct" id="ctNearby"></span></button>
-    <button class="chip" data-filter="friends">Solo amici <span class="ct" id="ctFriends"></span></button>
-  </div>
-  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-    <button class="sort">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
-      Ordina: Più recenti
-    </button>
-    <button class="btn-new" id="newPropose">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-      Nuova proposta
-    </button>
-  </div>
-</div>
-
-<div class="cards" id="cards"></div>
+<div class="cards" id="scambiaRoot"></div>
 
 <div class="disclaimer">
   Lo scambio fra utenti avviene di persona. FiguBook non interviene nel trasferimento dei beni. Verifica sempre l'identità del tuo interlocutore prima di incontrarvi.
