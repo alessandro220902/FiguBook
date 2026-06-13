@@ -115,49 +115,75 @@
     renderMatches(active.id);
   }
 
+  function albumName(id) {
+    return (window.ALBUM_BY_ID && window.ALBUM_BY_ID[id] && window.ALBUM_BY_ID[id].title) ? window.ALBUM_BY_ID[id].title : id;
+  }
+  function chips(arr, max) {
+    max = max || 12;
+    return arr.slice(0, max).map(function (c) { return '<span style="font-family:var(--f-mono);font-size:12px;background:var(--bg);padding:2px 7px;border-radius:6px;margin:0 4px 4px 0;display:inline-block">' + esc(c) + '</span>'; }).join('') + (arr.length > max ? ' <span style="font-size:12px;color:var(--muted)">+' + (arr.length - max) + '</span>' : '');
+  }
+  function closeOverlay() { var o = $('fbOverlay'); if (o) o.remove(); }
+  function openOverlay(title, bodyHtml) {
+    closeOverlay();
+    var w = document.createElement('div');
+    w.id = 'fbOverlay';
+    w.style.cssText = 'position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55)';
+    w.innerHTML = '<div style="background:var(--bg-elev);border:1px solid var(--line);border-radius:16px;max-width:580px;width:100%;max-height:85vh;overflow:auto">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg-elev)">' +
+      '<div style="font-family:var(--f-display);font-weight:700;font-size:17px">' + esc(title) + '</div>' +
+      '<button id="fbOverlayClose" style="width:32px;height:32px;border-radius:99px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer">✕</button></div>' +
+      '<div style="padding:20px">' + bodyHtml + '</div></div>';
+    document.body.appendChild(w);
+    w.addEventListener('click', function (e) { if (e.target === w) closeOverlay(); });
+    var c = $('fbOverlayClose'); if (c) c.addEventListener('click', closeOverlay);
+  }
+  function openAlbumsPopup(uid) {
+    var t = (state.trades || []).find(function (x) { return x.uid === uid; });
+    if (!t) return;
+    var body = t.perAlbum.map(function (a) {
+      return '<div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line)">' +
+        '<div style="font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px">' + esc(albumName(a.albumId)) + '</div>' +
+        '<div style="display:flex;gap:20px;flex-wrap:wrap">' +
+          '<div style="flex:1 1 200px"><div style="font-size:13px;color:var(--good);margin-bottom:6px">↙ Ha <b>' + a.receive.length + '</b> carte che ti mancano</div>' + chips(a.receive) + '</div>' +
+          '<div style="flex:1 1 200px"><div style="font-size:13px;color:var(--warn);margin-bottom:6px">↗ Hai <b>' + a.give.length + '</b> carte che gli servono</div>' + chips(a.give) + '</div>' +
+        '</div></div>';
+    }).join('');
+    openOverlay((t.displayName || 'Collezionista') + ' · album in comune', body);
+  }
+
   async function renderMatches(groupId) {
     const ma = $('matchArea');
     if (!ma) return;
     let trades = [];
     try { trades = await window.DB.getPossibleTrades(groupId); }
     catch (e) { console.error(e); ma.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">Errore nel calcolo scambi.</div>'; return; }
+    state.trades = trades;
 
     if (!trades.length) {
       ma.innerHTML = '<div style="padding:40px 24px;text-align:center;color:var(--muted)"><div style="font-size:30px;margin-bottom:8px">🔄</div><div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px">Ancora nessuno scambio possibile</div><div style="font-size:13px;max-width:380px;margin:0 auto">Invita i tuoi amici col codice qui sopra. Appena segnano le loro doppie, gli scambi reciproci appaiono qui.</div></div>';
       return;
     }
 
-    function chips(arr) {
-      return arr.slice(0, 8).map(function (c) { return '<span style="font-family:var(--f-mono);font-size:12px;background:var(--bg);padding:2px 7px;border-radius:6px;margin-right:4px;display:inline-block;margin-bottom:4px">' + esc(c) + '</span>'; }).join('') + (arr.length > 8 ? ' <span style="font-size:12px;color:var(--muted)">+' + (arr.length - 8) + '</span>' : '');
-    }
-    function albumName(id) {
-      return (window.ALBUM_BY_ID && window.ALBUM_BY_ID[id] && window.ALBUM_BY_ID[id].title) ? window.ALBUM_BY_ID[id].title : id;
-    }
-
-    ma.innerHTML = trades.map(function (t) {
+    const cards = trades.map(function (t) {
       const initial = (t.displayName || '?').trim().charAt(0).toUpperCase();
-      const albumsHtml = t.perAlbum.map(function (a) {
-        return '<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">' +
-          '<div style="font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px">' + esc(albumName(a.albumId)) + '</div>' +
-          '<div style="display:flex;gap:24px;flex-wrap:wrap">' +
-            '<div style="flex:1 1 200px"><div style="font-size:13px;color:var(--good);margin-bottom:6px">↙ Ha <b>' + a.receive.length + '</b> carte che ti mancano</div>' + chips(a.receive) + '</div>' +
-            '<div style="flex:1 1 200px"><div style="font-size:13px;color:var(--warn);margin-bottom:6px">↗ Hai <b>' + a.give.length + '</b> carte che gli servono</div>' + chips(a.give) + '</div>' +
-          '</div>' +
-        '</div>';
-      }).join('');
-      return '<div style="background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px">' +
-        '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
-          '<div style="display:flex;align-items:center;gap:12px">' +
-            '<div style="width:42px;height:42px;border-radius:99px;background:linear-gradient(135deg,var(--accent),#7a5ae0);display:grid;place-items:center;color:#fff;font-weight:700">' + esc(initial) + '</div>' +
-            '<div><div style="font-weight:600;font-size:15px">' + esc(t.displayName || 'Collezionista') + '</div><div style="font-size:13px;color:var(--muted)">' + t.perAlbum.length + ' album in comune</div></div>' +
-          '</div>' +
-          '<button class="js-propose" data-uid="' + esc(t.uid) + '" style="padding:9px 16px;border:0;border-radius:99px;background:var(--accent);color:var(--accent-ink,#0d1b2a);font-weight:600;font-size:14px;cursor:pointer">Proponi scambio</button>' +
-        '</div>' + albumsHtml +
+      return '<div style="background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:16px">' +
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">' +
+          '<div style="width:40px;height:40px;border-radius:99px;background:linear-gradient(135deg,var(--accent),#7a5ae0);display:grid;place-items:center;color:#fff;font-weight:700;flex-shrink:0">' + esc(initial) + '</div>' +
+          '<div style="min-width:0"><div style="font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(t.displayName || 'Collezionista') + '</div>' +
+          '<div style="font-size:12px;color:var(--muted)"><span style="color:var(--good)">↙ ' + t.totReceive + '</span> · <span style="color:var(--warn)">↗ ' + t.totGive + '</span></div></div>' +
+        '</div>' +
+        '<button class="js-albums" data-uid="' + esc(t.uid) + '" style="width:100%;margin-bottom:8px;padding:9px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:13px;font-weight:600;cursor:pointer">' + t.perAlbum.length + ' album in comune</button>' +
+        '<button class="js-propose" data-uid="' + esc(t.uid) + '" style="width:100%;padding:9px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink,#0d1b2a);font-size:13px;font-weight:600;cursor:pointer">Proponi scambio</button>' +
       '</div>';
     }).join('');
 
+    ma.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px">' + cards + '</div>';
+
+    document.querySelectorAll('.js-albums').forEach(function (b) {
+      b.addEventListener('click', function () { openAlbumsPopup(b.dataset.uid); });
+    });
     document.querySelectorAll('.js-propose').forEach(function (b) {
-      b.addEventListener('click', function () { toast('Il flusso di proposta arriva nella prossima tappa'); });
+      b.addEventListener('click', function () { toast('Il flusso di proposta arriva nel prossimo passo'); });
     });
   }
 
