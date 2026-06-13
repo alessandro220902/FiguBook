@@ -348,6 +348,70 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     return snap.docs.map(function (d) { return Object.assign({ uid: d.id }, d.data()); });
   }
 
+  // ── Calcolo match di scambio ─────────────────────────────────────────────
+
+  // Tutte le bacheche di un gruppo (escluso me).
+  async function getGroupInventories(groupId) {
+    const uid = _uid();
+    const snap = await window.FB.db.collection('groups').doc(groupId).collection('inventory').get();
+    return snap.docs
+      .filter(function (d) { return d.id !== uid; })
+      .map(function (d) { return Object.assign({ uid: d.id }, d.data()); });
+  }
+
+  // La mia bacheca (owned/doubles per ogni album).
+  async function getMyInventory(groupId) {
+    const snap = await window.FB.db.collection('groups').doc(groupId).collection('inventory').doc(_uid()).get();
+    return snap.exists ? snap.data() : { albums: {} };
+  }
+
+  // Match con UN membro su UN album.
+  // ricevo = sue doppie che non possiedo; do = mie doppie che lui non possiede.
+  function _matchOnAlbum(mine, theirs) {
+    const myOwned = (mine && mine.owned) || [];
+    const myDoubles = (mine && mine.doubles) || [];
+    const thOwned = (theirs && theirs.owned) || [];
+    const thDoubles = (theirs && theirs.doubles) || [];
+    const myOwnedSet = {}; myOwned.forEach(function (c) { myOwnedSet[c] = 1; });
+    const thOwnedSet = {}; thOwned.forEach(function (c) { thOwnedSet[c] = 1; });
+    const receive = thDoubles.filter(function (c) { return !myOwnedSet[c]; });
+    const give = myDoubles.filter(function (c) { return !thOwnedSet[c]; });
+    return { receive: receive, give: give };
+  }
+
+  // Match completo con un membro su TUTTI gli album in comune.
+  function _matchMember(myInv, memberInv) {
+    const myAlbums = (myInv && myInv.albums) || {};
+    const memAlbums = (memberInv && memberInv.albums) || {};
+    const perAlbum = [];
+    let totReceive = 0, totGive = 0;
+    Object.keys(myAlbums).forEach(function (albumId) {
+      if (!memAlbums[albumId]) return; // album non in comune
+      const m = _matchOnAlbum(myAlbums[albumId], memAlbums[albumId]);
+      if (m.receive.length || m.give.length) {
+        perAlbum.push({ albumId: albumId, receive: m.receive, give: m.give });
+        totReceive += m.receive.length;
+        totGive += m.give.length;
+      }
+    });
+    return { perAlbum: perAlbum, totReceive: totReceive, totGive: totGive };
+  }
+
+  // "Scambi possibili" del gruppo: membri con cui ricevo>0 E do>0, ordinati per match migliore.
+  async function getPossibleTrades(groupId) {
+    const myInv = await getMyInventory(groupId);
+    const others = await getGroupInventories(groupId);
+    const out = [];
+    others.forEach(function (m) {
+      const r = _matchMember(myInv, m);
+      if (r.totReceive > 0 && r.totGive > 0) {
+        out.push({ uid: m.uid, displayName: m.displayName || 'Collezionista', perAlbum: r.perAlbum, totReceive: r.totReceive, totGive: r.totGive });
+      }
+    });
+    out.sort(function (a, b) { return (b.totReceive + b.totGive) - (a.totReceive + a.totGive); });
+    return out;
+  }
+
   // ── Esposizione pubblica ─────────────────────────────────────────────────
 
   window.DB = {
@@ -374,7 +438,11 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     joinGroup,
     leaveGroup,
     myGroups,
-    groupMembers
+    groupMembers,
+
+    getGroupInventories,
+    getMyInventory,
+    getPossibleTrades
   };
 
 })();
