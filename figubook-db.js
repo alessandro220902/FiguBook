@@ -299,7 +299,7 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     if (!btn || !panel) return;
     if (btn.dataset.wired) return; btn.dataset.wired = '1';
 
-    btn.addEventListener('click', function (e) { e.stopPropagation(); panel.classList.toggle('open'); });
+    btn.addEventListener('click', function (e) { e.stopPropagation(); panel.classList.toggle('open'); var d = document.getElementById('notifDot'); if (d) d.style.display = 'none'; });
     document.addEventListener('click', function (e) { if (!panel.contains(e.target) && e.target !== btn) panel.classList.remove('open'); });
 
     let props = [];
