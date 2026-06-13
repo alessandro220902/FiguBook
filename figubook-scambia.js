@@ -101,6 +101,7 @@
         '<div style="font-family:var(--f-mono);font-size:24px;font-weight:700;letter-spacing:0.12em;margin-top:4px">' + esc(code) + '</div></div>' +
         '<button id="grpCopyCode" style="padding:9px 16px;border:0;border-radius:99px;background:var(--accent);color:var(--accent-ink,#0d1b2a);font-weight:600;font-size:13px;cursor:pointer">Copia e invita</button>' +
       '</div>' +
+      '<div id="proposalsBox" style="margin-bottom:18px"></div>' +
       '<div id="matchArea"><div style="padding:30px;text-align:center;color:var(--muted);font-size:13px">Calcolo scambi…</div></div>';
 
     const sel = $('grpSel');
@@ -113,6 +114,7 @@
     });
 
     renderMatches(active.id);
+    renderProposals(root);
   }
 
   function albumName(id) {
@@ -226,6 +228,68 @@
       closeOverlay();
       toast('Proposta inviata');
     } catch (e) { console.error(e); toast('Errore nell\'invio'); }
+  }
+
+  async function renderProposals(root) {
+    var box = $('proposalsBox');
+    if (!box) return;
+    var list = [];
+    try { list = await window.DB.getMyProposals(); }
+    catch (e) { console.error(e); return; }
+    var uid = window.FB.auth.currentUser.uid;
+    // mostra solo quelle attive del gruppo corrente
+    list = list.filter(function (p) { return p.groupId === state.activeId && p.status !== 'rejected' && p.status !== 'completed'; });
+    if (!list.length) { box.innerHTML = ''; return; }
+
+    box.innerHTML = '<div style="font-family:var(--f-display);font-weight:700;font-size:16px;margin:0 0 12px">Proposte</div>' +
+      list.map(function (p) {
+        var incoming = p.toUid === uid;
+        var who = incoming ? 'Ricevuta' : 'Inviata';
+        var youReceive = incoming ? p.receive : p.give;   // se ricevo io, "ricevo" = il loro give? gestiamo dal mio punto di vista
+        // dal punto di vista di chi guarda:
+        var iGet = incoming ? p.give : p.receive;   // chi riceve la proposta: il proponente "dà" p.give -> io ricevo p.give
+        var iGive = incoming ? p.receive : p.give;
+        var statusLbl = p.status === 'accepted' ? 'In attesa di conferma' : (incoming ? 'Da rispondere' : 'In attesa di risposta');
+        var actions = '';
+        if (incoming && p.status === 'pending') {
+          actions =
+            '<button class="js-accept" data-id="' + esc(p.id) + '" style="padding:8px 14px;border:0;border-radius:99px;background:var(--good);color:#fff;font-weight:600;font-size:13px;cursor:pointer">Accetta</button>' +
+            '<button class="js-revise" data-id="' + esc(p.id) + '" data-uid="' + esc(incoming ? p.fromUid : p.toUid) + '" style="padding:8px 14px;border:1px solid var(--line);border-radius:99px;background:var(--bg);color:var(--ink);font-weight:600;font-size:13px;cursor:pointer">Modifica</button>' +
+            '<button class="js-reject" data-id="' + esc(p.id) + '" style="padding:8px 14px;border:1px solid var(--line);border-radius:99px;background:var(--bg);color:var(--warn);font-weight:600;font-size:13px;cursor:pointer">Rifiuta</button>';
+        } else if (p.status === 'accepted') {
+          // l'altro ha accettato: posso confermare a mia volta
+          var iConfirmed = (p.confirmedBy || []).indexOf(uid) >= 0;
+          if (!iConfirmed) actions = '<button class="js-accept" data-id="' + esc(p.id) + '" style="padding:8px 14px;border:0;border-radius:99px;background:var(--good);color:#fff;font-weight:600;font-size:13px;cursor:pointer">Conferma scambio</button>';
+          else actions = '<span style="font-size:13px;color:var(--muted)">In attesa dell\'altro</span>';
+        }
+        return '<div style="background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">' +
+            '<div style="font-size:14px;font-weight:600">' + who + ' · ' + esc(albumName(p.albumId)) + '</div>' +
+            '<div style="font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">' + statusLbl + '</div>' +
+          '</div>' +
+          '<div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:' + (actions ? '12px' : '0') + '">' +
+            '<div><div style="font-size:12px;color:var(--good);margin-bottom:4px">Ricevi ' + iGet.length + '</div>' + chips(iGet, 10) + '</div>' +
+            '<div><div style="font-size:12px;color:var(--warn);margin-bottom:4px">Dai ' + iGive.length + '</div>' + chips(iGive, 10) + '</div>' +
+          '</div>' +
+          (actions ? '<div style="display:flex;gap:8px;flex-wrap:wrap">' + actions + '</div>' : '') +
+        '</div>';
+      }).join('');
+
+    document.querySelectorAll('.js-accept').forEach(function (b) {
+      b.addEventListener('click', async function () {
+        try { var r = await window.DB.acceptProposal(b.dataset.id); toast(r.completed ? 'Scambio completato!' : 'Accettato'); reload(); }
+        catch (e) { console.error(e); toast('Errore'); }
+      });
+    });
+    document.querySelectorAll('.js-reject').forEach(function (b) {
+      b.addEventListener('click', async function () {
+        try { await window.DB.rejectProposal(b.dataset.id); toast('Rifiutata'); reload(); }
+        catch (e) { console.error(e); toast('Errore'); }
+      });
+    });
+    document.querySelectorAll('.js-revise').forEach(function (b) {
+      b.addEventListener('click', function () { toast('La modifica della proposta arriva a breve'); });
+    });
   }
 
   async function renderMatches(groupId) {
