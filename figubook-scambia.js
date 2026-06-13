@@ -123,36 +123,36 @@
     catch (e) { console.error(e); ma.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">Errore nel calcolo scambi.</div>'; return; }
 
     if (!trades.length) {
-      ma.innerHTML =
-        '<div style="padding:40px 24px;text-align:center;color:var(--muted)">' +
-          '<div style="font-size:30px;margin-bottom:8px">🔄</div>' +
-          '<div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px">Ancora nessuno scambio possibile</div>' +
-          '<div style="font-size:13px;max-width:380px;margin:0 auto">Invita i tuoi amici col codice qui sopra. Appena segnano le loro doppie, gli scambi reciproci appaiono qui.</div>' +
-        '</div>';
+      ma.innerHTML = '<div style="padding:40px 24px;text-align:center;color:var(--muted)"><div style="font-size:30px;margin-bottom:8px">🔄</div><div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px">Ancora nessuno scambio possibile</div><div style="font-size:13px;max-width:380px;margin:0 auto">Invita i tuoi amici col codice qui sopra. Appena segnano le loro doppie, gli scambi reciproci appaiono qui.</div></div>';
       return;
+    }
+
+    function chips(arr) {
+      return arr.slice(0, 8).map(function (c) { return '<span style="font-family:var(--f-mono);font-size:12px;background:var(--bg);padding:2px 7px;border-radius:6px;margin-right:4px;display:inline-block;margin-bottom:4px">' + esc(c) + '</span>'; }).join('') + (arr.length > 8 ? ' <span style="font-size:12px;color:var(--muted)">+' + (arr.length - 8) + '</span>' : '');
+    }
+    function albumName(id) {
+      return (window.ALBUM_BY_ID && window.ALBUM_BY_ID[id] && window.ALBUM_BY_ID[id].title) ? window.ALBUM_BY_ID[id].title : id;
     }
 
     ma.innerHTML = trades.map(function (t) {
       const initial = (t.displayName || '?').trim().charAt(0).toUpperCase();
-      const chip = function (arr) {
-        return arr.slice(0, 5).map(function (c) { return '<span style="font-family:var(--f-mono);font-size:12px;background:var(--bg);padding:2px 7px;border-radius:6px;margin-right:4px">' + esc(c) + '</span>'; }).join('') + (arr.length > 5 ? ' <span style="font-size:12px;color:var(--muted)">+' + (arr.length - 5) + '</span>' : '');
-      };
-      const allReceive = [];
-      const allGive = [];
-      t.perAlbum.forEach(function (a) { a.receive.forEach(function (c) { allReceive.push(c); }); a.give.forEach(function (c) { allGive.push(c); }); });
+      const albumsHtml = t.perAlbum.map(function (a) {
+        return '<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">' +
+          '<div style="font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px">' + esc(albumName(a.albumId)) + '</div>' +
+          '<div style="display:flex;gap:24px;flex-wrap:wrap">' +
+            '<div style="flex:1 1 200px"><div style="font-size:13px;color:var(--good);margin-bottom:6px">↙ Ha <b>' + a.receive.length + '</b> carte che ti mancano</div>' + chips(a.receive) + '</div>' +
+            '<div style="flex:1 1 200px"><div style="font-size:13px;color:var(--warn);margin-bottom:6px">↗ Hai <b>' + a.give.length + '</b> carte che gli servono</div>' + chips(a.give) + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
       return '<div style="background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
           '<div style="display:flex;align-items:center;gap:12px">' +
             '<div style="width:42px;height:42px;border-radius:99px;background:linear-gradient(135deg,var(--accent),#7a5ae0);display:grid;place-items:center;color:#fff;font-weight:700">' + esc(initial) + '</div>' +
-            '<div><div style="font-weight:600;font-size:15px">' + esc(t.displayName || 'Collezionista') + '</div>' +
-            '<div style="font-size:13px;color:var(--muted)">nel tuo gruppo</div></div>' +
+            '<div><div style="font-weight:600;font-size:15px">' + esc(t.displayName || 'Collezionista') + '</div><div style="font-size:13px;color:var(--muted)">' + t.perAlbum.length + ' album in comune</div></div>' +
           '</div>' +
           '<button class="js-propose" data-uid="' + esc(t.uid) + '" style="padding:9px 16px;border:0;border-radius:99px;background:var(--accent);color:var(--accent-ink,#0d1b2a);font-weight:600;font-size:14px;cursor:pointer">Proponi scambio</button>' +
-        '</div>' +
-        '<div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:14px">' +
-          '<div><div style="font-size:13px;color:var(--good);margin-bottom:6px">↙ Tu ricevi <b>' + t.totReceive + '</b> mancanti</div>' + chip(allReceive) + '</div>' +
-          '<div><div style="font-size:13px;color:var(--warn);margin-bottom:6px">↗ Tu dai <b>' + t.totGive + '</b> doppie</div>' + chip(allGive) + '</div>' +
-        '</div>' +
+        '</div>' + albumsHtml +
       '</div>';
     }).join('');
 
