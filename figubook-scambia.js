@@ -81,7 +81,6 @@
     if (!state.activeId) state.activeId = state.groups[0].id;
     const active = state.groups.find(function (g) { return g.id === state.activeId; }) || state.groups[0];
 
-    // dati del gruppo (codice, n. membri)
     let code = '—', memberCount = 1;
     try {
       const snap = await window.FB.db.collection('groups').doc(active.id).get();
@@ -97,23 +96,12 @@
         '<select id="grpSel" style="padding:10px 14px;border-radius:12px;background:var(--bg-elev);border:1px solid var(--line);color:var(--ink);font-size:14px;font-weight:600;font-family:var(--f-body)">' + options + '</select>' +
         '<button id="grpAddBtn" style="padding:9px 14px;border:1px solid var(--line);border-radius:99px;background:var(--bg-elev);color:var(--ink-2);font-size:13px;cursor:pointer">+ Nuovo gruppo</button>' +
       '</div>' +
-
       '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;border-radius:14px;background:var(--bg-elev);border:1px solid var(--line);margin-bottom:18px">' +
         '<div><div style="font-size:12px;color:var(--muted);font-family:var(--f-mono);text-transform:uppercase;letter-spacing:0.08em">Codice del gruppo · ' + memberCount + ' membri</div>' +
         '<div style="font-family:var(--f-mono);font-size:24px;font-weight:700;letter-spacing:0.12em;margin-top:4px">' + esc(code) + '</div></div>' +
         '<button id="grpCopyCode" style="padding:9px 16px;border:0;border-radius:99px;background:var(--accent);color:var(--accent-ink,#0d1b2a);font-weight:600;font-size:13px;cursor:pointer">Copia e invita</button>' +
       '</div>' +
-
-      '<div id="matchArea"></div>';
-
-    // segnaposto match (7b lo riempirà con getPossibleTrades)
-    const ma = $('matchArea');
-    if (ma) ma.innerHTML =
-      '<div style="padding:40px 24px;text-align:center;color:var(--muted)">' +
-        '<div style="font-size:30px;margin-bottom:8px">🔄</div>' +
-        '<div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px">Gli scambi possibili appariranno qui</div>' +
-        '<div style="font-size:13px;max-width:380px;margin:0 auto">Invita i tuoi amici col codice qui sopra. Appena segnano le loro doppie, l\'app vi calcola gli scambi reciproci.</div>' +
-      '</div>';
+      '<div id="matchArea"><div style="padding:30px;text-align:center;color:var(--muted);font-size:13px">Calcolo scambi…</div></div>';
 
     const sel = $('grpSel');
     if (sel) sel.addEventListener('change', function () { state.activeId = sel.value; renderGroupView(root); });
@@ -122,6 +110,54 @@
     const copy = $('grpCopyCode');
     if (copy) copy.addEventListener('click', function () {
       if (navigator.clipboard) navigator.clipboard.writeText(code).then(function () { toast('Codice copiato'); }).catch(function () {});
+    });
+
+    renderMatches(active.id);
+  }
+
+  async function renderMatches(groupId) {
+    const ma = $('matchArea');
+    if (!ma) return;
+    let trades = [];
+    try { trades = await window.DB.getPossibleTrades(groupId); }
+    catch (e) { console.error(e); ma.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">Errore nel calcolo scambi.</div>'; return; }
+
+    if (!trades.length) {
+      ma.innerHTML =
+        '<div style="padding:40px 24px;text-align:center;color:var(--muted)">' +
+          '<div style="font-size:30px;margin-bottom:8px">🔄</div>' +
+          '<div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px">Ancora nessuno scambio possibile</div>' +
+          '<div style="font-size:13px;max-width:380px;margin:0 auto">Invita i tuoi amici col codice qui sopra. Appena segnano le loro doppie, gli scambi reciproci appaiono qui.</div>' +
+        '</div>';
+      return;
+    }
+
+    ma.innerHTML = trades.map(function (t) {
+      const initial = (t.displayName || '?').trim().charAt(0).toUpperCase();
+      const chip = function (arr) {
+        return arr.slice(0, 5).map(function (c) { return '<span style="font-family:var(--f-mono);font-size:12px;background:var(--bg);padding:2px 7px;border-radius:6px;margin-right:4px">' + esc(c) + '</span>'; }).join('') + (arr.length > 5 ? ' <span style="font-size:12px;color:var(--muted)">+' + (arr.length - 5) + '</span>' : '');
+      };
+      const allReceive = [];
+      const allGive = [];
+      t.perAlbum.forEach(function (a) { a.receive.forEach(function (c) { allReceive.push(c); }); a.give.forEach(function (c) { allGive.push(c); }); });
+      return '<div style="background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
+          '<div style="display:flex;align-items:center;gap:12px">' +
+            '<div style="width:42px;height:42px;border-radius:99px;background:linear-gradient(135deg,var(--accent),#7a5ae0);display:grid;place-items:center;color:#fff;font-weight:700">' + esc(initial) + '</div>' +
+            '<div><div style="font-weight:600;font-size:15px">' + esc(t.displayName || 'Collezionista') + '</div>' +
+            '<div style="font-size:13px;color:var(--muted)">nel tuo gruppo</div></div>' +
+          '</div>' +
+          '<button class="js-propose" data-uid="' + esc(t.uid) + '" style="padding:9px 16px;border:0;border-radius:99px;background:var(--accent);color:var(--accent-ink,#0d1b2a);font-weight:600;font-size:14px;cursor:pointer">Proponi scambio</button>' +
+        '</div>' +
+        '<div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:14px">' +
+          '<div><div style="font-size:13px;color:var(--good);margin-bottom:6px">↙ Tu ricevi <b>' + t.totReceive + '</b> mancanti</div>' + chip(allReceive) + '</div>' +
+          '<div><div style="font-size:13px;color:var(--warn);margin-bottom:6px">↗ Tu dai <b>' + t.totGive + '</b> doppie</div>' + chip(allGive) + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    document.querySelectorAll('.js-propose').forEach(function (b) {
+      b.addEventListener('click', function () { toast('Il flusso di proposta arriva nella prossima tappa'); });
     });
   }
 
