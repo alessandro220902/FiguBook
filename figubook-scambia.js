@@ -230,10 +230,23 @@
     } catch (e) { console.error(e); toast('Errore nell\'invio'); }
   }
 
-  function openReviseOverlay(proposalId, otherUid, albumId, give, receive) {
-    state.revise = { proposalId: proposalId, albumId: albumId,
-      sel: { receive: {}, give: {} },
-      pool: { receive: receive.slice(), give: give.slice() } };
+  async function openReviseOverlay(proposalId, otherUid, albumId, give, receive) {
+    var pool = { receive: (receive || []).slice(), give: (give || []).slice() };
+    try {
+      var trades = await window.DB.getPossibleTrades(state.activeId);
+      var t = trades.find(function (x) { return x.uid === otherUid; });
+      if (t) {
+        var a = t.perAlbum.find(function (p) { return p.albumId === albumId; });
+        if (a) {
+          // dal punto di vista di chi guarda: ricevo le sue doppie (a.receive), do le mie (a.give)
+          var rset = {}; a.receive.forEach(function (c) { rset[c] = 1; }); (receive || []).forEach(function (c) { rset[c] = 1; });
+          var gset = {}; a.give.forEach(function (c) { gset[c] = 1; }); (give || []).forEach(function (c) { gset[c] = 1; });
+          pool.receive = Object.keys(rset);
+          pool.give = Object.keys(gset);
+        }
+      }
+    } catch (e) { console.error(e); }
+    state.revise = { proposalId: proposalId, albumId: albumId, sel: { receive: {}, give: {} }, pool: pool };
     (receive || []).forEach(function (c) { state.revise.sel.receive[c] = true; });
     (give || []).forEach(function (c) { state.revise.sel.give[c] = true; });
     renderReviseOverlay(otherUid);
@@ -315,14 +328,17 @@
           if (!iConfirmed) actions = '<button class="js-accept" data-id="' + esc(p.id) + '" style="padding:8px 14px;border:0;border-radius:99px;background:var(--good);color:#fff;font-weight:600;font-size:13px;cursor:pointer">Conferma scambio</button>';
           else actions = '<span style="font-size:13px;color:var(--muted)">In attesa dell\'altro</span>';
         }
-        return '<div style="background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px">' +
-          '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">' +
-            '<div style="font-size:14px;font-weight:600">' + who + ' · ' + esc(albumName(p.albumId)) + '</div>' +
-            '<div style="font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">' + statusLbl + '</div>' +
+        var otherName = incoming ? (p.fromName || 'Collezionista') : (p.toName || 'Collezionista');
+        var initial = otherName.trim().charAt(0).toUpperCase();
+        return '<div style="background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;max-width:520px">' +
+          '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">' +
+            '<div style="width:36px;height:36px;border-radius:99px;background:linear-gradient(135deg,var(--accent),#7a5ae0);display:grid;place-items:center;color:#fff;font-weight:700;flex-shrink:0">' + esc(initial) + '</div>' +
+            '<div style="min-width:0"><div style="font-weight:600;font-size:14px">' + esc(otherName) + '</div>' +
+            '<div style="font-size:12px;color:var(--muted)">' + who + ' · ' + esc(albumName(p.albumId)) + ' · ' + statusLbl + '</div></div>' +
           '</div>' +
-          '<div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:' + (actions ? '12px' : '0') + '">' +
-            '<div><div style="font-size:12px;color:var(--good);margin-bottom:4px">Ricevi ' + iGet.length + '</div>' + chips(iGet, 10) + '</div>' +
-            '<div><div style="font-size:12px;color:var(--warn);margin-bottom:4px">Dai ' + iGive.length + '</div>' + chips(iGive, 10) + '</div>' +
+          '<div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:' + (actions ? '12px' : '0') + '">' +
+            '<div><div style="font-size:12px;color:var(--good);margin-bottom:4px">Ricevi ' + iGet.length + '</div>' + chips(iGet, 8) + '</div>' +
+            '<div><div style="font-size:12px;color:var(--warn);margin-bottom:4px">Dai ' + iGive.length + '</div>' + chips(iGive, 8) + '</div>' +
           '</div>' +
           (actions ? '<div style="display:flex;gap:8px;flex-wrap:wrap">' + actions + '</div>' : '') +
         '</div>';
