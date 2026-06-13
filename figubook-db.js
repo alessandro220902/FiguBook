@@ -146,6 +146,41 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     };
   }
 
+  // Pubblica owned/doubles dell'album nella bacheca di ogni gruppo dell'utente.
+  // Interna: esposta come DB.syncInventory per il primo sync all'ingresso in un gruppo.
+  async function _syncInventory(albumId) {
+    try {
+      const uid = _uid();
+      const db = window.FB.db;
+      // leggi i gruppi dell'utente
+      const groupsSnap = await db.collection('users').doc(uid).collection('groups').get();
+      if (groupsSnap.empty) return;
+      // leggi lo stato dell'album
+      const albSnap = await _albumsCol().doc(albumId).get();
+      const data = albSnap.exists ? albSnap.data() : {};
+      const states = data.states || {};
+      const owned = [];
+      const doubles = [];
+      Object.keys(states).forEach(function (code) {
+        const s = states[code];
+        if (s === 'have' || s === 'double') owned.push(code);
+        if (s === 'double') doubles.push(code);
+      });
+      const dn = getUserName();
+      // scrivi la bacheca in ogni gruppo
+      await Promise.all(groupsSnap.docs.map(function (g) {
+        const invRef = db.collection('groups').doc(g.id).collection('inventory').doc(uid);
+        return invRef.set({
+          displayName: dn,
+          updatedAt: Date.now(),
+          albums: { [albumId]: { owned: owned, doubles: doubles } }
+        }, { merge: true });
+      }));
+    } catch (e) {
+      console.error('FiguBook: errore sync bacheca', e);
+    }
+  }
+
   async function saveCardState(albumId, code, state, count) {
     const ref = _albumsCol().doc(albumId);
     const update = {
@@ -158,6 +193,7 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
       update.counts = { [code]: firebase.firestore.FieldValue.delete() };
     }
     await ref.set(update, { merge: true });
+    await _syncInventory(albumId);
   }
 
   async function resetAlbum(albumId) {
@@ -171,6 +207,7 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
       v: existing.v || 1,
       ts: Date.now()
     });
+    await _syncInventory(albumId);
   }
 
   // ── Statistiche ─────────────────────────────────────────────────────────
@@ -247,6 +284,70 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     });
   }
 
+  // ── Gruppi di scambio ────────────────────────────────────────────────────
+
+  // Genera un codice invito di 5 caratteri (helper interno, non esportato).
+  function _genCode() {
+    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var s = '';
+    for (var i = 0; i < 5; i++) s += chars[Math.floor(Math.random() * chars.length)];
+    return s;
+  }
+
+  async function createGroup(name) {
+    const uid = _uid();
+    const db = window.FB.db;
+    const groupRef = db.collection('groups').doc();
+    const groupId = groupRef.id;
+    let code = _genCode();
+    // garantisci codice unico
+    let exists = await db.collection('inviteCodes').doc(code).get();
+    while (exists.exists) { code = _genCode(); exists = await db.collection('inviteCodes').doc(code).get(); }
+    const dn = getUserName();
+    await groupRef.set({ name: name, inviteCode: code, createdBy: uid, createdAt: Date.now(), memberCount: 1, settings: { allowShipping: false } });
+    await groupRef.collection('members').doc(uid).set({ displayName: dn, role: 'owner', joinedAt: Date.now() });
+    await db.collection('inviteCodes').doc(code).set({ groupId: groupId });
+    await db.collection('users').doc(uid).collection('groups').doc(groupId).set({ name: name, joinedAt: Date.now() });
+    return { groupId: groupId, code: code };
+  }
+
+  async function joinGroup(code) {
+    const uid = _uid();
+    const db = window.FB.db;
+    code = String(code || '').trim().toUpperCase();
+    const codeSnap = await db.collection('inviteCodes').doc(code).get();
+    if (!codeSnap.exists) throw new Error('Codice non valido');
+    const groupId = codeSnap.data().groupId;
+    const memberRef = db.collection('groups').doc(groupId).collection('members').doc(uid);
+    const already = await memberRef.get();
+    if (already.exists) return { groupId: groupId, already: true };
+    const groupSnap = await db.collection('groups').doc(groupId).get();
+    const gname = groupSnap.exists ? (groupSnap.data().name || 'Gruppo') : 'Gruppo';
+    await memberRef.set({ displayName: getUserName(), role: 'member', joinedAt: Date.now() });
+    await db.collection('groups').doc(groupId).update({ memberCount: firebase.firestore.FieldValue.increment(1) });
+    await db.collection('users').doc(uid).collection('groups').doc(groupId).set({ name: gname, joinedAt: Date.now() });
+    return { groupId: groupId, already: false };
+  }
+
+  async function leaveGroup(groupId) {
+    const uid = _uid();
+    const db = window.FB.db;
+    await db.collection('groups').doc(groupId).collection('inventory').doc(uid).delete().catch(function(){});
+    await db.collection('groups').doc(groupId).collection('members').doc(uid).delete();
+    await db.collection('groups').doc(groupId).update({ memberCount: firebase.firestore.FieldValue.increment(-1) }).catch(function(){});
+    await db.collection('users').doc(uid).collection('groups').doc(groupId).delete();
+  }
+
+  async function myGroups() {
+    const snap = await window.FB.db.collection('users').doc(_uid()).collection('groups').get();
+    return snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+  }
+
+  async function groupMembers(groupId) {
+    const snap = await window.FB.db.collection('groups').doc(groupId).collection('members').get();
+    return snap.docs.map(function (d) { return Object.assign({ uid: d.id }, d.data()); });
+  }
+
   // ── Esposizione pubblica ─────────────────────────────────────────────────
 
   window.DB = {
@@ -261,12 +362,19 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     getAlbumData,
     saveCardState,
     resetAlbum,
+    syncInventory: _syncInventory,
 
     getAlbumStats,
     getAllStats,
 
     setEverHadAlbum,
-    getEverHadAlbum
+    getEverHadAlbum,
+
+    createGroup,
+    joinGroup,
+    leaveGroup,
+    myGroups,
+    groupMembers
   };
 
 })();
