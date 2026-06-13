@@ -230,6 +230,58 @@
     } catch (e) { console.error(e); toast('Errore nell\'invio'); }
   }
 
+  function openReviseOverlay(proposalId, otherUid, albumId, give, receive) {
+    state.revise = { proposalId: proposalId, albumId: albumId,
+      sel: { receive: {}, give: {} },
+      pool: { receive: receive.slice(), give: give.slice() } };
+    (receive || []).forEach(function (c) { state.revise.sel.receive[c] = true; });
+    (give || []).forEach(function (c) { state.revise.sel.give[c] = true; });
+    renderReviseOverlay(otherUid);
+  }
+
+  function renderReviseOverlay(otherUid) {
+    var r = state.revise;
+    function col(side, arr, title, color) {
+      var items = arr.map(function (c) {
+        var on = !!r.sel[side][c];
+        return '<label class="rev-item" data-side="' + side + '" data-code="' + esc(c) + '" style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;cursor:pointer;margin-bottom:4px;background:' + (on ? 'color-mix(in srgb,var(--good) 16%,var(--bg))' : 'var(--bg)') + '">' +
+          '<input type="checkbox"' + (on ? ' checked' : '') + ' style="width:auto" />' +
+          '<span style="font-family:var(--f-mono);font-size:13px;font-weight:600">' + esc(c) + '</span></label>';
+      }).join('');
+      return '<div style="flex:1 1 220px"><div style="font-size:13px;color:' + color + ';margin-bottom:8px;font-weight:600">' + title + '</div>' + (items || '<div style="font-size:12px;color:var(--muted)">Niente qui</div>') + '</div>';
+    }
+    var nRec = Object.keys(r.sel.receive).length;
+    var nGive = Object.keys(r.sel.give).length;
+    var balance = nRec === nGive ? '<span style="color:var(--good)">⚖ scambio pari</span>' : '<span style="color:var(--warn)">⚠ ' + (nGive > nRec ? 'dai ' + (nGive - nRec) + ' in più' : 'ricevi ' + (nRec - nGive) + ' in più') + '</span>';
+    var body =
+      '<div style="font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:14px">' + esc(albumName(r.albumId)) + '</div>' +
+      '<div style="display:flex;gap:20px;flex-wrap:wrap">' +
+        col('receive', r.pool.receive, '↙ Ricevi', 'var(--good)') +
+        col('give', r.pool.give, '↗ Dai', 'var(--warn)') +
+      '</div>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">' +
+        '<div style="font-size:14px">Ricevi <b>' + nRec + '</b> · Dai <b>' + nGive + '</b> · ' + balance + '</div>' +
+        '<button id="revSend" style="padding:10px 18px;border:0;border-radius:99px;background:var(--accent);color:var(--accent-ink,#0d1b2a);font-weight:600;font-size:14px;cursor:pointer">Rimanda proposta</button>' +
+      '</div>';
+    openOverlay('Modifica e rimanda', body);
+    document.querySelectorAll('.rev-item').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        var side = el.dataset.side, code = el.dataset.code;
+        if (r.sel[side][code]) delete r.sel[side][code]; else r.sel[side][code] = true;
+        renderReviseOverlay(otherUid);
+      });
+    });
+    var send = $('revSend');
+    if (send) send.addEventListener('click', async function () {
+      var give = Object.keys(r.sel.give);
+      var receive = Object.keys(r.sel.receive);
+      if (!give.length && !receive.length) { toast('Seleziona almeno una carta'); return; }
+      try { await window.DB.reviseProposal(r.proposalId, give, receive); closeOverlay(); toast('Proposta rimandata'); reload(); }
+      catch (e) { console.error(e); toast('Errore'); }
+    });
+  }
+
   async function renderProposals(root) {
     var box = $('proposalsBox');
     if (!box) return;
@@ -239,6 +291,7 @@
     var uid = window.FB.auth.currentUser.uid;
     // mostra solo quelle attive del gruppo corrente
     list = list.filter(function (p) { return p.groupId === state.activeId && p.status !== 'rejected' && p.status !== 'completed'; });
+    state.proposalsCache = list;
     if (!list.length) { box.innerHTML = ''; return; }
 
     box.innerHTML = '<div style="font-family:var(--f-display);font-weight:700;font-size:16px;margin:0 0 12px">Proposte</div>' +
@@ -288,7 +341,14 @@
       });
     });
     document.querySelectorAll('.js-revise').forEach(function (b) {
-      b.addEventListener('click', function () { toast('La modifica della proposta arriva a breve'); });
+      b.addEventListener('click', function () {
+        var p = (state.proposalsCache || []).find(function (x) { return x.id === b.dataset.id; });
+        if (!p) return;
+        var uid = window.FB.auth.currentUser.uid;
+        var iGet = p.toUid === uid ? p.give : p.receive;
+        var iGive = p.toUid === uid ? p.receive : p.give;
+        openReviseOverlay(p.id, b.dataset.uid, p.albumId, iGive, iGet);
+      });
     });
   }
 
