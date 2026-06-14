@@ -307,6 +307,7 @@
     } catch (e) { state.myInvAlbums = {}; }
     // ridisegna i match ora che ho proposte+inventario
     renderMatches(state.activeId);
+    maybePromptFeedback();
   }
 
   function ownedSet(albumId) {
@@ -432,7 +433,7 @@
 
     document.querySelectorAll('.ov-accept').forEach(function (b) {
       b.addEventListener('click', async function () {
-        try { var r = await window.DB.acceptProposal(b.dataset.id); closeOverlay(); toast(r.completed ? 'Scambio completato!' : 'Accettato'); reload(); }
+        try { var r = await window.DB.acceptProposal(b.dataset.id); closeOverlay(); toast(r.completed ? 'Scambio completato!' : 'Accettato'); if (r.completed) { openFeedbackOverlay(b.dataset.id, otherUid, nameForUid(otherUid)); } reload(); }
         catch (e) { console.error(e); toast('Errore'); }
       });
     });
@@ -494,6 +495,68 @@
       state.activeId = state.groups[0].id;
     }
     renderGroupView(root);
+  }
+
+  var FB_REVIEWED = (window.__fbReviewPrompted = window.__fbReviewPrompted || {});
+
+  function nameForUid(uid) {
+    var t = (state.trades || []).find(function (x) { return x.uid === uid; });
+    return (t && t.displayName) || 'Collezionista';
+  }
+
+  function openFeedbackOverlay(proposalId, ratedUid, ratedName) {
+    FB_REVIEWED[proposalId] = true;
+    var rating = 5;
+    var stars = '';
+    for (var i = 1; i <= 5; i++) {
+      stars += '<button class="fb-star" data-v="' + i + '" style="background:none;border:0;cursor:pointer;font-size:30px;line-height:1;color:var(--warn);padding:0">★</button>';
+    }
+    var body =
+      '<div style="font-size:14px;color:var(--muted);margin-bottom:14px">Com\'è andato lo scambio con <b style="color:var(--ink)">' + esc(ratedName) + '</b>?</div>' +
+      '<div id="fbStars" style="display:flex;gap:6px;margin-bottom:16px">' + stars + '</div>' +
+      '<textarea id="fbComment" placeholder="Commento (opzionale)" style="width:100%;min-height:70px;box-sizing:border-box;background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:10px;font-family:inherit;font-size:13px;resize:vertical;margin-bottom:14px"></textarea>' +
+      '<button id="fbSubmit" data-id="' + esc(proposalId) + '" data-uid="' + esc(ratedUid) + '" style="width:100%;padding:11px;border:0;border-radius:99px;background:var(--good);color:#fff;font-weight:700;font-size:14px;cursor:pointer">Invia recensione</button>';
+    openOverlay('Lascia una recensione', body);
+
+    function paint() {
+      var btns = document.querySelectorAll('#fbStars .fb-star');
+      for (var j = 0; j < btns.length; j++) {
+        btns[j].style.color = (j < rating) ? 'var(--warn)' : 'var(--line)';
+      }
+    }
+    var sbtns = document.querySelectorAll('#fbStars .fb-star');
+    for (var s = 0; s < sbtns.length; s++) {
+      sbtns[s].addEventListener('click', function () { rating = parseInt(this.dataset.v, 10); paint(); });
+    }
+    paint();
+
+    var sub = $('fbSubmit');
+    if (sub) sub.addEventListener('click', async function () {
+      var btn = this; btn.disabled = true; btn.textContent = 'Invio…';
+      try {
+        await window.DB.leaveFeedback(btn.dataset.id, btn.dataset.uid, rating, ($('fbComment').value || '').trim());
+        closeOverlay(); toast('Recensione inviata!');
+      } catch (e) { console.error(e); btn.disabled = false; btn.textContent = 'Invia recensione'; toast('Errore invio recensione'); }
+    });
+  }
+
+  async function maybePromptFeedback() {
+    var uid = window.FB.auth.currentUser && window.FB.auth.currentUser.uid;
+    if (!uid) return;
+    var done = (state.proposalsCache || []).filter(function (p) {
+      return p.status === 'completed' && !FB_REVIEWED[p.id];
+    });
+    for (var k = 0; k < done.length; k++) {
+      var p = done[k];
+      var other = (p.participants || []).find(function (x) { return x !== uid; }) || (p.fromUid === uid ? p.toUid : p.fromUid);
+      if (!other) continue;
+      try {
+        var snap = await window.FB.db.collection('users').doc(other).collection('feedback').doc(p.id + '__' + uid).get();
+        if (snap.exists) { FB_REVIEWED[p.id] = true; continue; }
+      } catch (e) { continue; }
+      openFeedbackOverlay(p.id, other, nameForUid(other));
+      return;
+    }
   }
 
   window.FB.onReady(function () {
