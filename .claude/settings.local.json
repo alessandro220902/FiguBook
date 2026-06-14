@@ -23,7 +23,8 @@
       "Bash(python3)",
       "Bash(which node *)",
       "Bash(sed -n '615,668p' figubook-album.html)",
-      "Bash(sed -n '440,462p' figubook-mancanti.html)"
+      "Bash(sed -n '440,462p' figubook-mancanti.html)",
+      "Bash(node -c /Users/alessandrogelo/Desktop/FiguBook/figubook-db.js)"
     ]
   }
 }

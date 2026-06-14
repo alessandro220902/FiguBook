@@ -299,32 +299,79 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     if (!btn || !panel) return;
     if (btn.dataset.wired) return; btn.dataset.wired = '1';
 
-    btn.addEventListener('click', function (e) { e.stopPropagation(); panel.classList.toggle('open'); var d = document.getElementById('notifDot'); if (d) d.style.display = 'none'; });
+    btn.addEventListener('click', async function (e) {
+      e.stopPropagation();
+      const opening = !panel.classList.contains('open');
+      panel.classList.toggle('open');
+      if (opening) { await markNotificationsRead(); refreshNotifDot(); }
+    });
     document.addEventListener('click', function (e) { if (!panel.contains(e.target) && e.target !== btn) panel.classList.remove('open'); });
 
-    let props = [];
-    try { props = await getIncomingProposals(); } catch (e) {}
+    await renderNotifPanel();
+    refreshNotifDot();
+  }
 
-    // nomi dei mittenti dai profili pubblici
-    const names = {};
-    await Promise.all(props.map(async function (p) {
-      if (names[p.fromUid]) return;
-      try { const pr = await getPublicProfile(p.fromUid); names[p.fromUid] = pr.displayName || 'Un collezionista'; }
-      catch (e) { names[p.fromUid] = 'Un collezionista'; }
-    }));
-
+  async function _notifCol() {
+    return window.FB.db.collection('users').doc(_uid()).collection('notifications');
+  }
+  // crea una notifica per un altro utente (toUid) — usata quando invio una proposta
+  async function pushNotification(toUid, data) {
+    try {
+      await window.FB.db.collection('users').doc(toUid).collection('notifications').doc().set(
+        Object.assign({ fromUid: _uid(), read: false, at: Date.now() }, data || {})
+      );
+    } catch (e) { console.error('pushNotification', e); }
+  }
+  async function getNotifications() {
+    try {
+      const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const snap = await (await _notifCol()).get();
+      const all = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+      // pulizia: cancella le più vecchie di 7 giorni
+      all.filter(function (n) { return (n.at || 0) < weekAgo; }).forEach(function (n) {
+        _notifCol().then(function (c) { c.doc(n.id).delete().catch(function () {}); });
+      });
+      return all.filter(function (n) { return (n.at || 0) >= weekAgo; })
+                .sort(function (a, b) { return (b.at || 0) - (a.at || 0); });
+    } catch (e) { console.error('getNotifications', e); return []; }
+  }
+  async function markNotificationsRead() {
+    try {
+      const col = await _notifCol();
+      const snap = await col.where('read', '==', false).get();
+      await Promise.all(snap.docs.map(function (d) { return d.ref.update({ read: true }); }));
+    } catch (e) { console.error('markRead', e); }
+  }
+  async function refreshNotifDot() {
     const dot = document.getElementById('notifDot');
+    if (!dot) return;
+    try {
+      const col = await _notifCol();
+      const snap = await col.where('read', '==', false).get();
+      dot.style.display = snap.empty ? 'none' : '';
+    } catch (e) { dot.style.display = 'none'; }
+  }
+  async function renderNotifPanel() {
+    const panel = document.getElementById('notifPanel');
+    if (!panel) return;
+    const list = await getNotifications();
     const head = '<div class="notif-head"><h4>Notifiche</h4></div>';
-    if (!props.length) {
+    if (!list.length) {
       panel.innerHTML = head + '<div class="notif-item"><div class="notif-ic">ℹ️</div><div class="notif-txt"><div class="nm">Nessuna notifica</div><div class="info">Le proposte di scambio appariranno qui</div></div></div>';
-      if (dot) dot.style.display = 'none';
       return;
     }
-    if (dot) dot.style.display = '';
-    panel.innerHTML = head + props.map(function (p) {
-      const nm = names[p.fromUid] || 'Un collezionista';
-      const album = (window.ALBUM_BY_ID && window.ALBUM_BY_ID[p.albumId] && window.ALBUM_BY_ID[p.albumId].title) ? window.ALBUM_BY_ID[p.albumId].title : p.albumId;
-      return '<a href="figubook-scambia.html" style="text-decoration:none;color:inherit"><div class="notif-item unread"><div class="notif-ic">🔄</div><div class="notif-txt"><div class="nm">1 proposta ricevuta da ' + (nm.replace(/[<>&]/g,'')) + '</div><div class="info">' + (String(album).replace(/[<>&]/g,'')) + ' · tocca per aprire</div></div></div></a>';
+    function timeAgo(t) {
+      const m = Math.floor((Date.now() - t) / 60000);
+      if (m < 1) return 'ora'; if (m < 60) return m + 'm fa';
+      const h = Math.floor(m / 60); if (h < 24) return h + 'h fa';
+      return Math.floor(h / 24) + 'g fa';
+    }
+    panel.innerHTML = head + list.map(function (n) {
+      const cls = n.read ? 'notif-item' : 'notif-item unread';
+      const href = n.href || 'figubook-scambia.html';
+      const title = (n.title || 'Notifica').replace(/[<>&]/g, '');
+      const info = ((n.info || '') + ' · ' + timeAgo(n.at || Date.now())).replace(/[<>]/g, '');
+      return '<a href="' + href + '" style="text-decoration:none;color:inherit"><div class="' + cls + '"><div class="notif-ic">' + (n.icon || '🔄') + '</div><div class="notif-txt"><div class="nm">' + title + '</div><div class="info">' + info + '</div></div></div></a>';
     }).join('');
   }
 
@@ -477,6 +524,18 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
       updatedAt: Date.now()
     });
     await ref.collection('revisions').doc('0').set({ by: uid, give: give || [], receive: receive || [], at: Date.now() });
+    try {
+      await window.FB.db.collection('users').doc(toUid).collection('notifications').doc().set({
+        fromUid: uid,
+        type: 'proposal',
+        title: '1 proposta ricevuta da ' + getUserName(),
+        info: (window.ALBUM_BY_ID[albumId] && window.ALBUM_BY_ID[albumId].title) ? window.ALBUM_BY_ID[albumId].title : albumId,
+        href: 'figubook-scambia.html',
+        icon: '🔄',
+        read: false,
+        at: Date.now()
+      });
+    } catch (e) { console.error('notify createProposal', e); }
     return { proposalId: ref.id };
   }
 
@@ -574,6 +633,11 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     wireProfileMenu,
     getIncomingProposals,
     wireNotifications,
+    pushNotification,
+    getNotifications,
+    markNotificationsRead,
+    refreshNotifDot,
+    renderNotifPanel,
 
     getMyAlbums,
     addAlbum,
