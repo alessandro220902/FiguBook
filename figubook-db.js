@@ -371,7 +371,10 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
       const href = n.href || 'figubook-scambia.html';
       const title = (n.title || 'Notifica').replace(/[<>&]/g, '');
       const info = ((n.info || '') + ' · ' + timeAgo(n.at || Date.now())).replace(/[<>]/g, '');
-      return '<a href="' + href + '" style="text-decoration:none;color:inherit"><div class="' + cls + '"><div class="notif-ic">' + (n.icon || '🔄') + '</div><div class="notif-txt"><div class="nm">' + title + '</div><div class="info">' + info + '</div></div></div></a>';
+      var tcol = '';
+      if (n.type === 'rejected') tcol = 'color:#ff5b5b;';
+      else if (n.type === 'accepted' || n.type === 'completed') tcol = 'color:#4ade80;';
+      return '<a href="' + href + '" style="text-decoration:none;color:inherit"><div class="' + cls + '"><div class="notif-ic">' + (n.icon || '🔄') + '</div><div class="notif-txt"><div class="nm" style="' + tcol + '">' + title + '</div><div class="info">' + info + '</div></div></div></a>';
     }).join('');
   }
 
@@ -554,6 +557,18 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     const revs = await ref.collection('revisions').get();
     const n = String(revs.size);
     await ref.collection('revisions').doc(n).set({ by: uid, give: give || [], receive: receive || [], at: Date.now() });
+    var d0 = snap.data();
+    var other0 = (d0.participants || []).find(function (p) { return p !== uid; });
+    if (other0) {
+      try {
+        await db.collection('users').doc(other0).collection('notifications').doc().set({
+          fromUid: uid, type: 'revise',
+          title: getUserName() + ' ha modificato la proposta',
+          info: (window.ALBUM_BY_ID[d0.albumId] && window.ALBUM_BY_ID[d0.albumId].title) ? window.ALBUM_BY_ID[d0.albumId].title : d0.albumId,
+          href: 'figubook-scambia.html', icon: '✏️', read: false, at: Date.now()
+        });
+      } catch (e) {}
+    }
     // chi rimanda inverte i lati: il suo "give" diventa il give della proposta
     await ref.update({ give: give || [], receive: receive || [], status: 'pending', confirmedBy: [], lastActionBy: uid, updatedAt: Date.now() });
   }
@@ -569,11 +584,38 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     if (confirmed.indexOf(uid) < 0) confirmed.push(uid);
     const everyone = (data.participants || []).every(function (p) { return confirmed.indexOf(p) >= 0; });
     await ref.update({ confirmedBy: confirmed, status: everyone ? 'completed' : 'accepted', lastActionBy: uid, updatedAt: Date.now() });
+    var other1 = (data.participants || []).find(function (p) { return p !== uid; });
+    if (other1) {
+      try {
+        await db.collection('users').doc(other1).collection('notifications').doc().set({
+          fromUid: uid, type: everyone ? 'completed' : 'accepted',
+          title: getUserName() + (everyone ? ' ha completato lo scambio' : ' ha accettato la tua proposta'),
+          info: (window.ALBUM_BY_ID[data.albumId] && window.ALBUM_BY_ID[data.albumId].title) ? window.ALBUM_BY_ID[data.albumId].title : data.albumId,
+          href: 'figubook-scambia.html', icon: everyone ? '✅' : '👍', read: false, at: Date.now()
+        });
+      } catch (e) {}
+    }
     return { completed: everyone };
   }
 
   async function rejectProposal(proposalId) {
-    await window.FB.db.collection('proposals').doc(proposalId).update({ status: 'rejected', lastActionBy: _uid(), updatedAt: Date.now() });
+    const uid = _uid();
+    const db = window.FB.db;
+    const ref = db.collection('proposals').doc(proposalId);
+    const snap = await ref.get();
+    const data = snap.exists ? snap.data() : {};
+    await ref.update({ status: 'rejected', lastActionBy: uid, updatedAt: Date.now() });
+    var other = (data.participants || []).find(function (p) { return p !== uid; });
+    if (other) {
+      try {
+        await db.collection('users').doc(other).collection('notifications').doc().set({
+          fromUid: uid, type: 'rejected',
+          title: getUserName() + ' ha rifiutato la tua proposta',
+          info: (window.ALBUM_BY_ID[data.albumId] && window.ALBUM_BY_ID[data.albumId].title) ? window.ALBUM_BY_ID[data.albumId].title : data.albumId,
+          href: 'figubook-scambia.html', icon: '❌', read: false, at: Date.now()
+        });
+      } catch (e) {}
+    }
   }
 
   async function cancelProposal(proposalId) {

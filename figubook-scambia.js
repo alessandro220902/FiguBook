@@ -342,17 +342,17 @@
       var myProps = propsWith(t.uid);
       var badge = '';
       if (myProps.length) {
-        var nIncoming = myProps.filter(function (p) { return p.toUid === uid; }).length;
-        var nOutgoing = myProps.length - nIncoming;
-        var label;
-        if (nIncoming && !nOutgoing) label = nIncoming + (nIncoming === 1 ? ' proposta ricevuta' : ' proposte ricevute');
-        else if (nOutgoing && !nIncoming) label = nOutgoing + (nOutgoing === 1 ? ' proposta inviata' : ' proposte inviate');
-        else label = myProps.length + ' proposte';
+        var inc = myProps.filter(function (p) { return p.toUid === uid; }).length;
+        var out = myProps.length - inc;
+        var rows = '';
+        if (inc) rows += '<div style="font-size:12px;color:var(--accent);margin-bottom:6px">🔔 ' + inc + (inc === 1 ? ' proposta arrivata' : ' proposte arrivate') + '</div>';
+        if (out) rows += '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">↗ ' + out + (out === 1 ? ' proposta inviata' : ' proposte inviate') + '</div>';
+        var btns = '';
+        if (inc) btns += '<button class="js-viewprops" data-uid="' + esc(t.uid) + '" data-dir="in" style="width:100%;margin-bottom:8px;padding:9px;border:1px solid var(--accent);border-radius:10px;background:transparent;color:var(--accent);font-size:13px;font-weight:600;cursor:pointer">Visualizza ' + (inc === 1 ? 'proposta arrivata' : 'proposte arrivate') + '</button>';
+        if (out) btns += '<button class="js-viewprops" data-uid="' + esc(t.uid) + '" data-dir="out" style="width:100%;padding:9px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:13px;font-weight:600;cursor:pointer">Visualizza ' + (out === 1 ? 'proposta inviata' : 'proposte inviate') + '</button>';
         badge =
-          '<div style="display:flex;align-items:center;gap:8px;margin:14px 0 10px"><span style="flex:1;height:1px;background:var(--line)"></span>' +
-          '<span style="font-size:11px;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);padding:3px 10px;border-radius:99px">🔔 ' + label + '</span>' +
-          '<span style="flex:1;height:1px;background:var(--line)"></span></div>' +
-          '<button class="js-viewprops" data-uid="' + esc(t.uid) + '" style="width:100%;padding:9px;border:1px solid var(--accent);border-radius:10px;background:transparent;color:var(--accent);font-size:13px;font-weight:600;cursor:pointer">Visualizza proposta</button>';
+          '<div style="display:flex;align-items:center;gap:8px;margin:14px 0 10px"><span style="flex:1;height:1px;background:var(--line)"></span><span style="font-size:10px;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">Proposte</span><span style="flex:1;height:1px;background:var(--line)"></span></div>' +
+          rows + btns;
       }
       return '<div style="background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:16px">' +
         '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">' +
@@ -375,14 +375,17 @@
       b.addEventListener('click', function () { openProposeOverlay(b.dataset.uid); });
     });
     document.querySelectorAll('.js-viewprops').forEach(function (b) {
-      b.addEventListener('click', function () { openProposalsOverlay(b.dataset.uid); });
+      b.addEventListener('click', function () { openProposalsOverlay(b.dataset.uid, b.dataset.dir); });
     });
   }
 
-  function openProposalsOverlay(otherUid) {
+  function openProposalsOverlay(otherUid, dir) {
     var uid = window.FB.auth.currentUser.uid;
     var props = (state.proposalsCache || []).filter(function (p) {
-      return p.groupId === state.activeId && p.status !== 'rejected' && p.status !== 'completed' && p.status !== 'cancelled' && (p.fromUid === otherUid || p.toUid === otherUid);
+      var ok = p.groupId === state.activeId && p.status !== 'rejected' && p.status !== 'completed' && p.status !== 'cancelled' && (p.fromUid === otherUid || p.toUid === otherUid);
+      if (dir === 'in') ok = ok && p.toUid === uid;
+      if (dir === 'out') ok = ok && p.fromUid === uid;
+      return ok;
     });
     if (!props.length) { toast('Nessuna proposta'); return; }
     var owned = {};
