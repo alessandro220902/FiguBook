@@ -1,0 +1,86 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isUser(uid) { return request.auth != null && request.auth.uid == uid; }
+
+    // ── Utenti (doc privato + subcollection) ──────────────────────────────
+    match /users/{userId} {
+      allow read, write: if isUser(userId);
+
+      // Album personali, meta, lista gruppi: solo il proprietario
+      match /albums/{albumId} { allow read, write: if isUser(userId); }
+      match /meta/{docId}     { allow read, write: if isUser(userId); }
+      match /groups/{groupId} { allow read, write: if isUser(userId); }
+
+      // Notifiche: le leggo/segno-lette/cancello io; un ALTRO utente può crearmene
+      match /notifications/{notifId} {
+        allow read, update, delete: if isUser(userId);
+        allow create: if signedIn() && request.resource.data.fromUid == request.auth.uid;
+      }
+
+      // Recensioni RICEVUTE: chiunque autenticato le legge; le lascia un altro utente
+      match /feedback/{fid} {
+        allow read: if signedIn();
+        allow create, update: if signedIn()
+          && request.resource.data.fromUid == request.auth.uid   // recensisci come te stesso
+          && request.auth.uid != userId                          // non recensire te stesso
+          && request.resource.data.rating is number
+          && request.resource.data.rating >= 1
+          && request.resource.data.rating <= 5;
+        allow delete: if false;
+      }
+    }
+
+    // ── Profili pubblici ──────────────────────────────────────────────────
+    match /publicProfiles/{userId} {
+      allow read: if signedIn();
+      allow create: if isUser(userId)
+        || (signedIn() && request.resource.data.keys().hasOnly(['completedTrades']));
+      allow update: if isUser(userId)
+        || (signedIn() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['completedTrades']));
+      allow delete: if isUser(userId);
+    }
+
+    // ── Codici invito gruppo ──────────────────────────────────────────────
+    match /inviteCodes/{code} {
+      allow read, create: if signedIn();
+      allow update, delete: if false;
+    }
+
+    // ── Gruppi di scambio ─────────────────────────────────────────────────
+    match /groups/{groupId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.createdBy == request.auth.uid;
+      allow update: if signedIn();   // memberCount join/leave
+      allow delete: if false;
+
+      match /members/{memberId} {
+        allow read: if signedIn();
+        allow create, update, delete: if isUser(memberId);   // gestisci la tua membership
+      }
+      match /inventory/{ownerId} {
+        allow read: if signedIn();
+        allow write: if isUser(ownerId);                     // la tua bacheca
+      }
+    }
+
+    // ── Proposte di scambio ───────────────────────────────────────────────
+    match /proposals/{proposalId} {
+      allow read:   if signedIn() && request.auth.uid in resource.data.participants;
+      allow create: if signedIn()
+        && request.auth.uid in request.resource.data.participants
+        && request.resource.data.fromUid == request.auth.uid;
+      allow update: if signedIn() && request.auth.uid in resource.data.participants;
+      allow delete: if false;
+
+      match /revisions/{revId} {
+        allow read, create: if signedIn();
+        allow update, delete: if false;
+      }
+    }
+
+    // Tutto il resto: negato di default.
+  }
+}
