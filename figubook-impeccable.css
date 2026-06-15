@@ -1,23 +1,23 @@
 /* ============================================================
-   FiguBook — Impeccable polish layer
-   Solo estetica. Nessun collegamento, id, hook JS o markup toccato.
-   Theme-agnostic: usa solo i token esistenti (--accent, --ink, --line, ...)
-   così rispetta tutte le varianti (default / stadio / streetwear).
+   FiguBook — Impeccable layer (DISTILLED)
+   Essenza, non decorazione. Solo CSS, solo token esistenti.
+   Nessun collegamento, id, hook JS o markup toccato.
+   Theme-agnostic: vale su tutte le varianti (default / stadio / streetwear).
    Caricato per ultimo: vince i pari-specificità sugli stili inline.
-   Reversibile: basta rimuovere il <link> a questo file.
+   Reversibile: rimuovi il <link> a questo file.
+
+   Principio: ogni regola deve guadagnarsi il posto.
+   Resta solo accessibilità, leggibilità e affordance funzionale.
+   Rimossi tutti gli effetti decorativi (glow, sheen, ombre a riposo,
+   sfondi luminosi, entrate animate, titoli gonfiati).
    ============================================================ */
 
 :root {
-  /* curve d'uscita esponenziali — niente bounce/elastic */
   --imp-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --imp-fast: 140ms;
-  --imp-med: 240ms;
-  /* ombra theme-aware: si tinge dell'inchiostro del tema corrente */
-  --imp-shadow: 0 10px 30px -14px color-mix(in srgb, var(--ink, #14110d) 45%, transparent);
-  --imp-shadow-sm: 0 4px 14px -8px color-mix(in srgb, var(--ink, #14110d) 40%, transparent);
+  --imp-fast: 130ms;
 }
 
-/* ---- 1. Accessibilità: focus da tastiera coerente (mancava ovunque) ---- */
+/* ---- Accessibilità: focus da tastiera coerente (essenziale) ---- */
 a:focus-visible,
 button:focus-visible,
 [role="button"]:focus-visible,
@@ -39,10 +39,9 @@ textarea:focus-visible,
 select:focus-visible {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
-/* Rimuove l'outline solo per il puntatore, mantiene quello da tastiera */
 a:focus:not(:focus-visible),
 button:focus:not(:focus-visible),
 .nav-tab:focus:not(:focus-visible),
@@ -50,7 +49,7 @@ button:focus:not(:focus-visible),
   outline: none;
 }
 
-/* ---- 2. Micro-interazioni coerenti su elementi cliccabili ---- */
+/* ---- Affordance funzionale quieta: feedback, niente lift/glow ---- */
 .btn,
 .cta,
 .btn-accent,
@@ -63,16 +62,18 @@ button:focus:not(:focus-visible),
 .mode-toggle,
 .mark-read,
 .more,
-.album-menu-btn {
+.album-menu-btn,
+.panel,
+.album-mini,
+.qstat {
   transition:
     background-color var(--imp-fast) var(--imp-ease),
     border-color var(--imp-fast) var(--imp-ease),
     color var(--imp-fast) var(--imp-ease),
-    box-shadow var(--imp-med) var(--imp-ease),
-    transform var(--imp-fast) var(--imp-ease);
+    opacity var(--imp-fast) var(--imp-ease);
 }
 
-/* Pressione tattile: feedback al click */
+/* Pressione minima al click — solo segnale, non spettacolo */
 .btn:active,
 .cta:active,
 .btn-accent:active,
@@ -81,105 +82,41 @@ button:focus:not(:focus-visible),
 .icon-btn:active,
 .ask:active,
 .mark-read:active {
-  transform: translateY(1px) scale(0.985);
+  transform: translateY(0.5px);
 }
 
-/* Bottoni pieni: lieve sollevamento all'hover */
-.btn:hover,
-.cta:hover,
-.btn-accent:hover,
-.btn-primary:hover {
-  box-shadow: var(--imp-shadow-sm);
-}
-
-/* ---- 3. Card / pannelli: elevazione a riposo + hover marcato ---- */
-.panel,
-.album-mini,
-.qstat {
-  /* depth a riposo definita ma contenuta (≤8px blur, no ghost-card) */
-  box-shadow: var(--imp-shadow-sm);
-  transition:
-    border-color var(--imp-med) var(--imp-ease),
-    box-shadow var(--imp-med) var(--imp-ease),
-    transform var(--imp-med) var(--imp-ease);
-}
-
-.panel:hover,
-.qstat:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--imp-shadow);
-}
-
+/* Card/album cliccabili: l'hover sposta il bordo, niente ombra/lift */
 a.album-mini:hover,
 .album-mini[href]:hover,
-a .album-mini:hover,
 a:hover > .album-mini {
-  transform: translateY(-4px);
-  box-shadow: var(--imp-shadow);
   border-color: var(--accent);
 }
 
-/* ---- 3b. Bottoni accent più ricchi (glow nel colore del brand) ---- */
-.btn-accent,
-.cta {
-  box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--accent) 70%, transparent);
-}
-.btn-accent:hover,
-.cta:hover {
-  box-shadow: 0 8px 26px -8px color-mix(in srgb, var(--accent) 85%, transparent);
-  filter: brightness(1.04);
-}
-
-/* ---- 3c. Entrata animata al caricamento (contenuto visibile di default) ---- */
-@keyframes imp-rise {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: none; }
-}
-.page-head,
-.sec-head,
-.panel,
-.qstat,
-.album-mini {
-  animation: imp-rise 560ms var(--imp-ease) both;
-}
-.qstat:nth-child(2)  { animation-delay: 40ms; }
-.qstat:nth-child(3)  { animation-delay: 80ms; }
-.qstat:nth-child(4)  { animation-delay: 120ms; }
-.qstat:nth-child(5)  { animation-delay: 160ms; }
-.album-mini:nth-child(2) { animation-delay: 60ms; }
-.album-mini:nth-child(3) { animation-delay: 120ms; }
-.album-mini:nth-child(4) { animation-delay: 180ms; }
-
-/* ---- 4. Selezione testo nei colori del brand ---- */
+/* ---- Selezione testo nel colore del brand ---- */
 ::selection {
   background: var(--accent);
   color: var(--accent-ink, var(--ink));
 }
 
-/* ---- 5. Scrollbar coerente col tema ---- */
+/* ---- Scrollbar sobria e coerente col tema ---- */
 * {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--ink, #14110d) 28%, transparent) transparent;
+  scrollbar-color: color-mix(in srgb, var(--ink, #14110d) 24%, transparent) transparent;
 }
-*::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-*::-webkit-scrollbar-track {
-  background: transparent;
-}
+*::-webkit-scrollbar { width: 9px; height: 9px; }
+*::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--ink, #14110d) 22%, transparent);
+  background: color-mix(in srgb, var(--ink, #14110d) 20%, transparent);
   border-radius: 99px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--ink, #14110d) 38%, transparent);
+  background: color-mix(in srgb, var(--ink, #14110d) 34%, transparent);
   background-clip: padding-box;
 }
 
-/* ---- 6. Rifinitura tipografica ---- */
+/* ---- Leggibilità ---- */
 h1, h2, h3,
 .page-head h1,
 .sec-head h2,
@@ -190,7 +127,6 @@ p, .sub, .panel-sub, .disclaimer {
   text-wrap: pretty;
 }
 
-/* Numeri allineati e leggibili in statistiche e contatori */
 .qstat .v,
 .album-mini .have,
 .album-mini .pct,
@@ -201,105 +137,20 @@ p, .sub, .panel-sub, .disclaimer {
   font-feature-settings: "tnum" 1, "lnum" 1;
 }
 
-/* ---- 7. Immagini figurine più nitide ---- */
-img {
-  image-rendering: auto;
-}
-
-/* ---- 8. Scroll fluido + offset per la nav sticky ---- */
+/* ---- Scroll fluido + offset per la nav sticky ---- */
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 88px;
 }
 
-/* ---- 9. prefers-reduced-motion: rispetta le preferenze (mancava ovunque) ---- */
+/* ---- Rispetto delle preferenze di movimento (essenziale) ---- */
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .btn:active,
-  .chip:active,
-  .album-mini:hover,
-  a.album-mini:hover {
-    transform: none;
-  }
-}
-
-/* ============================================================
-   10. RESTYLE NETTO — cambio visibile a colpo d'occhio
-   Sempre solo CSS e solo token: vale su tutti i temi (anche scuro).
-   ============================================================ */
-
-/* 10a. Profondità dello sfondo: due glow morbidi, tinti dal tema.
-   Mantiene il background-color del tema (var(--bg)), aggiunge solo l'immagine. */
-body {
-  background-image:
-    radial-gradient(900px 520px at 12% -8%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
-    radial-gradient(1000px 600px at 100% 0%, color-mix(in srgb, var(--good, var(--accent)) 9%, transparent), transparent 65%);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-}
-
-/* 10b. Card con materia: bordo più definito + sheen interno + depth.
-   Lo sheen (inset chiaro) si vede anche sui temi scuri. */
-.panel,
-.album-mini,
-.qstat {
-  border-color: color-mix(in srgb, var(--ink, #14110d) 16%, var(--line));
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, #fff 7%, transparent),
-    var(--imp-shadow-sm);
-}
-.panel:hover,
-.qstat:hover {
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, #fff 9%, transparent),
-    var(--imp-shadow);
-}
-
-/* 10c. Titoli con più presenza (entro il floor di tracking -0.04em) */
-.page-head h1 {
-  font-size: clamp(40px, 5.2vw, 58px);
-  font-weight: 800;
-  letter-spacing: -0.035em;
-  line-height: 0.98;
-}
-.sec-head h2 {
-  font-weight: 800;
-  letter-spacing: -0.025em;
-}
-
-/* 10d. Numeri-chiave più grandi (gerarchia statistiche) */
-.qstat .v {
-  font-size: 27px;
-  letter-spacing: -0.03em;
-}
-
-/* 10e. Tab attiva e bottoni accent con alone nel colore del brand */
-.nav-tab.active {
-  box-shadow: 0 6px 18px -7px color-mix(in srgb, var(--accent) 55%, transparent);
-}
-
-/* 10f. Barre di avanzamento con leggero bagliore accent */
-.bar > i,
-.album-mini .bar > i {
-  box-shadow: 0 0 12px -2px color-mix(in srgb, var(--accent) 65%, transparent);
-}
-
-/* 10g. Logo: piccolo alone per staccarlo dallo sfondo */
-.brand-mark {
-  box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--ink, #14110d) 50%, transparent);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body { background-attachment: scroll; }
+  .btn:active, .chip:active { transform: none; }
 }
