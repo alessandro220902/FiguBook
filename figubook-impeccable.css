@@ -232,3 +232,74 @@ html {
     transform: none;
   }
 }
+
+/* ============================================================
+   10. RESTYLE NETTO — cambio visibile a colpo d'occhio
+   Sempre solo CSS e solo token: vale su tutti i temi (anche scuro).
+   ============================================================ */
+
+/* 10a. Profondità dello sfondo: due glow morbidi, tinti dal tema.
+   Mantiene il background-color del tema (var(--bg)), aggiunge solo l'immagine. */
+body {
+  background-image:
+    radial-gradient(900px 520px at 12% -8%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
+    radial-gradient(1000px 600px at 100% 0%, color-mix(in srgb, var(--good, var(--accent)) 9%, transparent), transparent 65%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* 10b. Card con materia: bordo più definito + sheen interno + depth.
+   Lo sheen (inset chiaro) si vede anche sui temi scuri. */
+.panel,
+.album-mini,
+.qstat {
+  border-color: color-mix(in srgb, var(--ink, #14110d) 16%, var(--line));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 7%, transparent),
+    var(--imp-shadow-sm);
+}
+.panel:hover,
+.qstat:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 9%, transparent),
+    var(--imp-shadow);
+}
+
+/* 10c. Titoli con più presenza (entro il floor di tracking -0.04em) */
+.page-head h1 {
+  font-size: clamp(40px, 5.2vw, 58px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+}
+.sec-head h2 {
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+/* 10d. Numeri-chiave più grandi (gerarchia statistiche) */
+.qstat .v {
+  font-size: 27px;
+  letter-spacing: -0.03em;
+}
+
+/* 10e. Tab attiva e bottoni accent con alone nel colore del brand */
+.nav-tab.active {
+  box-shadow: 0 6px 18px -7px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+/* 10f. Barre di avanzamento con leggero bagliore accent */
+.bar > i,
+.album-mini .bar > i {
+  box-shadow: 0 0 12px -2px color-mix(in srgb, var(--accent) 65%, transparent);
+}
+
+/* 10g. Logo: piccolo alone per staccarlo dallo sfondo */
+.brand-mark {
+  box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--ink, #14110d) 50%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body { background-attachment: scroll; }
+}
