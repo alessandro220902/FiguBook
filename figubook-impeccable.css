@@ -181,3 +181,35 @@ html {
 /* Warning perf: animazione di proprietà di layout sull'hero album → niente jank */
 .sec-hero { transition: background-color var(--dur-med, 240ms) var(--ease-out, ease),
                         border-color var(--dur-med, 240ms) var(--ease-out, ease); }
+
+/* ============================================================
+   FASE 4 — refine componenti (token-based, applica a tutte le pagine)
+   Gerarchia, coerenza, leggibilità. Niente layout aggressivo.
+   ============================================================ */
+
+/* Gerarchia titoli più decisa e bilanciata */
+.page-head h1 { font-weight: 800; letter-spacing: -0.03em; }
+.sec-head h2  { font-weight: 700; letter-spacing: -0.02em; }
+.panel h3     { letter-spacing: -0.01em; }
+
+/* Statistiche: numero protagonista, label calma */
+.qstat .v { letter-spacing: -0.02em; }
+.qstat .l { color: var(--muted); }
+
+/* Card: raggio coerente dai token, niente over-round */
+.panel      { border-radius: var(--radius-lg); }
+.album-mini { border-radius: var(--radius); }
+.qstat      { border-radius: var(--radius); }
+
+/* Azione primaria: peso e pill coerenti */
+.btn-accent, .cta { font-weight: 600; }
+.chip { font-weight: 500; }
+
+/* Empty/placeholder leggibili (AA) */
+::placeholder { color: var(--muted); opacity: 1; }
+
+/* Link inline (non bottoni): sottolineatura sobria all'hover */
+.panel a:not(.btn):not(.more):not(.nav-tab):hover { text-decoration: underline; text-underline-offset: 2px; }
+
+/* Divisori coerenti */
+hr { border: none; border-top: 1px solid var(--line); margin: var(--s-6, 24px) 0; }
