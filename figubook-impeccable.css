@@ -154,3 +154,30 @@ html {
   }
   .btn:active, .chip:active { transform: none; }
 }
+
+/* ============================================================
+   FIX BAN (anti-pattern detector) — neutralizzati via override
+   Sorgente inline invariato; qui si correge il rendering.
+   ============================================================ */
+
+/* Ban: gradient-text sull'hero "opening-trofei" (9 album) → testo solido */
+.sec-hero[data-kind="opening-trofei"] h2 {
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  color: #fff;
+}
+
+/* Watermark "STYLE" 200px: troppo rumore → rimosso */
+.sec-hero[data-kind="style"]::after { content: none; }
+
+/* Ban: side-stripe border su .friend-card (scambia) → bordo pieno + tint */
+.card.friend-card {
+  border-left: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent) 6%, var(--bg-elev));
+}
+
+/* Warning perf: animazione di proprietà di layout sull'hero album → niente jank */
+.sec-hero { transition: background-color var(--dur-med, 240ms) var(--ease-out, ease),
+                        border-color var(--dur-med, 240ms) var(--ease-out, ease); }

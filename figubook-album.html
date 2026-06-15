@@ -567,7 +567,10 @@
   .share-btn.copied{background:var(--good);color:#fff;border-color:var(--good)}
   .is-loading{opacity:.35}
 </style>
+<script>document.cookie.indexOf("fb-theme=light")>-1&&document.documentElement.classList.add("fb-light");</script>
+<link rel="stylesheet" href="figubook-tokens.css">
 <link rel="stylesheet" href="figubook-impeccable.css">
+<script src="figubook-theme.js" defer></script>
 </head>
 <body data-variant="stadio">
 
@@ -584,6 +587,7 @@
       <a class="nav-tab" href="#">Community</a>
     </div>
     <div class="nav-actions">
+      <button class="icon-btn" id="fb-theme-toggle" type="button" aria-label="Cambia tema">&#9728;</button>
       <!-- Cerca -->
       <div style="position:relative">
         <button class="icon-btn" id="searchBtn" aria-label="Cerca"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>

@@ -681,7 +681,10 @@
   .site-footer .footer-dot{opacity:.4}
   .is-loading{opacity:.35}
 </style>
+<script>document.cookie.indexOf("fb-theme=light")>-1&&document.documentElement.classList.add("fb-light");</script>
+<link rel="stylesheet" href="figubook-tokens.css">
 <link rel="stylesheet" href="figubook-impeccable.css">
+<script src="figubook-theme.js" defer></script>
 </head>
 <body data-variant="stadio">
 
@@ -695,6 +698,7 @@
       <a class="nav-tab" href="#">Community</a>
     </div>
     <div class="nav-actions">
+      <button class="icon-btn" id="fb-theme-toggle" type="button" aria-label="Cambia tema">&#9728;</button>
       <!-- Cerca -->
       <div style="position:relative">
         <button class="icon-btn" id="searchBtn" aria-label="Cerca">

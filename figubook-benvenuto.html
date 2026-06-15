@@ -403,9 +403,12 @@
     .slogan-text{font-size:32px}
   }
 </style>
+<script>document.cookie.indexOf("fb-theme=light")>-1&&document.documentElement.classList.add("fb-light");</script>
+<link rel="stylesheet" href="figubook-tokens.css">
 <link rel="stylesheet" href="figubook-impeccable.css">
+<script src="figubook-theme.js" defer></script>
 </head>
-<body>
+<body data-variant="stadio">
 
 <div class="page">
 
@@ -444,6 +447,7 @@
   <!-- ════════ RIGHT ════════ -->
   <section class="right">
     <div class="top-meta">
+      <button id="fb-theme-toggle" type="button" aria-label="Cambia tema" style="float:right;width:34px;height:34px;border-radius:999px;border:1px solid var(--line);background:var(--bg-elev);color:var(--ink);cursor:pointer;font-size:15px;line-height:1">&#9728;</button>
       Non hai un account? <a href="#" id="topGoRegister">Registrati</a>
     </div>
 

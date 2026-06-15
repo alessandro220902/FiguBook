@@ -1,0 +1,99 @@
+/* ============================================================
+   FiguBook — Design tokens (v2)
+   Due temi: DARK "campo notturno" (default) + LIGHT "carta foil".
+   Persistenza via COOKIE (fb-theme), NIENTE localStorage.
+   Toggle = classe html.fb-light (impostata da script inline prima del paint).
+
+   Cascata:
+   - :root, html.fb-light body  → palette LIGHT
+   - body[data-variant="stadio"] → palette DARK  (default del sito)
+   - html.fb-light body vince su body[data-variant] (specificità 0,1,2 > 0,1,1)
+     → quando l'utente sceglie chiaro, il chiaro vince anche su stadio.
+
+   Solo token: nessun collegamento/id/hook JS toccato. Reversibile.
+   ============================================================ */
+
+/* ---- Palette LIGHT "carta foil" (base + tema chiaro scelto) ---- */
+:root,
+html.fb-light body {
+  --bg: #efece4;
+  --bg-elev: #faf7f1;
+  --ink: #121511;
+  --ink-2: #3a3f38;
+  --muted: #6b6f64;          /* AA ~5:1 su --bg */
+  --line: #e1dccf;
+  --line-strong: #121511;
+
+  --accent: #c2f23d;
+  --accent-ink: #13160f;
+
+  --pitch: #0e4d39;
+  --pitch-ink: #eafff3;
+
+  --gold: #e6b73c;
+  --foil: #e6b73c;
+  --foil-ink: #1a1407;
+
+  --warn: #ff5b2e;
+  --good: #1f9c63;
+}
+
+/* ---- Palette DARK "campo notturno" (default del sito) ---- */
+body[data-variant="stadio"] {
+  --bg: #0c1410;
+  --bg-elev: #13201a;
+  --ink: #eef3ec;
+  --ink-2: #b9c4ba;
+  --muted: #8a978c;          /* AA su scuro */
+  --line: #243029;
+  --line-strong: #eef3ec;
+
+  --accent: #c2f23d;          /* lime unificato sui due temi */
+  --accent-ink: #0c1410;
+
+  --pitch: #1f7a59;
+  --pitch-ink: #eafff3;
+
+  --gold: #e6b73c;
+  --foil: #e6b73c;
+  --foil-ink: #1a1407;
+
+  --warn: #ff6a45;
+  --good: #34d399;
+}
+
+/* ---- Scale / sistema (validi su entrambi i temi) ---- */
+:root {
+  --t-xs: 12px;  --t-sm: 13px; --t-md: 14px; --t-base: 16px;
+  --t-lg: 18px;  --t-xl: 22px; --t-2xl: 28px; --t-3xl: 36px;
+  --t-4xl: 46px; --t-5xl: 58px;
+
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px; --s-5: 20px;
+  --s-6: 24px; --s-8: 32px; --s-10: 40px; --s-14: 56px; --s-18: 72px;
+
+  --radius: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px color-mix(in srgb, var(--ink) 12%, transparent);
+  --shadow-md: 0 4px 12px -6px color-mix(in srgb, var(--ink) 22%, transparent);
+  --shadow-lg: 0 12px 28px -12px color-mix(in srgb, var(--ink) 30%, transparent);
+
+  --z-dropdown: 100; --z-sticky: 200; --z-backdrop: 300;
+  --z-modal: 400; --z-toast: 500; --z-tooltip: 600;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 130ms; --dur-med: 240ms; --dur-slow: 480ms;
+}
+
+/* Transizione morbida nel cambio tema (rispetta reduced-motion) */
+@media (prefers-reduced-motion: no-preference) {
+  body, .nav, .panel, .album-mini, .qstat, .card {
+    transition: background-color var(--dur-med) var(--ease-out),
+                border-color var(--dur-med) var(--ease-out),
+                color var(--dur-med) var(--ease-out);
+  }
+}
+
+/* Bottone toggle tema */
+#fb-theme-toggle { font-size: 16px; line-height: 1; }

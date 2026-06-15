@@ -115,9 +115,12 @@
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--ink);color:var(--accent);font-size:13px;font-weight:600;padding:10px 20px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:9999;white-space:nowrap;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
+<script>document.cookie.indexOf("fb-theme=light")>-1&&document.documentElement.classList.add("fb-light");</script>
+<link rel="stylesheet" href="figubook-tokens.css">
 <link rel="stylesheet" href="figubook-impeccable.css">
+<script src="figubook-theme.js" defer></script>
 </head>
-<body>
+<body data-variant="stadio">
 
 <nav class="nav">
   <div class="nav-inner">
@@ -128,6 +131,7 @@
       <a class="nav-tab" href="figubook-scambia.html">Scambia</a>
       <a class="nav-tab" href="#">Community</a>
     </div>
+    <div class="nav-actions" style="margin-left:auto;display:flex;align-items:center;gap:10px"><button class="icon-btn" id="fb-theme-toggle" type="button" aria-label="Cambia tema">&#9728;</button></div>
   </div>
 </nav>
 
