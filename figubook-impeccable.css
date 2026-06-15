@@ -1,0 +1,193 @@
+/* ============================================================
+   FiguBook — Impeccable polish layer
+   Solo estetica. Nessun collegamento, id, hook JS o markup toccato.
+   Theme-agnostic: usa solo i token esistenti (--accent, --ink, --line, ...)
+   così rispetta tutte le varianti (default / stadio / streetwear).
+   Caricato per ultimo: vince i pari-specificità sugli stili inline.
+   Reversibile: basta rimuovere il <link> a questo file.
+   ============================================================ */
+
+:root {
+  /* curve d'uscita esponenziali — niente bounce/elastic */
+  --imp-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --imp-fast: 140ms;
+  --imp-med: 240ms;
+  /* ombra theme-aware: si tinge dell'inchiostro del tema corrente */
+  --imp-shadow: 0 10px 30px -14px color-mix(in srgb, var(--ink, #14110d) 45%, transparent);
+  --imp-shadow-sm: 0 4px 14px -8px color-mix(in srgb, var(--ink, #14110d) 40%, transparent);
+}
+
+/* ---- 1. Accessibilità: focus da tastiera coerente (mancava ovunque) ---- */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible,
+summary:focus-visible,
+.nav-tab:focus-visible,
+.icon-btn:focus-visible,
+.chip:focus-visible,
+.btn:focus-visible,
+.cta:focus-visible,
+.ask:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: inherit;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+/* Rimuove l'outline solo per il puntatore, mantiene quello da tastiera */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+.nav-tab:focus:not(:focus-visible),
+.icon-btn:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ---- 2. Micro-interazioni coerenti su elementi cliccabili ---- */
+.btn,
+.cta,
+.btn-accent,
+.btn-primary,
+.btn-secondary,
+.chip,
+.icon-btn,
+.nav-tab,
+.ask,
+.mode-toggle,
+.mark-read,
+.more,
+.album-menu-btn {
+  transition:
+    background-color var(--imp-fast) var(--imp-ease),
+    border-color var(--imp-fast) var(--imp-ease),
+    color var(--imp-fast) var(--imp-ease),
+    box-shadow var(--imp-med) var(--imp-ease),
+    transform var(--imp-fast) var(--imp-ease);
+}
+
+/* Pressione tattile: feedback al click */
+.btn:active,
+.cta:active,
+.btn-accent:active,
+.btn-primary:active,
+.chip:active,
+.icon-btn:active,
+.ask:active,
+.mark-read:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+/* Bottoni pieni: lieve sollevamento all'hover */
+.btn:hover,
+.cta:hover,
+.btn-accent:hover,
+.btn-primary:hover {
+  box-shadow: var(--imp-shadow-sm);
+}
+
+/* ---- 3. Card / pannelli: elevazione all'hover, theme-aware ---- */
+.panel,
+.album-mini,
+.qstat {
+  transition:
+    border-color var(--imp-med) var(--imp-ease),
+    box-shadow var(--imp-med) var(--imp-ease),
+    transform var(--imp-med) var(--imp-ease);
+}
+
+a.album-mini:hover,
+.album-mini[href]:hover,
+a .album-mini:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--imp-shadow);
+}
+
+/* ---- 4. Selezione testo nei colori del brand ---- */
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink, var(--ink));
+}
+
+/* ---- 5. Scrollbar coerente col tema ---- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ink, #14110d) 28%, transparent) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--ink, #14110d) 22%, transparent);
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--ink, #14110d) 38%, transparent);
+  background-clip: padding-box;
+}
+
+/* ---- 6. Rifinitura tipografica ---- */
+h1, h2, h3,
+.page-head h1,
+.sec-head h2,
+.panel h3 {
+  text-wrap: balance;
+}
+p, .sub, .panel-sub, .disclaimer {
+  text-wrap: pretty;
+}
+
+/* Numeri allineati e leggibili in statistiche e contatori */
+.qstat .v,
+.album-mini .have,
+.album-mini .pct,
+.big,
+.count-pill,
+.v {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* ---- 7. Immagini figurine più nitide ---- */
+img {
+  image-rendering: auto;
+}
+
+/* ---- 8. Scroll fluido + offset per la nav sticky ---- */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+}
+
+/* ---- 9. prefers-reduced-motion: rispetta le preferenze (mancava ovunque) ---- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .btn:active,
+  .chip:active,
+  .album-mini:hover,
+  a.album-mini:hover {
+    transform: none;
+  }
+}
