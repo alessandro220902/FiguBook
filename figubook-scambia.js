@@ -1,4 +1,4 @@
-// figubook-scambia.js â Scambia (gruppi). MAI localStorage.
+// figubook-scambia.js — Scambia (gruppi). MAI localStorage.
 // Renderizza tutto dentro #scambiaRoot. Tappa 7a: gruppi (stato senza gruppo,
 // crea/entra, selettore gruppo, codice invito). Le card dei match arrivano in 7b.
 
@@ -40,16 +40,16 @@
     } catch (e) { console.error('FiguBook: sync iniziale', e); }
   }
 
-  // ââ STATO SENZA GRUPPO ââ
+  // ── STATO SENZA GRUPPO ──
   function renderNoGroup(root) {
     root.innerHTML =
       '<div style="max-width:460px;margin:40px auto 0;text-align:center">' +
-        '<div style="width:56px;height:56px;border-radius:99px;background:color-mix(in srgb,var(--accent) 18%,var(--bg-elev));display:grid;place-items:center;margin:0 auto 16px;font-size:26px">ð¥</div>' +
+        '<div style="width:56px;height:56px;border-radius:99px;background:color-mix(in srgb,var(--accent) 18%,var(--bg-elev));display:grid;place-items:center;margin:0 auto 16px;font-size:26px">👥</div>' +
         '<div style="font-family:var(--f-display);font-size:22px;font-weight:700;margin-bottom:8px">Scambia con il tuo gruppo</div>' +
-        '<div style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:22px">Crea un gruppo con la tua classe, i tuoi amici o il quartiere. Scambiate dal vivo le doppie che vi servono â solo tra persone che inviti.</div>' +
+        '<div style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:22px">Crea un gruppo con la tua classe, i tuoi amici o il quartiere. Scambiate dal vivo le doppie che vi servono — solo tra persone che inviti.</div>' +
 
         '<div style="display:flex;gap:8px;margin-bottom:14px">' +
-          '<input id="grpNewName" type="text" placeholder="Nome del gruppo (es. 3Âª B)" style="flex:1;padding:12px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--line);color:var(--ink);font-size:14px;font-family:var(--f-body)" />' +
+          '<input id="grpNewName" type="text" placeholder="Nome del gruppo (es. 3ª B)" style="flex:1;padding:12px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--line);color:var(--ink);font-size:14px;font-family:var(--f-body)" />' +
           '<button id="grpCreateBtn" style="padding:0 18px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink,#0d1b2a);font-weight:600;font-size:14px;cursor:pointer">Crea</button>' +
         '</div>' +
 
@@ -60,7 +60,7 @@
           '<button id="grpJoinBtn" style="padding:0 18px;border:1px solid var(--line);border-radius:12px;background:var(--bg-elev);color:var(--ink);font-weight:600;font-size:14px;cursor:pointer">Entra</button>' +
         '</div>' +
 
-        '<div style="font-size:12px;color:var(--muted);margin-top:22px;display:flex;align-items:center;justify-content:center;gap:6px">ð Niente sconosciuti. Solo chi ha il codice entra nel gruppo.</div>' +
+        '<div style="font-size:12px;color:var(--muted);margin-top:22px;display:flex;align-items:center;justify-content:center;gap:6px">🔒 Niente sconosciuti. Solo chi ha il codice entra nel gruppo.</div>' +
       '</div>';
 
     const cBtn = $('grpCreateBtn');
@@ -77,15 +77,15 @@
     });
   }
 
-  // ââ VISTA GRUPPO (selettore + codice + segnaposto match) ââ
+  // ── VISTA GRUPPO (selettore + codice + segnaposto match) ──
   async function renderGroupView(root) {
     if (!state.activeId) state.activeId = state.groups[0].id;
     const active = state.groups.find(function (g) { return g.id === state.activeId; }) || state.groups[0];
 
-    let code = 'â', memberCount = 1;
+    let code = '—', memberCount = 1;
     try {
       const snap = await window.FB.db.collection('groups').doc(active.id).get();
-      if (snap.exists) { code = snap.data().inviteCode || 'â'; memberCount = snap.data().memberCount || 1; }
+      if (snap.exists) { code = snap.data().inviteCode || '—'; memberCount = snap.data().memberCount || 1; }
     } catch (e) { console.error(e); }
 
     const options = state.groups.map(function (g) {
@@ -98,12 +98,12 @@
         '<button id="grpAddBtn" style="padding:9px 14px;border:1px solid var(--line);border-radius:99px;background:var(--bg-elev);color:var(--ink-2);font-size:13px;cursor:pointer">+ Nuovo gruppo</button>' +
       '</div>' +
       '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;border-radius:14px;background:var(--bg-elev);border:1px solid var(--line);margin-bottom:18px">' +
-        '<div><div style="font-size:12px;color:var(--muted);font-family:var(--f-mono);text-transform:uppercase;letter-spacing:0.08em">Codice del gruppo Â· ' + memberCount + ' membri</div>' +
+        '<div><div style="font-size:12px;color:var(--muted);font-family:var(--f-mono);text-transform:uppercase;letter-spacing:0.08em">Codice del gruppo · ' + memberCount + ' membri</div>' +
         '<div style="font-family:var(--f-mono);font-size:24px;font-weight:700;letter-spacing:0.12em;margin-top:4px">' + esc(code) + '</div></div>' +
         '<button id="grpCopyCode" style="padding:9px 16px;border:0;border-radius:99px;background:var(--accent);color:var(--accent-ink,#0d1b2a);font-weight:600;font-size:13px;cursor:pointer">Copia e invita</button>' +
       '</div>' +
       '<div id="proposalsBox" style="margin-bottom:18px"></div>' +
-      '<div id="matchArea"><div style="padding:30px;text-align:center;color:var(--muted);font-size:13px">Calcolo scambiâ¦</div></div>';
+      '<div id="matchArea"><div style="padding:30px;text-align:center;color:var(--muted);font-size:13px">Calcolo scambi…</div></div>';
 
     const sel = $('grpSel');
     if (sel) sel.addEventListener('change', function () { state.activeId = sel.value; renderGroupView(root); });
@@ -133,7 +133,7 @@
     w.innerHTML = '<div style="background:var(--bg-elev);border:1px solid var(--line);border-radius:16px;max-width:580px;width:100%;max-height:85vh;overflow:auto">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg-elev)">' +
       '<div style="font-family:var(--f-display);font-weight:700;font-size:17px">' + esc(title) + '</div>' +
-      '<button id="fbOverlayClose" style="width:32px;height:32px;border-radius:99px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer">â</button></div>' +
+      '<button id="fbOverlayClose" style="width:32px;height:32px;border-radius:99px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer">✕</button></div>' +
       '<div style="padding:20px">' + bodyHtml + '</div></div>';
     document.body.appendChild(w);
     w.addEventListener('click', function (e) { if (e.target === w) closeOverlay(); });
@@ -146,11 +146,11 @@
       return '<div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line)">' +
         '<div style="font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px">' + esc(albumName(a.albumId)) + '</div>' +
         '<div style="display:flex;gap:20px;flex-wrap:wrap">' +
-          '<div style="flex:1 1 200px"><div style="font-size:13px;color:var(--good);margin-bottom:6px">â Ha <b>' + a.receive.length + '</b> carte che ti mancano</div>' + chips(a.receive) + '</div>' +
-          '<div style="flex:1 1 200px"><div style="font-size:13px;color:var(--warn);margin-bottom:6px">â Hai <b>' + a.give.length + '</b> carte che gli servono</div>' + chips(a.give) + '</div>' +
+          '<div style="flex:1 1 200px"><div style="font-size:13px;color:var(--good);margin-bottom:6px">↙ Ha <b>' + a.receive.length + '</b> carte che ti mancano</div>' + chips(a.receive) + '</div>' +
+          '<div style="flex:1 1 200px"><div style="font-size:13px;color:var(--warn);margin-bottom:6px">↗ Hai <b>' + a.give.length + '</b> carte che gli servono</div>' + chips(a.give) + '</div>' +
         '</div></div>';
     }).join('');
-    openOverlay((t.displayName || 'Collezionista') + ' Â· album in comune', body);
+    openOverlay((t.displayName || 'Collezionista') + ' · album in comune', body);
   }
 
   function openProposeOverlay(uid) {
@@ -168,7 +168,7 @@
     var a = t.perAlbum[state.prop.albumIdx];
     var sel = state.prop.sel[a.albumId];
 
-    // selettore album (se piÃ¹ di uno)
+    // selettore album (se più di uno)
     var albumSel = t.perAlbum.length > 1
       ? '<select id="propAlbum" style="width:100%;margin-bottom:14px;padding:10px 12px;border-radius:10px;background:var(--bg);border:1px solid var(--line);color:var(--ink);font-size:14px">' +
         t.perAlbum.map(function (p, i) { return '<option value="' + i + '"' + (i === state.prop.albumIdx ? ' selected' : '') + '>' + esc(albumName(p.albumId)) + '</option>'; }).join('') + '</select>'
@@ -186,17 +186,17 @@
 
     var nRec = Object.keys(sel.receive).length;
     var nGive = Object.keys(sel.give).length;
-    var balance = nRec === nGive ? '<span style="color:var(--good)">â scambio pari</span>' : '<span style="color:var(--warn)">â  stai dando ' + (nGive - nRec > 0 ? (nGive - nRec) + ' in piÃ¹' : (nRec - nGive) + ' in meno') + '</span>';
+    var balance = nRec === nGive ? '<span style="color:var(--good)">⚖ scambio pari</span>' : '<span style="color:var(--warn)">⚠ stai dando ' + (nGive - nRec > 0 ? (nGive - nRec) + ' in più' : (nRec - nGive) + ' in meno') + '</span>';
 
     var body =
       albumSel +
       '<div style="display:flex;gap:20px;flex-wrap:wrap">' +
-        col('receive', a.receive, 'â Prendi da ' + esc(t.displayName || 'lui') + ' (sue doppie che ti mancano)', 'var(--good)') +
-        '<div style="flex:1 1 220px"><div style="font-size:12px;color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,var(--bg));padding:8px 10px;border-radius:8px;margin-bottom:8px">ð¡ Queste servono a ' + esc(t.displayName || 'lui') + ' per ' + esc(albumName(a.albumId)) + '. Scegli quali dare.</div>' +
-        col('give', a.give, 'â Dai a ' + esc(t.displayName || 'lui'), 'var(--warn)').replace('<div style="flex:1 1 220px">', '<div>') + '</div>' +
+        col('receive', a.receive, '↙ Prendi da ' + esc(t.displayName || 'lui') + ' (sue doppie che ti mancano)', 'var(--good)') +
+        '<div style="flex:1 1 220px"><div style="font-size:12px;color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,var(--bg));padding:8px 10px;border-radius:8px;margin-bottom:8px">💡 Queste servono a ' + esc(t.displayName || 'lui') + ' per ' + esc(albumName(a.albumId)) + '. Scegli quali dare.</div>' +
+        col('give', a.give, '↗ Dai a ' + esc(t.displayName || 'lui'), 'var(--warn)').replace('<div style="flex:1 1 220px">', '<div>') + '</div>' +
       '</div>' +
       '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">' +
-        '<div style="font-size:14px">Ricevi <b>' + nRec + '</b> Â· Dai <b>' + nGive + '</b> Â· ' + balance + '</div>' +
+        '<div style="font-size:14px">Ricevi <b>' + nRec + '</b> · Dai <b>' + nGive + '</b> · ' + balance + '</div>' +
         '<button id="propSend" style="padding:10px 18px;border:0;border-radius:99px;background:var(--accent);color:var(--accent-ink,#0d1b2a);font-weight:600;font-size:14px;cursor:pointer">Invia proposta</button>' +
       '</div>';
 
@@ -265,15 +265,15 @@
     }
     var nRec = Object.keys(r.sel.receive).length;
     var nGive = Object.keys(r.sel.give).length;
-    var balance = nRec === nGive ? '<span style="color:var(--good)">â scambio pari</span>' : '<span style="color:var(--warn)">â  ' + (nGive > nRec ? 'dai ' + (nGive - nRec) + ' in piÃ¹' : 'ricevi ' + (nRec - nGive) + ' in piÃ¹') + '</span>';
+    var balance = nRec === nGive ? '<span style="color:var(--good)">⚖ scambio pari</span>' : '<span style="color:var(--warn)">⚠ ' + (nGive > nRec ? 'dai ' + (nGive - nRec) + ' in più' : 'ricevi ' + (nRec - nGive) + ' in più') + '</span>';
     var body =
       '<div style="font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:14px">' + esc(albumName(r.albumId)) + '</div>' +
       '<div style="display:flex;gap:20px;flex-wrap:wrap">' +
-        col('receive', r.pool.receive, 'â Ricevi', 'var(--good)') +
-        col('give', r.pool.give, 'â Dai', 'var(--warn)') +
+        col('receive', r.pool.receive, '↙ Ricevi', 'var(--good)') +
+        col('give', r.pool.give, '↗ Dai', 'var(--warn)') +
       '</div>' +
       '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">' +
-        '<div style="font-size:14px">Ricevi <b>' + nRec + '</b> Â· Dai <b>' + nGive + '</b> Â· ' + balance + '</div>' +
+        '<div style="font-size:14px">Ricevi <b>' + nRec + '</b> · Dai <b>' + nGive + '</b> · ' + balance + '</div>' +
         '<button id="revSend" style="padding:10px 18px;border:0;border-radius:99px;background:var(--accent);color:var(--accent-ink,#0d1b2a);font-weight:600;font-size:14px;cursor:pointer">Rimanda proposta</button>' +
       '</div>';
     openOverlay('Modifica e rimanda', body);
@@ -346,7 +346,7 @@
     }
 
     if (!trades.length && !props.length) {
-      ma.innerHTML = '<div style="padding:40px 24px;text-align:center;color:var(--muted)"><div style="font-size:30px;margin-bottom:8px">ð</div><div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px">Ancora nessuno scambio possibile</div><div style="font-size:13px;max-width:380px;margin:0 auto">Invita i tuoi amici col codice qui sopra. Appena segnano le loro doppie, gli scambi reciproci appaiono qui.</div></div>';
+      ma.innerHTML = '<div style="padding:40px 24px;text-align:center;color:var(--muted)"><div style="font-size:30px;margin-bottom:8px">🔄</div><div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px">Ancora nessuno scambio possibile</div><div style="font-size:13px;max-width:380px;margin:0 auto">Invita i tuoi amici col codice qui sopra. Appena segnano le loro doppie, gli scambi reciproci appaiono qui.</div></div>';
       return;
     }
 
@@ -358,8 +358,8 @@
         var inc = myProps.filter(function (p) { return p.toUid === uid; }).length;
         var out = myProps.length - inc;
         var rows = '';
-        if (inc) rows += '<div style="font-size:12px;color:var(--accent);margin-bottom:6px">ð ' + inc + (inc === 1 ? ' proposta arrivata' : ' proposte arrivate') + '</div>';
-        if (out) rows += '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">â ' + out + (out === 1 ? ' proposta inviata' : ' proposte inviate') + '</div>';
+        if (inc) rows += '<div style="font-size:12px;color:var(--accent);margin-bottom:6px">🔔 ' + inc + (inc === 1 ? ' proposta arrivata' : ' proposte arrivate') + '</div>';
+        if (out) rows += '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">↗ ' + out + (out === 1 ? ' proposta inviata' : ' proposte inviate') + '</div>';
         var btns = '';
         if (inc) btns += '<button class="js-viewprops" data-uid="' + esc(t.uid) + '" data-dir="in" style="width:100%;margin-bottom:8px;padding:9px;border:1px solid var(--accent);border-radius:10px;background:transparent;color:var(--accent);font-size:13px;font-weight:600;cursor:pointer">Visualizza ' + (inc === 1 ? 'proposta arrivata' : 'proposte arrivate') + '</button>';
         if (out) btns += '<button class="js-viewprops" data-uid="' + esc(t.uid) + '" data-dir="out" style="width:100%;padding:9px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:13px;font-weight:600;cursor:pointer">Visualizza ' + (out === 1 ? 'proposta inviata' : 'proposte inviate') + '</button>';
@@ -372,7 +372,7 @@
           '<div style="width:40px;height:40px;border-radius:99px;background:linear-gradient(135deg,var(--accent),#7a5ae0);display:grid;place-items:center;color:#fff;font-weight:700;flex-shrink:0">' + esc(initial) + '</div>' +
           '<div style="min-width:0"><div style="font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(t.displayName || 'Collezionista') + '</div>' +
           '<div style="margin:2px 0">' + starsHtml((ratings[t.uid] || {}).avg || 0, (ratings[t.uid] || {}).count || 0) + '</div>' +
-          '<div style="font-size:12px;color:var(--muted)"><span style="color:var(--good)">â ' + t.totReceive + '</span> Â· <span style="color:var(--warn)">â ' + t.totGive + '</span></div></div>' +
+          '<div style="font-size:12px;color:var(--muted)"><span style="color:var(--good)">↙ ' + t.totReceive + '</span> · <span style="color:var(--warn)">↗ ' + t.totGive + '</span></div></div>' +
         '</div>' +
         '<button class="js-albums" data-uid="' + esc(t.uid) + '" style="width:100%;margin-bottom:8px;padding:9px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:13px;font-weight:600;cursor:pointer">' + t.perAlbum.length + ' album in comune</button>' +
         '<button class="js-propose" data-uid="' + esc(t.uid) + '" style="width:100%;padding:9px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink,#0d1b2a);font-size:13px;font-weight:600;cursor:pointer">Proponi scambio</button>' +
@@ -412,11 +412,11 @@
       function chipsFound(arr) {
         return arr.map(function (c) {
           var found = !!oset[c];
-          return '<span style="font-family:var(--f-mono);font-size:12px;background:' + (found ? 'color-mix(in srgb,var(--warn) 18%,var(--bg))' : 'var(--bg)') + ';color:' + (found ? 'var(--warn)' : 'var(--ink)') + ';padding:2px 7px;border-radius:6px;margin:0 4px 4px 0;display:inline-block">' + esc(c) + (found ? ' â ' : '') + '</span>';
+          return '<span style="font-family:var(--f-mono);font-size:12px;background:' + (found ? 'color-mix(in srgb,var(--warn) 18%,var(--bg))' : 'var(--bg)') + ';color:' + (found ? 'var(--warn)' : 'var(--ink)') + ';padding:2px 7px;border-radius:6px;margin:0 4px 4px 0;display:inline-block">' + esc(c) + (found ? ' ⚠' : '') + '</span>';
         }).join('');
       }
       var foundList = iGet.filter(function (c) { return oset[c]; });
-      var warn = foundList.length ? '<div style="font-size:12px;color:var(--warn);margin-top:6px">â  ' + (foundList.length === 1 ? 'La ' + foundList[0] + ' l\'hai giÃ  trovata â chiedine un\'altra' : 'Alcune carte (' + foundList.join(', ') + ') le hai giÃ  trovate â chiedine altre') + '</div>' : '';
+      var warn = foundList.length ? '<div style="font-size:12px;color:var(--warn);margin-top:6px">⚠ ' + (foundList.length === 1 ? 'La ' + foundList[0] + ' l\'hai già trovata — chiedine un\'altra' : 'Alcune carte (' + foundList.join(', ') + ') le hai già trovate — chiedine altre') + '</div>' : '';
       var statusLbl = p.status === 'accepted' ? 'In attesa di conferma' : (incoming ? 'Da rispondere' : 'In attesa di risposta');
 
       var actions = '';
@@ -492,7 +492,7 @@
     try {
       const res = await window.DB.joinGroup(code);
       await syncAllAlbums();
-      toast(res.already ? 'Sei giÃ  in questo gruppo' : 'Sei entrato nel gruppo');
+      toast(res.already ? 'Sei già in questo gruppo' : 'Sei entrato nel gruppo');
       state.activeId = res.groupId;
       await reload();
     } catch (e) { console.error(e); toast('Codice non valido'); }
@@ -523,10 +523,10 @@
     var rating = 5;
     var stars = '';
     for (var i = 1; i <= 5; i++) {
-      stars += '<button class="fb-star" data-v="' + i + '" style="background:none;border:0;cursor:pointer;font-size:30px;line-height:1;color:var(--warn);padding:0">â</button>';
+      stars += '<button class="fb-star" data-v="' + i + '" style="background:none;border:0;cursor:pointer;font-size:30px;line-height:1;color:var(--warn);padding:0">★</button>';
     }
     var body =
-      '<div style="font-size:14px;color:var(--muted);margin-bottom:14px">Com\'Ã¨ andato lo scambio con <b style="color:var(--ink)">' + esc(ratedName) + '</b>?</div>' +
+      '<div style="font-size:14px;color:var(--muted);margin-bottom:14px">Com\'è andato lo scambio con <b style="color:var(--ink)">' + esc(ratedName) + '</b>?</div>' +
       '<div id="fbStars" style="display:flex;gap:6px;margin-bottom:16px">' + stars + '</div>' +
       '<textarea id="fbComment" placeholder="Commento (opzionale)" style="width:100%;min-height:70px;box-sizing:border-box;background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:10px;font-family:inherit;font-size:13px;resize:vertical;margin-bottom:14px"></textarea>' +
       '<button id="fbSubmit" data-id="' + esc(proposalId) + '" data-uid="' + esc(ratedUid) + '" style="width:100%;padding:11px;border:0;border-radius:99px;background:var(--good);color:#fff;font-weight:700;font-size:14px;cursor:pointer">Invia recensione</button>';
@@ -546,7 +546,7 @@
 
     var sub = $('fbSubmit');
     if (sub) sub.addEventListener('click', async function () {
-      var btn = this; btn.disabled = true; btn.textContent = 'Invioâ¦';
+      var btn = this; btn.disabled = true; btn.textContent = 'Invio…';
       try {
         await window.DB.leaveFeedback(btn.dataset.id, btn.dataset.uid, rating, ($('fbComment').value || '').trim());
         closeOverlay(); toast('Recensione inviata!');
