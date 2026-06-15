@@ -92,22 +92,63 @@ button:focus:not(:focus-visible),
   box-shadow: var(--imp-shadow-sm);
 }
 
-/* ---- 3. Card / pannelli: elevazione all'hover, theme-aware ---- */
+/* ---- 3. Card / pannelli: elevazione a riposo + hover marcato ---- */
 .panel,
 .album-mini,
 .qstat {
+  /* depth a riposo definita ma contenuta (≤8px blur, no ghost-card) */
+  box-shadow: var(--imp-shadow-sm);
   transition:
     border-color var(--imp-med) var(--imp-ease),
     box-shadow var(--imp-med) var(--imp-ease),
     transform var(--imp-med) var(--imp-ease);
 }
 
-a.album-mini:hover,
-.album-mini[href]:hover,
-a .album-mini:hover {
-  transform: translateY(-3px);
+.panel:hover,
+.qstat:hover {
+  transform: translateY(-2px);
   box-shadow: var(--imp-shadow);
 }
+
+a.album-mini:hover,
+.album-mini[href]:hover,
+a .album-mini:hover,
+a:hover > .album-mini {
+  transform: translateY(-4px);
+  box-shadow: var(--imp-shadow);
+  border-color: var(--accent);
+}
+
+/* ---- 3b. Bottoni accent più ricchi (glow nel colore del brand) ---- */
+.btn-accent,
+.cta {
+  box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.btn-accent:hover,
+.cta:hover {
+  box-shadow: 0 8px 26px -8px color-mix(in srgb, var(--accent) 85%, transparent);
+  filter: brightness(1.04);
+}
+
+/* ---- 3c. Entrata animata al caricamento (contenuto visibile di default) ---- */
+@keyframes imp-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+.page-head,
+.sec-head,
+.panel,
+.qstat,
+.album-mini {
+  animation: imp-rise 560ms var(--imp-ease) both;
+}
+.qstat:nth-child(2)  { animation-delay: 40ms; }
+.qstat:nth-child(3)  { animation-delay: 80ms; }
+.qstat:nth-child(4)  { animation-delay: 120ms; }
+.qstat:nth-child(5)  { animation-delay: 160ms; }
+.album-mini:nth-child(2) { animation-delay: 60ms; }
+.album-mini:nth-child(3) { animation-delay: 120ms; }
+.album-mini:nth-child(4) { animation-delay: 180ms; }
 
 /* ---- 4. Selezione testo nei colori del brand ---- */
 ::selection {
