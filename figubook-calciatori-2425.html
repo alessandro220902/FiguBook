@@ -171,7 +171,7 @@
     background:linear-gradient(135deg, var(--c1,#2a6fdb) 0%, var(--c2,#0a3a8b) 100%);
     display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap;
     min-height:180px;
-    transition:min-height .2s ease, padding .2s ease;
+    transition:none;
   }
   .sec-hero > div:first-child{flex:1 1 320px;min-width:0}
   .sec-hero::before{
@@ -201,7 +201,7 @@
 
   /* Type-specific hero treatments — kept LIGHT so c1/c2 colors remain dominant */
   .sec-hero[data-kind="opening-trofei"]::after{content:"";position:absolute;left:-40px;bottom:-60px;width:240px;height:240px;border-radius:99px;background:radial-gradient(circle, rgba(255,215,0,.4), transparent 65%);pointer-events:none}
-  .sec-hero[data-kind="opening-trofei"] h2{background:linear-gradient(135deg, #fff, #ffe98b);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sec-hero[data-kind="opening-trofei"] h2{color:#ffe98b}
 
   .sec-hero[data-kind="style"]::after{content:"STYLE";position:absolute;right:-20px;top:50%;transform:translateY(-50%);font-family:var(--f-display);font-weight:900;font-size:200px;color:rgba(255,255,255,.06);letter-spacing:-0.05em;pointer-events:none}
 
