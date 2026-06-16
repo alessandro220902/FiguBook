@@ -44,25 +44,27 @@
   main{max-width:1480px;margin:0 auto;padding:28px}
 
   /* ── PAGE HEAD ─────────────────────────────────── */
-  .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:32px}
+  .page-head{display:flex;flex-direction:column;align-items:stretch;gap:22px;margin-bottom:32px}
   .page-head h1{font-family:var(--f-display);font-weight:700;font-size:46px;letter-spacing:-0.025em;margin:0;line-height:1}
   .page-head h1 em{font-family:var(--f-display);font-style:italic;font-weight:500;color:var(--muted)}
   .page-head .sub{color:var(--muted);font-size:14px;margin-top:6px}
 
-  .quick-stats{display:flex;gap:12px;flex-wrap:wrap}
+  .quick-stats{display:flex;gap:12px;flex-wrap:wrap;align-items:stretch}
   .qstat{
+    flex:1 1 150px;
     background:var(--bg-elev);border:1px solid var(--line);
-    border-radius:14px;padding:13px 18px;min-width:120px;
+    border-radius:14px;padding:14px 18px;min-width:130px;
+    display:flex;flex-direction:column;justify-content:center;
   }
   .qstat .v{font-family:var(--f-display);font-weight:700;font-size:24px;line-height:1;letter-spacing:-0.02em}
   .qstat .l{font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-top:5px}
   /* Gerarchia a 3 livelli: principale (blocco pitch) > mancanti (tier warn) > compatte */
-  .qstat.primary{background:var(--pitch);border-color:transparent;padding:16px 24px;flex:1 1 200px}
+  .qstat.primary{background:var(--pitch);border-color:transparent;padding:16px 24px;flex:2.4 1 240px}
   .qstat.primary .v{font-size:44px;color:var(--pitch-ink)}
   .qstat.primary .l{color:var(--pitch-ink);opacity:.82}
   .qstat.warn{background:color-mix(in srgb, var(--warn) 9%, var(--bg-elev));border-color:color-mix(in srgb, var(--warn) 28%, var(--line))}
   .qstat.warn .v{color:var(--warn)}
-  .qstat.compact{background:transparent;border-color:transparent;padding:13px 14px;min-width:auto}
+  .qstat.compact{padding:14px 16px}
 
   /* ── SECTION HEAD ──────────────────────────────── */
   .sec-head{
