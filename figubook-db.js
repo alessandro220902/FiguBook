@@ -44,6 +44,11 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
 
   // ── Helpers interni ─────────────────────────────────────────────────────
 
+  // Cache di sessione: memoizza le Promise di read per-uid (profilo pubblico,
+  // feedback). Deduplica chiamate ripetute sullo stesso utente entro la
+  // pagina (es. lo stesso venditore in piu scambi). Bustata su scrittura.
+  const _rdCache = new Map();
+
   function _uid() {
     return window.FB.auth.currentUser.uid;
   }
@@ -287,7 +292,7 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
   async function getIncomingProposals() {
     try {
       const uid = _uid();
-      const snap = await window.FB.db.collection('proposals').where('participants', 'array-contains', uid).get();
+      const snap = await window.FB.db.collection('proposals').where('participants', 'array-contains', uid).limit(500).get();
       return snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); })
         .filter(function (p) { return p.toUid === uid && p.status === 'pending'; });
     } catch (e) { console.error(e); return []; }
@@ -347,7 +352,8 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     if (!dot) return;
     try {
       const col = await _notifCol();
-      const snap = await col.where('read', '==', false).get();
+      // serve solo sapere se esiste almeno una non letta → leggi 1 doc, non tutte
+      const snap = await col.where('read', '==', false).limit(1).get();
       dot.style.display = snap.empty ? 'none' : '';
     } catch (e) { dot.style.display = 'none'; }
   }
@@ -544,7 +550,7 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
 
   async function getMyProposals() {
     const uid = _uid();
-    const snap = await window.FB.db.collection('proposals').where('participants', 'array-contains', uid).get();
+    const snap = await window.FB.db.collection('proposals').where('participants', 'array-contains', uid).limit(500).get();
     return snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
   }
 
@@ -642,21 +648,36 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
     await db.collection('publicProfiles').doc(ratedUid).set({
       completedTrades: firebase.firestore.FieldValue.increment(1)
     }, { merge: true });
+    // invalida la cache: il valutato ha nuovo feedback/contatore
+    _rdCache.delete('fb:' + ratedUid);
+    _rdCache.delete('pp:' + ratedUid);
   }
 
   // Feedback di un utente (per media e reputazione).
-  async function getFeedback(uid) {
-    const snap = await window.FB.db.collection('users').doc(uid).collection('feedback').get();
-    const list = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
-    let avg = 0;
-    if (list.length) avg = list.reduce(function (s, f) { return s + (f.rating || 0); }, 0) / list.length;
-    return { list: list, count: list.length, avg: avg };
+  function getFeedback(uid) {
+    const key = 'fb:' + uid;
+    if (_rdCache.has(key)) return _rdCache.get(key);
+    const p = (async function () {
+      const snap = await window.FB.db.collection('users').doc(uid).collection('feedback').get();
+      const list = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+      let avg = 0;
+      if (list.length) avg = list.reduce(function (s, f) { return s + (f.rating || 0); }, 0) / list.length;
+      return { list: list, count: list.length, avg: avg };
+    })();
+    _rdCache.set(key, p);
+    return p;
   }
 
   // Profilo pubblico (per nome/colore/scambi nelle card).
-  async function getPublicProfile(uid) {
-    const snap = await window.FB.db.collection('publicProfiles').doc(uid).get();
-    return snap.exists ? Object.assign({ uid: uid }, snap.data()) : { uid: uid };
+  function getPublicProfile(uid) {
+    const key = 'pp:' + uid;
+    if (_rdCache.has(key)) return _rdCache.get(key);
+    const p = (async function () {
+      const snap = await window.FB.db.collection('publicProfiles').doc(uid).get();
+      return snap.exists ? Object.assign({ uid: uid }, snap.data()) : { uid: uid };
+    })();
+    _rdCache.set(key, p);
+    return p;
   }
 
   // Salva/aggiorna il MIO profilo pubblico (chiamato al login/onboarding).

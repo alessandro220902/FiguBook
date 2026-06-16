@@ -112,7 +112,13 @@
       "Bash(node -e \"require.resolve\\('puppeteer'\\)\")",
       "Bash(sips -g pixelWidth -g pixelHeight figubook_before_dark.png figubook_after_dark.png)",
       "Read(//mnt/skills/public/**)",
-      "Read(//mnt/**)"
+      "Read(//mnt/**)",
+      "Bash(awk '/async function getNotifications/{f=1} f{print NR\": \"$0} f&&/^  }/{c++; if\\(c>=1\\) exit}' figubook-db.js)",
+      "Bash(sed -n '/async function getFeedback/,/^  }/p' figubook-db.js)",
+      "Bash(sed -n '/async function leaveFeedback/,/^  }/p' figubook-db.js)",
+      "Bash(node -c figubook-db.js)",
+      "Bash(node -c album-app.js)",
+      "Bash(echo \"exit:$?\")"
     ]
   }
 }

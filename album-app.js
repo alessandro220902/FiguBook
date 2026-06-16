@@ -305,12 +305,16 @@ function _teamClr(sec){
       return;
     }
 
+    wireGridDelegation(container);
+
+    const frag = document.createDocumentFragment();
     filtered.forEach(code => {
       const node = (viewMode === 'list')
         ? buildListRow(sec, code, { teamPhotoColors, transferColors })
         : buildSticker(sec, code, { teamPhotoColors, transferColors });
-      container.appendChild(node);
+      frag.appendChild(node);
     });
+    container.appendChild(frag);
   }
 
   function getCardColors(sec, code, colorMaps){
@@ -349,7 +353,6 @@ function _teamClr(sec){
       <button class="step minus" aria-label="Rimuovi una copia" data-act="minus">−</button>
       <button class="step plus" aria-label="Aggiungi una copia" data-act="plus">+</button>
     `;
-    wireCardEvents(div, sec, code);
     return div;
   }
 
@@ -378,16 +381,31 @@ function _teamClr(sec){
       <button class="step minus" aria-label="Rimuovi una copia" data-act="minus">−</button>
       <button class="step plus" aria-label="Aggiungi una copia" data-act="plus">+</button>
     `;
-    wireCardEvents(div, sec, code);
     return div;
   }
 
-  function wireCardEvents(el, sec, code){
-    // Body click → drawer (or quick-cycle in quick-mode / shift)
-    el.addEventListener('click', e => {
-      if (e.target.closest('.step')) return;
+  // Event delegation: un solo listener sul contenitore griglia invece di
+  // ~4 per figurina (centinaia di listener → 2). Copre anche le card
+  // sostituite da refreshCard, perche restano figlie del contenitore.
+  function wireGridDelegation(container){
+    if (container._wired) return;
+    container._wired = true;
+
+    container.addEventListener('click', e => {
+      const el = e.target.closest('[data-code]');
+      if (!el || !container.contains(el)) return;
+      const code = el.dataset.code;
+      const sec = getSection(activeSectionId);
+
+      const stepBtn = e.target.closest('[data-act]');
+      if (stepBtn){
+        e.stopPropagation();
+        if (stepBtn.dataset.act === 'plus') increment(code); else decrement(code);
+        afterMutate(sec, code);
+        return;
+      }
       if (quickMode || e.shiftKey){
-        // Bug 10 fix: debounce 300ms — ignore rapid second click
+        // debounce 300ms — ignora secondo click rapido
         const now = Date.now();
         if (el._lastQuickClick && now - el._lastQuickClick < 300) return;
         el._lastQuickClick = now;
@@ -397,25 +415,15 @@ function _teamClr(sec){
       }
       openDrawer(code);
     });
-    el.addEventListener('dblclick', e => {
-      if (e.target.closest('.step')) return;
-      if (quickMode) return; // quick mode: click+debounce already handled it
-      increment(code);
-      afterMutate(sec, code);
-    });
 
-    el.querySelector('[data-act="plus"]').addEventListener('click', e => {
-      e.stopPropagation();
+    container.addEventListener('dblclick', e => {
+      const el = e.target.closest('[data-code]');
+      if (!el || !container.contains(el)) return;
+      if (e.target.closest('[data-act]')) return;
+      if (quickMode) return; // gia gestito da click+debounce
+      const code = el.dataset.code;
       increment(code);
-      afterMutate(sec, code);
-    });
-    // Wire all minus buttons (regular step + quick-strip)
-    el.querySelectorAll('[data-act="minus"]').forEach(btn => {
-      btn.addEventListener('click', e => {
-        e.stopPropagation();
-        decrement(code);
-        afterMutate(sec, code);
-      });
+      afterMutate(getSection(activeSectionId), code);
     });
   }
 
