@@ -155,7 +155,7 @@
 
   function openProposeOverlay(uid) {
     var t = (state.trades || []).find(function (x) { return x.uid === uid; });
-    if (!t || !t.perAlbum.length) { toast('Nessuno scambio possibile'); return; }
+    if (!t || !t.perAlbum.length) { toast('Nessuna carta da scambiare con questo utente.'); return; }
     state.prop = { uid: uid, displayName: t.displayName, albumIdx: 0, sel: {} };
     // sel: { albumId: { receive:{code:true}, give:{code:true} } }
     t.perAlbum.forEach(function (a) { state.prop.sel[a.albumId] = { receive: {}, give: {} }; });
@@ -401,7 +401,7 @@
       if (dir === 'out') ok = ok && p.fromUid === uid;
       return ok;
     });
-    if (!props.length) { toast('Nessuna proposta'); return; }
+    if (!props.length) { toast('Nessuna proposta con questo utente.'); return; }
     var owned = {};
 
     var body = props.map(function (p) {

@@ -123,7 +123,9 @@
       "Bash(grep -nE \"querySelectorAll\\\\\\('#albumView|querySelector\\\\\\(\\\\`#albumView\" album-app.js)",
       "Bash(grep -oE \"style=\\\\\"[^\\\\\"]{20,}\\\\\"\" figubook-scambia.js)",
       "Bash(perl -0pi -e ' *)",
-      "Bash(node -c figubook-scambia.js)"
+      "Bash(node -c figubook-scambia.js)",
+      "Bash(perl -0pi -e 's{\\(<link rel=\"preconnect\" href=\"https://fonts\\\\.gstatic\\\\.com\" crossorigin>\\)}{$1\\\\n<link rel=\"preconnect\" href=\"https://www.gstatic.com\" crossorigin>\\\\n<link rel=\"preconnect\" href=\"https://firestore.googleapis.com\" crossorigin>}' figubook-*.html)",
+      "Bash(perl -0pi -e \"s/toast\\\\\\('Nessuno scambio possibile'\\\\\\)/toast\\('Nessuna carta da scambiare con questo utente.'\\)/; s/toast\\\\\\('Nessuna proposta'\\\\\\)/toast\\('Nessuna proposta con questo utente.'\\)/;\" figubook-scambia.js)"
     ]
   }
 }
