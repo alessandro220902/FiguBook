@@ -227,7 +227,7 @@
       await window.DB.createProposal(state.prop.uid, state.activeId, a.albumId, give, receive);
       closeOverlay();
       toast('Proposta inviata');
-    } catch (e) { console.error(e); toast('Errore nell\'invio'); }
+    } catch (e) { console.error(e); toast('Proposta non inviata. Controlla la connessione e riprova.'); }
   }
 
   async function openReviseOverlay(proposalId, otherUid, albumId, give, receive) {
@@ -291,7 +291,7 @@
       var receive = Object.keys(r.sel.receive);
       if (!give.length && !receive.length) { toast('Seleziona almeno una carta'); return; }
       try { await window.DB.reviseProposal(r.proposalId, give, receive); closeOverlay(); toast('Proposta rimandata'); reload(); }
-      catch (e) { console.error(e); toast('Errore'); }
+      catch (e) { console.error(e); toast('Proposta non rimandata. Riprova.'); }
     });
   }
 
@@ -329,7 +329,7 @@
     if (!ma) return;
     let trades = [];
     try { trades = await window.DB.getPossibleTrades(groupId); }
-    catch (e) { console.error(e); ma.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">Errore nel calcolo scambi.</div>'; return; }
+    catch (e) { console.error(e); ma.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">Non riusciamo a calcolare gli scambi. Ricarica la pagina.</div>'; return; }
     state.trades = trades;
 
     var ratings = {};
@@ -447,13 +447,13 @@
     document.querySelectorAll('.ov-accept').forEach(function (b) {
       b.addEventListener('click', async function () {
         try { var r = await window.DB.acceptProposal(b.dataset.id); closeOverlay(); toast(r.completed ? 'Scambio completato!' : 'Accettato'); if (r.completed) { await openFeedbackOverlay(b.dataset.id, otherUid, nameForUid(otherUid)); } reload(); }
-        catch (e) { console.error(e); toast('Errore'); }
+        catch (e) { console.error(e); toast('Non riusciamo ad accettare la proposta. Riprova.'); }
       });
     });
     document.querySelectorAll('.ov-reject').forEach(function (b) {
       b.addEventListener('click', async function () {
         try { await window.DB.rejectProposal(b.dataset.id); closeOverlay(); toast('Rifiutata'); reload(); }
-        catch (e) { console.error(e); toast('Errore'); }
+        catch (e) { console.error(e); toast('Non riusciamo a rifiutare la proposta. Riprova.'); }
       });
     });
     document.querySelectorAll('.ov-revise').forEach(function (b) {
@@ -470,7 +470,7 @@
     document.querySelectorAll('.ov-cancel').forEach(function (b) {
       b.addEventListener('click', async function () {
         try { await window.DB.cancelProposal(b.dataset.id); closeOverlay(); toast('Proposta annullata'); reload(); }
-        catch (e) { console.error(e); toast('Errore'); }
+        catch (e) { console.error(e); toast('Non riusciamo ad annullare la proposta. Riprova.'); }
       });
     });
   }
@@ -483,7 +483,7 @@
       toast('Gruppo creato');
       state.activeId = res.groupId;
       await reload();
-    } catch (e) { console.error(e); toast('Errore nella creazione'); }
+    } catch (e) { console.error(e); toast('Gruppo non creato. Riprova.'); }
     state.busy = false;
   }
 
@@ -550,7 +550,7 @@
       try {
         await window.DB.leaveFeedback(btn.dataset.id, btn.dataset.uid, rating, ($('fbComment').value || '').trim());
         closeOverlay(); toast('Recensione inviata!');
-      } catch (e) { console.error(e); btn.disabled = false; btn.textContent = 'Invia recensione'; toast('Errore invio recensione'); }
+      } catch (e) { console.error(e); btn.disabled = false; btn.textContent = 'Invia recensione'; toast('Recensione non inviata. Controlla la connessione e riprova.'); }
     });
   }
 
