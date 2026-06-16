@@ -644,13 +644,11 @@ window.ALBUM_BY_ID = ALBUM_BY_ID;
       comment: comment || '',
       at: Date.now()
     });
-    // aggiorna il contatore scambi completati nel profilo pubblico del valutato
-    await db.collection('publicProfiles').doc(ratedUid).set({
-      completedTrades: firebase.firestore.FieldValue.increment(1)
-    }, { merge: true });
-    // invalida la cache: il valutato ha nuovo feedback/contatore
+    // Nota: il numero di scambi completati si deriva dal conteggio dei feedback
+    // (getFeedback().count). Niente contatore cross-scrivibile su publicProfiles
+    // -> nessun vettore di abuso.
+    // invalida la cache: il valutato ha un nuovo feedback
     _rdCache.delete('fb:' + ratedUid);
-    _rdCache.delete('pp:' + ratedUid);
   }
 
   // Feedback di un utente (per media e reputazione).

@@ -36,11 +36,10 @@ service cloud.firestore {
     // ── Profili pubblici ──────────────────────────────────────────────────
     match /publicProfiles/{userId} {
       allow read: if signedIn();
-      allow create: if isUser(userId)
-        || (signedIn() && request.resource.data.keys().hasOnly(['completedTrades']));
-      allow update: if isUser(userId)
-        || (signedIn() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['completedTrades']));
-      allow delete: if isUser(userId);
+      // Solo il proprietario scrive il proprio profilo. Niente piu incremento
+      // cross-user di completedTrades (era abusabile); il conteggio scambi si
+      // deriva dai feedback ricevuti.
+      allow create, update, delete: if isUser(userId);
     }
 
     // ── Codici invito gruppo ──────────────────────────────────────────────
