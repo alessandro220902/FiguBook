@@ -118,7 +118,9 @@
       "Bash(sed -n '/async function leaveFeedback/,/^  }/p' figubook-db.js)",
       "Bash(node -c figubook-db.js)",
       "Bash(node -c album-app.js)",
-      "Bash(echo \"exit:$?\")"
+      "Bash(echo \"exit:$?\")",
+      "Bash(grep -nE \"querySelectorAll\\\\\\('#albumView|querySelector\\\\\\(\\\\`#albumView|classList.\\(toggle|remove|add\\)\\\\\\('selected'\\\\\\)\" album-app.js)",
+      "Bash(grep -nE \"querySelectorAll\\\\\\('#albumView|querySelector\\\\\\(\\\\`#albumView\" album-app.js)"
     ]
   }
 }

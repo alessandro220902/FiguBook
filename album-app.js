@@ -67,6 +67,11 @@ function _teamClr(sec){
   let quickMode = false;
   let viewMode = 'grid';        // 'grid' | 'list'
 
+  // Indice code -> nodo card per lookup O(1) (evita querySelectorAll ad ogni
+  // click/refresh). Mantenuto in renderGrid (build) e refreshCard (mutate).
+  const _cardMap = new Map();
+  let _selectedEl = null;        // card attualmente selezionata
+
   // ── Helpers ─────────────────────────────────────────────────
   function getSection(id){ return SECTIONS.find(s => s.id === id); }
   function getSectionCounts(sec){
@@ -286,6 +291,8 @@ function _teamClr(sec){
     const container = document.getElementById('albumView');
     container.className = (viewMode === 'list') ? 'list-view' : 'grid';
     container.innerHTML = '';
+    _cardMap.clear();
+    _selectedEl = null;
 
     const teamPhotoColors = sec.kind === 'team-photos' ? teamColorMap() : null;
     const transferColors  = sec.kind === 'transfer'    ? transferColorMap(sec.codes) : null;
@@ -312,6 +319,7 @@ function _teamClr(sec){
       const node = (viewMode === 'list')
         ? buildListRow(sec, code, { teamPhotoColors, transferColors })
         : buildSticker(sec, code, { teamPhotoColors, transferColors });
+      _cardMap.set(code, node);
       frag.appendChild(node);
     });
     container.appendChild(frag);
@@ -438,7 +446,7 @@ function _teamClr(sec){
 
   function refreshCard(code){
     const sec = getSection(activeSectionId);
-    const old = document.querySelector(`#albumView .sticker[data-code="${code}"], #albumView .list-row[data-code="${code}"]`);
+    const old = _cardMap.get(code);
     if (!old) return;
     const teamPhotoColors = sec.kind === 'team-photos' ? teamColorMap() : null;
     const transferColors  = sec.kind === 'transfer'    ? transferColorMap(sec.codes) : null;
@@ -453,10 +461,17 @@ function _teamClr(sec){
       (activeFilter === 'missing' && st === 'missing') ||
       (activeFilter === 'double' && st === 'double');
 
-    if (shouldShow){ old.replaceWith(fresh); }
-    else { old.remove(); }
+    if (shouldShow){
+      old.replaceWith(fresh);
+      _cardMap.set(code, fresh);
+      if (_selectedEl === old) _selectedEl = fresh;
+    } else {
+      old.remove();
+      _cardMap.delete(code);
+      if (_selectedEl === old) _selectedEl = null;
+    }
     document.getElementById('visibleCount').textContent =
-      `${document.querySelectorAll('#albumView > [data-code]').length} figurine visibili`;
+      `${document.getElementById('albumView').childElementCount} figurine visibili`;
 
     if (activeCode === code) openDrawer(code);
   }
@@ -485,7 +500,10 @@ function _teamClr(sec){
   // ── Drawer ──────────────────────────────────────────────────
   function openDrawer(code){
     activeCode = code;
-    document.querySelectorAll('#albumView > [data-code]').forEach(el => el.classList.toggle('selected', el.dataset.code === code));
+    if (_selectedEl) _selectedEl.classList.remove('selected');
+    const sel = _cardMap.get(code);
+    if (sel){ sel.classList.add('selected'); _selectedEl = sel; }
+    else { _selectedEl = null; }
     const sec = getSection(activeSectionId);
     const st = STATES[code];
 
@@ -543,7 +561,7 @@ function _teamClr(sec){
     document.getElementById('drawer').classList.remove('open');
     document.getElementById('drawer').setAttribute('aria-hidden','true');
     document.getElementById('drawerBackdrop').classList.remove('open');
-    document.querySelectorAll('#albumView > [data-code]').forEach(el => el.classList.remove('selected'));
+    if (_selectedEl){ _selectedEl.classList.remove('selected'); _selectedEl = null; }
     activeCode = null;
   }
 
@@ -589,7 +607,7 @@ function _teamClr(sec){
     activeFilter = 'all';
     renderAll();
     setTimeout(() => {
-      const target = document.querySelector(`#albumView [data-code="${code}"]`);
+      const target = _cardMap.get(code);
       if (target){
         target.scrollIntoView({ behavior:'smooth', block:'center' });
         target.classList.add('flash');
@@ -667,7 +685,7 @@ function _teamClr(sec){
     else delete NAMES[activeCode];
     persistAndToast();
 
-    const card = document.querySelector(`#albumView [data-code="${activeCode}"]`);
+    const card = _cardMap.get(activeCode);
     if (card){
       const existing = card.querySelector('.player-name:not(.add):not(.placeholder)');
       if (val){
