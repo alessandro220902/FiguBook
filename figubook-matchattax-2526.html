@@ -166,20 +166,20 @@
     content:"";position:absolute;inset:0;pointer-events:none;
     background:
       radial-gradient(60% 90% at 100% 0%, rgba(255,255,255,.18), transparent 60%),
-      repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0 2px, transparent 2px 14px);
+      linear-gradient(180deg, transparent 55%, rgba(0,0,0,.16));
   }
   .sec-hero > *{position:relative}
   .sec-hero .eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;opacity:.85;display:flex;gap:10px;align-items:center}
   .sec-hero h2{font-family:var(--f-display);font-weight:800;font-size:52px;letter-spacing:-0.03em;line-height:.95;margin:10px 0 6px;transition:font-size .2s ease}
   .sec-hero .info{font-size:14px;opacity:.85;display:flex;gap:18px;flex-wrap:wrap;margin-top:4px}
   .sec-hero .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-  .sec-hero .badge{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;padding:5px 10px;border-radius:99px;background:rgba(255,255,255,.16);backdrop-filter:blur(6px)}
+  .sec-hero .badge{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;padding:5px 10px;border-radius:99px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.28)}
 
   .sec-hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:220px}
   .sec-hero-right .big{font-family:var(--f-display);font-weight:800;font-size:46px;line-height:1;letter-spacing:-0.02em;transition:font-size .2s ease}
   .sec-hero-right .lbl{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;opacity:.85}
   .sec-hero-right .bar{height:6px;width:200px;background:rgba(0,0,0,.22);border-radius:99px;overflow:hidden}
-  .sec-hero-right .bar > i{display:block;height:100%;background:#fff;border-radius:99px}
+  .sec-hero-right .bar > i{display:block;height:100%;background:var(--accent);border-radius:99px;transform-origin:left}
 
   /* ── Hero adattivo per sezioni piccole (<8 figurine) ────── */
   .sec-hero.compact{min-height:110px;padding:20px 28px}
@@ -677,8 +677,8 @@
         <div class="nav-dropdown search-panel" id="searchPanel">
           <input class="search-input" id="searchInput" placeholder="Cerca numero carta o album..." autocomplete="off" />
           <div class="search-hints">
-            <button class="search-hint" data-hint="carta">&#127183; Numero carta</button>
-            <button class="search-hint" data-hint="album">&#128218; Album</button>
+            <button class="search-hint" data-hint="carta">Numero carta</button>
+            <button class="search-hint" data-hint="album">Album</button>
           </div>
           <div class="search-results" id="searchResults"></div>
         </div>

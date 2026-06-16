@@ -37,26 +37,6 @@
   .avatar{width:38px;height:38px;border-radius:999px;background:linear-gradient(135deg,#ffce5b,#ff5b2e);display:grid;place-items:center;font-family:var(--f-display);font-weight:700;color:#fff;font-size:14px;box-shadow:inset 0 0 0 2px var(--bg-elev), 0 0 0 1px var(--ink)}
 
   /* ── SLOGAN BAR ────────────────────────────────── */
-  .slogan-bar{
-    border-bottom:1px solid var(--line);
-    background:var(--bg-elev);
-  }
-  .slogan-bar .inner{
-    max-width:1480px;margin:0 auto;padding:14px 28px;
-    display:flex;align-items:center;gap:14px;
-    font-family:var(--f-mono);font-size:11.5px;
-    text-transform:uppercase;letter-spacing:0.14em;
-    color:var(--ink-2);
-  }
-  .slogan-bar .badge{
-    display:inline-flex;align-items:center;gap:6px;
-    padding:3px 10px;border-radius:99px;
-    background:var(--accent);color:var(--accent-ink);
-    font-weight:700;
-  }
-  .slogan-bar .badge::before{
-    content:"";width:6px;height:6px;border-radius:99px;background:var(--accent-ink);
-  }
 
   /* ── PAGE WRAP ─────────────────────────────────── */
   main{max-width:1480px;margin:0 auto;padding:28px}
@@ -74,6 +54,11 @@
   }
   .qstat .v{font-family:var(--f-display);font-weight:700;font-size:24px;line-height:1;letter-spacing:-0.02em}
   .qstat .l{font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-top:5px}
+  .qstat.primary{background:var(--pitch);border-color:transparent;padding:16px 22px}
+  .qstat.primary .v{font-size:40px;color:var(--pitch-ink)}
+  .qstat.primary .l{color:var(--pitch-ink);opacity:.78}
+  .qstat.warn .v{color:var(--warn)}
+  .qstat.compact{background:transparent;border-color:transparent;padding:13px 14px;min-width:auto}
 
   /* ── SECTION HEAD ──────────────────────────────── */
   .sec-head{
@@ -110,13 +95,12 @@
     text-decoration:none;color:var(--ink);
   }
   .album-mini:hover{
-    transform:translateY(-3px);
     box-shadow:0 14px 28px -14px rgba(0,0,0,.3);
     border-color:var(--ink);
   }
   .album-mini.featured{
     border-color:var(--accent);
-    box-shadow:0 0 0 1px var(--accent), 0 12px 24px -10px rgba(0,0,0,.18);
+    border-width:2px;
   }
 
   .album-mini .cover{
@@ -129,7 +113,7 @@
     content:"";position:absolute;inset:0;pointer-events:none;
     background:
       radial-gradient(60% 90% at 100% 0%, rgba(255,255,255,.18), transparent 60%),
-      repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0 2px, transparent 2px 14px);
+      linear-gradient(180deg, transparent 55%, rgba(0,0,0,.16));
   }
   .album-mini .cover > *{position:relative}
   .album-mini .editor{font-family:var(--f-mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.12em;opacity:.85}
@@ -243,7 +227,7 @@
     content:"";position:absolute;inset:0;pointer-events:none;
     background:
       radial-gradient(60% 90% at 100% 0%, rgba(255,255,255,.18), transparent 60%),
-      repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0 2px, transparent 2px 14px);
+      linear-gradient(180deg, transparent 55%, rgba(0,0,0,.16));
   }
   .obj-hero > *{position:relative}
   .obj-hero .eyebrow{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:0.12em;opacity:.85}
@@ -572,7 +556,6 @@
   }
 
   /* ── COMPACT SLOGAN BAR ───────────────────────────── */
-  .slogan-bar .inner{padding:7px 28px;font-size:10.5px}
 
   /* ── EQUAL-HEIGHT COLS ────────────────────────────── */
   .cols{align-items:stretch}
@@ -606,10 +589,6 @@
     background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);
     padding:20px 22px;position:relative;overflow:hidden;
   }
-  .mission-card::before{
-    content:'';position:absolute;top:0;left:0;right:0;height:3px;
-    background:linear-gradient(90deg,var(--accent),#0ea5e9);
-  }
   .mission-team{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
   .mission-crest{
     width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;
@@ -621,8 +600,8 @@
   .mission-codes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
   .mission-code{
     font-family:var(--f-mono);font-size:11px;font-weight:600;
-    background:rgba(200,255,61,0.15);color:var(--ink-2);
-    border:1px solid rgba(200,255,61,0.4);border-radius:6px;padding:3px 8px;
+    background:color-mix(in srgb, var(--accent) 15%, transparent);color:var(--ink-2);
+    border:1px solid color-mix(in srgb, var(--accent) 40%, transparent);border-radius:6px;padding:3px 8px;
   }
   .mission-footer{display:flex;align-items:center;justify-content:space-between;}
   .mission-bar-wrap{flex:1;background:var(--line);border-radius:99px;height:6px;overflow:hidden;margin-right:12px;}
@@ -643,7 +622,7 @@
     background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;
     padding:9px 14px;min-width:160px;flex:1;
   }
-  .badge-chip.unlocked{border-color:var(--accent);background:rgba(200,255,61,0.08);}
+  .badge-chip.unlocked{border-color:var(--accent);background:color-mix(in srgb, var(--accent) 8%, transparent);}
   .badge-chip.locked{opacity:.45;filter:grayscale(1);}
   .badge-icon{font-size:20px;line-height:1;}
   .badge-info .nm{font-size:12px;font-weight:700;color:var(--ink);}
@@ -697,8 +676,8 @@
         <div class="nav-dropdown search-panel" id="searchPanel">
           <input class="search-input" id="searchInput" placeholder="Cerca numero carta o album..." autocomplete="off" />
           <div class="search-hints">
-            <button class="search-hint" data-hint="carta">🃏 Numero carta</button>
-            <button class="search-hint" data-hint="album">📚 Album</button>
+            <button class="search-hint" data-hint="carta">Numero carta</button>
+            <button class="search-hint" data-hint="album">Album</button>
           </div>
           <div class="search-results" id="searchResults"></div>
         </div>
@@ -753,12 +732,6 @@
   </div>
 </nav>
 
-<div class="slogan-bar">
-  <div class="inner">
-    <span class="badge">FiguBook</span>
-    <span>La piattaforma sicura per famiglie e collezionisti di tutte le età</span>
-  </div>
-</div>
 
 <main>
 
@@ -767,23 +740,23 @@
       <h1 id="greetingH1" class="is-loading">&nbsp;</h1>
     </div>
     <div class="quick-stats">
-      <div class="qstat">
+      <div class="qstat primary">
         <div class="v is-loading" id="qstatFigurine">—</div>
         <div class="l">Figurine totali</div>
       </div>
-      <div class="qstat">
+      <div class="qstat compact">
         <div class="v is-loading" id="qstatDoppie">—</div>
         <div class="l">Doppie</div>
       </div>
-      <div class="qstat">
+      <div class="qstat warn">
         <div class="v is-loading" id="qstatMancanti">—</div>
         <div class="l">Mancanti</div>
       </div>
-      <div class="qstat">
+      <div class="qstat compact">
         <div class="v">0</div>
         <div class="l">Scambi attivi</div>
       </div>
-      <div class="qstat">
+      <div class="qstat compact">
         <div class="v">0</div>
         <div class="l">Match pronti</div>
       </div>
