@@ -17,7 +17,16 @@ service cloud.firestore {
       // Notifiche: le leggo/segno-lette/cancello io; un ALTRO utente può crearmene
       match /notifications/{notifId} {
         allow read, update, delete: if isUser(userId);
-        allow create: if signedIn() && request.resource.data.fromUid == request.auth.uid;
+        // Un altro utente puo crearmi una notifica, ma con forma valida e
+        // limitata (no payload enormi / pre-lette).
+        allow create: if signedIn()
+          && request.resource.data.fromUid == request.auth.uid
+          && request.resource.data.read == false
+          && request.resource.data.type is string
+          && request.resource.data.title is string
+          && request.resource.data.title.size() <= 160
+          && (!('info' in request.resource.data)
+              || (request.resource.data.info is string && request.resource.data.info.size() <= 160));
       }
 
       // Recensioni RICEVUTE: chiunque autenticato le legge; le lascia un altro utente
