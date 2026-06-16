@@ -873,10 +873,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-<script type="text/babel" src="tweaks-panel.jsx"></script>
 
 <script src="album-data-2223.js"></script>
 <script>
@@ -903,28 +899,7 @@
 // ID DOM toccati: #searchBtn, #searchPanel, #searchInput, #searchResults, #msgBtn, #notifBtn, #notifPanel, #notifDot, #markReadBtn, #avatarBtn, #profileMenu, #pmProfilo, #pmImpostazioni, #pmEsci, #fbDblTrigger
 </script>
 
-<script type="text/babel">
-const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "variant": "stadio",
-  "fontDisplay": "Barlow Condensed"
-}/*EDITMODE-END*/;
-const VARIANTS = ["pitch", "stadio", "streetwear"];
-function App(){
-  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
-  React.useEffect(() => { document.body.dataset.variant = t.variant; }, [t.variant]);
-  React.useEffect(() => { document.documentElement.style.setProperty('--f-display', `'${t.fontDisplay}', ui-sans-serif`); }, [t.fontDisplay]);
-  return (
-    <TweaksPanel title="Tweaks">
-      <TweakSection label="Stile" />
-      <TweakRadio label="Variante" value={t.variant} options={VARIANTS} onChange={(v) => setTweak('variant', v)} />
-      <TweakSelect label="Font display" value={t.fontDisplay} options={['Barlow Condensed', 'Bricolage Grotesque', 'Space Grotesk', 'Instrument Serif', 'Geist']} onChange={(v) => setTweak('fontDisplay', v)} />
-    </TweaksPanel>
-  );
-}
-const mount = document.createElement('div');
-document.body.appendChild(mount);
-ReactDOM.createRoot(mount).render(<App />);
-</script>
+<script>document.body.dataset.variant = "stadio";</script>
 
 
 <script src="album-app.js"></script>
