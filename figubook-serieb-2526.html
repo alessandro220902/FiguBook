@@ -11,18 +11,6 @@
 
 <style>
   :root{
-    --bg: #f4efe6;
-    --bg-elev: #fbf8f1;
-    --ink: #14110d;
-    --ink-2: #3a342a;
-    --muted: #8a8275;
-    --line: #e3dccd;
-    --line-strong: #14110d;
-    --accent: #c8ff3d;
-    --accent-ink: #14110d;
-    --warn: #ff5b2e;
-    --gold: #f5b800;
-    --good: #1f8a5b;
 
     --f-display: 'Bricolage Grotesque', ui-sans-serif, system-ui;
     --f-body: 'Geist', ui-sans-serif, system-ui;
@@ -608,18 +596,13 @@
   .btn-line:hover{background:var(--bg-elev)}
 
   /* Variants */
-  body[data-variant="stadio"]{
-    --bg:#0d1b2a;--bg-elev:#152736;--ink:#f4efe6;--ink-2:#cfd9e3;--muted:#7e90a3;
-    --line:#22384a;--line-strong:#f4efe6;--accent:#ff7a3d;--accent-ink:#0d1b2a;
-    --warn:#ff5b2e;--gold:#ffd25b;--good:#4ade80;
-  }
-  body[data-variant="stadio"] .sticker.have{background:linear-gradient(180deg, color-mix(in srgb, var(--card-c1,#1c3245) 70%, #1c3245), color-mix(in srgb, var(--card-c1,#0d1b2a) 90%, #0d1b2a));border-color:color-mix(in srgb, var(--card-c1,#22384a) 60%, #22384a);color:var(--ink)}
+  body[data-variant="stadio"] .sticker.have{background:linear-gradient(180deg, color-mix(in srgb, var(--card-c1,var(--bg-elev)) 70%, var(--bg-elev)), color-mix(in srgb, var(--card-c1,var(--bg)) 90%, var(--bg)));border-color:color-mix(in srgb, var(--card-c1,var(--line)) 60%, var(--line));color:var(--ink)}
   body[data-variant="stadio"] .sticker.have .num,
   body[data-variant="stadio"] .sticker.have .player-name{color:#fff}
-  body[data-variant="stadio"] .sticker.missing{border:1px dashed #2e4a63}
+  body[data-variant="stadio"] .sticker.missing{border:1px dashed var(--line)}
   body[data-variant="stadio"] .sticker.double{
     background:
-      linear-gradient(135deg, color-mix(in srgb, var(--card-c1,#1c3245) 65%, var(--warn)) 0%, color-mix(in srgb, var(--card-c2,#0d1b2a) 80%, var(--warn)) 100%);
+      linear-gradient(135deg, color-mix(in srgb, var(--card-c1,var(--bg-elev)) 65%, var(--warn)) 0%, color-mix(in srgb, var(--card-c2,var(--bg)) 80%, var(--warn)) 100%);
     border-color:var(--warn);
     box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--warn) 50%, transparent);
     color:#fff;
@@ -631,16 +614,16 @@
   }
   body[data-variant="stadio"] .nav-tab.active{background:var(--accent);color:var(--ink)}
   body[data-variant="stadio"] .album-progress .ring > i{background:var(--bg-elev);color:var(--ink)}
-  body[data-variant="stadio"] .big-sticker{background:#1c3245;border-color:#22384a;color:var(--ink)}
+  body[data-variant="stadio"] .big-sticker{background:var(--bg-elev);border-color:var(--line);color:var(--ink)}
   body[data-variant="stadio"] .big-sticker .num,body[data-variant="stadio"] .big-sticker .player-name{color:var(--ink)}
-  body[data-variant="stadio"] .rail-search{background:#0d1b2a;color:var(--ink);border-color:#22384a}
-  body[data-variant="stadio"] .list-row{background:#152736;color:var(--ink)}
+  body[data-variant="stadio"] .rail-search{background:var(--bg);color:var(--ink);border-color:var(--line)}
+  body[data-variant="stadio"] .list-row{background:var(--bg-elev);color:var(--ink)}
   body[data-variant="stadio"] .list-row .player-name{color:var(--ink)}
   body[data-variant="stadio"] .list-row.missing .player-name{color:var(--muted)}
-  body[data-variant="stadio"] .list-view{background:#0d1b2a;border-color:#22384a}
-  body[data-variant="stadio"] .state-buttons button.active.have{background:color-mix(in srgb, var(--good) 20%, #152736);color:var(--good)}
-  body[data-variant="stadio"] .state-buttons button.active.double{background:color-mix(in srgb, var(--gold) 22%, #152736);color:var(--gold)}
-  body[data-variant="stadio"] .state-buttons button.active.missing{background:color-mix(in srgb, var(--warn) 20%, #152736);color:var(--warn)}
+  body[data-variant="stadio"] .list-view{background:var(--bg);border-color:var(--line)}
+  body[data-variant="stadio"] .state-buttons button.active.have{background:color-mix(in srgb, var(--good) 20%, var(--bg-elev));color:var(--good)}
+  body[data-variant="stadio"] .state-buttons button.active.double{background:color-mix(in srgb, var(--gold) 22%, var(--bg-elev));color:var(--gold)}
+  body[data-variant="stadio"] .state-buttons button.active.missing{background:color-mix(in srgb, var(--warn) 20%, var(--bg-elev));color:var(--warn)}
 
   body[data-variant="streetwear"]{
     --bg:#ece9e2;--bg-elev:#fefcf7;--ink:#0a0a0a;--ink-2:#2a2a2a;--muted:#7d7a72;
@@ -666,7 +649,7 @@
   .disclaimer{max-width:1480px;margin:20px auto 80px;padding:0 28px;font-family:var(--f-mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;line-height:1.6;border-top:1px solid var(--line);padding-top:20px;margin-top:30px}
 
   /* Prevent white flash during page navigation */
-  html{background-color:#0d1b2a}
+  html{background-color:#0c1410}
 </style>
 <script>document.cookie.indexOf("fb-theme=light")>-1&&document.documentElement.classList.add("fb-light");</script>
 <link rel="stylesheet" href="figubook-tokens.css">
