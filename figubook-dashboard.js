@@ -5,6 +5,26 @@
 (function () {
 
   function $(id) { return document.getElementById(id); }
+
+  // Conta da 0 al valore (effetto vivo sulle statistiche). Rispetta
+  // prefers-reduced-motion: in quel caso scrive subito il numero.
+  function countUp(el, target, dur) {
+    if (!el) return;
+    target = Number(target) || 0;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || target <= 0) { el.textContent = target; return; }
+    dur = dur || 900;
+    var start = null;
+    function step(ts) {
+      if (start === null) start = ts;
+      var p = Math.min((ts - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3); // ease-out cubic
+      el.textContent = Math.round(eased * target);
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = target;
+    }
+    requestAnimationFrame(step);
+  }
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
@@ -66,13 +86,13 @@
     // ── Statistiche rapide ───────────────────────────────────────
     let all = { totalHave: 0, totalDoubles: 0, totalMissing: 0 };
     try { all = await window.DB.getAllStats(); } catch (e) {}
-    if ($('qstatFigurine')) $('qstatFigurine').textContent = all.totalHave;
-    if ($('qstatDoppie'))   $('qstatDoppie').textContent   = all.totalDoubles;
-    if ($('qstatMancanti')) $('qstatMancanti').textContent = all.totalMissing;
     ['qstatFigurine', 'qstatDoppie', 'qstatMancanti'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.classList.remove('is-loading');
     });
+    countUp($('qstatFigurine'), all.totalHave);
+    countUp($('qstatDoppie'),   all.totalDoubles);
+    countUp($('qstatMancanti'), all.totalMissing);
 
     // ── Album posseduti ──────────────────────────────────────────
     let ids = [];
