@@ -26,6 +26,7 @@ html.fb-light body {
 
   --accent: #c2f23d;
   --accent-ink: #13160f;
+  --accent-2: #94e000;        /* endpoint gradiente barre progresso */
 
   --pitch: #0e4d39;
   --pitch-ink: #eafff3;
@@ -50,6 +51,7 @@ body[data-variant="stadio"] {
 
   --accent: #c2f23d;          /* lime unificato sui due temi */
   --accent-ink: #0c1410;
+  --accent-2: #94e000;        /* endpoint gradiente barre progresso */
 
   --pitch: #1f7a59;
   --pitch-ink: #eafff3;

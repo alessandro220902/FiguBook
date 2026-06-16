@@ -109,7 +109,7 @@
   .album-progress .ring{width:54px;height:54px;border-radius:99px;background:conic-gradient(var(--accent) calc(var(--p, 9) * 1%), var(--line) 0);display:grid;place-items:center}
   .album-progress .ring > i{width:42px;height:42px;border-radius:99px;background:var(--bg-elev);display:grid;place-items:center;font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--ink);font-style:normal}
   .album-progress .bar{flex:1;height:6px;background:var(--line);border-radius:99px;overflow:hidden;max-width:200px}
-  .album-progress .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#94e000);width:9%}
+  .album-progress .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:9%}
 
   /* Layout */
   .layout{max-width:1480px;margin:0 auto;padding:24px 28px 60px;display:grid;grid-template-columns:300px 1fr;gap:22px}
@@ -191,7 +191,6 @@
   .sec-hero[data-kind="opening-trofei"]::after{content:"";position:absolute;left:-40px;bottom:-60px;width:240px;height:240px;border-radius:99px;background:radial-gradient(circle, rgba(255,215,0,.4), transparent 65%);pointer-events:none}
   .sec-hero[data-kind="opening-trofei"] h2{color:#ffe98b}
 
-  .sec-hero[data-kind="style"]::after{content:"STYLE";position:absolute;right:-20px;top:50%;transform:translateY(-50%);font-family:var(--f-display);font-weight:900;font-size:200px;color:rgba(255,255,255,.06);letter-spacing:-0.05em;pointer-events:none}
 
   /* IA: usa i colori della sezione (--c1/--c2) + overlay griglia tech */
   .sec-hero[data-kind="ai"]::after{
@@ -205,7 +204,7 @@
   }
 
   .sec-hero[data-kind="upgrade"]{background:linear-gradient(135deg, #14110d, #1a1a2a);color:#fff;overflow:hidden}
-  .sec-hero[data-kind="upgrade"]::after{content:"";position:absolute;inset:-20%;background:conic-gradient(from 0deg, #c8ff3d, #ff5b2e, #f5b800, #7a5ae0, #0ea5e9, #c8ff3d);filter:blur(60px);opacity:.4;pointer-events:none}
+  .sec-hero[data-kind="upgrade"]::after{content:"";position:absolute;inset:-20%;background:conic-gradient(from 0deg, #c8ff3d, #ff5b2e, #f5b800, #7a5ae0, #0ea5e9, #c8ff3d);filter:blur(60px);opacity:.18;pointer-events:none}
   .sec-hero[data-kind="upgrade"] h2{position:relative}
 
   .sec-hero[data-kind="kinder"]{color:#1a1a1a}
