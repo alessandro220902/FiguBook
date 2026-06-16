@@ -56,9 +56,11 @@
   }
   .qstat .v{font-family:var(--f-display);font-weight:700;font-size:24px;line-height:1;letter-spacing:-0.02em}
   .qstat .l{font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-top:5px}
-  .qstat.primary{background:var(--pitch);border-color:transparent;padding:16px 22px}
-  .qstat.primary .v{font-size:40px;color:var(--pitch-ink)}
-  .qstat.primary .l{color:var(--pitch-ink);opacity:.78}
+  /* Gerarchia a 3 livelli: principale (blocco pitch) > mancanti (tier warn) > compatte */
+  .qstat.primary{background:var(--pitch);border-color:transparent;padding:16px 24px;flex:1 1 200px}
+  .qstat.primary .v{font-size:44px;color:var(--pitch-ink)}
+  .qstat.primary .l{color:var(--pitch-ink);opacity:.82}
+  .qstat.warn{background:color-mix(in srgb, var(--warn) 9%, var(--bg-elev));border-color:color-mix(in srgb, var(--warn) 28%, var(--line))}
   .qstat.warn .v{color:var(--warn)}
   .qstat.compact{background:transparent;border-color:transparent;padding:13px 14px;min-width:auto}
 
@@ -99,11 +101,15 @@
   .album-mini:hover{
     box-shadow:0 14px 28px -14px rgba(0,0,0,.3);
     border-color:var(--accent);
+    transform:translateY(-2px);
   }
+  /* In corso = card primaria del carosello: piu larga + bordo accent */
   .album-mini.featured{
+    flex:0 0 320px;
     border-color:var(--accent);
     border-width:2px;
   }
+  .album-mini.featured .ttl{font-size:27px}
 
   .album-mini .cover{
     height:120px;position:relative;overflow:hidden;
@@ -145,7 +151,7 @@
   .album-mini .bar > i{display:block;height:100%;background:linear-gradient(90deg, var(--c1,var(--accent)), var(--c2,var(--accent-2)));border-radius:99px}
 
   /* ── TWO-PANELS ROW ────────────────────────────── */
-  .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 
   .panel{
     background:var(--bg-elev);border:1px solid var(--line);
@@ -243,7 +249,7 @@
     position:relative;
     padding:22px 24px 16px;
   }
-  .obj-list{display:grid;grid-template-columns:repeat(2, 1fr);gap:10px;margin-bottom:20px}
+  .obj-list{display:grid;grid-template-columns:repeat(2, 1fr);gap:12px;margin-bottom:20px}
   .obj-row{
     display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;
     padding:12px 14px;border-radius:10px;
