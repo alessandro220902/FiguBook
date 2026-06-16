@@ -23,12 +23,21 @@ service cloud.firestore {
       // Recensioni RICEVUTE: chiunque autenticato le legge; le lascia un altro utente
       match /feedback/{fid} {
         allow read: if signedIn();
+        // Recensione valida solo se esiste uno scambio COMPLETATO tra i due
+        // (anti review-bombing). proposalId deve puntare a una proposta
+        // completed con entrambi tra i participants.
         allow create, update: if signedIn()
           && request.resource.data.fromUid == request.auth.uid   // recensisci come te stesso
           && request.auth.uid != userId                          // non recensire te stesso
           && request.resource.data.rating is number
           && request.resource.data.rating >= 1
-          && request.resource.data.rating <= 5;
+          && request.resource.data.rating <= 5
+          && request.resource.data.comment is string
+          && request.resource.data.comment.size() <= 500
+          && exists(/databases/$(database)/documents/proposals/$(request.resource.data.proposalId))
+          && get(/databases/$(database)/documents/proposals/$(request.resource.data.proposalId)).data.status == 'completed'
+          && request.auth.uid in get(/databases/$(database)/documents/proposals/$(request.resource.data.proposalId)).data.participants
+          && userId in get(/databases/$(database)/documents/proposals/$(request.resource.data.proposalId)).data.participants;
         allow delete: if false;
       }
     }
@@ -52,7 +61,17 @@ service cloud.firestore {
     match /groups/{groupId} {
       allow read: if signedIn();
       allow create: if signedIn() && request.resource.data.createdBy == request.auth.uid;
-      allow update: if signedIn();   // memberCount join/leave
+      // Update consentito solo per:
+      //  - join/leave: cambia SOLO memberCount, di esattamente +/-1
+      //  - il proprietario: modifica il gruppo senza poter cambiare createdBy
+      // (prima era aperto a chiunque -> hijack di nome/codice/contatori)
+      allow update: if signedIn() && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberCount'])
+          && (request.resource.data.memberCount == resource.data.memberCount + 1
+              || request.resource.data.memberCount == resource.data.memberCount - 1))
+        || (isUser(resource.data.createdBy)
+          && request.resource.data.createdBy == resource.data.createdBy)
+      );
       allow delete: if false;
 
       match /members/{memberId} {
