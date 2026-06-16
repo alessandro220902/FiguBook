@@ -41,23 +41,25 @@
   }
 
   // Card album per lo scroller orizzontale.
-  function albumCard(meta, stats) {
+  function albumCard(meta, stats, featured) {
     const a = document.createElement('a');
     a.href = meta.href;
-    a.className = 'album-mini';
+    a.className = 'album-mini' + (featured ? ' featured' : '');
     const c1 = meta.c1 || '#2a2a2a', c2 = meta.c2 || '#1a1a1a';
     // overlay scuro sopra il gradiente colore: garantisce contrasto del testo
     // bianco anche su album chiari (giallo/oro), senza perdere l'identita colore.
-    a.style.cssText = 'display:block;min-width:200px;text-decoration:none;color:#fff;' +
+    // featured = album "in corso" (piu vicino al completamento): piu largo + bordo accent.
+    a.style.cssText = 'display:block;min-width:' + (featured ? '264px' : '200px') + ';text-decoration:none;color:#fff;' +
       'text-shadow:0 1px 3px rgba(0,0,0,.5);' +
       'background:linear-gradient(160deg, rgba(0,0,0,.10) 0%, rgba(0,0,0,.40) 100%), ' +
       'linear-gradient(135deg, ' + c1 + ' 0%, ' + c2 + ' 100%);' +
-      'border:1px solid rgba(0,0,0,.08);border-radius:16px;' +
+      'border:' + (featured ? '2px solid var(--accent)' : '1px solid rgba(0,0,0,.08)') + ';border-radius:16px;' +
       'padding:16px;margin-right:12px';
     a.innerHTML =
+      (featured ? '<div style="display:inline-block;font-family:var(--f-mono);font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-ink);background:var(--accent);padding:2px 8px;border-radius:99px;margin-bottom:8px;text-shadow:none">In corso</div>' : '') +
       '<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.04em">' +
         esc(meta.editor) + ' · ' + esc(meta.season) + '</div>' +
-      '<div style="font-size:16px;font-weight:700;margin:4px 0 10px">' + esc(meta.title) + '</div>' +
+      '<div style="font-size:' + (featured ? '19px' : '16px') + ';font-weight:700;margin:4px 0 10px">' + esc(meta.title) + '</div>' +
       '<div style="height:8px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden">' +
         '<i style="display:block;height:100%;width:' + stats.pct + '%;background:#fff"></i>' +
       '</div>' +
@@ -127,10 +129,26 @@
       if (scroller) {
         scroller.innerHTML = '';
         scroller.style.cssText = 'display:flex;overflow-x:auto;padding-bottom:4px';
+        // featured = album piu vicino al completamento (0 < pct < 100); altrimenti
+        // quello con pct piu alto. Va per primo + evidenziato.
+        let featuredId = null, bestPct = -1;
         ids.forEach(function (id) {
+          var p = (statsById[id] || {}).pct || 0;
+          if (p > 0 && p < 100 && p > bestPct) { bestPct = p; featuredId = id; }
+        });
+        if (!featuredId) {
+          ids.forEach(function (id) {
+            var p = (statsById[id] || {}).pct || 0;
+            if (p > bestPct) { bestPct = p; featuredId = id; }
+          });
+        }
+        const order = featuredId
+          ? [featuredId].concat(ids.filter(function (id) { return id !== featuredId; }))
+          : ids;
+        order.forEach(function (id) {
           const meta = window.ALBUM_BY_ID[id] ||
             { href: '#', editor: '', season: '', title: id };
-          scroller.appendChild(albumCard(meta, statsById[id]));
+          scroller.appendChild(albumCard(meta, statsById[id], id === featuredId));
         });
       }
 
