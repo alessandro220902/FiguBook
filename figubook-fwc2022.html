@@ -6,13 +6,13 @@
 <title>FiguBook — FIFA World Cup 2022</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="figubook-album-overrides.css">
 
 <style>
   :root{
 
-    --f-display: 'Bricolage Grotesque', ui-sans-serif, system-ui;
+    --f-display:'Barlow Condensed', ui-sans-serif, system-ui;
     --f-body: 'Geist', ui-sans-serif, system-ui;
     --f-mono: 'Geist Mono', ui-monospace, Menlo, monospace;
     --f-serif: 'Instrument Serif', ui-serif, Georgia, serif;
@@ -906,7 +906,7 @@
 <script type="text/babel">
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "variant": "stadio",
-  "fontDisplay": "Space Grotesk"
+  "fontDisplay": "Barlow Condensed"
 }/*EDITMODE-END*/;
 const VARIANTS = ["pitch", "stadio", "streetwear"];
 function App(){
@@ -917,7 +917,7 @@ function App(){
     <TweaksPanel title="Tweaks">
       <TweakSection label="Stile" />
       <TweakRadio label="Variante" value={t.variant} options={VARIANTS} onChange={(v) => setTweak('variant', v)} />
-      <TweakSelect label="Font display" value={t.fontDisplay} options={['Bricolage Grotesque', 'Space Grotesk', 'Instrument Serif', 'Geist']} onChange={(v) => setTweak('fontDisplay', v)} />
+      <TweakSelect label="Font display" value={t.fontDisplay} options={['Barlow Condensed', 'Bricolage Grotesque', 'Space Grotesk', 'Instrument Serif', 'Geist']} onChange={(v) => setTweak('fontDisplay', v)} />
     </TweaksPanel>
   );
 }

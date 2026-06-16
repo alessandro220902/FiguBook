@@ -74,7 +74,7 @@ Coppie su asse di contrasto (display grottesco + serif + mono), non font simili.
 
 | Ruolo | Famiglia | Token | Uso |
 |---|---|---|---|
-| Display | **Bricolage Grotesque** (400–800, opsz) | `--f-display` | titoli, numeri grandi, hero |
+| Display | **Barlow Condensed** (400–700) | `--f-display` | titoli, numeri grandi, hero — condensato sportivo "da tabellone" |
 | Body | **Geist** (300–700) | `--f-body` | testo, UI, label |
 | Mono | **Geist Mono** (400–600) | `--f-mono` | dati, codici figurina, kicker funzionali, stat label |
 | Serif accent | **Instrument Serif** (italic) | `--f-serif` | tocco editoriale, enfasi "ma non per molto…" in hero benvenuto |
