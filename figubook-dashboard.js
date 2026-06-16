@@ -46,9 +46,12 @@
     a.href = meta.href;
     a.className = 'album-mini';
     const c1 = meta.c1 || '#2a2a2a', c2 = meta.c2 || '#1a1a1a';
+    // overlay scuro sopra il gradiente colore: garantisce contrasto del testo
+    // bianco anche su album chiari (giallo/oro), senza perdere l'identita colore.
     a.style.cssText = 'display:block;min-width:200px;text-decoration:none;color:#fff;' +
-      'text-shadow:0 1px 2px rgba(0,0,0,.35);' +
-      'background:linear-gradient(135deg, ' + c1 + ' 0%, ' + c2 + ' 100%);' +
+      'text-shadow:0 1px 3px rgba(0,0,0,.5);' +
+      'background:linear-gradient(160deg, rgba(0,0,0,.10) 0%, rgba(0,0,0,.40) 100%), ' +
+      'linear-gradient(135deg, ' + c1 + ' 0%, ' + c2 + ' 100%);' +
       'border:1px solid rgba(0,0,0,.08);border-radius:16px;' +
       'padding:16px;margin-right:12px';
     a.innerHTML =
