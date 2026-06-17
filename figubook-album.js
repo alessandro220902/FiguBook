@@ -33,14 +33,14 @@
     div.dataset.status = status;
     div.dataset.tags = (meta.tags || []).join(',');
     const c1 = meta.c1 || '#2a2a2a', c2 = meta.c2 || '#1a1a1a';
-    div.style.cssText = 'position:relative;cursor:pointer;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);' +
+    div.style.cssText = 'position:relative;cursor:pointer;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);' +
       'background:linear-gradient(135deg, ' + c1 + ' 0%, ' + c2 + ' 100%);' +
       'border:1px solid rgba(0,0,0,.08);border-radius:18px;padding:18px';
     div.innerHTML =
       '<button class="card-remove" title="Rimuovi dalla raccolta" ' +
         'style="position:absolute;top:10px;right:10px;border:none;background:rgba(255,255,255,.2);color:#fff;' +
         'width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:14px;line-height:1">×</button>' +
-      '<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.04em">' +
+      '<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.92);text-transform:uppercase;letter-spacing:.04em">' +
         esc(meta.editor) + ' · ' + esc(meta.season) + '</div>' +
       '<a href="' + meta.href + '" style="display:block;font-size:18px;font-weight:700;margin:4px 0 12px;' +
         'text-decoration:none;color:#fff">' + esc(meta.title) + '</a>' +

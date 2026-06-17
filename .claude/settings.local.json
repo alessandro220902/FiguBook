@@ -135,7 +135,9 @@
       "Bash(sed -i '' 's/figubook-dashboard.js?v=4/figubook-dashboard.js?v=5/' figubook-dashboard.html)",
       "Bash(sed -i '' 's/figubook-doppioni.js?v=1/figubook-doppioni.js?v=2/' figubook-doppioni.html)",
       "Bash(node -c figubook-doppioni.js)",
-      "Bash(xargs -0 sed -i '' 's/album-app.js?v=1/album-app.js?v=2/g')"
+      "Bash(xargs -0 sed -i '' 's/album-app.js?v=1/album-app.js?v=2/g')",
+      "Bash(node -c figubook-album.js)",
+      "Bash(sed -i '' 's/figubook-album.js?v=1/figubook-album.js?v=2/' figubook-album.html)"
     ]
   }
 }
