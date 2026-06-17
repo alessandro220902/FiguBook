@@ -57,7 +57,7 @@
       'padding:16px;margin-right:12px';
     a.innerHTML =
       (featured ? '<div style="display:inline-block;font-family:var(--f-mono);font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-ink);background:var(--accent);padding:2px 8px;border-radius:99px;margin-bottom:8px;text-shadow:none">In corso</div>' : '') +
-      '<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.04em">' +
+      '<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.92);text-transform:uppercase;letter-spacing:.04em">' +
         esc(meta.editor) + ' · ' + esc(meta.season) + '</div>' +
       '<div style="font-size:' + (featured ? '19px' : '16px') + ';font-weight:700;margin:4px 0 10px">' + esc(meta.title) + '</div>' +
       '<div style="height:8px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden">' +

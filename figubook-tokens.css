@@ -45,7 +45,7 @@ body[data-variant="stadio"] {
   --bg-elev: #13201a;
   --ink: #eef3ec;
   --ink-2: #b9c4ba;
-  --muted: #8a978c;          /* AA su scuro */
+  --muted: #9aa89d;          /* AA+ su scuro (~7.3:1) — alzato per leggibilità label/sub */
   --line: #243029;
   --line-strong: #eef3ec;
 
