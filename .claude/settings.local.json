@@ -146,7 +146,14 @@
       "Bash(unzip -p superpowers-main.zip superpowers-main/hooks/hooks.json)",
       "Bash(unzip -p superpowers-main.zip superpowers-main/hooks/session-start)",
       "Bash(echo \"---exit $?---\")",
-      "WebFetch(domain:21st.dev)"
+      "WebFetch(domain:21st.dev)",
+      "Bash(gh --version)",
+      "Bash(npm -v)",
+      "Bash(npm create *)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(npm ls *)",
+      "Bash(npx --yes shadcn@latest init -d)"
     ]
   }
 }

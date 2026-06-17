@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>FiguBook</title>
+  <script>
+    // SPA fallback per GitHub Pages: le route React (es. /FiguBook/app/dashboard)
+    // non esistono come file, Pages serve questo 404 -> rimanda all'app,
+    // conservando il percorso cosi' il router lo gestisce.
+    var base = '/FiguBook/app/';
+    var path = location.pathname;
+    if (path.indexOf(base) === 0) {
+      var route = path.slice(base.length);
+      location.replace(base + '?p=' + encodeURIComponent(route) + location.hash);
+    } else {
+      location.replace(base);
+    }
+  </script>
+</head>
+<body></body>
+</html>
