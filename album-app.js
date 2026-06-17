@@ -495,6 +495,9 @@ function _teamClr(sec){
     // Also update the missing count pill next to "Tutte le figurine mancanti"
     const pill = document.getElementById('missingCountPill');
     if (pill) pill.textContent = stats.missing;
+    // ...e il pill doppioni (carte in doppia, coerente con headerDouble)
+    const dblPill = document.getElementById('fbDblCountPill');
+    if (dblPill) dblPill.textContent = stats.doubles;
   }
 
   // ── Drawer ──────────────────────────────────────────────────
