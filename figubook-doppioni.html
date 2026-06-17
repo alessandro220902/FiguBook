@@ -187,6 +187,25 @@
   .miss-card .found-btn:hover{filter:brightness(1.12)}
   .miss-card .found-btn:active{transform:scale(.96)}
 
+  /* Footer doppione: contatore + bottone rimuovi (stessa logica di "Trovata" in mancanti) */
+  .miss-card .dbl-foot{display:flex;flex-direction:column;gap:6px}
+  .miss-card .dbl-count{
+    font-family:var(--f-mono);font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:0.08em;text-align:center;
+    opacity:.95;background:rgba(255,255,255,.18);border-radius:7px;padding:5px 8px;
+  }
+  .miss-card .remove-btn{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    width:100%;padding:8px 10px;border:0;border-radius:8px;
+    background:var(--warn);color:#fff;
+    font-family:var(--f-body);font-size:12px;font-weight:700;
+    text-transform:uppercase;letter-spacing:0.04em;cursor:pointer;
+    box-shadow:0 2px 8px -1px rgba(0,0,0,.25);
+    transition:filter .12s ease, transform .08s ease;
+  }
+  .miss-card .remove-btn:hover{filter:brightness(1.12)}
+  .miss-card .remove-btn:active{transform:scale(.96)}
+
   /* When marked found (state transition) */
   .miss-card.found{
     animation:found-flash .6s ease forwards;
@@ -477,6 +496,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="firebase-init.js?v=1"></script>
 <script src="figubook-db.js?v=1"></script>
-<script src="figubook-doppioni.js?v=1"></script>
+<script src="figubook-doppioni.js?v=2"></script>
 </body>
 </html>

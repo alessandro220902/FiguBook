@@ -59,7 +59,10 @@
       '<div class="team-line">' + team + '</div>' +
       '<div><div class="num">' + esc(item.code) + '</div>' +
       '<div class="section-hint">' + name + '</div></div>' +
-      '<div class="found-btn" style="cursor:default;background:rgba(255,255,255,.2)">' + label + '</div>' +
+      '<div class="dbl-foot">' +
+        '<div class="dbl-count">' + label + '</div>' +
+        '<button class="remove-btn" type="button">− Rimuovi doppione</button>' +
+      '</div>' +
     '</div>';
   }
 
@@ -103,6 +106,38 @@
           g.items.map(cardHtml).join('') + '</div></div>';
       }).join('');
     }
+
+    // Wire "Rimuovi doppione": scala di 1 la copia extra. Se resta >=1 doppia la
+    // carta resta in lista col contatore aggiornato; all'ultima rimozione torna
+    // 'have' (1 copia posseduta) ed esce dalla lista. Aggiornamento ottimistico,
+    // salvataggio Firestore in background (stessa logica di "Trovata" in mancanti).
+    wrap.querySelectorAll('.miss-card').forEach(function (card) {
+      const code = card.dataset.code;
+      const btn = card.querySelector('.remove-btn');
+      if (!btn) return;
+      btn.addEventListener('click', async function () {
+        const total = window.STICKER_COUNTS[code] || 2; // stato 'double' => almeno 2 copie
+        const newTotal = total - 1;
+        if (newTotal >= 2) {
+          window.STICKER_COUNTS[code] = newTotal;
+          const extra = newTotal - 1;
+          const cl = card.querySelector('.dbl-count');
+          if (cl) cl.textContent = extra === 1 ? '1 doppia' : extra + ' doppie';
+          try { await window.DB.saveCardState(albumId, code, 'double', newTotal); }
+          catch (e) { console.error('FiguBook: errore salvataggio', e); }
+          renderStats();
+        } else {
+          window.STICKER_STATES[code] = 'have';
+          delete window.STICKER_COUNTS[code];
+          try { await window.DB.saveCardState(albumId, code, 'have'); }
+          catch (e) { console.error('FiguBook: errore salvataggio', e); }
+          card.style.transition = 'opacity .25s';
+          card.style.opacity = '0';
+          setTimeout(function () { render(); }, 260);
+          renderStats();
+        }
+      });
+    });
 
     renderStats();
   }
