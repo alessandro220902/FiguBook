@@ -7,9 +7,11 @@
 
 /* Identità FiguBook — token brand (da figubook-tokens.css, tema scuro) */
 @theme {
-  --color-accent: #c2f23d;      /* lime */
+  --color-lime: #c2f23d;        /* lime brand (usa questo, 'accent' e' oscurato da shadcn) */
+  --color-lime-ink: #0c1410;
+  --color-lime-2: #94e000;      /* endpoint gradiente barre */
   --color-accent-ink: #0c1410;
-  --color-accent-2: #94e000;    /* endpoint gradiente barre */
+  --color-accent-2: #94e000;
   --color-pitch: #1f7a59;       /* verde campo */
   --color-pitch-ink: #eafff3;
   --color-gold: #e6b73c;
@@ -75,24 +77,25 @@ body {
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  /* Tema scuro su identità FiguBook (pitch/lime) */
+  --background: #0c1410;
+  --foreground: #eef3ec;
+  --card: #13201a;
+  --card-foreground: #eef3ec;
+  --popover: #13201a;
+  --popover-foreground: #eef3ec;
+  --primary: #c2f23d;            /* lime = azione primaria */
+  --primary-foreground: #0c1410;
+  --secondary: #1f7a59;          /* pitch */
+  --secondary-foreground: #eafff3;
+  --muted: #1a2a22;
+  --muted-foreground: #9aa89d;
+  --accent: #1f7a59;
+  --accent-foreground: #eafff3;
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: #c2f23d;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -119,3 +122,21 @@ body {
     @apply font-sans;
   }
 }
+
+/* Aurora background (21st aceternity) — vars + keyframe, ricolorato lime/pitch/gold */
+:root {
+  --white: #ffffff;
+  --black: #000000;
+  --transparent: transparent;
+  /* gradiente aurora brand */
+  --aurora-1: #c2f23d; /* lime */
+  --aurora-2: #1f7a59; /* pitch */
+  --aurora-3: #94e000; /* lime scuro */
+  --aurora-4: #e6b73c; /* gold */
+}
+
+@keyframes aurora {
+  from { background-position: 50% 50%, 50% 50%; }
+  to   { background-position: 350% 50%, 350% 50%; }
+}
+.animate-aurora { animation: aurora 60s linear infinite; }

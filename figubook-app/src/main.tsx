@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
+import { AuthProvider } from '@/hooks/useAuth'
 
 // Ripristina la route salvata dal fallback SPA (public/404.html)
 const _p = new URLSearchParams(location.search).get('p')
@@ -13,7 +14,9 @@ if (_p !== null) {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter basename="/FiguBook/app">
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 )
