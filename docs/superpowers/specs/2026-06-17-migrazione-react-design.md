@@ -18,6 +18,17 @@ cambia solo UI/UX e l'architettura frontend.
 - Build statica → deploy su GitHub Pages.
 - Switch finale solo quando React copre tutte le sezioni.
 
+### Deploy — ZERO LOCALE (vincolo esplicito utente)
+
+- L'utente NON vuole nulla in locale: niente Node, niente dev server sul Mac.
+- Build automatica via **GitHub Actions**: ad ogni push, Actions installa,
+  builda Vite e pubblica l'output su GitHub Pages.
+- L'utente vede il risultato solo sull'URL web Pages (come il sito vecchio).
+- `figubook-app/` sono file di codice nel repo, non un sito da aprire in locale.
+- Trade-off accettato: dopo ogni push si aspetta ~1 min la build prima di vedere.
+- Sito vecchio (HTML alla radice) e nuovo (build React in sottocartella Pages)
+  coesistono finché non si fa lo switch finale.
+
 ### Stack
 
 - Vite + React + TypeScript

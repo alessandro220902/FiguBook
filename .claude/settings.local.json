@@ -139,7 +139,14 @@
       "Bash(node -c figubook-album.js)",
       "Bash(sed -i '' 's/figubook-album.js?v=1/figubook-album.js?v=2/' figubook-album.html)",
       "Bash(sed -i '' 's/figubook-album.js?v=2/figubook-album.js?v=3/' figubook-album.html)",
-      "Bash(sed -i '' 's/figubook-dashboard.js?v=5/figubook-dashboard.js?v=6/' figubook-dashboard.html)"
+      "Bash(sed -i '' 's/figubook-dashboard.js?v=5/figubook-dashboard.js?v=6/' figubook-dashboard.html)",
+      "Bash(unzip -l superpowers-main.zip)",
+      "Bash(unzip -p superpowers-main.zip superpowers-main/.claude-plugin/plugin.json)",
+      "Bash(unzip -p superpowers-main.zip superpowers-main/.claude-plugin/marketplace.json)",
+      "Bash(unzip -p superpowers-main.zip superpowers-main/hooks/hooks.json)",
+      "Bash(unzip -p superpowers-main.zip superpowers-main/hooks/session-start)",
+      "Bash(echo \"---exit $?---\")",
+      "WebFetch(domain:21st.dev)"
     ]
   }
 }
