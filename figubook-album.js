@@ -45,7 +45,7 @@
       '<a href="' + meta.href + '" style="display:block;font-size:18px;font-weight:700;margin:4px 0 12px;' +
         'text-decoration:none;color:#fff">' + esc(meta.title) + '</a>' +
       '<div style="height:8px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden">' +
-        '<i style="display:block;height:100%;width:' + stats.pct + '%;background:#fff"></i>' +
+        '<i style="display:block;height:100%;width:' + stats.pct + '%;background:var(--accent)"></i>' +
       '</div>' +
       '<div style="display:flex;justify-content:space-between;margin-top:10px;font-size:13px">' +
         '<span>' + stats.have + ' / ' + stats.total + ' · ' + stats.doubles + ' doppie</span>' +

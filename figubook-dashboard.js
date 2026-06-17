@@ -61,7 +61,7 @@
         esc(meta.editor) + ' · ' + esc(meta.season) + '</div>' +
       '<div style="font-size:' + (featured ? '19px' : '16px') + ';font-weight:700;margin:4px 0 10px">' + esc(meta.title) + '</div>' +
       '<div style="height:8px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden">' +
-        '<i style="display:block;height:100%;width:' + stats.pct + '%;background:#fff"></i>' +
+        '<i style="display:block;height:100%;width:' + stats.pct + '%;background:var(--accent)"></i>' +
       '</div>' +
       '<div style="display:flex;justify-content:space-between;margin-top:8px;font-size:13px">' +
         '<span>' + stats.have + ' / ' + stats.total + '</span>' +
