@@ -1,0 +1,59 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build React app
+        working-directory: figubook-app
+        run: |
+          npm ci
+          npm run build
+
+      - name: Assemble Pages artifact (sito vecchio + app nuova)
+        run: |
+          mkdir -p _site
+          # Sito vecchio: tutti i file di root tranne meta-repo e l'app sorgente
+          rsync -a \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude 'figubook-app' \
+            --exclude 'docs' \
+            --exclude '_site' \
+            ./ _site/
+          # App React buildata sotto /app/
+          mkdir -p _site/app
+          cp -r figubook-app/dist/. _site/app/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
