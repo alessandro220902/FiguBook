@@ -1,88 +1,41 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, useReducedMotion, type PanInfo } from 'framer-motion'
+import { CardStack, type CardStackItem } from '@/components/ui/card-stack'
 import type { PerAlbumStats } from '@/lib/db/albums'
 
-// Mazzo di album sfogliabile: card a tutto colore dell'album con stat complete.
-// Auto-advance (pausa su hover), drag/swipe, pallini cliccabili, reduced-motion safe.
-export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
-  const order = [...albums].sort((a, b) => a.missing - b.missing)
-  const n = order.length
-  const [active, setActive] = useState(0)
-  const [paused, setPaused] = useState(false)
-  const reduce = useReducedMotion()
+type Item = CardStackItem & { a: PerAlbumStats }
 
-  const go = (i: number) => setActive(((i % n) + n) % n)
-  const next = () => go(active + 1)
-  const prev = () => go(active - 1)
+// Mazzo album: card-stack a tutto colore album, stat complete, auto-rotazione.
+export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
+  const ordered = [...albums].sort((a, b) => a.missing - b.missing)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const [w, setW] = useState(460)
 
   useEffect(() => {
-    if (reduce || paused || n <= 1) return
-    const t = window.setInterval(() => setActive((a) => (a + 1) % n), 5000)
-    return () => window.clearInterval(t)
-  }, [reduce, paused, n])
+    const el = wrapRef.current
+    if (!el) return
+    const ro = new ResizeObserver((entries) => setW(Math.round(entries[0].contentRect.width)))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
-  if (!n) return null
+  if (!ordered.length) return null
 
-  const onDragEnd = (_e: unknown, info: PanInfo) => {
-    if (info.offset.x < -60 || info.velocity.x < -350) next()
-    else if (info.offset.x > 60 || info.velocity.x > 350) prev()
-  }
+  const cardWidth = Math.max(240, Math.min(Math.round(w * 0.82), 480))
+  const cardHeight = Math.round(cardWidth * 0.6)
+  const items: Item[] = ordered.map((a) => ({ id: a.id, title: a.entry.title, a }))
 
   return (
-    <div
-      className="flex h-full flex-col"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
-      <div className="relative grow" style={{ minHeight: 232 }}>
-        {order.map((a, i) => {
-          const o = (i - active + n) % n // 0 = davanti
-          const front = o === 0
-          const layer =
-            o === 0
-              ? { scale: 1, y: 0, opacity: 1 }
-              : o === 1
-                ? { scale: 0.95, y: 16, opacity: 0.7 }
-                : o === 2
-                  ? { scale: 0.9, y: 30, opacity: 0.4 }
-                  : { scale: 0.88, y: 30, opacity: 0 }
-          return (
-            <motion.div
-              key={a.id}
-              className={'absolute inset-0 ' + (front ? 'cursor-grab active:cursor-grabbing' : 'pointer-events-none')}
-              style={{ zIndex: 40 - o }}
-              animate={layer}
-              transition={{ type: 'spring', stiffness: 320, damping: 34 }}
-              drag={front && !reduce ? 'x' : false}
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.5}
-              onDragEnd={front ? onDragEnd : undefined}
-            >
-              <DeckCard a={a} />
-            </motion.div>
-          )
-        })}
-      </div>
-
-      <div className="mt-4 flex items-center justify-between">
-        <div className="flex gap-1.5">
-          {order.map((a, i) => (
-            <button
-              key={a.id}
-              onClick={() => go(i)}
-              aria-label={`Album ${i + 1}: ${a.entry.title}`}
-              className={
-                'h-2 rounded-full transition-all duration-200 ' +
-                (i === active ? 'w-5 bg-lime' : 'w-2 bg-white/20 hover:bg-white/35')
-              }
-            />
-          ))}
-        </div>
-        <span className="font-mono text-[11px] tabular-nums text-muted">
-          {active + 1} / {n}
-        </span>
-      </div>
+    <div ref={wrapRef} className="overflow-hidden">
+      <CardStack<Item>
+        items={items}
+        cardWidth={cardWidth}
+        cardHeight={cardHeight}
+        autoAdvance
+        intervalMs={4500}
+        pauseOnHover
+        renderCard={(it) => <DeckCard a={it.a} />}
+      />
     </div>
   )
 }
@@ -91,10 +44,10 @@ function DeckCard({ a }: { a: PerAlbumStats }) {
   const { entry } = a
   return (
     <div
-      className="relative flex h-full select-none flex-col justify-between overflow-hidden rounded-2xl p-6 shadow-xl shadow-black/40"
+      className="flex h-full flex-col justify-between p-6"
       style={{ background: `linear-gradient(145deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
     >
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="font-mono text-[10px] uppercase tracking-widest text-white/70">
             {entry.editor} · {entry.season}
@@ -103,8 +56,8 @@ function DeckCard({ a }: { a: PerAlbumStats }) {
             {entry.title}
           </h3>
         </div>
-        <div className="shrink-0 text-right">
-          <div className="text-3xl font-semibold tabular-nums text-white drop-shadow-sm">{a.pct}%</div>
+        <div className="shrink-0 text-3xl font-semibold tabular-nums text-white drop-shadow-sm">
+          {a.pct}%
         </div>
       </div>
 
@@ -112,7 +65,7 @@ function DeckCard({ a }: { a: PerAlbumStats }) {
         <div className="h-2 overflow-hidden rounded-full bg-black/25">
           <div className="h-full rounded-full bg-white/90" style={{ width: `${Math.max(2, a.pct)}%` }} />
         </div>
-        <div className="mt-4 flex items-end justify-between">
+        <div className="mt-4 flex items-end justify-between gap-3">
           <dl className="flex gap-6 text-white">
             <div>
               <dt className="text-[11px] text-white/70">Possedute</dt>
@@ -132,7 +85,7 @@ function DeckCard({ a }: { a: PerAlbumStats }) {
           </dl>
           <Link
             to="/album"
-            className="rounded-lg bg-white/95 px-3.5 py-2 text-sm font-medium text-black transition-transform duration-150 hover:-translate-y-px"
+            className="shrink-0 rounded-lg bg-white/95 px-3.5 py-2 text-sm font-medium text-black transition-transform duration-150 hover:-translate-y-px"
           >
             Apri →
           </Link>
