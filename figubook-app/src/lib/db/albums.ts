@@ -34,8 +34,9 @@ export function computeStats(
     }
   }
   const total = albumById[albumId] ? albumById[albumId].total : Object.keys(states).length
-  const missing = total - have
-  const pct = total > 0 ? Math.round((have / total) * 100) : 0
+  // Clamp: dati storici corrotti (have > total) non producono mancanti negativi / pct > 100.
+  const missing = Math.max(0, total - have)
+  const pct = total > 0 ? Math.min(100, Math.round((have / total) * 100)) : 0
   return { have, doubles, missing, total, pct }
 }
 
