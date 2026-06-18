@@ -6,7 +6,7 @@
 
 **Architecture:** Layer dati `lib/db/albums.ts` (subscribe onSnapshot + `computeStats` pura) → hook `useCollection` (aggrega per-album + totali, gestisce listener) → componenti dashboard piccoli e isolati (`CompletionRing`, `StatTicker`, `AlbumStatCard`, `ClosestAlbumCard`). Coerente col pattern notifiche già in repo.
 
-**Tech Stack:** React 19 + TS, Vite 8, Tailwind v4, Firebase Firestore (modular SDK), recharts (nuovo), vitest (nuovo, solo logica pura), framer-motion/lucide già presenti.
+**Tech Stack:** React 19 + TS, Vite 8, Tailwind v4, Firebase Firestore (modular SDK), recharts (nuovo), framer-motion/lucide già presenti. **Nessun test runner** (vincolo zero-locale): verifica via `tsc`/`build` + live.
 
 **Spec:** `docs/superpowers/specs/2026-06-18-a2-2-dashboard-collezione-design.md`
 
@@ -15,7 +15,6 @@
 ## File Structure
 
 - Create `figubook-app/src/lib/db/albums.ts` — tipi `AlbumStats`/`AlbumDoc`/`PerAlbumStats`, `computeStats` (pura), `aggregate` (pura), `subscribeMyAlbumIds`, `subscribeAlbum`.
-- Create `figubook-app/src/lib/db/albums.test.ts` — unit test vitest di `computeStats`/`aggregate`.
 - Create `figubook-app/src/hooks/useCollection.ts` — hook live: `{ albums, totals, loading }`.
 - Create `figubook-app/src/components/dashboard/statColors.ts` — palette stat (unica fonte hex).
 - Create `figubook-app/src/components/dashboard/CompletionRing.tsx` — anello recharts + % al centro.
@@ -24,49 +23,28 @@
 - Create `figubook-app/src/components/dashboard/ClosestAlbumCard.tsx` — album più vicino a chiudere.
 - Modify `figubook-app/src/pages/Dashboard.tsx` — cablaggio + empty/loading state.
 - Modify `figubook-app/src/index.css` — token `--color-stat-have`/`--color-stat-missing`.
-- Modify `figubook-app/package.json` + Create `figubook-app/vitest.config.ts` — recharts + vitest.
+- Modify `figubook-app/package.json` — recharts.
 
 **Checkpoint review (skill requesting-code-review):** dopo Task 4 (dati), dopo Task 8 (UI), dopo Task 9 (cablaggio).
 
 ---
 
-### Task 1: Dipendenze + token colore + infra test
+### Task 1: Dipendenza recharts + token colore + palette
 
 **Files:**
 - Modify: `figubook-app/package.json` (via npm)
-- Create: `figubook-app/vitest.config.ts`
 - Modify: `figubook-app/src/index.css:9-23` (blocco `@theme`)
 - Create: `figubook-app/src/components/dashboard/statColors.ts`
 
-- [ ] **Step 1: Installa recharts + vitest**
+- [ ] **Step 1: Installa recharts**
 
 Run (in `figubook-app/`):
 ```bash
-npm install recharts && npm install -D vitest
+npm install recharts
 ```
-Expected: aggiunge `recharts` a dependencies e `vitest` a devDependencies, exit 0.
+Expected: aggiunge `recharts` a dependencies, exit 0.
 
-- [ ] **Step 2: Aggiungi script test in package.json**
-
-In `figubook-app/package.json`, dentro `"scripts"`, aggiungi dopo `"lint"`:
-```json
-    "test": "vitest run",
-```
-
-- [ ] **Step 3: Crea vitest.config.ts**
-
-`figubook-app/vitest.config.ts`:
-```ts
-import { defineConfig } from 'vitest/config'
-import path from 'node:path'
-
-export default defineConfig({
-  resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
-  test: { environment: 'node', include: ['src/**/*.test.ts'] },
-})
-```
-
-- [ ] **Step 4: Aggiungi token colore stat in index.css**
+- [ ] **Step 2: Aggiungi token colore stat in index.css**
 
 In `figubook-app/src/index.css`, dentro il blocco `@theme { ... }` (dopo la riga `--color-gold: #e6b73c;`), aggiungi:
 ```css
@@ -74,7 +52,7 @@ In `figubook-app/src/index.css`, dentro il blocco `@theme { ... }` (dopo la riga
   --color-stat-missing: #ff5b5b; /* rosso mancanti */
 ```
 
-- [ ] **Step 5: Crea statColors.ts (fonte unica hex per recharts)**
+- [ ] **Step 3: Crea statColors.ts (fonte unica hex per recharts)**
 
 `figubook-app/src/components/dashboard/statColors.ts`:
 ```ts
@@ -88,84 +66,34 @@ export const STAT_COLORS = {
 } as const
 ```
 
-- [ ] **Step 6: Verifica build**
+- [ ] **Step 4: Verifica build**
 
 Run: `npm run build`
 Expected: exit 0 (recharts risolto, nessun errore TS).
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add figubook-app/package.json figubook-app/package-lock.json figubook-app/vitest.config.ts figubook-app/src/index.css figubook-app/src/components/dashboard/statColors.ts
-git commit -m "chore(a2.2): recharts + vitest + token stat colori"
+git add figubook-app/package.json figubook-app/package-lock.json figubook-app/src/index.css figubook-app/src/components/dashboard/statColors.ts
+git commit -m "chore(a2.2): recharts + token stat colori"
 git push
 ```
 
 ---
 
-### Task 2: `computeStats` + `aggregate` (logica pura, TDD)
+### Task 2: `computeStats` + `aggregate` (logica pura)
 
 **Files:**
 - Create: `figubook-app/src/lib/db/albums.ts`
-- Test: `figubook-app/src/lib/db/albums.test.ts`
 
-- [ ] **Step 1: Scrivi il test che fallisce**
+Atteso (riferimento per verifica manuale/live, non test automatico):
+- `computeStats('calciatori-25-26', {'1':'have','2':'double','3':'have'}, {'2':3})` → `{ have:3, doubles:2, total:784, missing:781, pct:0 }`.
+- `computeStats('calciatori-25-26', {'1':'double'}, {})` → `have:1, doubles:1` (default 2 copie = 1 extra).
+- `computeStats('ignoto', {'1':'have','2':'have'}, {})` → `total:2, pct:100` (fallback fuori catalogo).
+- `aggregate([{have:10,doubles:2,missing:90,total:100,pct:10},{have:30,doubles:0,missing:70,total:100,pct:30}])` → `{have:40,doubles:2,missing:160,total:200,pct:20}`.
+- `aggregate([])` → `{have:0,doubles:0,missing:0,total:0,pct:0}`.
 
-`figubook-app/src/lib/db/albums.test.ts`:
-```ts
-import { describe, it, expect } from 'vitest'
-import { computeStats, aggregate } from './albums'
-
-describe('computeStats', () => {
-  it('conta have/doubles/missing/pct dal catalogo (calciatori-25-26 total=784)', () => {
-    const states = { '1': 'have', '2': 'double', '3': 'have' }
-    const counts = { '2': 3 } // doppia con 3 copie => 2 extra
-    const s = computeStats('calciatori-25-26', states, counts)
-    expect(s.have).toBe(3)       // 1,2,3 posseduti
-    expect(s.doubles).toBe(2)    // (3-1) extra di '2'
-    expect(s.total).toBe(784)
-    expect(s.missing).toBe(781)
-    expect(s.pct).toBe(0)        // round(3/784*100)=0
-  })
-
-  it('doppia senza counts vale 1 extra (default 2 copie)', () => {
-    const s = computeStats('calciatori-25-26', { '1': 'double' }, {})
-    expect(s.have).toBe(1)
-    expect(s.doubles).toBe(1)
-  })
-
-  it('album fuori catalogo: total = numero di states', () => {
-    const s = computeStats('ignoto', { '1': 'have', '2': 'have' }, {})
-    expect(s.total).toBe(2)
-    expect(s.pct).toBe(100)
-  })
-})
-
-describe('aggregate', () => {
-  it('somma i campi e ricalcola pct sull aggregato', () => {
-    const a = aggregate([
-      { have: 10, doubles: 2, missing: 90, total: 100, pct: 10 },
-      { have: 30, doubles: 0, missing: 70, total: 100, pct: 30 },
-    ])
-    expect(a.have).toBe(40)
-    expect(a.doubles).toBe(2)
-    expect(a.missing).toBe(160)
-    expect(a.total).toBe(200)
-    expect(a.pct).toBe(20)
-  })
-
-  it('lista vuota: tutto 0, pct 0', () => {
-    expect(aggregate([])).toEqual({ have: 0, doubles: 0, missing: 0, total: 0, pct: 0 })
-  })
-})
-```
-
-- [ ] **Step 2: Esegui il test, deve fallire**
-
-Run: `npm run test`
-Expected: FAIL — "Failed to resolve import './albums'" / `computeStats is not a function`.
-
-- [ ] **Step 3: Implementa la logica pura in albums.ts**
+- [ ] **Step 1: Implementa la logica pura in albums.ts**
 
 `figubook-app/src/lib/db/albums.ts`:
 ```ts
@@ -218,16 +146,16 @@ export function aggregate(list: AlbumStats[]): AlbumStats {
 }
 ```
 
-- [ ] **Step 4: Esegui il test, deve passare**
+- [ ] **Step 2: Verifica build**
 
-Run: `npm run test`
-Expected: PASS (5 test verdi).
+Run: `npm run build`
+Expected: exit 0 (tipi ok). Correttezza numerica verificata live in Task 9.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 3: Commit**
 
 ```bash
-git add figubook-app/src/lib/db/albums.ts figubook-app/src/lib/db/albums.test.ts
-git commit -m "feat(a2.2): computeStats + aggregate puri con test"
+git add figubook-app/src/lib/db/albums.ts
+git commit -m "feat(a2.2): computeStats + aggregate puri"
 git push
 ```
 
@@ -699,10 +627,10 @@ export default function Dashboard() {
 }
 ```
 
-- [ ] **Step 2: Verifica build + lint + test**
+- [ ] **Step 2: Verifica build + lint**
 
-Run: `npm run build && npm run lint && npm run test`
-Expected: build exit 0; lint solo i 2 error pre-esistenti; test 5 verdi.
+Run: `npm run build && npm run lint`
+Expected: build exit 0; lint solo i 2 error pre-esistenti (`button.tsx`, `tabs.tsx`), nessuno nuovo.
 
 - [ ] **Step 3: Commit**
 
@@ -726,5 +654,5 @@ Invoca `superpowers:requesting-code-review` sul diff completo A2.2. Poi verifica
 
 **Coerenza tipi:** `AlbumStats`/`AlbumDoc`/`PerAlbumStats` definiti in Task 2, usati identici in Task 3-9; `computeStats(albumId, states, counts)` e `aggregate(list)` firma stabile; `STAT_COLORS` chiavi `have/missing/double/track` coerenti tra Task 1/5; `useCollection()` ritorna `{ albums, totals, loading }` usato uguale in Dashboard.
 
-**Note:** niente test runner pre-esistente → vitest introdotto (Task 1) solo per logica pura; subscribe/hook/UI verificati via build+lint+live (no DOM test infra, fuori scope). Rotta per-album non esiste → CTA verso `/album` lista (corretto per ora). Storico/recap/▲▼ e editing griglia/store ottimistico = A2.3.
+**Note:** nessun test runner (vincolo zero-locale) → `computeStats`/`aggregate` verificati via `build` (tipi) + numeri reali live in Task 9; valori attesi documentati in Task 2 come riferimento. Rotta per-album non esiste → CTA verso `/album` lista (corretto per ora). Storico/recap/▲▼ e editing griglia/store ottimistico = A2.3.
 ```
