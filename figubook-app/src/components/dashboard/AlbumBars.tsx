@@ -9,19 +9,19 @@ export function AlbumBars({ albums }: { albums: PerAlbumStats[] }) {
       {rows.map((a) => (
         <li
           key={a.id}
-          className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1.5 sm:grid-cols-[11rem_1fr_2.5rem]"
+          className="-mx-2 grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1.5 rounded-lg px-2 py-1.5 transition-colors duration-200 hover:bg-white/[0.04] sm:grid-cols-[12rem_1fr_2.75rem]"
         >
           <span className="flex min-w-0 items-center gap-2">
             <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: a.entry.c1 }} />
             <span className="truncate text-sm text-ink">{a.entry.title}</span>
           </span>
-          <div className="col-span-2 h-1.5 overflow-hidden rounded-full bg-white/[0.07] sm:col-span-1">
+          <div className="col-span-2 h-2 overflow-hidden rounded-full bg-white/[0.07] sm:col-span-1">
             <div
               className="h-full rounded-full transition-[width] duration-700 ease-out"
               style={{ width: `${Math.max(2, a.pct)}%`, background: a.entry.c1 }}
             />
           </div>
-          <span className="text-right text-sm tabular-nums text-muted">{a.pct}%</span>
+          <span className="text-right text-sm font-medium tabular-nums text-ink-2">{a.pct}%</span>
         </li>
       ))}
     </ul>
