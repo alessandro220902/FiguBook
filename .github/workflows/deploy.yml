@@ -11,7 +11,9 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  # false: i deploy si accodano invece di troncarsi a vicenda
+  # (cancel-in-progress troncava /app/ a meta')
+  cancel-in-progress: false
 
 jobs:
   build:
