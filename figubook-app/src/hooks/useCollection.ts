@@ -37,6 +37,7 @@ export function useCollection(): {
       unsub()
       setIds([])
       setIdsLoaded(false)
+      setStatsMap({})
     }
   }, [user])
 
