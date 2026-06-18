@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 // Card-stack sfogliabile (adattato da 21st ruixenui/card-stack):
 // tolto next/link + icona lucide, dots in stile FiguBook, render generico via renderCard.
@@ -34,6 +35,7 @@ export type CardStackProps<T extends CardStackItem> = {
   intervalMs?: number
   pauseOnHover?: boolean
   showDots?: boolean
+  showArrows?: boolean
   className?: string
   onChangeIndex?: (index: number, item: T) => void
   renderCard?: (item: T, state: { active: boolean }) => React.ReactNode
@@ -72,6 +74,7 @@ export function CardStack<T extends CardStackItem>({
   intervalMs = 4500,
   pauseOnHover = true,
   showDots = true,
+  showArrows = true,
   className,
   onChangeIndex,
   renderCard,
@@ -194,6 +197,27 @@ export function CardStack<T extends CardStackItem>({
             })}
           </AnimatePresence>
         </div>
+
+        {showArrows && len > 1 ? (
+          <>
+            <button
+              type="button"
+              onClick={prev}
+              aria-label="Album precedente"
+              className="absolute left-1 top-1/2 z-[120] grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-white/10 bg-bg-elev/80 text-ink-2 backdrop-blur-sm transition-colors hover:border-white/25 hover:text-ink"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={next}
+              aria-label="Album successivo"
+              className="absolute right-1 top-1/2 z-[120] grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-white/10 bg-bg-elev/80 text-ink-2 backdrop-blur-sm transition-colors hover:border-white/25 hover:text-ink"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </>
+        ) : null}
       </div>
 
       {showDots ? (
