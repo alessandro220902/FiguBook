@@ -11,21 +11,32 @@ function Dot({ color }: { color: string }) {
   return <span className="h-1.5 w-1.5 rounded-full" style={{ background: color }} />
 }
 
-// Riga ticker: Possedute (su totale + barra), Mancanti, Doppie, Scambi completati (link).
-export function StatTicker({ totals, trades }: { totals: AlbumStats; trades: number }) {
+// 5 statistiche: Possedute (su totale + %), Doppie, Mancanti, Album, Scambi (link).
+export function StatTicker({
+  totals,
+  albumsCount,
+  trades,
+}: {
+  totals: AlbumStats
+  albumsCount: number
+  trades: number
+}) {
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
       <div className={TILE}>
         <div className={LABEL}>
           <Dot color="var(--color-stat-have)" /> Possedute
         </div>
-        <div className="mt-2 flex items-baseline gap-1.5">
+        <div className="mt-2 flex flex-wrap items-baseline gap-x-2">
           <AnimatedNumber
             value={totals.have}
             className="text-3xl font-medium tabular-nums tracking-tight text-ink sm:text-4xl"
           />
           <span className="text-sm tabular-nums text-muted">
             / {totals.total.toLocaleString('it-IT')}
+          </span>
+          <span className="ml-auto text-lg font-medium tabular-nums" style={{ color: 'var(--color-stat-have)' }}>
+            {totals.pct}%
           </span>
         </div>
         <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
@@ -38,6 +49,13 @@ export function StatTicker({ totals, trades }: { totals: AlbumStats; trades: num
 
       <div className={TILE}>
         <div className={LABEL}>
+          <Dot color="var(--color-lime)" /> Doppie
+        </div>
+        <AnimatedNumber value={totals.doubles} className={NUM} />
+      </div>
+
+      <div className={TILE}>
+        <div className={LABEL}>
           <Dot color="var(--color-stat-missing)" /> Mancanti
         </div>
         <AnimatedNumber value={totals.missing} className={NUM} />
@@ -45,15 +63,15 @@ export function StatTicker({ totals, trades }: { totals: AlbumStats; trades: num
 
       <div className={TILE}>
         <div className={LABEL}>
-          <Dot color="var(--color-lime)" /> Doppie
+          <Dot color="var(--color-ink-2)" /> Album
         </div>
-        <AnimatedNumber value={totals.doubles} className={NUM} />
+        <AnimatedNumber value={albumsCount} className={NUM} />
       </div>
 
       <Link to="/scambi" className={`group ${TILE}`}>
         <div className={`${LABEL} justify-between`}>
           <span className="flex items-center gap-1.5">
-            <Dot color="var(--color-lime)" /> Scambi completati
+            <Dot color="var(--color-lime)" /> Scambi
           </span>
           <span className="text-lime opacity-0 transition-opacity group-hover:opacity-100">→</span>
         </div>

@@ -3,7 +3,6 @@ import { useAuth } from '@/hooks/useAuth'
 import { useCollection } from '@/hooks/useCollection'
 import { StatTicker } from '@/components/dashboard/StatTicker'
 import { CompletionRing } from '@/components/dashboard/CompletionRing'
-import { AlbumBars } from '@/components/dashboard/AlbumBars'
 import { AlbumDeck } from '@/components/dashboard/AlbumDeck'
 import { FadeIn } from '@/components/dashboard/FadeIn'
 import { Typewriter } from '@/components/dashboard/Typewriter'
@@ -52,7 +51,7 @@ export default function Dashboard() {
       ) : (
         <>
           <FadeIn delay={0.06} className="mt-8">
-            <StatTicker totals={totals} trades={trades} />
+            <StatTicker totals={totals} albumsCount={albums.length} trades={trades} />
           </FadeIn>
 
           <FadeIn delay={0.12} className="mt-5 grid gap-4 sm:grid-cols-[auto_1fr] sm:items-stretch">
@@ -64,15 +63,6 @@ export default function Dashboard() {
             </div>
             <AlbumDeck albums={albums} />
           </FadeIn>
-
-          <section className="mt-12">
-            <FadeIn delay={0.18}>
-              <h2 className="text-lg font-medium tracking-tight text-ink">Completamento per album</h2>
-            </FadeIn>
-            <FadeIn delay={0.22} className="mt-4">
-              <AlbumBars albums={albums} />
-            </FadeIn>
-          </section>
         </>
       )}
     </div>
