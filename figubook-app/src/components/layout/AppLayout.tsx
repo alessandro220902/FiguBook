@@ -14,7 +14,13 @@ const NAV: NavItem[] = [
 
 export function AppLayout() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div
+      className="min-h-screen text-foreground"
+      style={{
+        background:
+          'radial-gradient(125% 85% at 50% -8%, rgba(31,122,89,0.22) 0%, rgba(31,122,89,0.06) 32%, transparent 58%), var(--color-bg)',
+      }}
+    >
       {/* logo top-left */}
       <Link to="/dashboard" className="fixed left-4 top-4 z-50 flex items-center gap-2 sm:left-6 sm:top-6">
         <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">
