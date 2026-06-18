@@ -18,7 +18,7 @@ export function AppLayout() {
       className="min-h-screen text-foreground"
       style={{
         background:
-          'radial-gradient(125% 85% at 50% -8%, rgba(31,122,89,0.22) 0%, rgba(31,122,89,0.06) 32%, transparent 58%), var(--color-bg)',
+          'radial-gradient(150% 110% at 50% -15%, rgba(31,122,89,0.15) 0%, rgba(31,122,89,0.07) 28%, rgba(31,122,89,0.025) 52%, transparent 82%), var(--color-bg)',
       }}
     >
       {/* logo top-left */}
