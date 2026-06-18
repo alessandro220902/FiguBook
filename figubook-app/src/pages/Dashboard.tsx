@@ -4,8 +4,10 @@ import { useCollection } from '@/hooks/useCollection'
 import { StatTicker } from '@/components/dashboard/StatTicker'
 import { CompletionRing } from '@/components/dashboard/CompletionRing'
 import { AlbumStatCard } from '@/components/dashboard/AlbumStatCard'
+import { AlbumBars } from '@/components/dashboard/AlbumBars'
 import { ClosestAlbumCard } from '@/components/dashboard/ClosestAlbumCard'
 import { FadeIn } from '@/components/dashboard/FadeIn'
+import { Typewriter } from '@/components/dashboard/Typewriter'
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -29,7 +31,7 @@ export default function Dashboard() {
     <div className="mx-auto w-full max-w-5xl">
       <FadeIn>
         <h1 className="text-[28px] font-medium tracking-tight text-ink sm:text-[32px]">
-          Ciao, <span className="text-lime">{name}</span>
+          Ciao, <Typewriter text={name} className="text-lime" />
         </h1>
       </FadeIn>
 
@@ -64,11 +66,20 @@ export default function Dashboard() {
 
           <section className="mt-12">
             <FadeIn delay={0.18}>
+              <h2 className="text-lg font-medium tracking-tight text-ink">Completamento per album</h2>
+            </FadeIn>
+            <FadeIn delay={0.22} className="mt-4">
+              <AlbumBars albums={albums} />
+            </FadeIn>
+          </section>
+
+          <section className="mt-12">
+            <FadeIn delay={0.26}>
               <h2 className="text-lg font-medium tracking-tight text-ink">I tuoi album</h2>
             </FadeIn>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {albums.map((a, i) => (
-                <FadeIn key={a.id} delay={0.22 + i * 0.05}>
+                <FadeIn key={a.id} delay={0.3 + i * 0.05}>
                   <AlbumStatCard a={a} />
                 </FadeIn>
               ))}
