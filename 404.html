@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>FiguBook</title>
+  <script>
+    // Fallback Pages a livello root. Le route della SPA React vivono sotto
+    // /FiguBook/app/ ma non esistono come file: Pages serve questo 404 per
+    // qualsiasi path mancante. Se il path e' dell'app, rimanda all'app
+    // conservando la route (?p=) cosi' il router la gestisce.
+    (function () {
+      var appBase = '/FiguBook/app/';
+      var path = location.pathname;
+      var i = path.indexOf(appBase);
+      if (i === 0) {
+        var route = path.slice(appBase.length);
+        location.replace(appBase + '?p=' + encodeURIComponent(route) + location.hash);
+      } else {
+        // pagina del sito vecchio non trovata -> home vecchia
+        location.replace('/FiguBook/');
+      }
+    })();
+  </script>
+</head>
+<body></body>
+</html>
