@@ -15,6 +15,8 @@
   --color-pitch: #1f7a59;       /* verde campo */
   --color-pitch-ink: #eafff3;
   --color-gold: #e6b73c;
+  --color-stat-have: #3fb96b;    /* verde possedute */
+  --color-stat-missing: #ff5b5b; /* rosso mancanti */
   --color-bg: #0c1410;
   --color-bg-elev: #13201a;
   --color-ink: #eef3ec;
