@@ -8,10 +8,12 @@ export function CompletionRing({
   pct,
   size = 120,
   color = STAT_COLORS.have,
+  track = STAT_COLORS.track,
 }: {
   pct: number
   size?: number
   color?: string
+  track?: string
 }) {
   const data = [{ value: pct }]
   return (
@@ -30,7 +32,7 @@ export function CompletionRing({
           dataKey="value"
           cornerRadius={size}
           fill={color}
-          background={{ fill: STAT_COLORS.track }}
+          background={{ fill: track }}
           animationDuration={1100}
           animationEasing="ease-out"
         />

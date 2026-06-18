@@ -5,13 +5,15 @@ import { StatTicker } from '@/components/dashboard/StatTicker'
 import { CompletionRing } from '@/components/dashboard/CompletionRing'
 import { AlbumStatCard } from '@/components/dashboard/AlbumStatCard'
 import { AlbumBars } from '@/components/dashboard/AlbumBars'
-import { ClosestAlbumCard } from '@/components/dashboard/ClosestAlbumCard'
+import { AlbumCarousel } from '@/components/dashboard/AlbumCarousel'
 import { FadeIn } from '@/components/dashboard/FadeIn'
 import { Typewriter } from '@/components/dashboard/Typewriter'
+import { useTradesCount } from '@/hooks/useTradesCount'
 
 export default function Dashboard() {
   const { user } = useAuth()
   const { albums, totals, loading } = useCollection()
+  const trades = useTradesCount()
   const name = user?.displayName?.trim() || user?.email?.split('@')[0] || 'collezionista'
 
   if (loading) {
@@ -51,7 +53,7 @@ export default function Dashboard() {
       ) : (
         <>
           <FadeIn delay={0.06} className="mt-8">
-            <StatTicker totals={totals} />
+            <StatTicker totals={totals} trades={trades} />
           </FadeIn>
 
           <FadeIn delay={0.12} className="mt-5 grid gap-4 sm:grid-cols-[auto_1fr] sm:items-stretch">
@@ -61,7 +63,7 @@ export default function Dashboard() {
                 Completamento totale
               </div>
             </div>
-            <ClosestAlbumCard albums={albums} />
+            <AlbumCarousel albums={albums} />
           </FadeIn>
 
           <section className="mt-12">

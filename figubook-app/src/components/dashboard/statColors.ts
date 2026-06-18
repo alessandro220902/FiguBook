@@ -4,5 +4,5 @@ export const STAT_COLORS = {
   have: '#3fb96b',    // verde: possedute / completamento
   missing: '#ff5b5b', // rosso: mancanti
   double: '#c2f23d',  // lime: doppie
-  track: '#1c2b24',   // traccia anello (sfondo scuro)
+  track: 'rgba(255,255,255,0.2)', // traccia anello: bianco chiaro => completa il cerchio
 } as const

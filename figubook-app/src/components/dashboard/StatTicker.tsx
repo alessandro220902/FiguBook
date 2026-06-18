@@ -1,33 +1,64 @@
+import { Link } from 'react-router-dom'
 import type { AlbumStats } from '@/lib/db/albums'
 import { AnimatedNumber } from './AnimatedNumber'
 
-// Tile statistiche: card separate che si sollevano all'hover. Label visibili
-// (text-ink-2), numeri in ink con count-up. Colore semantico nel pallino.
-export function StatTicker({ totals }: { totals: AlbumStats }) {
-  const items: { label: string; value: number; suffix?: string; dot?: string }[] = [
-    { label: 'Possedute', value: totals.have, dot: 'var(--color-stat-have)' },
-    { label: 'Mancanti', value: totals.missing, dot: 'var(--color-stat-missing)' },
-    { label: 'Doppie', value: totals.doubles, dot: 'var(--color-lime)' },
-    { label: 'Completamento', value: totals.pct, suffix: '%' },
-  ]
+const TILE =
+  'rounded-2xl border border-white/[0.08] bg-surface px-5 py-4 transition-all duration-200 hover:-translate-y-1 hover:border-white/20'
+const LABEL = 'flex items-center gap-1.5 text-xs font-medium text-ink-2'
+const NUM = 'mt-2 block text-3xl font-medium tabular-nums tracking-tight text-ink sm:text-4xl'
+
+function Dot({ color }: { color: string }) {
+  return <span className="h-1.5 w-1.5 rounded-full" style={{ background: color }} />
+}
+
+// Riga ticker: Possedute (su totale + barra), Mancanti, Doppie, Scambi completati (link).
+export function StatTicker({ totals, trades }: { totals: AlbumStats; trades: number }) {
   return (
-    <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      {items.map((it) => (
-        <div
-          key={it.label}
-          className="rounded-2xl border border-white/[0.08] bg-surface px-5 py-4 transition-all duration-200 hover:-translate-y-1 hover:border-white/20"
-        >
-          <dt className="flex items-center gap-1.5 text-xs font-medium text-ink-2">
-            {it.dot && <span className="h-1.5 w-1.5 rounded-full" style={{ background: it.dot }} />}
-            {it.label}
-          </dt>
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className={TILE}>
+        <div className={LABEL}>
+          <Dot color="var(--color-stat-have)" /> Possedute
+        </div>
+        <div className="mt-2 flex items-baseline gap-1.5">
           <AnimatedNumber
-            value={it.value}
-            suffix={it.suffix}
-            className="mt-2 block text-3xl font-medium tabular-nums tracking-tight text-ink sm:text-4xl"
+            value={totals.have}
+            className="text-3xl font-medium tabular-nums tracking-tight text-ink sm:text-4xl"
+          />
+          <span className="text-sm tabular-nums text-muted">
+            / {totals.total.toLocaleString('it-IT')}
+          </span>
+        </div>
+        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
+          <div
+            className="h-full rounded-full transition-[width] duration-700 ease-out"
+            style={{ width: `${Math.max(2, totals.pct)}%`, background: 'var(--color-stat-have)' }}
           />
         </div>
-      ))}
-    </dl>
+      </div>
+
+      <div className={TILE}>
+        <div className={LABEL}>
+          <Dot color="var(--color-stat-missing)" /> Mancanti
+        </div>
+        <AnimatedNumber value={totals.missing} className={NUM} />
+      </div>
+
+      <div className={TILE}>
+        <div className={LABEL}>
+          <Dot color="var(--color-lime)" /> Doppie
+        </div>
+        <AnimatedNumber value={totals.doubles} className={NUM} />
+      </div>
+
+      <Link to="/scambi" className={`group ${TILE}`}>
+        <div className={`${LABEL} justify-between`}>
+          <span className="flex items-center gap-1.5">
+            <Dot color="var(--color-lime)" /> Scambi completati
+          </span>
+          <span className="text-lime opacity-0 transition-opacity group-hover:opacity-100">→</span>
+        </div>
+        <AnimatedNumber value={trades} className={NUM} />
+      </Link>
+    </div>
   )
 }
