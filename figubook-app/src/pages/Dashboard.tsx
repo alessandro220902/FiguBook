@@ -3,9 +3,8 @@ import { useAuth } from '@/hooks/useAuth'
 import { useCollection } from '@/hooks/useCollection'
 import { StatTicker } from '@/components/dashboard/StatTicker'
 import { CompletionRing } from '@/components/dashboard/CompletionRing'
-import { AlbumStatCard } from '@/components/dashboard/AlbumStatCard'
 import { AlbumBars } from '@/components/dashboard/AlbumBars'
-import { AlbumCarousel } from '@/components/dashboard/AlbumCarousel'
+import { AlbumDeck } from '@/components/dashboard/AlbumDeck'
 import { FadeIn } from '@/components/dashboard/FadeIn'
 import { Typewriter } from '@/components/dashboard/Typewriter'
 import { useTradesCount } from '@/hooks/useTradesCount'
@@ -63,7 +62,7 @@ export default function Dashboard() {
                 Completamento totale
               </div>
             </div>
-            <AlbumCarousel albums={albums} />
+            <AlbumDeck albums={albums} />
           </FadeIn>
 
           <section className="mt-12">
@@ -73,19 +72,6 @@ export default function Dashboard() {
             <FadeIn delay={0.22} className="mt-4">
               <AlbumBars albums={albums} />
             </FadeIn>
-          </section>
-
-          <section className="mt-12">
-            <FadeIn delay={0.26}>
-              <h2 className="text-lg font-medium tracking-tight text-ink">I tuoi album</h2>
-            </FadeIn>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {albums.map((a, i) => (
-                <FadeIn key={a.id} delay={0.3 + i * 0.05}>
-                  <AlbumStatCard a={a} />
-                </FadeIn>
-              ))}
-            </div>
           </section>
         </>
       )}
