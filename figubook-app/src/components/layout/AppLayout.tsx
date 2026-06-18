@@ -27,7 +27,7 @@ export function AppLayout() {
       <TopRightMenu />
 
       {/* pt per non finire sotto cluster (mobile) / nav (desktop); pb per bottom-bar mobile */}
-      <main className="px-5 pb-28 pt-20 sm:px-10 sm:pt-28">
+      <main className="px-5 pb-28 pt-24 sm:px-10 sm:pt-36">
         <Outlet />
       </main>
     </div>

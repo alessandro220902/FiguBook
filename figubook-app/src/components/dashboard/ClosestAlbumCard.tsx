@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
 import type { PerAlbumStats } from '@/lib/db/albums'
 
-// Album dove manca meno (missing>0). Usa il gradiente brand del SUO album:
-// lega l'hero alla collezione invece del verde piatto. CTA -> /album.
+// Album dove manca meno. Superficie piatta e sobria: il brand vive solo nel
+// pallino; titolo grande in ink, CTA lime. Niente gradiente full-bleed.
 export function ClosestAlbumCard({ albums }: { albums: PerAlbumStats[] }) {
   const closest = albums
     .filter((a) => a.missing > 0)
@@ -10,31 +10,22 @@ export function ClosestAlbumCard({ albums }: { albums: PerAlbumStats[] }) {
   if (!closest) return null
   const { entry } = closest
   return (
-    <div
-      className="relative flex h-full flex-col justify-center overflow-hidden rounded-2xl p-6 shadow-lg shadow-black/30"
-      style={{ background: `linear-gradient(135deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
-    >
-      <div
-        className="pointer-events-none absolute inset-0 opacity-60"
-        style={{
-          background:
-            'repeating-linear-gradient(45deg, rgba(255,255,255,.05) 0 2px, transparent 2px 14px)',
-        }}
-      />
-      <div className="relative">
-        <div className="font-mono text-[10px] uppercase tracking-widest text-white/70">
-          Più vicino a chiudere
-        </div>
-        <div className="mt-2 font-display text-2xl font-bold text-white drop-shadow-sm sm:text-3xl">
-          Ti mancano <span className="tabular-nums">{closest.missing}</span> a {entry.title}
-        </div>
-        <Link
-          to="/album"
-          className="mt-4 inline-block rounded-lg bg-white px-4 py-2 font-mono text-sm font-semibold text-black transition-transform duration-150 hover:scale-[1.03] active:scale-95"
-        >
-          Apri l'album →
-        </Link>
+    <div className="flex h-full flex-col justify-center rounded-xl border border-white/[0.07] bg-bg-elev p-7">
+      <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-muted">
+        <span className="h-1.5 w-1.5 rounded-full" style={{ background: entry.c1 }} />
+        Più vicino a chiudere
       </div>
+      <h3 className="mt-3 text-2xl font-medium leading-snug tracking-tight text-ink text-balance sm:text-[28px]">
+        Ti mancano <span className="tabular-nums">{closest.missing}</span> figurine
+        <br className="hidden sm:block" /> per chiudere {entry.title}
+      </h3>
+      <Link
+        to="/album"
+        className="mt-5 inline-flex w-fit items-center gap-1.5 rounded-lg bg-lime px-4 py-2 text-sm font-medium text-lime-ink transition-transform duration-150 hover:-translate-y-px active:translate-y-0"
+      >
+        Apri l'album
+        <span aria-hidden>→</span>
+      </Link>
     </div>
   )
 }

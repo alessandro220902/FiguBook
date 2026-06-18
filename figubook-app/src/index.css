@@ -24,7 +24,7 @@
   --color-muted: #9aa89d;
 
   --font-sans: 'Geist', system-ui, sans-serif;
-  --font-display: 'Barlow Condensed', ui-sans-serif, system-ui;
+  --font-display: 'Geist', ui-sans-serif, system-ui;
   --font-body: 'Geist', ui-sans-serif, system-ui;
   --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
   --font-mono: 'Geist Mono', ui-monospace, Menlo, monospace;
@@ -40,7 +40,7 @@ body {
 }
 
 @theme inline {
-  --font-heading: 'Barlow Condensed', system-ui, sans-serif;
+  --font-heading: 'Geist', system-ui, sans-serif;
   --font-sans: 'Geist', system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);

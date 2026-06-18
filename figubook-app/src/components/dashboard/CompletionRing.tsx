@@ -33,7 +33,7 @@ export function CompletionRing({
         />
       </RadialBarChart>
       <div className="absolute inset-0 grid place-items-center">
-        <span className="font-display text-3xl font-bold tabular-nums text-ink">{pct}%</span>
+        <span className="text-3xl font-medium tabular-nums tracking-tight text-ink">{pct}%</span>
       </div>
     </div>
   )

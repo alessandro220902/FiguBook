@@ -13,55 +13,55 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <main className="mx-auto w-full max-w-5xl px-4 py-8">
+      <div className="mx-auto w-full max-w-5xl">
         <div className="h-8 w-48 animate-pulse rounded bg-bg-elev" />
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="h-20 animate-pulse rounded-xl bg-bg-elev" />
-          ))}
+        <div className="mt-8 h-24 animate-pulse rounded-xl bg-bg-elev" />
+        <div className="mt-5 grid gap-4 sm:grid-cols-[auto_1fr]">
+          <div className="h-52 w-full animate-pulse rounded-xl bg-bg-elev sm:w-72" />
+          <div className="h-52 animate-pulse rounded-xl bg-bg-elev" />
         </div>
-      </main>
+      </div>
     )
   }
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-8">
-      <h1 className="font-display text-3xl font-bold text-ink">
+    <div className="mx-auto w-full max-w-5xl">
+      <h1 className="text-[28px] font-medium tracking-tight text-ink sm:text-[32px]">
         Ciao, <span className="text-lime">{name}</span>
       </h1>
 
       {albums.length === 0 ? (
-        <div className="mt-8 grid place-items-center rounded-2xl border border-white/8 bg-bg-elev p-12 text-center">
-          <div className="font-display text-2xl font-bold text-ink">
-            Nessun album ancora
-          </div>
-          <div className="mt-1 text-ink-2">Aggiungi il primo per vedere i tuoi progressi.</div>
+        <div className="mt-10 flex flex-col items-center rounded-xl border border-white/[0.07] bg-bg-elev px-6 py-16 text-center">
+          <div className="text-xl font-medium tracking-tight text-ink">Nessun album ancora</div>
+          <p className="mt-2 max-w-xs text-sm text-ink-2">
+            Aggiungi il primo album per vedere i tuoi progressi qui.
+          </p>
           <Link
             to="/album"
-            className="mt-4 rounded-lg bg-lime px-5 py-2.5 font-mono text-sm font-semibold text-lime-ink"
+            className="mt-5 rounded-lg bg-lime px-5 py-2.5 text-sm font-medium text-lime-ink transition-transform duration-150 hover:-translate-y-px"
           >
             Aggiungi il primo album
           </Link>
         </div>
       ) : (
         <>
-          <section className="mt-6">
+          <section className="mt-8">
             <StatTicker totals={totals} />
           </section>
 
-          <section className="mt-6 grid gap-4 sm:grid-cols-[auto_1fr] sm:items-stretch">
-            <div className="grid place-items-center rounded-2xl border border-white/10 bg-bg-elev/80 px-8 py-6 shadow-lg shadow-black/20">
-              <CompletionRing pct={totals.pct} size={168} />
-              <div className="mt-3 font-mono text-[10px] uppercase tracking-widest text-muted">
+          <section className="mt-5 grid gap-4 sm:grid-cols-[auto_1fr] sm:items-stretch">
+            <div className="grid place-items-center rounded-xl border border-white/[0.07] bg-bg-elev px-10 py-7">
+              <CompletionRing pct={totals.pct} size={160} />
+              <div className="mt-3 text-[11px] font-medium tracking-wide text-muted">
                 Completamento totale
               </div>
             </div>
             <ClosestAlbumCard albums={albums} />
           </section>
 
-          <section className="mt-8">
-            <h2 className="font-display text-xl font-bold text-ink">I tuoi album</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <section className="mt-12">
+            <h2 className="text-lg font-medium tracking-tight text-ink">I tuoi album</h2>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {albums.map((a) => (
                 <AlbumStatCard key={a.id} a={a} />
               ))}
@@ -69,6 +69,6 @@ export default function Dashboard() {
           </section>
         </>
       )}
-    </main>
+    </div>
   )
 }
