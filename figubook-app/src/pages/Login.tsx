@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   signInWithEmailAndPassword,
@@ -12,6 +12,11 @@ import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react'
 import { auth, db, googleProvider } from '@/lib/firebase'
 import { mapFirebaseError } from '@/lib/authErrors'
 import { useAuth } from '@/hooks/useAuth'
+
+// sfondo dot-matrix caricato lazy (porta three.js fuori dal bundle iniziale)
+const CanvasRevealEffect = lazy(() =>
+  import('@/components/ui/dot-matrix-bg').then((m) => ({ default: m.CanvasRevealEffect })),
+)
 
 // 19 slogan [testo, accento corsivo]
 const SLOGANS: [string, string][] = [
@@ -136,13 +141,24 @@ export default function Login() {
   const num = (n: number) => String(n).padStart(2, '0')
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-[1.05fr_0.95fr]">
+    <div className="relative min-h-screen overflow-hidden bg-[#080a08] text-[#f4efe6]">
+      {/* sfondo dot-matrix full-page */}
+      <div className="pointer-events-none absolute inset-0">
+        <Suspense fallback={null}>
+          <CanvasRevealEffect
+            colors={[[194, 242, 61], [31, 122, 89]]}
+            dotSize={3}
+            showGradient={false}
+          />
+        </Suspense>
+        {/* velo per leggibilita' */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_40%,transparent,rgba(8,10,8,.65)_70%)]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080a08] via-transparent to-[#080a08]/40" />
+      </div>
+
+      <div className="relative z-10 grid min-h-screen lg:grid-cols-[1.05fr_0.95fr]">
       {/* ════ LEFT — manifesto ════ */}
-      <section className="relative hidden flex-col overflow-hidden bg-[#14110d] px-14 py-10 text-[#f4efe6] lg:flex">
-        {/* glow ambient */}
-        <div className="pointer-events-none absolute -right-[10%] -top-[20%] aspect-square w-3/5 rounded-full bg-[radial-gradient(circle,rgba(194,242,61,.5),transparent_70%)] blur-[60px]" />
-        <div className="pointer-events-none absolute -bottom-[20%] -left-[15%] aspect-square w-[55%] rounded-full bg-[radial-gradient(circle,rgba(31,122,89,.55),transparent_70%)] blur-[70px]" />
-        <div className="login-grain pointer-events-none absolute inset-0" />
+      <section className="relative hidden flex-col overflow-hidden px-14 py-10 lg:flex">
 
         <div className="relative z-10 flex items-center gap-3">
           <span className="grid h-10 w-10 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-2xl font-extrabold text-lime-ink shadow-[0_6px_14px_-2px_rgba(194,242,61,.6)]">
@@ -195,7 +211,7 @@ export default function Login() {
       </section>
 
       {/* ════ RIGHT — auth ════ */}
-      <section className="relative flex flex-col items-center justify-center bg-background px-7 py-12 sm:px-14">
+      <section className="relative flex flex-col items-center justify-center px-7 py-12 sm:px-14">
         <div className="absolute right-7 top-12 font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground sm:right-14">
           {mode === 'login' ? (
             <>
@@ -214,7 +230,7 @@ export default function Login() {
           )}
         </div>
 
-        <div className="w-full max-w-[440px]">
+        <div className="w-full max-w-[440px] rounded-3xl border border-white/10 bg-[#0c100c]/70 p-7 shadow-2xl backdrop-blur-xl sm:p-9">
           {/* brand mobile */}
           <div className="mb-6 flex items-center gap-3 lg:hidden">
             <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">F</span>
@@ -352,6 +368,7 @@ export default function Login() {
           )}
         </div>
       </section>
+      </div>
     </div>
   )
 }
