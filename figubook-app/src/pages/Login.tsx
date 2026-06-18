@@ -5,6 +5,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   updateProfile,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
 } from 'firebase/auth'
 import { doc, setDoc } from 'firebase/firestore'
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react'
@@ -64,6 +67,7 @@ export default function Login() {
   const [loginEmail, setLoginEmail] = useState('')
   const [loginPass, setLoginPass] = useState('')
   const [loginErr, setLoginErr] = useState('')
+  const [remember, setRemember] = useState(true)
 
   const [regUser, setRegUser] = useState('')
   const [regEmail, setRegEmail] = useState('')
@@ -89,6 +93,7 @@ export default function Login() {
     setLoginErr('')
     setBusy(true)
     try {
+      await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence)
       await signInWithEmailAndPassword(auth, loginEmail.trim(), loginPass)
       navigate('/dashboard', { replace: true })
     } catch (err) {
@@ -103,6 +108,7 @@ export default function Login() {
     setRegErr('')
     setBusy(true)
     try {
+      await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence)
       const cred = await createUserWithEmailAndPassword(auth, regEmail.trim(), regPass)
       await updateProfile(cred.user, { displayName: regUser.trim() })
       await setDoc(
@@ -122,6 +128,7 @@ export default function Login() {
     setErr('')
     setBusy(true)
     try {
+      await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence)
       const cred = await signInWithPopup(auth, googleProvider)
       const u = cred.user
       const name = u.displayName || (u.email || '').split('@')[0]
@@ -137,8 +144,6 @@ export default function Login() {
       setBusy(false)
     }
   }
-
-  const num = (n: number) => String(n).padStart(2, '0')
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#080a08] text-[#f4efe6]">
@@ -174,11 +179,6 @@ export default function Login() {
 
         {/* slogan stage */}
         <div className="relative z-10 flex flex-1 flex-col justify-center py-6">
-          <div className="mb-4 flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.15em] text-[#8a8275]">
-            <span>{num(slogIdx + 1)} / {num(SLOGANS.length)}</span>
-            <span className="h-px max-w-[60px] flex-1 bg-[#2a241c]" />
-            <span>Manifesto</span>
-          </div>
           <h1
             key={slogIdx}
             className="slogan-anim m-0 max-w-[14ch] font-display text-[clamp(38px,5.5vw,64px)] font-bold leading-[1.02] tracking-[-0.025em]"
@@ -211,7 +211,7 @@ export default function Login() {
       </section>
 
       {/* ════ RIGHT — auth ════ */}
-      <section className="relative flex flex-col items-center justify-center px-7 py-12 sm:px-14">
+      <section className="relative flex max-h-screen overflow-y-auto px-7 py-24 sm:px-14">
         <div className="absolute right-7 top-12 font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground sm:right-14">
           {mode === 'login' ? (
             <>
@@ -230,7 +230,7 @@ export default function Login() {
           )}
         </div>
 
-        <div className="w-full max-w-[440px] rounded-3xl border border-white/10 bg-[#0c100c]/70 p-7 shadow-2xl backdrop-blur-xl sm:p-9">
+        <div className="m-auto w-full max-w-[440px] rounded-3xl border border-white/10 bg-[#0c100c]/70 p-7 shadow-2xl backdrop-blur-xl sm:p-9">
           {/* brand mobile */}
           <div className="mb-6 flex items-center gap-3 lg:hidden">
             <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">F</span>
@@ -291,8 +291,16 @@ export default function Login() {
                 <PassToggle on={showLoginPass} set={setShowLoginPass} />
               </Field>
 
-              <div className="-mt-0.5 flex items-center justify-between font-mono text-[11px] text-muted-foreground">
-                <span>Rimani connesso su questo dispositivo</span>
+              <div className="-mt-0.5 flex items-center justify-between text-[12px] text-muted-foreground">
+                <label className="flex cursor-pointer items-center gap-2 select-none">
+                  <input
+                    type="checkbox"
+                    checked={remember}
+                    onChange={(e) => setRemember(e.target.checked)}
+                    className="h-4 w-4 accent-lime"
+                  />
+                  Rimani connesso
+                </label>
                 <a href="#" className="font-semibold text-foreground underline underline-offset-4">
                   Password dimenticata?
                 </a>
