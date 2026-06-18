@@ -26,7 +26,13 @@ service cloud.firestore {
           && request.resource.data.title is string
           && request.resource.data.title.size() <= 160
           && (!('info' in request.resource.data)
-              || (request.resource.data.info is string && request.resource.data.info.size() <= 160));
+              || (request.resource.data.info is string && request.resource.data.info.size() <= 160))
+          // href solo path interni whitelisted (no javascript:/http: -> anti-XSS)
+          && (!('href' in request.resource.data)
+              || request.resource.data.href in ['figubook-scambia.html', '/scambi', '/dashboard', '/album'])
+          // icon da set chiuso, non stringa arbitraria iniettabile
+          && (!('icon' in request.resource.data)
+              || request.resource.data.icon in ['🔄', '✏️', '✅', '👍', '❌', 'ℹ️']);
       }
 
       // Recensioni RICEVUTE: chiunque autenticato le legge; le lascia un altro utente
@@ -106,7 +112,8 @@ service cloud.firestore {
       allow read:   if signedIn() && request.auth.uid in resource.data.participants;
       allow create: if signedIn()
         && request.auth.uid in request.resource.data.participants
-        && request.resource.data.fromUid == request.auth.uid;
+        && request.resource.data.fromUid == request.auth.uid
+        && request.resource.data.status == 'pending';   // si nasce sempre pending
       // Un partecipante aggiorna stato/offerta, ma NON puo riscrivere identita
       // o partecipanti (prima poteva alterare qualsiasi campo).
       allow update: if signedIn() && request.auth.uid in resource.data.participants
@@ -115,7 +122,14 @@ service cloud.firestore {
         && request.resource.data.toUid == resource.data.toUid
         && request.resource.data.groupId == resource.data.groupId
         && request.resource.data.albumId == resource.data.albumId
-        && request.resource.data.createdAt == resource.data.createdAt;
+        && request.resource.data.createdAt == resource.data.createdAt
+        // confirmedBy puo contenere solo partecipanti (no uid finti)
+        && request.resource.data.confirmedBy.hasOnly(resource.data.participants)
+        // 'completed' SOLO se entrambi i partecipanti hanno confermato
+        // (no auto-completamento unilaterale -> anti review-bombing)
+        && (request.resource.data.status != 'completed'
+            || (request.resource.data.confirmedBy.hasOnly(request.resource.data.participants)
+                && request.resource.data.confirmedBy.hasAll(request.resource.data.participants)));
       allow delete: if false;
 
       match /revisions/{revId} {

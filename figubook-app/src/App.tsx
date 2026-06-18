@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { ProtectedRoute } from '@/components/ProtectedRoute'
 import Login from '@/pages/Login'
 import Dashboard from '@/pages/Dashboard'
 import Album from '@/pages/Album'
@@ -10,10 +11,10 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/album" element={<Album />} />
-      <Route path="/scambi" element={<Scambi />} />
-      <Route path="/community" element={<Community />} />
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/album" element={<ProtectedRoute><Album /></ProtectedRoute>} />
+      <Route path="/scambi" element={<ProtectedRoute><Scambi /></ProtectedRoute>} />
+      <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
     </Routes>
   )
 }

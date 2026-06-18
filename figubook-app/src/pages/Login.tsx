@@ -4,6 +4,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  getAdditionalUserInfo,
   updateProfile,
   setPersistence,
   browserLocalPersistence,
@@ -109,11 +110,17 @@ export default function Login() {
     setBusy(true)
     try {
       await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence)
+      const username = regUser.trim()
+      if (!username) {
+        setRegErr('Inserisci un nome utente.')
+        setBusy(false)
+        return
+      }
       const cred = await createUserWithEmailAndPassword(auth, regEmail.trim(), regPass)
-      await updateProfile(cred.user, { displayName: regUser.trim() })
+      await updateProfile(cred.user, { displayName: username })
       await setDoc(
         doc(db, 'users', cred.user.uid, 'meta', 'profile'),
-        { displayName: regUser.trim(), username: regUser.trim(), ts: Date.now() },
+        { displayName: username, username, ts: Date.now() },
         { merge: true },
       )
       navigate('/dashboard', { replace: true })
@@ -131,12 +138,16 @@ export default function Login() {
       await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence)
       const cred = await signInWithPopup(auth, googleProvider)
       const u = cred.user
-      const name = u.displayName || (u.email || '').split('@')[0]
-      await setDoc(
-        doc(db, 'users', u.uid, 'meta', 'profile'),
-        { displayName: name, username: name, ts: Date.now() },
-        { merge: true },
-      )
+      // Scrivi il profilo SOLO al primo accesso: evita di sovrascrivere
+      // un displayName scelto dall'utente a ogni re-login Google.
+      if (getAdditionalUserInfo(cred)?.isNewUser) {
+        const name = u.displayName || (u.email || '').split('@')[0]
+        await setDoc(
+          doc(db, 'users', u.uid, 'meta', 'profile'),
+          { displayName: name, username: name, ts: Date.now() },
+          { merge: true },
+        )
+      }
       navigate('/dashboard', { replace: true })
     } catch (err) {
       setErr(mapFirebaseError((err as { code?: string }).code))
