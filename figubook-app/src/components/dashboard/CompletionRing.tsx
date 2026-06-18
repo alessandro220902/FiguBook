@@ -18,7 +18,7 @@ export function CompletionRing({
       <RadialBarChart
         width={size}
         height={size}
-        innerRadius="72%"
+        innerRadius="68%"
         outerRadius="100%"
         data={data}
         startAngle={90}
@@ -33,7 +33,7 @@ export function CompletionRing({
         />
       </RadialBarChart>
       <div className="absolute inset-0 grid place-items-center">
-        <span className="font-mono text-2xl font-bold text-ink">{pct}%</span>
+        <span className="font-display text-3xl font-bold tabular-nums text-ink">{pct}%</span>
       </div>
     </div>
   )

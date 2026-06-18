@@ -49,10 +49,10 @@ export default function Dashboard() {
             <StatTicker totals={totals} />
           </section>
 
-          <section className="mt-6 grid gap-4 sm:grid-cols-[auto_1fr] sm:items-center">
-            <div className="grid place-items-center rounded-2xl border border-white/8 bg-bg-elev p-6">
-              <CompletionRing pct={totals.pct} size={160} />
-              <div className="mt-2 font-mono text-[10px] uppercase tracking-widest text-muted">
+          <section className="mt-6 grid gap-4 sm:grid-cols-[auto_1fr] sm:items-stretch">
+            <div className="grid place-items-center rounded-2xl border border-white/10 bg-bg-elev/80 px-8 py-6 shadow-lg shadow-black/20">
+              <CompletionRing pct={totals.pct} size={168} />
+              <div className="mt-3 font-mono text-[10px] uppercase tracking-widest text-muted">
                 Completamento totale
               </div>
             </div>
@@ -61,7 +61,7 @@ export default function Dashboard() {
 
           <section className="mt-8">
             <h2 className="font-display text-xl font-bold text-ink">I tuoi album</h2>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {albums.map((a) => (
                 <AlbumStatCard key={a.id} a={a} />
               ))}
