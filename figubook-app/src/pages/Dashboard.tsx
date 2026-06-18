@@ -55,7 +55,7 @@ export default function Dashboard() {
             <StatTicker totals={totals} albumsCount={albums.length} trades={trades} />
           </FadeIn>
 
-          <FadeIn delay={0.12} className="mt-6">
+          <FadeIn delay={0.12} className="mt-2">
             <AlbumDeck albums={albums} />
           </FadeIn>
 

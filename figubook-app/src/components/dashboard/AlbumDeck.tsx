@@ -21,16 +21,22 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
 
   if (!ordered.length) return null
 
-  const cardWidth = Math.max(240, Math.min(Math.round(w * 0.76), 440))
+  const cardWidth = Math.max(260, Math.min(Math.round(w * 0.86), 520))
   const cardHeight = Math.round(cardWidth * 0.52)
   const items: Item[] = ordered.map((a) => ({ id: a.id, title: a.entry.title, a }))
 
   return (
-    <div ref={wrapRef}>
+    <div ref={wrapRef} className="relative">
+      {/* cornice morbida: il vuoto laterale legge come margine, non come buco */}
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[78%] w-[94%] -translate-x-1/2 -translate-y-1/2 rounded-[44px]"
+        style={{ background: 'radial-gradient(60% 60% at 50% 50%, rgba(255,255,255,0.025) 0%, transparent 72%)' }}
+      />
       <CardStack<Item>
         items={items}
         cardWidth={cardWidth}
         cardHeight={cardHeight}
+        overlap={0.66}
         autoAdvance
         intervalMs={4500}
         pauseOnHover
