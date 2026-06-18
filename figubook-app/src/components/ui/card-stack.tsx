@@ -228,7 +228,7 @@ export function CardStack<T extends CardStackItem>({
               onClick={() => setActive(idx)}
               aria-label={`Vai a ${it.title}`}
               className={cn(
-                'h-2 rounded-full transition-all duration-200',
+                "relative h-2 rounded-full transition-all duration-200 after:absolute after:-inset-2.5 after:content-['']",
                 idx === activeIdx ? 'w-5 bg-lime' : 'w-2 bg-white/20 hover:bg-white/35',
               )}
             />

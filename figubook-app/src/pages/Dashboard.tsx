@@ -31,7 +31,7 @@ export default function Dashboard() {
   return (
     <div className="mx-auto w-full max-w-[88rem]">
       <FadeIn>
-        <h1 className="text-[28px] font-medium tracking-tight text-ink sm:text-[32px]">
+        <h1 className="text-pretty text-[28px] font-medium tracking-tight text-ink sm:text-[32px]">
           Ciao, <Typewriter text={name} className="text-lime" />
         </h1>
       </FadeIn>
