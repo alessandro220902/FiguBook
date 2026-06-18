@@ -1,5 +1,6 @@
 import { RadialBarChart, RadialBar, PolarAngleAxis } from 'recharts'
 import { STAT_COLORS } from './statColors'
+import { AnimatedNumber } from './AnimatedNumber'
 
 // Anello completamento: arco verde proporzionale a pct, % al centro.
 // Pattern da 21st stats-2 (RadialBarChart + PolarAngleAxis).
@@ -30,10 +31,16 @@ export function CompletionRing({
           cornerRadius={size}
           fill={color}
           background={{ fill: STAT_COLORS.track }}
+          animationDuration={1100}
+          animationEasing="ease-out"
         />
       </RadialBarChart>
       <div className="absolute inset-0 grid place-items-center">
-        <span className="text-3xl font-medium tabular-nums tracking-tight text-ink">{pct}%</span>
+        <AnimatedNumber
+          value={pct}
+          suffix="%"
+          className="text-3xl font-medium tabular-nums tracking-tight text-ink"
+        />
       </div>
     </div>
   )

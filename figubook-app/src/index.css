@@ -17,8 +17,9 @@
   --color-gold: #e6b73c;
   --color-stat-have: #3fb96b;    /* verde possedute */
   --color-stat-missing: #ff5b5b; /* rosso mancanti */
-  --color-bg: #0c1410;
-  --color-bg-elev: #13201a;
+  --color-bg: #0a120e;
+  --color-bg-elev: #16241d;
+  --color-surface: #1b2c24;
   --color-ink: #eef3ec;
   --color-ink-2: #b9c4ba;
   --color-muted: #9aa89d;

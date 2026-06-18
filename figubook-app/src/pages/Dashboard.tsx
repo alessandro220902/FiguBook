@@ -5,6 +5,7 @@ import { StatTicker } from '@/components/dashboard/StatTicker'
 import { CompletionRing } from '@/components/dashboard/CompletionRing'
 import { AlbumStatCard } from '@/components/dashboard/AlbumStatCard'
 import { ClosestAlbumCard } from '@/components/dashboard/ClosestAlbumCard'
+import { FadeIn } from '@/components/dashboard/FadeIn'
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -26,9 +27,11 @@ export default function Dashboard() {
 
   return (
     <div className="mx-auto w-full max-w-5xl">
-      <h1 className="text-[28px] font-medium tracking-tight text-ink sm:text-[32px]">
-        Ciao, <span className="text-lime">{name}</span>
-      </h1>
+      <FadeIn>
+        <h1 className="text-[28px] font-medium tracking-tight text-ink sm:text-[32px]">
+          Ciao, <span className="text-lime">{name}</span>
+        </h1>
+      </FadeIn>
 
       {albums.length === 0 ? (
         <div className="mt-10 flex flex-col items-center rounded-xl border border-white/[0.07] bg-bg-elev px-6 py-16 text-center">
@@ -45,25 +48,29 @@ export default function Dashboard() {
         </div>
       ) : (
         <>
-          <section className="mt-8">
+          <FadeIn delay={0.06} className="mt-8">
             <StatTicker totals={totals} />
-          </section>
+          </FadeIn>
 
-          <section className="mt-5 grid gap-4 sm:grid-cols-[auto_1fr] sm:items-stretch">
-            <div className="grid place-items-center rounded-xl border border-white/[0.07] bg-bg-elev px-10 py-7">
+          <FadeIn delay={0.12} className="mt-5 grid gap-4 sm:grid-cols-[auto_1fr] sm:items-stretch">
+            <div className="grid place-items-center rounded-2xl border border-white/[0.08] bg-surface px-10 py-7">
               <CompletionRing pct={totals.pct} size={160} />
               <div className="mt-3 text-[11px] font-medium tracking-wide text-muted">
                 Completamento totale
               </div>
             </div>
             <ClosestAlbumCard albums={albums} />
-          </section>
+          </FadeIn>
 
           <section className="mt-12">
-            <h2 className="text-lg font-medium tracking-tight text-ink">I tuoi album</h2>
+            <FadeIn delay={0.18}>
+              <h2 className="text-lg font-medium tracking-tight text-ink">I tuoi album</h2>
+            </FadeIn>
             <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {albums.map((a) => (
-                <AlbumStatCard key={a.id} a={a} />
+              {albums.map((a, i) => (
+                <FadeIn key={a.id} delay={0.22 + i * 0.05}>
+                  <AlbumStatCard a={a} />
+                </FadeIn>
               ))}
             </div>
           </section>

@@ -10,7 +10,7 @@ export function ClosestAlbumCard({ albums }: { albums: PerAlbumStats[] }) {
   if (!closest) return null
   const { entry } = closest
   return (
-    <div className="flex h-full flex-col justify-center rounded-xl border border-white/[0.07] bg-bg-elev p-7">
+    <div className="flex h-full flex-col justify-center rounded-2xl border border-white/[0.08] bg-surface p-7">
       <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-muted">
         <span className="h-1.5 w-1.5 rounded-full" style={{ background: entry.c1 }} />
         Più vicino a chiudere
