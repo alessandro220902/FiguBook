@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { AlbumStats } from '@/lib/db/albums'
 import { AnimatedNumber } from './AnimatedNumber'
+import { CompletionRing } from './CompletionRing'
 
 const TILE =
   'rounded-2xl border border-white/[0.08] bg-surface px-5 py-4 transition-all duration-200 hover:-translate-y-1 hover:border-white/20'
@@ -27,23 +28,19 @@ export function StatTicker({
         <div className={LABEL}>
           <Dot color="var(--color-stat-have)" /> Possedute
         </div>
-        <div className="mt-2 flex flex-wrap items-baseline gap-x-2">
-          <AnimatedNumber
-            value={totals.have}
-            className="text-3xl font-medium tabular-nums tracking-tight text-ink sm:text-4xl"
-          />
-          <span className="text-sm tabular-nums text-muted">
-            / {totals.total.toLocaleString('it-IT')}
-          </span>
-          <span className="ml-auto text-lg font-medium tabular-nums" style={{ color: 'var(--color-stat-have)' }}>
-            {totals.pct}%
-          </span>
-        </div>
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
-          <div
-            className="h-full rounded-full transition-[width] duration-700 ease-out"
-            style={{ width: `${Math.max(2, totals.pct)}%`, background: 'var(--color-stat-have)' }}
-          />
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <div className="flex items-baseline gap-1.5">
+            <AnimatedNumber
+              value={totals.have}
+              className="text-3xl font-medium tabular-nums tracking-tight text-ink sm:text-4xl"
+            />
+            <span className="text-sm tabular-nums text-ink-2">
+              / {totals.total.toLocaleString('it-IT')}
+            </span>
+          </div>
+          <div className="shrink-0">
+            <CompletionRing pct={totals.pct} size={60} />
+          </div>
         </div>
       </div>
 

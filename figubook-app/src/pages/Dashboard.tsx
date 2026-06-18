@@ -2,8 +2,9 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useCollection } from '@/hooks/useCollection'
 import { StatTicker } from '@/components/dashboard/StatTicker'
-import { CompletionRing } from '@/components/dashboard/CompletionRing'
 import { AlbumDeck } from '@/components/dashboard/AlbumDeck'
+import { NewsPanel } from '@/components/dashboard/NewsPanel'
+import { GroupsPanel } from '@/components/dashboard/GroupsPanel'
 import { FadeIn } from '@/components/dashboard/FadeIn'
 import { Typewriter } from '@/components/dashboard/Typewriter'
 import { useTradesCount } from '@/hooks/useTradesCount'
@@ -54,14 +55,13 @@ export default function Dashboard() {
             <StatTicker totals={totals} albumsCount={albums.length} trades={trades} />
           </FadeIn>
 
-          <FadeIn delay={0.12} className="mt-5 grid gap-4 sm:grid-cols-[auto_1fr] sm:items-stretch">
-            <div className="grid place-items-center rounded-2xl border border-white/[0.08] bg-surface px-10 py-7">
-              <CompletionRing pct={totals.pct} size={160} />
-              <div className="mt-3 text-xs font-medium tracking-wide text-ink-2">
-                Completamento totale
-              </div>
-            </div>
+          <FadeIn delay={0.12} className="mt-6">
             <AlbumDeck albums={albums} />
+          </FadeIn>
+
+          <FadeIn delay={0.2} className="mt-8 grid gap-4 lg:grid-cols-2">
+            <NewsPanel />
+            <GroupsPanel />
           </FadeIn>
         </>
       )}

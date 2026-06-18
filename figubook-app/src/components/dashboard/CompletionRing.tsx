@@ -37,11 +37,14 @@ export function CompletionRing({
           animationEasing="ease-out"
         />
       </RadialBarChart>
-      <div className="absolute inset-0 grid place-items-center">
+      <div
+        className="absolute inset-0 grid place-items-center"
+        style={{ fontSize: Math.round(size * 0.24) }}
+      >
         <AnimatedNumber
           value={pct}
           suffix="%"
-          className="text-3xl font-medium tabular-nums tracking-tight text-ink"
+          className="font-medium tabular-nums tracking-tight text-ink"
         />
       </div>
     </div>
