@@ -1,4 +1,6 @@
 import { albumById, type AlbumCatalogEntry } from '@/data/albumCatalog'
+import { doc, onSnapshot } from 'firebase/firestore'
+import { db } from '@/lib/firebase'
 
 export interface AlbumStats {
   have: number
@@ -44,4 +46,43 @@ export function aggregate(list: AlbumStats[]): AlbumStats {
   const total = list.reduce((n, s) => n + s.total, 0)
   const pct = total > 0 ? Math.round((have / total) * 100) : 0
   return { have, doubles, missing, total, pct }
+}
+
+// onSnapshot live su users/{uid}/albums/_my-albums -> ids[]. Errore => [].
+export function subscribeMyAlbumIds(
+  uid: string,
+  cb: (ids: string[]) => void,
+): () => void {
+  const ref = doc(db, 'users', uid, 'albums', '_my-albums')
+  return onSnapshot(
+    ref,
+    (snap) => cb(snap.exists() ? ((snap.data().ids as string[]) ?? []) : []),
+    (err) => {
+      console.error('album ids', err)
+      cb([])
+    },
+  )
+}
+
+// onSnapshot live sul doc album -> { states, counts }. Errore => vuoto.
+export function subscribeAlbum(
+  uid: string,
+  albumId: string,
+  cb: (d: AlbumDoc) => void,
+): () => void {
+  const ref = doc(db, 'users', uid, 'albums', albumId)
+  return onSnapshot(
+    ref,
+    (snap) => {
+      const data = snap.exists() ? snap.data() : {}
+      cb({
+        states: (data.states as Record<string, string>) ?? {},
+        counts: (data.counts as Record<string, number>) ?? {},
+      })
+    },
+    (err) => {
+      console.error('album', albumId, err)
+      cb({ states: {}, counts: {} })
+    },
+  )
 }
