@@ -58,11 +58,11 @@ export function CardStack<T extends CardStackItem>({
   cardWidth = 460,
   cardHeight = 280,
   overlap = 0.62,
-  spreadDeg = 20,
+  spreadDeg = 13,
   perspectivePx = 1100,
   depthPx = 110,
-  tiltXDeg = 9,
-  activeLiftPx = 16,
+  tiltXDeg = 6,
+  activeLiftPx = 14,
   activeScale = 1.02,
   inactiveScale = 0.94,
   springStiffness = 300,
@@ -128,7 +128,7 @@ export function CardStack<T extends CardStackItem>({
     >
       <div
         className="relative w-full"
-        style={{ height: cardHeight + 56 }}
+        style={{ height: cardHeight + 150 }}
         tabIndex={0}
         onKeyDown={onKeyDown}
       >
@@ -197,7 +197,7 @@ export function CardStack<T extends CardStackItem>({
       </div>
 
       {showDots ? (
-        <div className="mt-5 flex items-center justify-center gap-1.5">
+        <div className="relative z-50 mt-5 flex items-center justify-center gap-1.5">
           {items.map((it, idx) => (
             <button
               key={it.id}

@@ -21,12 +21,12 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
 
   if (!ordered.length) return null
 
-  const cardWidth = Math.max(240, Math.min(Math.round(w * 0.82), 480))
-  const cardHeight = Math.round(cardWidth * 0.6)
+  const cardWidth = Math.max(240, Math.min(Math.round(w * 0.78), 460))
+  const cardHeight = Math.round(cardWidth * 0.56)
   const items: Item[] = ordered.map((a) => ({ id: a.id, title: a.entry.title, a }))
 
   return (
-    <div ref={wrapRef} className="overflow-hidden">
+    <div ref={wrapRef}>
       <CardStack<Item>
         items={items}
         cardWidth={cardWidth}
