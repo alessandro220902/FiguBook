@@ -18,3 +18,10 @@ const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
 export const db = getFirestore(app)
 export const googleProvider = new GoogleAuthProvider()
+
+// Uid dell'utente corrente o errore: nessuna chiamata dati con utente null (fix B4).
+export function requireUid(): string {
+  const uid = auth.currentUser?.uid
+  if (!uid) throw new Error('Utente non autenticato')
+  return uid
+}

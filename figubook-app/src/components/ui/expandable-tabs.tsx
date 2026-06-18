@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 interface Tab {
   title: string
   icon: LucideIcon
+  dot?: boolean
   type?: never
 }
 interface Separator {
@@ -79,6 +80,9 @@ export function ExpandableTabs({
             )}
           >
             <Icon size={20} />
+            {tab.dot && (
+              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-lime ring-2 ring-card" />
+            )}
             <AnimatePresence initial={false}>
               {isSelected && (
                 <motion.span

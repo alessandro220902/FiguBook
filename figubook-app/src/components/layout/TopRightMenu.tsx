@@ -1,21 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { signOut } from 'firebase/auth'
 import { User, Bell, Settings, LifeBuoy, LogOut } from 'lucide-react'
 import { ExpandableTabs, type TabItem } from '@/components/ui/expandable-tabs'
 import { auth } from '@/lib/firebase'
 import { useAuth } from '@/hooks/useAuth'
-
-// Cluster top-right: Profilo · Notifiche │ Impostazioni · Supporto
-// Impostazioni e Supporto NON aprono pannelli (servono a tarare spazi).
-// Notifiche: pannello placeholder finche' A2 porta i dati Firestore.
-const TABS: TabItem[] = [
-  { title: 'Profilo', icon: User },
-  { title: 'Notifiche', icon: Bell },
-  { type: 'separator' },
-  { title: 'Impostazioni', icon: Settings },
-  { title: 'Supporto', icon: LifeBuoy },
-]
+import { useNotifications } from '@/hooks/useNotifications'
+import { markAllRead, resolveHref, timeAgo } from '@/lib/db/notifications'
 
 function useClickOutside(ref: React.RefObject<HTMLElement | null>, handler: () => void) {
   useEffect(() => {
@@ -33,11 +24,26 @@ export function TopRightMenu() {
   const ref = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { items, unread } = useNotifications()
 
   useClickOutside(ref, () => setSelected(null))
 
+  // Apertura pannello Notifiche -> segna tutto letto.
+  useEffect(() => {
+    if (selected === 1 && user && unread > 0) void markAllRead(user.uid)
+  }, [selected, user, unread])
+
   const name = user?.displayName?.trim() || (user?.email || '').split('@')[0] || 'Collezionista'
   const initial = name.charAt(0).toUpperCase()
+
+  // Indici: 0 Profilo · 1 Notifiche · 2 separator · 3 Impostazioni · 4 Supporto
+  const TABS: TabItem[] = [
+    { title: 'Profilo', icon: User },
+    { title: 'Notifiche', icon: Bell, dot: unread > 0 },
+    { type: 'separator' },
+    { title: 'Impostazioni', icon: Settings },
+    { title: 'Supporto', icon: LifeBuoy },
+  ]
 
   async function handleLogout() {
     await signOut(auth)
@@ -71,15 +77,40 @@ export function TopRightMenu() {
         </div>
       )}
 
-      {/* Pannello Notifiche (placeholder; dati reali in A2) */}
+      {/* Pannello Notifiche (live) */}
       {selected === 1 && (
         <div className="w-80 rounded-2xl border border-border bg-card p-4 shadow-2xl">
           <p className="mb-3 font-display text-lg font-bold">Notifiche</p>
-          <div className="grid place-items-center gap-1 rounded-xl border border-border bg-background px-4 py-8 text-center">
-            <Bell className="h-6 w-6 text-muted-foreground" />
-            <p className="text-sm font-semibold">Nessuna notifica</p>
-            <p className="text-xs text-muted-foreground">Le proposte di scambio appariranno qui</p>
-          </div>
+          {items.length === 0 ? (
+            <div className="grid place-items-center gap-1 rounded-xl border border-border bg-background px-4 py-8 text-center">
+              <Bell className="h-6 w-6 text-muted-foreground" />
+              <p className="text-sm font-semibold">Nessuna notifica</p>
+              <p className="text-xs text-muted-foreground">Le proposte di scambio appariranno qui</p>
+            </div>
+          ) : (
+            <div className="flex max-h-80 flex-col gap-1.5 overflow-y-auto">
+              {items.map((n) => (
+                <Link
+                  key={n.id}
+                  to={resolveHref(n.href)}
+                  onClick={() => setSelected(null)}
+                  className={
+                    'flex items-start gap-3 rounded-xl border px-3 py-2.5 transition-colors hover:bg-muted ' +
+                    (n.read ? 'border-border bg-background' : 'border-lime/30 bg-lime/5')
+                  }
+                >
+                  <span className="text-lg leading-none">{n.icon || '🔄'}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold leading-snug text-foreground">{n.title}</span>
+                    <span className="block truncate text-xs text-muted-foreground">
+                      {(n.info ? n.info + ' · ' : '') + timeAgo(n.at)}
+                    </span>
+                  </span>
+                  {!n.read && <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-lime" />}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       )}
       {/* selected 3 (Impostazioni) e 4 (Supporto): nessun pannello, di proposito */}
