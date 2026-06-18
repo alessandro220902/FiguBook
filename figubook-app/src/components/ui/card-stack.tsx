@@ -144,7 +144,7 @@ export function CardStack<T extends CardStackItem>({
 
               const rotateZ = off * stepDeg
               const x = off * cardSpacing
-              const y = abs * 8
+              const y = 0
               const z = -abs * depthPx
               const isActive = off === 0
               const scale = isActive ? activeScale : inactiveScale
@@ -197,7 +197,7 @@ export function CardStack<T extends CardStackItem>({
       </div>
 
       {showDots ? (
-        <div className="relative z-50 mt-5 flex items-center justify-center gap-1.5">
+        <div className="relative z-[120] mt-5 flex items-center justify-center gap-2 py-2">
           {items.map((it, idx) => (
             <button
               key={it.id}
