@@ -52,10 +52,12 @@ export default function Dashboard() {
       ) : (
         <>
           <FadeIn delay={0.06} className="mt-8">
+            <h2 className="sr-only">Le tue statistiche</h2>
             <StatTicker totals={totals} albumsCount={albums.length} trades={trades} />
           </FadeIn>
 
           <FadeIn delay={0.12} className="mt-2">
+            <h2 className="sr-only">I tuoi album</h2>
             <AlbumDeck albums={albums} />
           </FadeIn>
 

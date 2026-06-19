@@ -24,7 +24,7 @@ export function StatTicker({
 }) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-      <div className={TILE}>
+      <div className={`${TILE} col-span-2 sm:col-span-1`}>
         <div className={LABEL}>
           <Dot color="var(--color-stat-have)" /> Possedute
         </div>

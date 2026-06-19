@@ -71,7 +71,7 @@ function DeckCard({ a, compact }: { a: PerAlbumStats; compact: boolean }) {
       <div className={`relative flex h-full flex-col justify-between ${compact ? 'p-4' : 'p-6'}`}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-white/85">
+            <div className="font-mono text-[11px] text-white/85">
               {entry.editor} · {entry.season}
             </div>
             <h3
