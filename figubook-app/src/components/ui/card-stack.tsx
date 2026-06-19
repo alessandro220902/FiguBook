@@ -194,7 +194,7 @@ export function CardStack<T extends CardStackItem>({
                 <motion.div
                   key={item.id}
                   className={cn(
-                    'absolute overflow-hidden rounded-2xl border border-white/10 shadow-xl will-change-transform select-none',
+                    'absolute overflow-hidden rounded-2xl border border-white/10 shadow-[0_18px_40px_-16px_rgba(4,10,7,0.6)] will-change-transform select-none',
                     isActive ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer',
                   )}
                   style={{ width: cardWidth, height: cardHeight, zIndex, transformStyle: 'preserve-3d' }}
@@ -222,7 +222,7 @@ export function CardStack<T extends CardStackItem>({
               type="button"
               onClick={prev}
               aria-label="Album precedente"
-              className="absolute left-1 top-1/2 z-[120] grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/10 bg-bg-elev/80 text-ink-2 backdrop-blur-sm transition-colors hover:border-white/25 hover:text-ink"
+              className="absolute left-1 top-1/2 z-[120] grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/10 bg-bg-elev/80 text-ink-2 backdrop-blur-sm transition hover:border-white/25 hover:text-ink active:scale-90"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -230,7 +230,7 @@ export function CardStack<T extends CardStackItem>({
               type="button"
               onClick={next}
               aria-label="Album successivo"
-              className="absolute right-1 top-1/2 z-[120] grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/10 bg-bg-elev/80 text-ink-2 backdrop-blur-sm transition-colors hover:border-white/25 hover:text-ink"
+              className="absolute right-1 top-1/2 z-[120] grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/10 bg-bg-elev/80 text-ink-2 backdrop-blur-sm transition hover:border-white/25 hover:text-ink active:scale-90"
             >
               <ChevronRight className="h-5 w-5" />
             </button>

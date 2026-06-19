@@ -50,7 +50,7 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={retry}
-            className="mt-5 rounded-lg bg-lime px-5 py-2.5 text-sm font-medium text-lime-ink transition-transform duration-150 hover:-translate-y-px"
+            className="mt-5 rounded-lg bg-lime px-5 py-2.5 text-sm font-medium text-lime-ink transition-transform duration-150 hover:-translate-y-px active:scale-95"
           >
             Riprova
           </button>
@@ -63,7 +63,7 @@ export default function Dashboard() {
           </p>
           <Link
             to="/album"
-            className="mt-5 rounded-lg bg-lime px-5 py-2.5 text-sm font-medium text-lime-ink transition-transform duration-150 hover:-translate-y-px"
+            className="mt-5 rounded-lg bg-lime px-5 py-2.5 text-sm font-medium text-lime-ink transition-transform duration-150 hover:-translate-y-px active:scale-95"
           >
             Aggiungi il primo album
           </Link>

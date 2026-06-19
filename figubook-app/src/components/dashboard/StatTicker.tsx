@@ -4,7 +4,7 @@ import { AnimatedNumber } from './AnimatedNumber'
 import { CompletionRing } from './CompletionRing'
 
 const TILE =
-  'rounded-2xl border border-white/[0.08] bg-surface px-4 py-3.5 transition-colors duration-200 hover:border-white/20'
+  'rounded-2xl border border-white/[0.08] bg-surface px-4 py-3.5 transition duration-200 hover:border-white/20 active:scale-[0.98]'
 const LABEL = 'flex items-center gap-1.5 text-xs font-medium text-ink-2'
 const NUM = 'mt-1.5 block font-display text-3xl font-semibold tabular-nums tracking-tight text-ink'
 
