@@ -20,7 +20,8 @@ export default function App() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/album" element={<Album />} />
+        <Route path="/album" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/album/:albumId" element={<Album />} />
         <Route path="/scambi" element={<Scambi />} />
         <Route path="/community" element={<Community />} />
       </Route>
