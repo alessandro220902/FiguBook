@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react'
 
 // Card-stack sfogliabile (adattato da 21st ruixenui/card-stack):
 // tolto next/link + icona lucide, dots in stile FiguBook, render generico via renderCard.
@@ -83,6 +83,8 @@ export function CardStack<T extends CardStackItem>({
   const len = items.length
   const [active, setActive] = React.useState(() => wrapIndex(initialIndex, len))
   const [hovering, setHovering] = React.useState(false)
+  const [focused, setFocused] = React.useState(false)
+  const [userPaused, setUserPaused] = React.useState(false)
 
   // active normalizzato in render (no setState-in-effect se items cambiano).
   const activeIdx = wrapIndex(active, len)
@@ -112,27 +114,46 @@ export function CardStack<T extends CardStackItem>({
     if (e.key === 'ArrowRight') next()
   }
 
+  // Pausa effettiva: hover (mouse), focus tastiera dentro al carosello, o toggle
+  // esplicito. WCAG 2.2.2 — contenuto in movimento >5s deve poter essere fermato.
+  const autoPlaying = autoAdvance && !reduceMotion && !userPaused
+  const paused = (pauseOnHover && hovering) || focused || userPaused
+
   React.useEffect(() => {
-    if (!autoAdvance || reduceMotion || !len) return
-    if (pauseOnHover && hovering) return
+    if (!autoPlaying || !len || paused) return
     const id = window.setInterval(() => {
       if (loop || activeIdx < len - 1) next()
     }, Math.max(700, intervalMs))
     return () => window.clearInterval(id)
-  }, [autoAdvance, intervalMs, hovering, pauseOnHover, reduceMotion, len, loop, activeIdx, next])
+  }, [autoPlaying, intervalMs, paused, len, loop, activeIdx, next])
 
   if (!len) return null
 
   return (
     <div
       className={cn('w-full', className)}
+      role="group"
+      aria-roledescription="carosello"
+      aria-label="Mazzo album"
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) setFocused(false)
+      }}
     >
+      {/* Annuncio screen-reader: l'album attivo cambia senza spostare il focus. */}
+      <div aria-live="polite" className="sr-only">
+        {items[activeIdx]?.title} — {activeIdx + 1} di {len}
+      </div>
+
       <div
         className="relative w-full"
         style={{ height: cardHeight + 150 }}
         tabIndex={0}
+        role="group"
+        aria-roledescription="diapositiva"
+        aria-label={`${items[activeIdx]?.title} (${activeIdx + 1} di ${len})`}
         onKeyDown={onKeyDown}
       >
         <div
@@ -222,6 +243,17 @@ export function CardStack<T extends CardStackItem>({
 
       {showDots ? (
         <div className="relative z-[120] mt-5 flex items-center justify-center gap-2 py-2">
+          {autoAdvance && !reduceMotion && len > 1 ? (
+            <button
+              type="button"
+              onClick={() => setUserPaused((p) => !p)}
+              aria-label={userPaused ? 'Riprendi rotazione automatica' : 'Metti in pausa la rotazione'}
+              aria-pressed={userPaused}
+              className="mr-1 grid h-7 w-7 place-items-center rounded-full text-ink-2 transition-colors hover:bg-white/10 hover:text-ink"
+            >
+              {userPaused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+            </button>
+          ) : null}
           {items.map((it, idx) => (
             <button
               key={it.id}
