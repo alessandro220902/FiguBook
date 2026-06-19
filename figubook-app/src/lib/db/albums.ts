@@ -1,6 +1,7 @@
 import { albumById, type AlbumCatalogEntry } from '@/data/albumCatalog'
-import { doc, onSnapshot } from 'firebase/firestore'
+import { doc, onSnapshot, setDoc, deleteField } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
+import { countToFields } from '@/lib/album/stats'
 
 export interface AlbumStats {
   have: number
@@ -90,4 +91,28 @@ export function subscribeAlbum(
       cb({ states: {}, counts: {} })
     },
   )
+}
+
+// Costruisce l'update Firestore da una mappa code->count (parte pura, testabile).
+export function buildAlbumUpdate(deltas: Record<string, number>) {
+  const states: Record<string, unknown> = {}
+  const counts: Record<string, unknown> = {}
+  for (const [code, count] of Object.entries(deltas)) {
+    const f = countToFields(count)
+    states[code] = f.state ?? deleteField()
+    counts[code] = f.count ?? deleteField()
+  }
+  return { states, counts, ts: Date.now() }
+}
+
+// Un solo setDoc merge con tutti i delta accumulati (fix B1: niente 1-write-per-tap).
+// NB: non porta _syncInventory del vecchio sito (layer scambi, fuori scope A2.3).
+export async function flushAlbumCounts(
+  uid: string,
+  albumId: string,
+  deltas: Record<string, number>,
+): Promise<void> {
+  if (Object.keys(deltas).length === 0) return
+  const ref = doc(db, 'users', uid, 'albums', albumId)
+  await setDoc(ref, buildAlbumUpdate(deltas), { merge: true })
 }
