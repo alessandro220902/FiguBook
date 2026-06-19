@@ -25,7 +25,7 @@
   --color-muted: #9aa89d;
 
   --font-sans: 'Geist', system-ui, sans-serif;
-  --font-display: 'Geist', ui-sans-serif, system-ui;
+  --font-display: 'Barlow Condensed', 'Geist', ui-sans-serif, system-ui;
   --font-body: 'Geist', ui-sans-serif, system-ui;
   --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
   --font-mono: 'Geist Mono', ui-monospace, Menlo, monospace;

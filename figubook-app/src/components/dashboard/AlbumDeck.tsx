@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CardStack, type CardStackItem } from '@/components/ui/card-stack'
 import type { PerAlbumStats } from '@/lib/db/albums'
+import { STAT_COLORS } from './statColors'
 
 type Item = CardStackItem & { a: PerAlbumStats }
 
@@ -49,6 +50,7 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
 
 function DeckCard({ a, compact }: { a: PerAlbumStats; compact: boolean }) {
   const { entry } = a
+  const complete = a.pct >= 100
   return (
     <div
       className="relative h-full"
@@ -75,13 +77,21 @@ function DeckCard({ a, compact }: { a: PerAlbumStats; compact: boolean }) {
               {entry.editor} · {entry.season}
             </div>
             <h3
-              className={`mt-1 truncate font-semibold tracking-tight text-white ${compact ? 'text-xl' : 'text-2xl'}`}
+              className={`mt-1 truncate font-display font-semibold tracking-tight text-white ${compact ? 'text-2xl' : 'text-[28px] leading-tight'}`}
             >
               {entry.title}
             </h3>
+            {complete ? (
+              <span
+                className="mt-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium"
+                style={{ background: STAT_COLORS.gold, color: '#1a1304' }}
+              >
+                ✦ Completo
+              </span>
+            ) : null}
           </div>
           <div
-            className={`shrink-0 font-semibold tabular-nums text-white ${compact ? 'text-2xl' : 'text-3xl'}`}
+            className={`shrink-0 font-display font-semibold tabular-nums text-white ${compact ? 'text-3xl' : 'text-4xl'}`}
           >
             {a.pct}%
           </div>
@@ -89,24 +99,27 @@ function DeckCard({ a, compact }: { a: PerAlbumStats; compact: boolean }) {
 
         <div>
           <div className="h-2 overflow-hidden rounded-full bg-black/30">
-            <div className="h-full rounded-full bg-white" style={{ width: `${Math.max(2, a.pct)}%` }} />
+            <div
+              className="h-full rounded-full"
+              style={{ width: `${Math.max(2, a.pct)}%`, background: complete ? STAT_COLORS.gold : '#ffffff' }}
+            />
           </div>
           <div className={`mt-4 flex items-end justify-between gap-3 ${compact ? 'flex-wrap' : ''}`}>
             <dl className={`flex text-white ${compact ? 'gap-4' : 'gap-6'}`}>
               <div>
                 <dt className="text-[11px] text-white/85">Possedute</dt>
-                <dd className="text-lg font-medium tabular-nums">
+                <dd className="font-display text-xl font-semibold tabular-nums">
                   {a.have}
                   <span className="text-sm text-white/75"> / {a.total}</span>
                 </dd>
               </div>
               <div>
                 <dt className="text-[11px] text-white/85">Mancanti</dt>
-                <dd className="text-lg font-medium tabular-nums">{a.missing}</dd>
+                <dd className="font-display text-xl font-semibold tabular-nums">{a.missing}</dd>
               </div>
               <div>
                 <dt className="text-[11px] text-white/85">Doppie</dt>
-                <dd className="text-lg font-medium tabular-nums">{a.doubles}</dd>
+                <dd className="font-display text-xl font-semibold tabular-nums">{a.doubles}</dd>
               </div>
             </dl>
             <Link

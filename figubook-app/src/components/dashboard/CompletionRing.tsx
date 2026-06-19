@@ -21,6 +21,9 @@ export function CompletionRing({
   const c = 2 * Math.PI * r
   const clamped = Math.max(0, Math.min(100, pct))
   const offset = c * (1 - clamped / 100)
+  // Foil: a completamento l'anello diventa oro (raro => resta speciale).
+  const isComplete = clamped >= 100
+  const arcColor = isComplete ? STAT_COLORS.gold : color
 
   return (
     <div className="relative" style={{ width: size, height: size }}>
@@ -40,7 +43,7 @@ export function CompletionRing({
             cy={size / 2}
             r={r}
             fill="none"
-            stroke={color}
+            stroke={arcColor}
             strokeWidth={stroke}
             strokeLinecap="round"
             strokeDasharray={c}
@@ -57,7 +60,7 @@ export function CompletionRing({
         <AnimatedNumber
           value={pct}
           suffix="%"
-          className="font-medium tabular-nums tracking-tight text-ink"
+          className="font-display font-semibold tabular-nums tracking-tight text-ink"
         />
       </div>
     </div>
