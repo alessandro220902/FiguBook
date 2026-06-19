@@ -225,7 +225,7 @@ export function CardStack<T extends CardStackItem>({
               type="button"
               onClick={prev}
               aria-label="Album precedente"
-              className="absolute left-1 top-1/2 z-[120] grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-white/10 bg-bg-elev/80 text-ink-2 backdrop-blur-sm transition-colors hover:border-white/25 hover:text-ink"
+              className="absolute left-1 top-1/2 z-[120] grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/10 bg-bg-elev/80 text-ink-2 backdrop-blur-sm transition-colors hover:border-white/25 hover:text-ink"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -233,7 +233,7 @@ export function CardStack<T extends CardStackItem>({
               type="button"
               onClick={next}
               aria-label="Album successivo"
-              className="absolute right-1 top-1/2 z-[120] grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-white/10 bg-bg-elev/80 text-ink-2 backdrop-blur-sm transition-colors hover:border-white/25 hover:text-ink"
+              className="absolute right-1 top-1/2 z-[120] grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/10 bg-bg-elev/80 text-ink-2 backdrop-blur-sm transition-colors hover:border-white/25 hover:text-ink"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -249,7 +249,7 @@ export function CardStack<T extends CardStackItem>({
               onClick={() => setUserPaused((p) => !p)}
               aria-label={userPaused ? 'Riprendi rotazione automatica' : 'Metti in pausa la rotazione'}
               aria-pressed={userPaused}
-              className="mr-1 grid h-7 w-7 place-items-center rounded-full text-ink-2 transition-colors hover:bg-white/10 hover:text-ink"
+              className="relative mr-1 grid h-7 w-7 place-items-center rounded-full text-ink-2 transition-colors after:absolute after:-inset-2 after:content-[''] hover:bg-white/10 hover:text-ink"
             >
               {userPaused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
             </button>
