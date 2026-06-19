@@ -11,7 +11,7 @@ import { useTradesCount } from '@/hooks/useTradesCount'
 
 export default function Dashboard() {
   const { user } = useAuth()
-  const { albums, totals, loading } = useCollection()
+  const { albums, totals, loading, error, retry } = useCollection()
   const trades = useTradesCount()
   const name = user?.displayName?.trim() || user?.email?.split('@')[0] || 'collezionista'
 
@@ -36,7 +36,26 @@ export default function Dashboard() {
         </h1>
       </FadeIn>
 
-      {albums.length === 0 ? (
+      {error ? (
+        <div
+          role="alert"
+          className="mt-10 flex flex-col items-center rounded-xl border border-white/[0.07] bg-bg-elev px-6 py-16 text-center"
+        >
+          <div className="text-xl font-medium tracking-tight text-ink">
+            Non riesco a caricare la collezione
+          </div>
+          <p className="mt-2 max-w-xs text-sm text-ink-2">
+            Controlla la connessione e riprova. I tuoi dati sono al sicuro.
+          </p>
+          <button
+            type="button"
+            onClick={retry}
+            className="mt-5 rounded-lg bg-lime px-5 py-2.5 text-sm font-medium text-lime-ink transition-transform duration-150 hover:-translate-y-px"
+          >
+            Riprova
+          </button>
+        </div>
+      ) : albums.length === 0 ? (
         <div className="mt-10 flex flex-col items-center rounded-xl border border-white/[0.07] bg-bg-elev px-6 py-16 text-center">
           <div className="text-xl font-medium tracking-tight text-ink">Nessun album ancora</div>
           <p className="mt-2 max-w-xs text-sm text-ink-2">

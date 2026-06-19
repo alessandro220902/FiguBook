@@ -49,10 +49,13 @@ export function aggregate(list: AlbumStats[]): AlbumStats {
   return { have, doubles, missing, total, pct }
 }
 
-// onSnapshot live su users/{uid}/albums/_my-albums -> ids[]. Errore => [].
+// onSnapshot live su users/{uid}/albums/_my-albums -> ids[].
+// Errore => onError se fornito (per distinguere fallimento da collezione vuota),
+// altrimenti fallback a [].
 export function subscribeMyAlbumIds(
   uid: string,
   cb: (ids: string[]) => void,
+  onError?: (err: unknown) => void,
 ): () => void {
   const ref = doc(db, 'users', uid, 'albums', '_my-albums')
   return onSnapshot(
@@ -60,7 +63,8 @@ export function subscribeMyAlbumIds(
     (snap) => cb(snap.exists() ? ((snap.data().ids as string[]) ?? []) : []),
     (err) => {
       console.error('album ids', err)
-      cb([])
+      if (onError) onError(err)
+      else cb([])
     },
   )
 }

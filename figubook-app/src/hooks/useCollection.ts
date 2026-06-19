@@ -16,22 +16,39 @@ export function useCollection(): {
   albums: PerAlbumStats[]
   totals: AlbumStats
   loading: boolean
+  error: boolean
+  retry: () => void
 } {
   const { user } = useAuth()
   const [ids, setIds] = useState<string[]>([])
   const [idsLoaded, setIdsLoaded] = useState(false)
   const [statsMap, setStatsMap] = useState<Record<string, AlbumStats>>({})
+  const [error, setError] = useState(false)
+  const [reloadKey, setReloadKey] = useState(0)
+
+  const retry = () => {
+    setError(false)
+    setIdsLoaded(false)
+    setReloadKey((k) => k + 1)
+  }
 
   // Lista album dell'utente (live).
   useEffect(() => {
     if (!user) return
     let active = true
-    const unsub = subscribeMyAlbumIds(user.uid, (next) => {
-      if (active) {
-        setIds(next)
-        setIdsLoaded(true)
-      }
-    })
+    const unsub = subscribeMyAlbumIds(
+      user.uid,
+      (next) => {
+        if (active) {
+          setIds(next)
+          setIdsLoaded(true)
+          setError(false)
+        }
+      },
+      () => {
+        if (active) setError(true)
+      },
+    )
     return () => {
       active = false
       unsub()
@@ -39,7 +56,7 @@ export function useCollection(): {
       setIdsLoaded(false)
       setStatsMap({})
     }
-  }, [user])
+  }, [user, reloadKey])
 
   // Un listener per album; cleanup su cambio lista/unmount (nessun orfano).
   useEffect(() => {
@@ -57,7 +74,7 @@ export function useCollection(): {
     .map((id) => ({ id, entry: albumById[id], ...(statsMap[id] ?? EMPTY) }))
 
   const totals = aggregate(albums)
-  const loading = !!user && (!idsLoaded || ids.some((id) => albumById[id] && !statsMap[id]))
+  const loading = !error && !!user && (!idsLoaded || ids.some((id) => albumById[id] && !statsMap[id]))
 
-  return { albums, totals, loading }
+  return { albums, totals, loading, error, retry }
 }
