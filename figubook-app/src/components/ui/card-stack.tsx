@@ -83,7 +83,6 @@ export function CardStack<T extends CardStackItem>({
   const len = items.length
   const [active, setActive] = React.useState(() => wrapIndex(initialIndex, len))
   const [hovering, setHovering] = React.useState(false)
-  const [focused, setFocused] = React.useState(false)
   const [userPaused, setUserPaused] = React.useState(false)
 
   // active normalizzato in render (no setState-in-effect se items cambiano).
@@ -114,10 +113,12 @@ export function CardStack<T extends CardStackItem>({
     if (e.key === 'ArrowRight') next()
   }
 
-  // Pausa effettiva: hover (mouse), focus tastiera dentro al carosello, o toggle
-  // esplicito. WCAG 2.2.2 — contenuto in movimento >5s deve poter essere fermato.
+  // Pausa effettiva: hover (mouse) o toggle esplicito. WCAG 2.2.2 — il contenuto in
+  // movimento deve poter essere fermato, garantito dal bottone pausa/play.
+  // NB: niente pausa-su-focus: un tap su freccia/dot lascia il focus lì e bloccherebbe
+  // l'autoplay per sempre (regressione mobile).
   const autoPlaying = autoAdvance && !reduceMotion && !userPaused
-  const paused = (pauseOnHover && hovering) || focused || userPaused
+  const paused = (pauseOnHover && hovering) || userPaused
 
   React.useEffect(() => {
     if (!autoPlaying || !len || paused) return
@@ -137,10 +138,6 @@ export function CardStack<T extends CardStackItem>({
       aria-label="Mazzo album"
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
-      onFocus={() => setFocused(true)}
-      onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) setFocused(false)
-      }}
     >
       {/* Annuncio screen-reader: l'album attivo cambia senza spostare il focus. */}
       <div aria-live="polite" className="sr-only">
