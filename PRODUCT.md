@@ -12,7 +12,7 @@ App web per **collezionisti italiani di figurine Panini** (e album affini: Calci
 - **scambiare** doppioni con altri collezionisti (richieste, accetta/rifiuta, recensioni);
 - sfogliare un catalogo di album e attivarli nella propria raccolta.
 
-Stack: **plain HTML/CSS/JS** (niente React, niente Tailwind, niente build step). Hosting **GitHub Pages**. Backend dati via Firebase. CSS principalmente inline in `<style>` per pagina + `figubook-album-overrides.css` + layer `figubook-impeccable.css`.
+Stack: **React SPA (Vite + TypeScript)** in `figubook-app/`, **Tailwind v4** con token brand in `src/index.css` (tema scuro, primitive shadcn). Hosting **GitHub Pages** (base `/FiguBook/app/`), deploy via GitHub Actions. Backend dati via Firebase (auth + Firestore); stato collezione locale via IndexedDB. Font: Geist / Barlow Condensed / Geist Mono.
 
 ## Utenti & Contesto
 
