@@ -4,6 +4,7 @@ import { AppLayout } from '@/components/layout/AppLayout'
 import Login from '@/pages/Login'
 import Dashboard from '@/pages/Dashboard'
 import Album from '@/pages/Album'
+import AlbumList from '@/pages/AlbumList'
 import Scambi from '@/pages/Scambi'
 import Community from '@/pages/Community'
 
@@ -20,7 +21,7 @@ export default function App() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/album" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/album" element={<AlbumList />} />
         <Route path="/album/:albumId" element={<Album />} />
         <Route path="/scambi" element={<Scambi />} />
         <Route path="/community" element={<Community />} />
