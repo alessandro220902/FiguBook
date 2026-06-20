@@ -9,6 +9,7 @@ import { sectionStats } from '@/lib/album/stats'
 import { computeStats } from '@/lib/db/albums'
 import { sectionVars } from '@/lib/album/color'
 import { AlbumLanding } from '@/components/album/AlbumLanding'
+import { Breadcrumb } from '@/components/Breadcrumb'
 import { SectionSidebar } from '@/components/album/SectionSidebar'
 import { SectionHero } from '@/components/album/SectionHero'
 import { AlbumToolbar } from '@/components/album/AlbumToolbar'
@@ -62,9 +63,15 @@ export default function Album() {
   const secStats = sectionStats(album.states, album.counts, section.codes)
   const infoSection = infoCode ? data.sections.find((s) => s.codes.includes(infoCode)) ?? section : section
 
+  // Codici per la condivisione: mancanti = count 0, doppie = count >= 2 (su tutto l'album)
+  const allCodes = data.sections.flatMap((s) => s.codes)
+  const missingCodes = allCodes.filter((c) => album.countOf(c) === 0)
+  const doubleCodes = allCodes.filter((c) => album.countOf(c) >= 2)
+
   return (
     <main className="w-full px-4 pb-16 pt-6 sm:px-6 lg:px-8">
-      <AlbumLanding entry={entry} stats={albumStats} />
+      <Breadcrumb items={[{ label: 'Album', to: '/album' }, { label: entry.title }]} />
+      <AlbumLanding entry={entry} stats={albumStats} missingCodes={missingCodes} doubleCodes={doubleCodes} />
 
       <ContainerScroll
         className="mt-8"

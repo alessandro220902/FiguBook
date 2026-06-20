@@ -1,15 +1,48 @@
 // figubook-app/src/components/album/AlbumLanding.tsx
-import { Share2 } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { Share2, Check } from 'lucide-react'
 import type { AlbumCatalogEntry } from '@/data/albumCatalog'
 import { sectionGradient } from '@/lib/album/color'
 import type { AlbumStats } from '@/lib/db/albums'
 
-// Hero statico full-width: copertina + statistiche ad alto contrasto. Nessun effetto
-// scroll qui (parte all'apertura). Le stat sono chip solide leggibili (prima erano
-// semitrasparenti sul gradiente -> illeggibili).
-export function AlbumLanding({ entry, stats }: { entry: AlbumCatalogEntry; stats: AlbumStats }) {
+export interface AlbumLandingProps {
+  entry: AlbumCatalogEntry
+  stats: AlbumStats
+  // codici per la condivisione (calcolati in Album.tsx, dove c'è il dataset)
+  missingCodes: string[]
+  doubleCodes: string[]
+}
+
+// Hero statico full-width: copertina + statistiche ad alto contrasto. Le stat sono
+// chip solide leggibili. I tasti condividono la lista doppie/mancanti via Web Share
+// API (mobile) con fallback copia-negli-appunti.
+export function AlbumLanding({ entry, stats, missingCodes, doubleCodes }: AlbumLandingProps) {
+  const [toast, setToast] = useState<string | null>(null)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  function flash(msg: string) {
+    setToast(msg)
+    if (timer.current) clearTimeout(timer.current)
+    timer.current = setTimeout(() => setToast(null), 2600)
+  }
+
+  async function share(kind: 'doubles' | 'missing', codes: string[]) {
+    const label = kind === 'doubles' ? 'Doppie' : 'Mancanti'
+    const text = `${entry.title} — ${label} (${codes.length}):\n${codes.join(', ')}`
+    try {
+      if (typeof navigator.share === 'function') {
+        await navigator.share({ title: `FiguBook · ${label}`, text })
+        return
+      }
+      await navigator.clipboard.writeText(text)
+      flash(`${label}: lista copiata negli appunti`)
+    } catch {
+      // condivisione annullata dall'utente: nessun feedback
+    }
+  }
+
   return (
-    <section className="w-full">
+    <section className="relative w-full">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,420px)_1fr] lg:items-stretch">
         {/* Copertina */}
         <div
@@ -45,16 +78,32 @@ export function AlbumLanding({ entry, stats }: { entry: AlbumCatalogEntry; stats
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <button type="button" disabled title="Presto" className="flex cursor-not-allowed items-center gap-2 rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm font-semibold text-muted-foreground opacity-60">
-              <Share2 size={16} /> Condividi doppie
-            </button>
-            <button type="button" disabled title="Presto" className="flex cursor-not-allowed items-center gap-2 rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm font-semibold text-muted-foreground opacity-60">
-              <Share2 size={16} /> Condividi mancanti
-            </button>
+            <ShareButton label="Condividi doppie" disabled={doubleCodes.length === 0} onClick={() => share('doubles', doubleCodes)} />
+            <ShareButton label="Condividi mancanti" disabled={missingCodes.length === 0} onClick={() => share('missing', missingCodes)} />
           </div>
         </div>
       </div>
+
+      {toast && (
+        <div role="status" className="pointer-events-none absolute bottom-0 left-0 flex items-center gap-2 rounded-xl border border-lime/30 bg-bg-elev px-4 py-2.5 text-sm font-medium text-ink shadow-lg">
+          <Check size={16} className="text-lime" /> {toast}
+        </div>
+      )}
     </section>
+  )
+}
+
+function ShareButton({ label, disabled, onClick }: { label: string; disabled: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={disabled ? 'Niente da condividere' : label}
+      className="flex items-center gap-2 rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-lime/40 hover:bg-surface/80 disabled:cursor-not-allowed disabled:text-muted-foreground disabled:opacity-50 disabled:hover:border-white/10"
+    >
+      <Share2 size={16} /> {label}
+    </button>
   )
 }
 

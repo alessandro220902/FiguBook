@@ -12,7 +12,7 @@ const stats = { have: 400, doubles: 12, missing: 270, total: 670, pct: 60 }
 
 describe('AlbumLanding', () => {
   it('mostra titolo, percentuale e numeri statistiche', () => {
-    render(<AlbumLanding entry={entry} stats={stats} />)
+    render(<AlbumLanding entry={entry} stats={stats} missingCodes={['12', '45']} doubleCodes={['7']} />)
     expect(screen.getByRole('heading', { name: /FIFA World Cup 2022/ })).toBeInTheDocument()
     expect(screen.getAllByText('60%').length).toBeGreaterThan(0)
     expect(screen.getByText('400')).toBeInTheDocument()

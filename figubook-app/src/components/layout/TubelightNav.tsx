@@ -20,14 +20,18 @@ export function TubelightNav({ items, className }: { items: NavItem[]; className
   return (
     <div
       className={cn(
-        'fixed bottom-0 left-1/2 z-50 mb-6 -translate-x-1/2 sm:top-0 sm:mb-0 sm:pt-6',
+        // bottom-0 (mobile) + sm:top-0 insieme rendevano il wrapper alto tutto il
+        // viewport e largo quanto la pill: una colonna invisibile al centro che
+        // intercettava i clic del contenuto sottostante. sm:bottom-auto la rilascia.
+        'fixed bottom-0 left-1/2 z-50 mb-6 -translate-x-1/2 sm:top-0 sm:bottom-auto sm:mb-0 sm:pt-6',
         className,
       )}
     >
       <div className="flex items-center gap-1 rounded-full border border-border bg-card/80 px-1 py-1 shadow-lg backdrop-blur-lg">
         {items.map((item) => {
           const Icon = item.icon
-          const isActive = pathname === item.url
+          // attivo anche su sotto-rotte: /album/:id deve accendere "Album"
+          const isActive = pathname === item.url || pathname.startsWith(item.url + '/')
           return (
             <Link
               key={item.name}
