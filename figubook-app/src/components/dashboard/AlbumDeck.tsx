@@ -123,7 +123,7 @@ function DeckCard({ a, compact }: { a: PerAlbumStats; compact: boolean }) {
               </div>
             </dl>
             <Link
-              to="/album"
+              to={`/album/${a.id}`}
               className={`grid shrink-0 place-items-center rounded-lg bg-white px-4 text-sm font-medium text-black transition-transform duration-150 hover:-translate-y-px active:scale-95 ${compact ? 'min-h-11 w-full' : 'min-h-11'}`}
             >
               Apri →
