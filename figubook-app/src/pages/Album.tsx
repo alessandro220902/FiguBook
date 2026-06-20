@@ -12,10 +12,8 @@ import { AlbumLanding } from '@/components/album/AlbumLanding'
 import { Breadcrumb } from '@/components/Breadcrumb'
 import { SectionSidebar } from '@/components/album/SectionSidebar'
 import { SectionHero } from '@/components/album/SectionHero'
-import { AlbumToolbar } from '@/components/album/AlbumToolbar'
 import { StickerGrid, type Filter } from '@/components/album/StickerGrid'
 import { StickerInfoOverlay } from '@/components/album/StickerInfoOverlay'
-import { ContainerScroll } from '@/components/album/ContainerScroll'
 
 export default function Album() {
   const { albumId = '' } = useParams()
@@ -82,17 +80,15 @@ export default function Album() {
       <Breadcrumb items={[{ label: 'Album', to: '/album' }, { label: entry.title }]} />
       <AlbumLanding entry={entry} stats={albumStats} missingCodes={missingCodes} doubleCodes={doubleCodes} />
 
-      {/* Sidebar e contenuto dentro lo stesso wrap 3D: entrano insieme e restano
-          allineate (inizio e fine). scroll-mt-24 fa atterrare sotto la navbar fissa. */}
-      <ContainerScroll
-        className="mt-8 scroll-mt-24"
-        header={<h2 className="text-center font-display text-2xl font-bold tracking-tight text-ink">Sezioni album</h2>}
-      >
-        <div ref={contentRef} className="grid scroll-mt-24 gap-5 lg:grid-cols-[15rem_1fr]" style={section ? sectionVars(section.c1, section.c2) : undefined}>
-          <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={selectSection} />
-          <div className="min-w-0">
-            <SectionHero section={section} index={sectionIndex} stats={secStats} />
-            <AlbumToolbar filter={filter} onFilter={setFilter} insertOn={insertOn} onToggleInsert={() => setInsertOn((v) => !v)} stats={secStats} />
+      <h2 className="mt-8 text-center font-display text-2xl font-bold tracking-tight text-ink">Sezioni album</h2>
+
+      {/* Sidebar sticky (scroll proprio) + contenuto: niente 3D -> colonne sempre
+          allineate e nessun buco. scroll-mt-24 fa atterrare sotto la navbar fissa. */}
+      <div ref={contentRef} className="mt-4 grid scroll-mt-24 gap-5 lg:grid-cols-[15rem_1fr]" style={section ? sectionVars(section.c1, section.c2) : undefined}>
+        <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={selectSection} />
+        <div className="min-w-0">
+          <SectionHero section={section} index={sectionIndex} stats={secStats} filter={filter} onFilter={setFilter} insertOn={insertOn} onToggleInsert={() => setInsertOn((v) => !v)} />
+          <div className="mt-4">
             <StickerGrid
               section={section}
               names={data.names}
@@ -105,7 +101,7 @@ export default function Album() {
             />
           </div>
         </div>
-      </ContainerScroll>
+      </div>
 
       <StickerInfoOverlay
         open={infoCode !== null}

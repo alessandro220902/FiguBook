@@ -32,15 +32,16 @@ export function SectionSidebar({ data, states, counts, activeId, onSelect }: Sec
     s.codes.some((c) => c.toLowerCase().includes(needle.replace('#', '')))
 
   return (
-    <aside className="w-full shrink-0 rounded-2xl border border-white/8 bg-bg-elev p-4 lg:w-60">
-      <h2 className="mb-3 font-display text-lg font-semibold">Sezioni</h2>
+    <aside className="flex w-full shrink-0 flex-col rounded-2xl border border-white/8 bg-bg-elev p-4 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:w-60 lg:self-start">
+      <h2 className="mb-3 shrink-0 font-display text-lg font-semibold">Sezioni</h2>
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Cerca sezione o #figurina"
-        className="mb-4 w-full rounded-lg border border-white/10 bg-surface px-3 py-2 text-xs text-ink placeholder:text-muted-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
+        className="mb-4 w-full shrink-0 rounded-lg border border-white/10 bg-surface px-3 py-2 text-xs text-ink placeholder:text-muted-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
       />
-      <nav className="space-y-1">
+      {/* lista scrolla internamente: header+ricerca pinnati */}
+      <nav className="-mr-2 min-h-0 flex-1 space-y-1 overflow-y-auto pr-2">
         {grouped.map(({ group, sections }) => {
           const visible = sections.filter(match)
           if (visible.length === 0) return null

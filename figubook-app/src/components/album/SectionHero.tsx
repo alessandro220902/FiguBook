@@ -2,8 +2,26 @@
 import type { Section } from '@/data/albums/types'
 import { sectionGradient } from '@/lib/album/color'
 import type { SectionStats } from '@/lib/album/stats'
+import type { Filter } from './StickerGrid'
 
-export function SectionHero({ section, index, stats }: { section: Section; index: number; stats: SectionStats }) {
+const TABS: { key: Filter; label: string; n: (s: SectionStats) => number }[] = [
+  { key: 'all', label: 'Tutte', n: (s) => s.total },
+  { key: 'missing', label: 'Mancanti', n: (s) => s.missing },
+  { key: 'double', label: 'Doppie', n: (s) => s.doubles },
+  { key: 'have', label: 'Possedute', n: (s) => s.have },
+]
+
+export interface SectionHeroProps {
+  section: Section
+  index: number
+  stats: SectionStats
+  filter: Filter
+  onFilter: (f: Filter) => void
+  insertOn: boolean
+  onToggleInsert: () => void
+}
+
+export function SectionHero({ section, index, stats, filter, onFilter, insertOn, onToggleInsert }: SectionHeroProps) {
   return (
     <header className="relative overflow-hidden rounded-2xl border border-white/10 p-6" style={{ backgroundImage: sectionGradient(section.c1, section.c2) }}>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_120%_at_100%_0,rgba(255,255,255,0.16),transparent_50%)]" />
@@ -13,11 +31,31 @@ export function SectionHero({ section, index, stats }: { section: Section; index
         </div>
         <h1 className="mt-1 font-display text-4xl font-bold tracking-tight text-white">{section.name}</h1>
         <p className="mt-1 text-sm text-white/80">{section.codes[0]} – {section.codes[section.codes.length - 1]} · {section.codes.length} figurine</p>
-        <div className="mt-3 flex gap-2">
-          <span className="rounded-full border border-white/20 bg-black/20 px-3 py-1 text-[11px] font-semibold text-white">{stats.have} possedute</span>
-          <span className="rounded-full border border-white/20 bg-black/20 px-3 py-1 text-[11px] font-semibold text-white">{stats.missing} mancanti</span>
+
+        {/* Filtri + toggle inserimento rapido, dentro il banner (niente toolbar separata) */}
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          {TABS.map((t) => {
+            const active = filter === t.key
+            return (
+              <button key={t.key} type="button" onClick={() => onFilter(t.key)}
+                className={[
+                  'rounded-full px-3.5 py-1.5 text-sm font-semibold transition',
+                  active ? 'bg-white text-black shadow' : 'border border-white/25 bg-black/25 text-white hover:bg-black/40',
+                ].join(' ')}>
+                {t.label} <span className="opacity-70">{t.n(stats)}</span>
+              </button>
+            )
+          })}
+          <button type="button" onClick={onToggleInsert} aria-pressed={insertOn}
+            className={[
+              'ml-auto rounded-full px-5 py-1.5 text-sm font-semibold transition',
+              insertOn ? 'bg-lime text-lime-ink shadow-[0_0_18px_rgba(194,242,61,0.45)]' : 'border border-white/30 bg-black/30 text-white hover:bg-black/45',
+            ].join(' ')}>
+            Inserimento rapido {insertOn ? 'ON' : 'OFF'}
+          </button>
         </div>
       </div>
+
       <div className="absolute right-6 top-6 z-10 text-right">
         <div className="text-[10px] uppercase tracking-widest text-white/70">Completamento</div>
         <div className="font-display text-4xl font-bold leading-none text-white">{stats.pct}%</div>
