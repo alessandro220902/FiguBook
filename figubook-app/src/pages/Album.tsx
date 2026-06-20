@@ -82,14 +82,15 @@ export default function Album() {
       <Breadcrumb items={[{ label: 'Album', to: '/album' }, { label: entry.title }]} />
       <AlbumLanding entry={entry} stats={albumStats} missingCodes={missingCodes} doubleCodes={doubleCodes} />
 
-      <h2 className="mt-8 text-center font-display text-2xl font-bold tracking-tight text-ink">Sezioni album</h2>
-
-      {/* Sidebar fuori dal wrap 3D (sticky, scroll proprio); il 3D entra solo sul
-          contenuto. scroll-mt-24 fa atterrare il contenuto sotto la navbar fissa. */}
-      <div className="mt-4 grid gap-5 lg:grid-cols-[15rem_1fr]" style={section ? sectionVars(section.c1, section.c2) : undefined}>
-        <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={selectSection} />
-        <div ref={contentRef} className="min-w-0 scroll-mt-24">
-          <ContainerScroll>
+      {/* Sidebar e contenuto dentro lo stesso wrap 3D: entrano insieme e restano
+          allineate (inizio e fine). scroll-mt-24 fa atterrare sotto la navbar fissa. */}
+      <ContainerScroll
+        className="mt-8 scroll-mt-24"
+        header={<h2 className="text-center font-display text-2xl font-bold tracking-tight text-ink">Sezioni album</h2>}
+      >
+        <div ref={contentRef} className="grid scroll-mt-24 gap-5 lg:grid-cols-[15rem_1fr]" style={section ? sectionVars(section.c1, section.c2) : undefined}>
+          <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={selectSection} />
+          <div className="min-w-0">
             <SectionHero section={section} index={sectionIndex} stats={secStats} />
             <AlbumToolbar filter={filter} onFilter={setFilter} insertOn={insertOn} onToggleInsert={() => setInsertOn((v) => !v)} stats={secStats} />
             <StickerGrid
@@ -102,9 +103,9 @@ export default function Album() {
               onRemove={album.decrement}
               onInfo={(code) => setInfoCode(code)}
             />
-          </ContainerScroll>
+          </div>
         </div>
-      </div>
+      </ContainerScroll>
 
       <StickerInfoOverlay
         open={infoCode !== null}

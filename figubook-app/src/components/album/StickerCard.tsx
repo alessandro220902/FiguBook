@@ -53,27 +53,44 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
         {name || '—'}
       </div>
 
-      {/* Stepper sempre visibile: − N + */}
-      <div className="mt-1 flex items-center justify-center gap-1">
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onRemove() }}
-          disabled={count === 0}
-          aria-label={`Rimuovi una copia di ${code}`}
-          className="flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-surface text-ink transition hover:border-stat-missing/50 hover:text-stat-missing disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-white/10 disabled:hover:text-ink"
-        >
-          <Minus size={14} />
-        </button>
-        <span className="min-w-5 text-center font-display text-sm font-bold tabular-nums text-ink">{count}</span>
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onAdd() }}
-          aria-label={`Aggiungi ${code}`}
-          className="flex h-6 w-6 items-center justify-center rounded-md bg-stat-have text-lime-ink transition hover:brightness-110"
-        >
-          <Plus size={14} />
-        </button>
-      </div>
+      {insertOn ? (
+        // Inserimento rapido: tap sulla card = +1. Per rimuovere, striscia rossa col meno
+        // (solo se posseduta). Niente stepper/numero: tutto veloce.
+        owned ? (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onRemove() }}
+            aria-label={`Rimuovi una copia di ${code}`}
+            className="mt-1 flex h-6 w-full items-center justify-center rounded-md bg-stat-missing text-white transition hover:brightness-110"
+          >
+            <Minus size={14} />
+          </button>
+        ) : (
+          <div className="mt-1 h-6" aria-hidden />
+        )
+      ) : (
+        // Modalità lettura: stepper − N +
+        <div className="mt-1 flex items-center justify-center gap-1">
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onRemove() }}
+            disabled={count === 0}
+            aria-label={`Rimuovi una copia di ${code}`}
+            className="flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-surface text-ink transition hover:border-stat-missing/50 hover:text-stat-missing disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-white/10 disabled:hover:text-ink"
+          >
+            <Minus size={14} />
+          </button>
+          <span className="min-w-5 text-center font-display text-sm font-bold tabular-nums text-ink">{count}</span>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onAdd() }}
+            aria-label={`Aggiungi ${code}`}
+            className="flex h-6 w-6 items-center justify-center rounded-md bg-stat-have text-lime-ink transition hover:brightness-110"
+          >
+            <Plus size={14} />
+          </button>
+        </div>
+      )}
     </div>
   )
 }

@@ -23,6 +23,11 @@ describe('StickerCard', () => {
     expect(onAdd).toHaveBeenCalledOnce()
     expect(onInfo).not.toHaveBeenCalled()
   })
+  it('insert ON posseduta: striscia rimuovi, niente stepper +', () => {
+    render(<StickerCard {...base} count={2} insertOn onAdd={() => {}} onRemove={() => {}} onInfo={() => {}} />)
+    expect(screen.getByRole('button', { name: /Rimuovi una copia/ })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^Aggiungi/ })).toBeNull()
+  })
   it('insert OFF: tap card chiama onInfo', async () => {
     const onAdd = vi.fn(); const onInfo = vi.fn()
     render(<StickerCard {...base} count={1} insertOn={false} onAdd={onAdd} onRemove={() => {}} onInfo={onInfo} />)
