@@ -14,6 +14,7 @@ import { SectionHero } from '@/components/album/SectionHero'
 import { AlbumToolbar } from '@/components/album/AlbumToolbar'
 import { StickerGrid, type Filter } from '@/components/album/StickerGrid'
 import { StickerInfoOverlay } from '@/components/album/StickerInfoOverlay'
+import { ContainerScroll } from '@/components/album/ContainerScroll'
 
 export default function Album() {
   const { albumId = '' } = useParams()
@@ -62,26 +63,36 @@ export default function Album() {
   const infoSection = infoCode ? data.sections.find((s) => s.codes.includes(infoCode)) ?? section : section
 
   return (
-    <main className="mx-auto max-w-6xl px-4 pb-16 pt-6">
+    <main className="w-full px-4 pb-16 pt-6 sm:px-6 lg:px-8">
       <AlbumLanding entry={entry} stats={albumStats} />
 
-      <div className="mt-6 grid gap-5 lg:grid-cols-[15rem_1fr]" style={section ? sectionVars(section.c1, section.c2) : undefined}>
-        <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={(id) => { setActiveId(id); void album.flush() }} />
-        <div>
-          <SectionHero section={section} index={sectionIndex} stats={secStats} />
-          <AlbumToolbar filter={filter} onFilter={setFilter} insertOn={insertOn} onToggleInsert={() => setInsertOn((v) => !v)} stats={secStats} />
-          <StickerGrid
-            section={section}
-            names={data.names}
-            countOf={album.countOf}
-            insertOn={insertOn}
-            filter={filter}
-            onAdd={album.increment}
-            onRemove={album.decrement}
-            onInfo={(code) => setInfoCode(code)}
-          />
+      <ContainerScroll
+        className="mt-8"
+        header={
+          <div className="text-center">
+            <div className="text-[11px] font-semibold uppercase tracking-widest text-muted">Editor figurine</div>
+            <h2 className="font-display text-2xl font-bold tracking-tight text-ink">Le sezioni dell'album</h2>
+          </div>
+        }
+      >
+        <div className="grid gap-5 lg:grid-cols-[15rem_1fr]" style={section ? sectionVars(section.c1, section.c2) : undefined}>
+          <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={(id) => { setActiveId(id); void album.flush() }} />
+          <div>
+            <SectionHero section={section} index={sectionIndex} stats={secStats} />
+            <AlbumToolbar filter={filter} onFilter={setFilter} insertOn={insertOn} onToggleInsert={() => setInsertOn((v) => !v)} stats={secStats} />
+            <StickerGrid
+              section={section}
+              names={data.names}
+              countOf={album.countOf}
+              insertOn={insertOn}
+              filter={filter}
+              onAdd={album.increment}
+              onRemove={album.decrement}
+              onInfo={(code) => setInfoCode(code)}
+            />
+          </div>
         </div>
-      </div>
+      </ContainerScroll>
 
       <StickerInfoOverlay
         open={infoCode !== null}
