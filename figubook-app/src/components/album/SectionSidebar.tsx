@@ -32,7 +32,7 @@ export function SectionSidebar({ data, states, counts, activeId, onSelect }: Sec
     s.codes.some((c) => c.toLowerCase().includes(needle.replace('#', '')))
 
   return (
-    <aside className="flex w-full shrink-0 flex-col rounded-2xl border border-white/8 bg-bg-elev p-4 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:w-60 lg:self-start">
+    <aside className="flex w-full shrink-0 flex-col rounded-2xl border border-white/8 bg-bg-elev p-4 lg:h-full lg:min-h-0 lg:w-60">
       <h2 className="mb-3 shrink-0 font-display text-lg font-semibold">Sezioni</h2>
       <input
         value={q}

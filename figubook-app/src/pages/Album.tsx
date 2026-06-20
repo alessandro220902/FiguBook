@@ -25,14 +25,18 @@ export default function Album() {
   const [filter, setFilter] = useState<Filter>('all')
   const [insertOn, setInsertOn] = useState(false)
   const [infoCode, setInfoCode] = useState<string | null>(null)
-  const contentRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const gridScrollRef = useRef<HTMLDivElement>(null)
 
-  // Cambio sezione: scendo dolcemente al contenuto (il 3D di ContainerScroll parte
-  // da solo con lo scroll). rAF: dopo che React ha renderizzato la nuova sezione.
+  // Cambio sezione: porto il pannello in cima (sotto la navbar) e resetto lo scroll
+  // interno della griglia in alto. rAF: dopo che React ha renderizzato la sezione.
   function selectSection(id: string) {
     setActiveId(id)
     void album.flush()
-    requestAnimationFrame(() => contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    requestAnimationFrame(() => {
+      panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      if (gridScrollRef.current) gridScrollRef.current.scrollTop = 0
+    })
   }
 
   const album = useAlbum(albumId)
@@ -82,13 +86,18 @@ export default function Album() {
 
       <h2 className="mt-8 text-center font-display text-2xl font-bold tracking-tight text-ink">Sezioni album</h2>
 
-      {/* Sidebar sticky (scroll proprio) + contenuto: niente 3D -> colonne sempre
-          allineate e nessun buco. scroll-mt-24 fa atterrare sotto la navbar fissa. */}
-      <div ref={contentRef} className="mt-4 grid scroll-mt-24 gap-5 lg:grid-cols-[15rem_1fr]" style={section ? sectionVars(section.c1, section.c2) : undefined}>
+      {/* Pannello ad altezza schermo (sticky sotto la navbar): sidebar e griglia
+          scrollano internamente. La pagina non cresce -> niente vuoto, e la griglia
+          non scorre mai sopra la barra sezioni. Su mobile torna al flusso normale. */}
+      <div
+        ref={panelRef}
+        className="mt-4 grid scroll-mt-24 gap-5 lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:grid-cols-[15rem_1fr]"
+        style={section ? sectionVars(section.c1, section.c2) : undefined}
+      >
         <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={selectSection} />
-        <div className="min-w-0">
+        <div className="flex min-h-0 min-w-0 flex-col">
           <SectionHero section={section} index={sectionIndex} stats={secStats} filter={filter} onFilter={setFilter} insertOn={insertOn} onToggleInsert={() => setInsertOn((v) => !v)} />
-          <div className="mt-4">
+          <div ref={gridScrollRef} className="mt-4 min-h-0 flex-1 lg:overflow-y-auto">
             <StickerGrid
               section={section}
               names={data.names}
