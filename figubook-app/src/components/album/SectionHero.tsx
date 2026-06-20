@@ -40,7 +40,7 @@ export function SectionHero({ section, index, stats, filter, onFilter, insertOn,
               <button key={t.key} type="button" onClick={() => onFilter(t.key)}
                 className={[
                   'rounded-full px-3.5 py-1.5 text-sm font-semibold transition',
-                  active ? 'bg-white text-black shadow' : 'border border-white/25 bg-black/25 text-white hover:bg-black/40',
+                  active ? 'bg-white text-black shadow' : 'border border-white/30 bg-black/45 text-white hover:bg-black/60',
                 ].join(' ')}>
                 {t.label} <span className="opacity-70">{t.n(stats)}</span>
               </button>
@@ -49,7 +49,7 @@ export function SectionHero({ section, index, stats, filter, onFilter, insertOn,
           <button type="button" onClick={onToggleInsert} aria-pressed={insertOn}
             className={[
               'ml-auto rounded-full px-5 py-1.5 text-sm font-semibold transition',
-              insertOn ? 'bg-lime text-lime-ink shadow-[0_0_18px_rgba(194,242,61,0.45)]' : 'border border-white/30 bg-black/30 text-white hover:bg-black/45',
+              insertOn ? 'bg-lime text-lime-ink shadow-[0_0_18px_rgba(194,242,61,0.45)]' : 'border border-white/30 bg-black/45 text-white hover:bg-black/60',
             ].join(' ')}>
             Inserimento rapido {insertOn ? 'ON' : 'OFF'}
           </button>

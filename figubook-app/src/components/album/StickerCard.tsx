@@ -1,4 +1,4 @@
-import { Plus, Minus } from 'lucide-react'
+import { Plus, Minus, Check } from 'lucide-react'
 import { sectionGradient } from '@/lib/album/color'
 
 export interface StickerCardProps {
@@ -41,7 +41,7 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
         </button>
 
         {owned && (
-          <span data-testid="owned-badge" className="pointer-events-none absolute left-1.5 top-1.5 z-20 flex h-[18px] min-w-[18px] items-center justify-center rounded-md bg-stat-have px-1 text-[10px] font-bold text-lime-ink">1</span>
+          <span data-testid="owned-badge" aria-hidden className="pointer-events-none absolute left-1.5 top-1.5 z-20 flex h-[18px] w-[18px] items-center justify-center rounded-md bg-stat-have text-lime-ink"><Check size={12} strokeWidth={3} /></span>
         )}
         {doubles > 0 && (
           <span data-testid="dup-badge" className="pointer-events-none absolute right-1.5 top-1.5 z-20 rounded-md bg-gold px-1.5 text-[10px] font-bold text-[#1a1205]">×{doubles}</span>
@@ -61,12 +61,12 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
             type="button"
             onClick={(e) => { e.stopPropagation(); onRemove() }}
             aria-label={`Rimuovi una copia di ${code}`}
-            className="mt-1 flex h-6 w-full items-center justify-center rounded-md bg-stat-missing text-white transition hover:brightness-110"
+            className="mt-1 flex h-8 w-full items-center justify-center rounded-md bg-stat-missing text-white transition hover:brightness-110"
           >
-            <Minus size={14} />
+            <Minus size={16} />
           </button>
         ) : (
-          <div className="mt-1 h-6" aria-hidden />
+          <div className="mt-1 h-8" aria-hidden />
         )
       ) : (
         // Modalità lettura: stepper − N +
@@ -76,18 +76,18 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
             onClick={(e) => { e.stopPropagation(); onRemove() }}
             disabled={count === 0}
             aria-label={`Rimuovi una copia di ${code}`}
-            className="flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-surface text-ink transition hover:border-stat-missing/50 hover:text-stat-missing disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-white/10 disabled:hover:text-ink"
+            className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-surface text-ink transition hover:border-stat-missing/50 hover:text-stat-missing disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-white/10 disabled:hover:text-ink"
           >
-            <Minus size={14} />
+            <Minus size={16} />
           </button>
-          <span className="min-w-5 text-center font-display text-sm font-bold tabular-nums text-ink">{count}</span>
+          <span className="min-w-6 text-center font-display text-base font-bold tabular-nums text-ink">{count}</span>
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onAdd() }}
             aria-label={`Aggiungi ${code}`}
-            className="flex h-6 w-6 items-center justify-center rounded-md bg-stat-have text-lime-ink transition hover:brightness-110"
+            className="flex h-8 w-8 items-center justify-center rounded-md bg-stat-have text-lime-ink transition hover:brightness-110"
           >
-            <Plus size={14} />
+            <Plus size={16} />
           </button>
         </div>
       )}
