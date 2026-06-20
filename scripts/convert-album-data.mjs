@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url'
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 // file album-data → id catalogo (figubook-app/src/data/albumCatalog.ts)
 const MAP = {
+  'album-data.js': 'calciatori-25-26',
   'album-data-2223.js': 'calciatori-22-23',
   'album-data-2324.js': 'calciatori-23-24',
   'album-data-2425.js': 'calciatori-24-25',
