@@ -77,8 +77,7 @@ export default function Album() {
         className="mt-8"
         header={
           <div className="text-center">
-            <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Editor figurine</div>
-            <h2 className="font-display text-2xl font-bold tracking-tight text-ink">Le sezioni dell'album</h2>
+            <h2 className="font-display text-2xl font-bold tracking-tight text-ink">Sezioni album</h2>
           </div>
         }
       >

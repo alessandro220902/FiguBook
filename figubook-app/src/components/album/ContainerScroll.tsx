@@ -30,7 +30,9 @@ export function ContainerScroll({ header, children, className }: ContainerScroll
   const isMobile = useIsMobile()
   const disabled = !!reduce || isMobile
 
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start start'] })
+  // L'effetto si completa quando il TOP del blocco raggiunge la METÀ del viewport
+  // (non la cima): così, una volta che la sezione è ben visibile, è già appiattita.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start center'] })
   const rotateX = useTransform(scrollYProgress, [0, 1], [20, 0])
   const scale = useTransform(scrollYProgress, [0, 1], [1.04, 1])
   // L'header è un titolo di sezione: deve restare sempre leggibile. Niente fade
