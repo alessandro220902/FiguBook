@@ -171,3 +171,10 @@ body {
     repeating-linear-gradient(45deg, rgba(255,255,255,.015) 0 2px, transparent 2px 8px),
     radial-gradient(ellipse at 30% 80%, rgba(0,0,0,.3), transparent 60%);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
