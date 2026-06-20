@@ -30,7 +30,7 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
           'focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime',
           owned
             ? 'border-white/15 text-white shadow-sm hover:-translate-y-0.5 hover:shadow-lg'
-            : 'border-dashed border-white/10 bg-surface text-muted hover:-translate-y-0.5',
+            : 'border-dashed border-white/10 bg-surface text-muted-foreground hover:-translate-y-0.5',
         ].join(' ')}
         style={owned ? { backgroundImage: sectionGradient(c1, c2) } : undefined}
       >

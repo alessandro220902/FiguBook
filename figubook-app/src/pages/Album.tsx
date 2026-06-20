@@ -70,7 +70,7 @@ export default function Album() {
         className="mt-8"
         header={
           <div className="text-center">
-            <div className="text-[11px] font-semibold uppercase tracking-widest text-muted">Editor figurine</div>
+            <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Editor figurine</div>
             <h2 className="font-display text-2xl font-bold tracking-tight text-ink">Le sezioni dell'album</h2>
           </div>
         }
@@ -111,5 +111,5 @@ export default function Album() {
 }
 
 function Centered({ children }: { children: React.ReactNode }) {
-  return <main className="grid min-h-[60vh] place-items-center px-4 text-center text-muted">{children}</main>
+  return <main className="grid min-h-[60vh] place-items-center px-4 text-center text-muted-foreground">{children}</main>
 }

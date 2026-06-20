@@ -42,7 +42,7 @@ export function GroupsPanel() {
                   <Users className="h-4 w-4" />
                 </span>
                 <span className="truncate text-sm font-medium text-ink">{g.name}</span>
-                <span className="ml-auto text-muted">→</span>
+                <span className="ml-auto text-muted-foreground">→</span>
               </Link>
             </li>
           ))}

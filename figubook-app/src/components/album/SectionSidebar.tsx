@@ -38,7 +38,7 @@ export function SectionSidebar({ data, states, counts, activeId, onSelect }: Sec
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Cerca sezione o #figurina"
-        className="mb-4 w-full rounded-lg border border-white/10 bg-surface px-3 py-2 text-xs text-ink placeholder:text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
+        className="mb-4 w-full rounded-lg border border-white/10 bg-surface px-3 py-2 text-xs text-ink placeholder:text-muted-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
       />
       <nav className="space-y-1">
         {grouped.map(({ group, sections }) => {
@@ -46,7 +46,7 @@ export function SectionSidebar({ data, states, counts, activeId, onSelect }: Sec
           if (visible.length === 0) return null
           return (
             <div key={group}>
-              <div className="mt-3 px-1 text-[10px] font-bold uppercase tracking-widest text-muted">{group}</div>
+              <div className="mt-3 px-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{group}</div>
               {visible.map((s) => {
                 const st = sectionStats(states, counts, s.codes)
                 const active = s.id === activeId
@@ -65,7 +65,7 @@ export function SectionSidebar({ data, states, counts, activeId, onSelect }: Sec
                   >
                     <span className="h-6 w-6 shrink-0 rounded-md border border-white/15" style={{ backgroundImage: sectionGradient(s.c1, s.c2) }} />
                     <span className="font-display text-sm">{s.name}</span>
-                    <span className="ml-auto text-right text-[10px] leading-tight text-muted">{st.have}/{st.total}<br />{st.pct}%</span>
+                    <span className="ml-auto text-right text-[10px] leading-tight text-muted-foreground">{st.have}/{st.total}<br />{st.pct}%</span>
                   </button>
                 )
               })}

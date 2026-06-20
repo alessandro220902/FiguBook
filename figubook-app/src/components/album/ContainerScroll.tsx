@@ -33,8 +33,9 @@ export function ContainerScroll({ header, children, className }: ContainerScroll
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start start'] })
   const rotateX = useTransform(scrollYProgress, [0, 1], [20, 0])
   const scale = useTransform(scrollYProgress, [0, 1], [1.04, 1])
-  const headerY = useTransform(scrollYProgress, [0, 1], [40, 0])
-  const headerOpacity = useTransform(scrollYProgress, [0, 0.6], [0, 1])
+  // L'header è un titolo di sezione: deve restare sempre leggibile. Niente fade
+  // d'opacità (prima scompariva finché non avevi scrollato il 60%); solo lieve slide.
+  const headerY = useTransform(scrollYProgress, [0, 1], [24, 0])
 
   if (disabled) {
     return (
@@ -48,7 +49,7 @@ export function ContainerScroll({ header, children, className }: ContainerScroll
   return (
     <div ref={ref} className={className} style={{ perspective: '1200px' }}>
       {header != null && (
-        <motion.div style={{ y: headerY, opacity: headerOpacity }} className="mb-4">
+        <motion.div style={{ y: headerY }} className="mb-4">
           {header}
         </motion.div>
       )}

@@ -24,7 +24,7 @@ export function AlbumToolbar({ filter, onFilter, insertOn, onToggleInsert, stats
         <button key={t.key} type="button" onClick={() => onFilter(t.key)}
           className={[
             'rounded-full border px-4 py-1.5 text-sm transition',
-            filter === t.key ? 'border-ink bg-ink text-bg' : 'border-white/10 bg-surface text-muted hover:text-ink',
+            filter === t.key ? 'border-ink bg-ink text-bg' : 'border-white/10 bg-surface text-muted-foreground hover:text-ink',
           ].join(' ')}>
           {t.label} <span className="opacity-60">{t.n(stats)}</span>
         </button>
@@ -32,7 +32,7 @@ export function AlbumToolbar({ filter, onFilter, insertOn, onToggleInsert, stats
       <button type="button" onClick={onToggleInsert} aria-pressed={insertOn}
         className={[
           'ml-auto rounded-full border px-4 py-1.5 text-sm font-semibold transition',
-          insertOn ? 'border-lime bg-lime text-lime-ink' : 'border-white/10 bg-surface text-muted hover:text-ink',
+          insertOn ? 'border-lime bg-lime text-lime-ink' : 'border-white/10 bg-surface text-muted-foreground hover:text-ink',
         ].join(' ')}>
         ⚡ Inserimento {insertOn ? 'ON' : 'OFF'}
       </button>

@@ -25,7 +25,7 @@ function passes(filter: Filter, count: number): boolean {
 export function StickerGrid({ section, names, countOf, insertOn, filter, onAdd, onRemove, onInfo }: StickerGridProps) {
   const codes = section.codes.filter((c) => passes(filter, countOf(c)))
   if (codes.length === 0) {
-    return <p className="py-12 text-center text-sm text-muted">Nessuna figurina in questo filtro.</p>
+    return <p className="py-12 text-center text-sm text-muted-foreground">Nessuna figurina in questo filtro.</p>
   }
   return (
     <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 2xl:grid-cols-[repeat(auto-fill,minmax(5.5rem,1fr))]">

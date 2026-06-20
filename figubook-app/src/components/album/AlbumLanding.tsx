@@ -36,7 +36,7 @@ export function AlbumLanding({ entry, stats }: { entry: AlbumCatalogEntry; stats
           </div>
 
           <div>
-            <div className="mb-1.5 flex items-center justify-between text-xs text-muted">
+            <div className="mb-1.5 flex items-center justify-between text-xs text-muted-foreground">
               <span>Completamento</span><span className="tabular-nums">{stats.pct}%</span>
             </div>
             <div className="h-2.5 w-full overflow-hidden rounded-full bg-bg-elev">
@@ -45,10 +45,10 @@ export function AlbumLanding({ entry, stats }: { entry: AlbumCatalogEntry; stats
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <button type="button" disabled title="Presto" className="flex cursor-not-allowed items-center gap-2 rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm font-semibold text-muted opacity-60">
+            <button type="button" disabled title="Presto" className="flex cursor-not-allowed items-center gap-2 rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm font-semibold text-muted-foreground opacity-60">
               <Share2 size={16} /> Condividi doppie
             </button>
-            <button type="button" disabled title="Presto" className="flex cursor-not-allowed items-center gap-2 rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm font-semibold text-muted opacity-60">
+            <button type="button" disabled title="Presto" className="flex cursor-not-allowed items-center gap-2 rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm font-semibold text-muted-foreground opacity-60">
               <Share2 size={16} /> Condividi mancanti
             </button>
           </div>
@@ -62,9 +62,9 @@ function Stat({ label, value, sub, tone }: { label: string; value: string; sub?:
   const color = tone === 'have' ? 'text-stat-have' : tone === 'missing' ? 'text-stat-missing' : 'text-ink'
   return (
     <div className="rounded-2xl border border-white/10 bg-bg-elev p-4">
-      <div className="text-[11px] font-medium uppercase tracking-widest text-muted">{label}</div>
-      <div className={`mt-1 font-display text-3xl font-bold tabular-nums ${color}`}>
-        {value}{sub && <span className="text-base font-semibold text-muted"> {sub}</span>}
+      <div className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">{label}</div>
+      <div className={`mt-1 whitespace-nowrap font-display text-3xl font-bold tabular-nums ${color}`}>
+        {value}{sub && <span className="text-base font-semibold text-muted-foreground"> {sub}</span>}
       </div>
     </div>
   )

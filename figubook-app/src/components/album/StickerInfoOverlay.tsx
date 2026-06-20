@@ -39,7 +39,7 @@ export function StickerInfoOverlay({ open, code, name, sectionName, c1, c2, coun
       <div className="space-y-3 p-4">
         <div>
           <div className="font-display text-lg font-semibold">{name ?? code}</div>
-          <div className="text-xs text-muted">{sectionName} · {count === 0 ? 'mancante' : count === 1 ? 'posseduta' : `posseduta · ${doubles} doppie`}</div>
+          <div className="text-xs text-muted-foreground">{sectionName} · {count === 0 ? 'mancante' : count === 1 ? 'posseduta' : `posseduta · ${doubles} doppie`}</div>
         </div>
         <div className="flex items-center gap-3">
           <button type="button" onClick={onRemove} disabled={count === 0} aria-label="Rimuovi una copia"
