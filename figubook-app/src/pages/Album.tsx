@@ -1,5 +1,5 @@
 // figubook-app/src/pages/Album.tsx
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { albumById } from '@/data/albumCatalog'
 import { loadAlbumData } from '@/data/albums'
@@ -27,6 +27,15 @@ export default function Album() {
   const [filter, setFilter] = useState<Filter>('all')
   const [insertOn, setInsertOn] = useState(false)
   const [infoCode, setInfoCode] = useState<string | null>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  // Cambio sezione: scendo dolcemente al contenuto (il 3D di ContainerScroll parte
+  // da solo con lo scroll). rAF: dopo che React ha renderizzato la nuova sezione.
+  function selectSection(id: string) {
+    setActiveId(id)
+    void album.flush()
+    requestAnimationFrame(() => contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }
 
   const album = useAlbum(albumId)
 
@@ -73,17 +82,14 @@ export default function Album() {
       <Breadcrumb items={[{ label: 'Album', to: '/album' }, { label: entry.title }]} />
       <AlbumLanding entry={entry} stats={albumStats} missingCodes={missingCodes} doubleCodes={doubleCodes} />
 
-      <ContainerScroll
-        className="mt-8"
-        header={
-          <div className="text-center">
-            <h2 className="font-display text-2xl font-bold tracking-tight text-ink">Sezioni album</h2>
-          </div>
-        }
-      >
-        <div className="grid gap-5 lg:grid-cols-[15rem_1fr]" style={section ? sectionVars(section.c1, section.c2) : undefined}>
-          <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={(id) => { setActiveId(id); void album.flush() }} />
-          <div>
+      <h2 className="mt-8 text-center font-display text-2xl font-bold tracking-tight text-ink">Sezioni album</h2>
+
+      {/* Sidebar fuori dal wrap 3D (sticky, scroll proprio); il 3D entra solo sul
+          contenuto. scroll-mt-24 fa atterrare il contenuto sotto la navbar fissa. */}
+      <div className="mt-4 grid gap-5 lg:grid-cols-[15rem_1fr]" style={section ? sectionVars(section.c1, section.c2) : undefined}>
+        <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={selectSection} />
+        <div ref={contentRef} className="min-w-0 scroll-mt-24">
+          <ContainerScroll>
             <SectionHero section={section} index={sectionIndex} stats={secStats} />
             <AlbumToolbar filter={filter} onFilter={setFilter} insertOn={insertOn} onToggleInsert={() => setInsertOn((v) => !v)} stats={secStats} />
             <StickerGrid
@@ -96,9 +102,9 @@ export default function Album() {
               onRemove={album.decrement}
               onInfo={(code) => setInfoCode(code)}
             />
-          </div>
+          </ContainerScroll>
         </div>
-      </ContainerScroll>
+      </div>
 
       <StickerInfoOverlay
         open={infoCode !== null}
