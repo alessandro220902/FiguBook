@@ -1,5 +1,5 @@
 import { albumById, type AlbumCatalogEntry } from '@/data/albumCatalog'
-import { doc, onSnapshot, setDoc, deleteField } from 'firebase/firestore'
+import { doc, onSnapshot, setDoc, deleteDoc, deleteField, arrayUnion, arrayRemove } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { countToFields } from '@/lib/album/stats'
 
@@ -50,22 +50,31 @@ export function aggregate(list: AlbumStats[]): AlbumStats {
   return { have, doubles, missing, total, pct }
 }
 
-// onSnapshot live su users/{uid}/albums/_my-albums -> ids[].
-// Errore => onError se fornito (per distinguere fallimento da collezione vuota),
-// altrimenti fallback a [].
+export interface MyAlbums {
+  ids: string[]
+  archived: string[]
+}
+
+// onSnapshot live su users/{uid}/albums/_my-albums -> { ids, archived }.
 export function subscribeMyAlbumIds(
   uid: string,
-  cb: (ids: string[]) => void,
+  cb: (data: MyAlbums) => void,
   onError?: (err: unknown) => void,
 ): () => void {
   const ref = doc(db, 'users', uid, 'albums', '_my-albums')
   return onSnapshot(
     ref,
-    (snap) => cb(snap.exists() ? ((snap.data().ids as string[]) ?? []) : []),
+    (snap) => {
+      const d = snap.exists() ? snap.data() : {}
+      cb({
+        ids: (d.ids as string[]) ?? [],
+        archived: (d.archived as string[]) ?? [],
+      })
+    },
     (err) => {
       console.error('album ids', err)
       if (onError) onError(err)
-      else cb([])
+      else cb({ ids: [], archived: [] })
     },
   )
 }
@@ -115,4 +124,27 @@ export async function flushAlbumCounts(
   if (Object.keys(deltas).length === 0) return
   const ref = doc(db, 'users', uid, 'albums', albumId)
   await setDoc(ref, buildAlbumUpdate(deltas), { merge: true })
+}
+
+const myAlbumsRef = (uid: string) => doc(db, 'users', uid, 'albums', '_my-albums')
+
+// Aggiunge un album alla collezione (idempotente via arrayUnion).
+export async function addAlbum(uid: string, id: string): Promise<void> {
+  await setDoc(myAlbumsRef(uid), { ids: arrayUnion(id) }, { merge: true })
+}
+
+// Archivia: l'album resta in ids, entra in archived (escluso dai filtri non-archivio).
+export async function archiveAlbum(uid: string, id: string): Promise<void> {
+  await setDoc(myAlbumsRef(uid), { archived: arrayUnion(id) }, { merge: true })
+}
+
+export async function unarchiveAlbum(uid: string, id: string): Promise<void> {
+  await setDoc(myAlbumsRef(uid), { archived: arrayRemove(id) }, { merge: true })
+}
+
+// Elimina IRREVERSIBILE: rimuove da lista (e archived) poi cancella il doc dati.
+// Ordine: prima fuori dalla lista live, poi wipe; re-add riparte da doc vuoto.
+export async function removeAlbum(uid: string, id: string): Promise<void> {
+  await setDoc(myAlbumsRef(uid), { ids: arrayRemove(id), archived: arrayRemove(id) }, { merge: true })
+  await deleteDoc(doc(db, 'users', uid, 'albums', id))
 }
