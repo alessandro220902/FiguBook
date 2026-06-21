@@ -9,7 +9,7 @@ export default function AlbumList() {
 
   if (loading) {
     return (
-      <div className="mx-auto w-full max-w-[88rem]">
+      <div className="album-theme mx-auto w-full max-w-[88rem]">
         <div className="h-8 w-40 animate-pulse rounded bg-bg-elev" />
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -21,7 +21,7 @@ export default function AlbumList() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-[88rem]">
+    <div className="album-theme mx-auto w-full max-w-[88rem]">
       <h1 className="text-[28px] font-medium tracking-tight text-ink sm:text-[32px]">I tuoi album</h1>
 
       {error ? (
