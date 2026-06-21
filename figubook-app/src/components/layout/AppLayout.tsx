@@ -1,4 +1,4 @@
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Outlet, Link } from 'react-router-dom'
 import { Home, BookOpen, ArrowLeftRight, Users } from 'lucide-react'
 import { TubelightNav, type NavItem } from '@/components/layout/TubelightNav'
 import { TopRightMenu } from '@/components/layout/TopRightMenu'
@@ -13,25 +13,13 @@ const NAV: NavItem[] = [
 ]
 
 export function AppLayout() {
-  // Sezione Album usa lo sfondo neutro Supabase (near-black), niente glow verde.
-  // Altre sezioni: identità FiguBook (glow pitch + bg brand).
-  const { pathname } = useLocation()
-  const isAlbum = pathname === '/album' || pathname.startsWith('/album/')
   return (
-    <div
-      className="relative min-h-screen text-foreground"
-      style={isAlbum ? undefined : {
-        background:
-          'radial-gradient(150% 110% at 50% -15%, rgba(31,122,89,0.15) 0%, rgba(31,122,89,0.07) 28%, rgba(31,122,89,0.025) 52%, transparent 82%), var(--color-bg)',
-      }}
-    >
-      {/* Sfondo Album: radiale blu + griglia (21st reapollo), full-screen fisso */}
-      {isAlbum && (
-        <div className="fixed inset-0 -z-10 bg-neutral-900">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_560px_at_50%_200px,#38bdf8,transparent)]" />
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#38bdf820_1px,transparent_1px),linear-gradient(to_bottom,#38bdf820_1px,transparent_1px)] bg-[size:18px_18px]" />
-        </div>
-      )}
+    <div className="relative min-h-screen text-foreground">
+      {/* Sfondo unico app: radiale blu + griglia (21st reapollo), full-screen fisso */}
+      <div className="fixed inset-0 -z-10 bg-neutral-900">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_560px_at_50%_200px,#38bdf8,transparent)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#38bdf820_1px,transparent_1px),linear-gradient(to_bottom,#38bdf820_1px,transparent_1px)] bg-[size:18px_18px]" />
+      </div>
 
       {/* logo top-left */}
       <Link to="/dashboard" className="fixed left-4 top-4 z-50 flex items-center gap-2 sm:left-6 sm:top-6">
