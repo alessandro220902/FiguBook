@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Check } from 'lucide-react'
 import type { AlbumData, Section } from '@/data/albums/types'
 import { sectionGradient, sectionVars } from '@/lib/album/color'
 import { sectionStats } from '@/lib/album/stats'
@@ -58,14 +59,15 @@ export function SectionSidebar({ data, states, counts, activeId, onSelect }: Sec
                     onClick={() => onSelect(s.id)}
                     style={active ? sectionVars(s.c1, s.c2) : undefined}
                     className={[
-                      'flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition',
+                      'flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition-transform duration-150 ease-out active:scale-[0.99]',
                       active
                         ? 'bg-[linear-gradient(100deg,color-mix(in_srgb,var(--t1)_36%,transparent),color-mix(in_srgb,var(--t2)_22%,transparent))] shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--t1)_50%,transparent)]'
                         : 'hover:bg-surface',
                     ].join(' ')}
                   >
                     <span className="h-6 w-6 shrink-0 rounded-md border border-white/15" style={{ backgroundImage: sectionGradient(s.c1, s.c2) }} />
-                    <span className="font-display text-sm">{s.name}</span>
+                    <span className="text-sm">{s.name}</span>
+                    {active && <Check size={14} className="shrink-0 text-lime" strokeWidth={3} />}
                     <span className="ml-auto text-right text-[10px] leading-tight text-muted-foreground">{st.have}/{st.total}<br />{st.pct}%</span>
                   </button>
                 )

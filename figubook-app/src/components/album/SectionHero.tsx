@@ -32,15 +32,15 @@ export function SectionHero({ section, index, stats, filter, onFilter, insertOn,
         <h1 className="mt-1 font-display text-4xl font-bold tracking-tight text-white">{section.name}</h1>
         <p className="mt-1 text-sm text-white/80">{section.codes[0]} – {section.codes[section.codes.length - 1]} · {section.codes.length} figurine</p>
 
-        {/* Filtri + toggle inserimento rapido, dentro il banner (niente toolbar separata) */}
+        {/* Filtri segmented + toggle inserimento, dentro il banner */}
         <div className="mt-4 flex flex-wrap items-center gap-2">
           {TABS.map((t) => {
             const active = filter === t.key
             return (
-              <button key={t.key} type="button" onClick={() => onFilter(t.key)}
+              <button key={t.key} type="button" onClick={() => onFilter(t.key)} aria-pressed={active}
                 className={[
-                  'rounded-full px-3.5 py-1.5 text-sm font-semibold transition',
-                  active ? 'bg-white text-black shadow' : 'border border-white/30 bg-black/45 text-white hover:bg-black/60',
+                  'rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-transform duration-150 ease-out active:scale-[0.97]',
+                  active ? 'bg-lime text-lime-ink' : 'border border-white/25 bg-black/40 text-white hover:bg-black/55',
                 ].join(' ')}>
                 {t.label} <span className="opacity-70">{t.n(stats)}</span>
               </button>
@@ -48,8 +48,8 @@ export function SectionHero({ section, index, stats, filter, onFilter, insertOn,
           })}
           <button type="button" onClick={onToggleInsert} aria-pressed={insertOn}
             className={[
-              'ml-auto rounded-full px-5 py-1.5 text-sm font-semibold transition',
-              insertOn ? 'bg-lime text-lime-ink shadow-[0_0_18px_rgba(194,242,61,0.45)]' : 'border border-white/30 bg-black/45 text-white hover:bg-black/60',
+              'ml-auto rounded-lg px-5 py-1.5 text-sm font-semibold transition-transform duration-150 ease-out active:scale-[0.97]',
+              insertOn ? 'bg-lime text-lime-ink' : 'border border-white/25 bg-black/40 text-white hover:bg-black/55',
             ].join(' ')}>
             Inserimento rapido {insertOn ? 'ON' : 'OFF'}
           </button>
