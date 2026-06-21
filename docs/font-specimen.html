@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FiguBook · Specimen font Album</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600;700;800&family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Playfair+Display:wght@500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Geist:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#121212; --card:#171717; --border:#292929; --ink:#e2e8f0; --ink2:#a2a2a2; --lime:#c2f23d;
+    --mono:'Geist Mono', ui-monospace, monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(120% 90% at 50% -8%, rgba(255,255,255,.05) 0%, rgba(255,255,255,.015) 38%, transparent 64%),
+      radial-gradient(rgba(255,255,255,.022) 1px, transparent 1px) 0 0/22px 22px,
+      var(--bg);
+    color:var(--ink); font-family:'Inter',system-ui,sans-serif; padding:40px 24px 80px;
+  }
+  .head{max-width:1100px;margin:0 auto 28px}
+  .head h1{font-size:22px;margin:0 0 6px;letter-spacing:.025em}
+  .head p{color:var(--ink2);font-size:14px;margin:0;line-height:1.5}
+  .grid{max-width:1100px;margin:0 auto;display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(330px,1fr))}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative}
+  .tag{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:11px;color:var(--ink2)}
+  .fam{font-family:var(--mono);font-size:11px;color:var(--lime);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+  .label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
+  .title{font-size:30px;font-weight:700;line-height:1.05;margin:4px 0 0}
+  .row{display:flex;justify-content:space-between;align-items:flex-end;margin-top:14px;gap:12px}
+  .num{font-size:40px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+  .num small{font-size:20px;color:var(--ink2)}
+  .sub{font-size:13px;color:var(--ink2);margin-top:10px}
+  .stats{display:flex;gap:18px;margin-top:14px}
+  .stats b{display:block;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+  .stats span{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink2)}
+  /* applica la famiglia all'intera card (titoli, num, sub, stats) — la label/mono resta mono */
+  .card .label,.card .stats span,.card .tag,.card .fam{font-family:var(--mono)}
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>Specimen font — sezione Album</h1>
+    <p>Ogni card mostra la STESSA famiglia su titolo, numero, sottotitolo e stat (la micro-label resta sempre in mono Geist Mono). Scegline UNA per tutto l'album e dimmi il numero (es. «voglio #7»). Le ultime 3 sono coppie serif-titolo + sans-corpo.</p>
+  </div>
+  <div class="grid" id="grid"></div>
+<script>
+const fonts = [
+  ["Outfit (attuale)","'Outfit',sans-serif"],
+  ["Geist","'Geist',sans-serif"],
+  ["Inter","'Inter',sans-serif"],
+  ["Manrope","'Manrope',sans-serif"],
+  ["Plus Jakarta Sans","'Plus Jakarta Sans',sans-serif"],
+  ["Space Grotesk","'Space Grotesk',sans-serif"],
+  ["Sora","'Sora',sans-serif"],
+  ["Bricolage Grotesque","'Bricolage Grotesque',sans-serif"],
+  ["Times New Roman (serif sistema)","'Times New Roman',Times,serif"],
+  ["Georgia (serif sistema)","Georgia,serif"],
+  ["Instrument Serif","'Instrument Serif',serif"],
+  ["Playfair Display","'Playfair Display',serif"],
+  ["Fraunces","'Fraunces',serif"],
+];
+// coppie: [nome, fontTitolo, fontCorpo]
+const pairs = [
+  ["Playfair + Inter","'Playfair Display',serif","'Inter',sans-serif"],
+  ["Fraunces + Geist","'Fraunces',serif","'Geist',sans-serif"],
+  ["Instrument Serif + Outfit","'Instrument Serif',serif","'Outfit',sans-serif"],
+];
+const cardHTML = (idx, fam, titleFam, bodyFam) => `
+  <div class="card" style="font-family:${bodyFam||fam}">
+    <span class="tag">#${idx}</span>
+    <div class="fam">${fam}</div>
+    <div class="label">PANINI · 2024/25</div>
+    <div class="title" style="font-family:${titleFam||fam}">Calciatori 2024/25</div>
+    <div class="row">
+      <div class="sub" style="font-family:${bodyFam||fam}">Sezione 01 · Apertura<br>00 – 5 · 6 figurine</div>
+      <div class="num" style="font-family:${titleFam||fam}">62<small>%</small></div>
+    </div>
+    <div class="stats" style="font-family:${bodyFam||fam}">
+      <div><span>Possedute</span><b>545</b></div>
+      <div><span>Mancanti</span><b>341</b></div>
+      <div><span>Doppie</span><b>205</b></div>
+    </div>
+  </div>`;
+let i=1, html="";
+fonts.forEach(([n,f])=>{ html+=cardHTML(i++, n, f, f); });
+pairs.forEach(([n,tf,bf])=>{ html+=cardHTML(i++, n, tf, bf); });
+document.getElementById('grid').innerHTML = html;
+</script>
+</body>
+</html>
