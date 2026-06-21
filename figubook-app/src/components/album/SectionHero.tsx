@@ -24,13 +24,15 @@ export interface SectionHeroProps {
 export function SectionHero({ section, index, stats, filter, onFilter, insertOn, onToggleInsert }: SectionHeroProps) {
   return (
     <header className="relative overflow-hidden rounded-2xl border border-white/10 p-6" style={{ backgroundImage: sectionGradient(section.c1, section.c2) }}>
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_120%_at_100%_0,rgba(255,255,255,0.16),transparent_50%)]" />
+      {/* Scrim scuro: garantisce contrasto del testo bianco anche su sezioni chiare
+          (gold, azzurro). Più scuro a sinistra/sotto dove vivono titolo e label. */}
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.62)_0%,rgba(0,0,0,0.42)_55%,rgba(0,0,0,0.30)_100%)]" />
       <div className="relative z-10">
-        <div className="text-[11px] font-semibold uppercase tracking-widest text-white/70">
+        <div className="text-[11px] font-semibold uppercase tracking-widest text-white/80">
           Sezione {String(index + 1).padStart(2, '0')} · {section.group}
         </div>
-        <h1 className="mt-1 font-display text-4xl font-bold tracking-tight text-white">{section.name}</h1>
-        <p className="mt-1 text-sm text-white/80">{section.codes[0]} – {section.codes[section.codes.length - 1]} · {section.codes.length} figurine</p>
+        <h1 className="mt-1 font-display text-4xl font-bold tracking-tight text-white drop-shadow-sm">{section.name}</h1>
+        <p className="mt-1 text-sm text-white/85">{section.codes[0]} – {section.codes[section.codes.length - 1]} · {section.codes.length} figurine</p>
 
         {/* Filtri segmented + toggle inserimento, dentro il banner */}
         <div className="mt-4 flex flex-wrap items-center gap-2">
