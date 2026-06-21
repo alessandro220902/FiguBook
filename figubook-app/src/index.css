@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Outfit:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -40,11 +40,13 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Sezione Album — tema scoped (Supabase neutro + Outfit). Reversibile: togli la
-   classe .album-theme dai wrapper e tutto torna ai token brand. Override dei soli
-   CSS custom properties di superficie => i componenti tengono le stesse classi. */
+/* Sezione Album — tema scoped (Supabase neutro + Times New Roman). Reversibile:
+   togli la classe .album-theme dai wrapper e tutto torna ai token brand. */
 .album-theme {
-  --font-sans: 'Outfit', system-ui, sans-serif;
+  /* Times New Roman su tutti i ruoli (sans/display/mono) — font di sistema */
+  --font-sans: 'Times New Roman', Times, serif;
+  --font-display: 'Times New Roman', Times, serif;
+  --font-mono: 'Times New Roman', Times, serif;
   /* token tema Supabase (dark) — valori esatti */
   --color-bg: #121212;          /* background */
   --color-bg-elev: #171717;     /* card */
@@ -56,7 +58,6 @@ body {
   --muted-foreground: #a2a2a2;
   --border: #292929;
   font-family: var(--font-sans);
-  letter-spacing: 0.025em;      /* firma tipografica Supabase */
 }
 
 /* Focus visibile globale (a11y/polish): anello lime su navigazione tastiera. */
