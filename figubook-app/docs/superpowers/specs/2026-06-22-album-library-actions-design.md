@@ -71,60 +71,42 @@ Sostituisce la "×" del mockup con un trigger a 3 punti (icona `MoreVertical` lu
 
 Il trigger e il menu vivono **fuori** dal `<Link>` (oggi l'intera tile è un `Link`). Refactor: la tile diventa un `<div>` relativo; l'area cliccabile-apri-album è un `<Link>` che copre la card; il bottone menu è un fratello con `z-index` superiore e `stopPropagation`, così il click sul menu non naviga.
 
-Voci:
-- **Archivia** / **Ripristina** (label dipende da `archived.includes(id)`) → `archiveAlbum`/`unarchiveAlbum`.
-- **Condividi** → vedi sotto.
+Voci (no Condividi):
+- **Archivia** / **Ripristina** (label dipende da `archived.includes(id)`). Archivia esegue subito `archiveAlbum` (reversibile, niente conferma). Ripristina apre il dialog di conferma.
 - **Elimina** (variante distruttiva, rosso) → apre il dialog di conferma.
 
-## Condividi
+## Dialog di conferma (elimina / ripristina)
 
-Costruisce e condivide la lista **mancanti + doppie** dell'album.
+Un solo componente generico `src/components/album/ConfirmActionDialog.tsx` (stile 21st `the-dialog/delete-account`), parametrizzato: `{ title, body, confirmLabel, destructive, onConfirm }`. Bloccante (modal); ESC e click backdrop = annulla. Due usi:
 
-Flusso (async, on-click):
-1. `getDoc` (one-shot) di `users/{uid}/albums/{id}` → `states`, `counts`.
-2. `loadAlbumData(id)` → `sections[].codes` + `names`.
-3. Calcola:
-   - **mancanti** = codici presenti nelle sezioni con stato ≠ `have`/`double`.
-   - **doppie** = codici con stato `double`, quantità `counts[code] - 1` (≥1).
-4. Formatta testo:
-   ```
-   FiguBook — {titolo album}
-   Mancanti ({n}): code1, code2, …
-   Doppie ({n}): code3 ×2, code4 ×1, …
-   ```
-   I codici sono le label figurina (numero/sigla del catalogo, già lo schema usato nell'editor).
-5. `navigator.share({ title, text })` se disponibile; altrimenti `navigator.clipboard.writeText(text)` + feedback inline (testo "Copiato" temporaneo sul menu/bottone). Nessuna lib toast.
+**Elimina** (`destructive: true`):
+- Titolo: «Eliminare «{titolo}»?»
+- Corpo: "Verranno cancellati per sempre tutti i dati di questo album: figurine possedute, doppie e progresso. L'operazione **non è reversibile** — se in futuro lo riaggiungi, riparti da zero."
+- Azioni: `Annulla` · `Elimina` (rosso) → `removeAlbum` + chiude.
 
-Logica pura estraibile e testabile: `buildShareText(entry, albumData, states, counts): string` in `src/lib/album/share.ts`. Il wrapper che fa I/O (getDoc + share/clipboard) sta nel componente o in un piccolo helper.
+**Ripristina** (`destructive: false`):
+- Titolo: «Ripristinare «{titolo}»?»
+- Corpo: "L'album torna tra quelli attivi e ricompare nei filtri In corso/Completati. Nessun dato è andato perso durante l'archiviazione: ritrovi progresso e doppie esattamente com'erano."
+- Azioni: `Annulla` · `Ripristina` → `unarchiveAlbum` + chiude.
 
-## Dialog elimina
-
-Conferma distruttiva stile 21st `the-dialog/delete-account`. Contenuto:
-- Titolo: "Eliminare {titolo}?"
-- Corpo: avviso che l'operazione è **irreversibile** e cancella tutti i dati (figurine, doppie, progresso).
-- Azioni: "Annulla" (chiude) + "Elimina" (distruttivo/rosso) → `removeAlbum` + chiude.
-- Bloccante (modal). ESC e click backdrop = annulla.
-
-Componente `src/components/album/DeleteAlbumDialog.tsx`.
+Archivia non ha conferma (azione reversibile).
 
 ## UI primitives
 
 Niente Radix; lo stack ha già `@base-ui/react`. Costruisco due wrapper riusabili in `src/components/ui/`:
 
-- `dialog.tsx` — wrapper su Base UI `Dialog` (Root/Backdrop/Popup), tema album, anim framer-motion. Usato da NewAlbumDialog e DeleteAlbumDialog.
+- `dialog.tsx` — wrapper su Base UI `Dialog` (Root/Backdrop/Popup), tema album, anim framer-motion. Usato da NewAlbumDialog e ConfirmActionDialog.
 - `menu.tsx` — wrapper su Base UI `Menu` (Root/Trigger/Popup/Item), supporto item distruttivo. Usato dal menu per-album.
 
 Markup/animazioni adattati dai componenti 21st citati (one-button, the-dialog), riportati ai token del tema `.album-theme`. Icone da `lucide-react` (già in uso; swap Phosphor è rimandato, fuori scope).
 
 ## Error handling
 
-- Scritture (`addAlbum`/`removeAlbum`/`archive`): la lista è live via `onSnapshot`, quindi l'UI si aggiorna da sola a commit avvenuto (ottimismo implicito). Su errore di scrittura → `console.error` + feedback inline "Operazione non riuscita" sul dialog/menu. Niente rollback manuale (la fonte di verità resta lo snapshot).
-- Condividi: se `getDoc`/`loadAlbumData` falliscono o `navigator.share` viene annullato dall'utente (`AbortError`) → nessun errore mostrato per l'abort; per fallimento dati → feedback "Non riuscito".
+- Scritture (`addAlbum`/`removeAlbum`/`archive`/`unarchive`): la lista è live via `onSnapshot`, quindi l'UI si aggiorna da sola a commit avvenuto (ottimismo implicito). Su errore di scrittura → `console.error` + feedback inline "Operazione non riuscita" sul dialog/menu. Niente rollback manuale (la fonte di verità resta lo snapshot).
 - Filtri: indipendenti dai dati remoti; nessun nuovo stato d'errore.
 
 ## Testing
 
-- `share.test.ts` — `buildShareText`: mancanti/doppie corrette, quantità doppie = count−1, album pieno → "Mancanti (0)", formato stringa.
 - `albums.*.test.ts` — `removeAlbum` chiama arrayRemove su ids+archived e deleteDoc; `archiveAlbum`/`unarchiveAlbum` arrayUnion/Remove su archived; `addAlbum` arrayUnion su ids. (Mock Firestore come nei test esistenti `albums.flush.test.ts`.)
 - `LibraryFilters` — i predicati di bucket (logica pura `bucketOf(stats, archived)`); test sui conteggi.
 - Build (`npm run build`) e lint puliti; `detect.mjs` (impeccable) `[]` sui nuovi file.
@@ -134,11 +116,10 @@ Markup/animazioni adattati dai componenti 21st citati (one-button, the-dialog), 
 Nuovi:
 - `src/components/album/LibraryFilters.tsx`
 - `src/components/album/NewAlbumDialog.tsx`
-- `src/components/album/DeleteAlbumDialog.tsx`
+- `src/components/album/ConfirmActionDialog.tsx` (conferma generica: elimina/ripristina)
 - `src/components/album/AlbumMenu.tsx` (trigger 3 punti + voci)
 - `src/components/ui/dialog.tsx`
 - `src/components/ui/menu.tsx`
-- `src/lib/album/share.ts`
 
 Modificati:
 - `src/pages/AlbumList.tsx` (barra filtri + bottone + refactor tile per il menu)
@@ -147,7 +128,7 @@ Modificati:
 
 ## Fuori scope (rimandato)
 
+- **Condividi** (lista mancanti/doppie) — tolto da questo slice, rimandato.
 - Nomi giocatori / filtri figurine dentro l'album, layer scambi (slice separati).
-- Link pubblico read-only dell'album (Condividi qui = solo testo).
 - Swap icone Lucide→Phosphor.
 - Persistenza del filtro selezionato.
