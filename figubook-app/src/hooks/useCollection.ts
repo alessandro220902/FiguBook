@@ -15,12 +15,14 @@ const EMPTY: AlbumStats = { have: 0, doubles: 0, missing: 0, total: 0, pct: 0 }
 export function useCollection(): {
   albums: PerAlbumStats[]
   totals: AlbumStats
+  archived: string[]
   loading: boolean
   error: boolean
   retry: () => void
 } {
   const { user } = useAuth()
   const [ids, setIds] = useState<string[]>([])
+  const [archived, setArchived] = useState<string[]>([])
   const [idsLoaded, setIdsLoaded] = useState(false)
   const [statsMap, setStatsMap] = useState<Record<string, AlbumStats>>({})
   const [error, setError] = useState(false)
@@ -40,7 +42,8 @@ export function useCollection(): {
       user.uid,
       (next) => {
         if (active) {
-          setIds(next)
+          setIds(next.ids)
+          setArchived(next.archived)
           setIdsLoaded(true)
           setError(false)
         }
@@ -53,6 +56,7 @@ export function useCollection(): {
       active = false
       unsub()
       setIds([])
+      setArchived([])
       setIdsLoaded(false)
       setStatsMap({})
     }
@@ -76,5 +80,5 @@ export function useCollection(): {
   const totals = aggregate(albums)
   const loading = !error && !!user && (!idsLoaded || ids.some((id) => albumById[id] && !statsMap[id]))
 
-  return { albums, totals, loading, error, retry }
+  return { albums, totals, archived, loading, error, retry }
 }
