@@ -1,0 +1,43 @@
+import { Plus } from 'lucide-react'
+import { LIBRARY_FILTERS, type LibraryFilter } from '@/lib/album/libraryFilters'
+
+export interface LibraryFiltersProps {
+  active: LibraryFilter
+  counts: Record<LibraryFilter, number>
+  onChange: (f: LibraryFilter) => void
+  onNew: () => void
+}
+
+// Barra filtri: pills a sinistra, "Nuovo album" a destra. Min touch target 44px.
+export function LibraryFilters({ active, counts, onChange, onNew }: LibraryFiltersProps) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-1 flex-wrap items-center gap-2">
+        {LIBRARY_FILTERS.map(({ key, label }) => {
+          const on = key === active
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => onChange(key)}
+              aria-pressed={on}
+              className={`inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 text-sm font-medium transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime ${
+                on ? 'bg-bg-elev text-ink' : 'border border-white/10 text-ink-2 hover:text-ink'
+              }`}
+            >
+              {label}
+              <span className={`tabular-nums text-xs ${on ? 'rounded-full bg-lime px-1.5 text-lime-ink' : 'text-ink-2/70'}`}>{counts[key]}</span>
+            </button>
+          )
+        })}
+      </div>
+      <button
+        type="button"
+        onClick={onNew}
+        className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-lime px-4 text-sm font-semibold text-lime-ink transition-transform duration-150 ease-out hover:brightness-105 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
+      >
+        <Plus className="h-4 w-4" aria-hidden /> Nuovo album
+      </button>
+    </div>
+  )
+}
