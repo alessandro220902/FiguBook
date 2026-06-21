@@ -1,4 +1,4 @@
-import { Outlet, Link } from 'react-router-dom'
+import { Outlet, Link, useLocation } from 'react-router-dom'
 import { Home, BookOpen, ArrowLeftRight, Users } from 'lucide-react'
 import { TubelightNav, type NavItem } from '@/components/layout/TubelightNav'
 import { TopRightMenu } from '@/components/layout/TopRightMenu'
@@ -13,12 +13,17 @@ const NAV: NavItem[] = [
 ]
 
 export function AppLayout() {
+  // Sezione Album usa lo sfondo neutro Supabase (near-black), niente glow verde.
+  // Altre sezioni: identità FiguBook (glow pitch + bg brand).
+  const { pathname } = useLocation()
+  const isAlbum = pathname === '/album' || pathname.startsWith('/album/')
   return (
     <div
       className="min-h-screen text-foreground"
       style={{
-        background:
-          'radial-gradient(150% 110% at 50% -15%, rgba(31,122,89,0.15) 0%, rgba(31,122,89,0.07) 28%, rgba(31,122,89,0.025) 52%, transparent 82%), var(--color-bg)',
+        background: isAlbum
+          ? 'oklch(0.1822 0 0)'
+          : 'radial-gradient(150% 110% at 50% -15%, rgba(31,122,89,0.15) 0%, rgba(31,122,89,0.07) 28%, rgba(31,122,89,0.025) 52%, transparent 82%), var(--color-bg)',
       }}
     >
       {/* logo top-left */}
