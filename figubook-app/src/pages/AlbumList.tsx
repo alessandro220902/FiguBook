@@ -14,7 +14,7 @@ export default function AlbumList() {
         <div className="h-8 w-40 animate-pulse rounded bg-bg-elev" />
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-36 animate-pulse rounded-lg bg-bg-elev" />
+            <div key={i} className="h-44 animate-pulse rounded-2xl bg-bg-elev" />
           ))}
         </div>
       </div>
@@ -46,51 +46,50 @@ export default function AlbumList() {
   )
 }
 
+// Tile a gradiente pieno colore-album (identità forte), su sfondo Supabase neutro.
 function AlbumTile({ a }: { a: PerAlbumStats }) {
   const { entry } = a
   return (
     <Link
       to={`/album/${a.id}`}
-      className="group relative flex overflow-hidden rounded-lg border border-border bg-bg-elev transition-transform duration-150 ease-out hover:-translate-y-0.5 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
+      className="group relative block overflow-hidden rounded-2xl border border-white/10 p-5 shadow-[0_18px_40px_-20px_rgba(0,0,0,0.7)] transition-transform duration-150 ease-out hover:-translate-y-0.5 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
+      style={{ background: `linear-gradient(145deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
       aria-label={`Apri ${entry.title} — ${a.pct}% completo`}
     >
-      {/* Spina colore squadra: identifica senza annegare la card */}
-      <span aria-hidden className="w-1 shrink-0" style={{ background: `linear-gradient(${entry.c1}, ${entry.c2})` }} />
-      <div className="min-w-0 flex-1 p-5">
+      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.05) 40%, transparent 60%, rgba(0,0,0,0.45) 100%)' }} />
+      <div className="relative">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="font-mono text-[11px] uppercase tracking-wide text-ink-2">{entry.editor} · {entry.season}</div>
-            <h2 className="mt-1 truncate text-lg font-semibold tracking-tight text-ink">{entry.title}</h2>
+            <div className="font-mono text-[11px] uppercase tracking-wide text-white/85">{entry.editor} · {entry.season}</div>
+            <h2 className="mt-1 truncate text-2xl font-semibold tracking-tight text-white">{entry.title}</h2>
           </div>
-          <div className="shrink-0 font-display text-4xl font-bold leading-none tabular-nums text-ink">
-            {a.pct}<span className="text-xl text-ink-2">%</span>
+          <div className="shrink-0 font-display text-3xl font-bold leading-none tabular-nums text-white">
+            {a.pct}<span className="text-xl text-white/75">%</span>
           </div>
         </div>
 
-        <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-muted">
-          <div className="h-full rounded-full bg-lime transition-[width] duration-500" style={{ width: `${Math.max(2, a.pct)}%` }} />
+        <div className="mt-4 h-2 overflow-hidden rounded-full bg-black/30">
+          <div className="h-full rounded-full bg-white" style={{ width: `${Math.max(2, a.pct)}%` }} />
         </div>
 
         <div className="mt-4 flex items-end justify-between">
-          <dl className="flex gap-5">
-            <TileStat label="Possedute" value={`${a.have}`} sub={`/ ${a.total}`} />
-            <TileStat label="Mancanti" value={`${a.missing}`} />
-            <TileStat label="Doppie" value={`${a.doubles}`} />
+          <dl className="flex gap-5 text-white">
+            <div>
+              <dt className="font-mono text-[10px] uppercase tracking-wide text-white/75">Possedute</dt>
+              <dd className="mt-0.5 font-display text-lg font-bold tabular-nums">{a.have}<span className="text-sm font-medium text-white/70"> / {a.total}</span></dd>
+            </div>
+            <div>
+              <dt className="font-mono text-[10px] uppercase tracking-wide text-white/75">Mancanti</dt>
+              <dd className="mt-0.5 font-display text-lg font-bold tabular-nums">{a.missing}</dd>
+            </div>
+            <div>
+              <dt className="font-mono text-[10px] uppercase tracking-wide text-white/75">Doppie</dt>
+              <dd className="mt-0.5 font-display text-lg font-bold tabular-nums">{a.doubles}</dd>
+            </div>
           </dl>
-          <span className="text-sm font-medium text-ink-2 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-lime">Apri →</span>
+          <span className="font-medium text-white/90 transition-transform duration-150 group-hover:translate-x-0.5">Apri →</span>
         </div>
       </div>
     </Link>
-  )
-}
-
-function TileStat({ label, value, sub }: { label: string; value: string; sub?: string }) {
-  return (
-    <div>
-      <dt className="font-mono text-[10px] uppercase tracking-wide text-ink-2">{label}</dt>
-      <dd className="mt-0.5 font-display text-lg font-bold tabular-nums text-ink">
-        {value}{sub && <span className="text-sm font-medium text-ink-2"> {sub}</span>}
-      </dd>
-    </div>
   )
 }

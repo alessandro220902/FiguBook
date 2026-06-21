@@ -45,15 +45,18 @@ body {
    CSS custom properties di superficie => i componenti tengono le stesse classi. */
 .album-theme {
   --font-sans: 'Outfit', system-ui, sans-serif;
-  /* superfici neutre (tema Supabase, dark) */
-  --color-bg-elev: oklch(0.2046 0 0);
-  --color-surface: oklch(0.2603 0 0);
-  --color-muted: oklch(0.2393 0 0);
-  --color-ink-2: oklch(0.7122 0 0);
-  --color-muted-foreground: oklch(0.7122 0 0);
-  --muted-foreground: oklch(0.7122 0 0);
-  --border: oklch(0.2809 0 0);
+  /* token tema Supabase (dark) — valori esatti */
+  --color-bg: #121212;          /* background */
+  --color-bg-elev: #171717;     /* card */
+  --color-surface: #242424;     /* secondary/popover */
+  --color-muted: #1f1f1f;       /* muted */
+  --color-ink: #e2e8f0;         /* foreground (freddo) */
+  --color-ink-2: #a2a2a2;       /* muted-foreground */
+  --color-muted-foreground: #a2a2a2;
+  --muted-foreground: #a2a2a2;
+  --border: #292929;
   font-family: var(--font-sans);
+  letter-spacing: 0.025em;      /* firma tipografica Supabase */
 }
 
 /* Focus visibile globale (a11y/polish): anello lime su navigazione tastiera. */
