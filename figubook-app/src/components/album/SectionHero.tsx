@@ -47,8 +47,8 @@ function FilterButton({ active, onClick, children }: { active: boolean; onClick:
   return (
     <button type="button" onClick={onClick} aria-pressed={active}
       className={[
-        'flex-1 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition-transform duration-150 ease-out active:scale-[0.97]',
-        active ? 'bg-lime text-lime-ink' : 'border border-white/25 bg-black/40 text-white hover:bg-black/55',
+        'flex-1 whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-semibold transition-transform duration-150 ease-out active:scale-[0.97]',
+        active ? 'border-lime bg-black/40 text-lime' : 'border-white/25 bg-black/40 text-white hover:bg-black/55',
       ].join(' ')}>
       {children}
     </button>
@@ -86,8 +86,8 @@ export function SectionHero({ section, stats, filter, onFilter, insertOn, onTogg
           </FilterButton>
           <button type="button" onClick={onToggleInsert} aria-pressed={insertOn}
             className={[
-              'flex-1 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition-transform duration-150 ease-out active:scale-[0.97]',
-              insertOn ? 'bg-lime text-lime-ink' : 'border border-white/25 bg-black/40 text-white hover:bg-black/55',
+              'flex-1 whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-semibold transition-transform duration-150 ease-out active:scale-[0.97]',
+              insertOn ? 'border-lime bg-black/40 text-lime' : 'border-white/25 bg-black/40 text-white hover:bg-black/55',
             ].join(' ')}>
             Inserimento rapido
           </button>

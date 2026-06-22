@@ -38,7 +38,9 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
         >
           {owned && <span className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent" />}
           <span className="relative z-10 font-display text-2xl font-bold tracking-wide drop-shadow">{code}</span>
-          <span className="relative z-10 w-full truncate text-center text-[13px] font-semibold leading-tight drop-shadow" title={name || code}>{name || '—'}</span>
+          {owned && name && (
+            <span className="relative z-10 w-full truncate text-center text-[13px] font-semibold leading-tight drop-shadow" title={name}>{name}</span>
+          )}
         </button>
 
         {owned && (
