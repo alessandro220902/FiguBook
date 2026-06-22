@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react'
 import { LIBRARY_FILTERS, type LibraryFilter } from '@/lib/album/libraryFilters'
+import { ctrl, CTRL_BADGE_ON, CTRL_BADGE_OFF } from '@/lib/album/controlStyles'
 
 export interface LibraryFiltersProps {
   active: LibraryFilter
@@ -24,12 +25,10 @@ export function LibraryFilters({ active, counts, onChange, onNew }: LibraryFilte
               type="button"
               onClick={() => onChange(key)}
               aria-pressed={on}
-              className={`inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full px-4 text-sm font-medium transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime ${
-                on ? 'bg-bg-elev text-ink' : 'border border-white/10 text-ink-2 hover:text-ink'
-              }`}
+              className={`shrink-0 ${ctrl(on)}`}
             >
               {label}
-              <span className={`tabular-nums text-xs ${on ? 'rounded-full bg-lime px-1.5 text-lime-ink' : 'text-ink-2/70'}`}>{counts[key]}</span>
+              <span className={on ? CTRL_BADGE_ON : CTRL_BADGE_OFF}>{counts[key]}</span>
             </button>
           )
         })}
@@ -37,7 +36,7 @@ export function LibraryFilters({ active, counts, onChange, onNew }: LibraryFilte
       <button
         type="button"
         onClick={onNew}
-        className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full border border-lime/60 bg-lime/10 px-4 text-sm font-semibold text-lime transition-colors duration-150 ease-out hover:bg-lime/20 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
+        className={`shrink-0 ${ctrl(true)}`}
       >
         <Plus className="h-4 w-4" aria-hidden /> Nuovo album
       </button>
