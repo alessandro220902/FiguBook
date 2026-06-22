@@ -8,6 +8,14 @@ export interface AlbumViewTabsProps {
   onChange: (view: AlbumView) => void
 }
 
+// Trigger icon-only: target touch >=44px, attivo = lime brand (non i token shadcn
+// che nel tema album rendono l'attivo più scuro della lista). twMerge lascia
+// vincere queste classi sui default di ui/tabs.
+const trigger =
+  'h-11 min-w-11 flex-none rounded-lg px-3 text-ink-2 transition-colors hover:text-ink disabled:opacity-40 ' +
+  'data-active:bg-lime data-active:text-lime-ink data-active:shadow-none ' +
+  'dark:data-active:border-transparent dark:data-active:bg-lime dark:data-active:text-lime-ink'
+
 export function AlbumViewTabs({ value, onChange }: AlbumViewTabsProps) {
   return (
     <Tabs
@@ -15,17 +23,16 @@ export function AlbumViewTabs({ value, onChange }: AlbumViewTabsProps) {
       onValueChange={(v) => {
         if (v === 'sections' || v === 'flat') onChange(v)
       }}
-      className="items-center"
     >
-      <TabsList aria-label="Modalità vista album">
-        <TabsTrigger value="sections" aria-label="Vista a sezioni" title="Vista a sezioni">
-          <LayoutGrid aria-hidden />
+      <TabsList className="h-auto gap-1 rounded-xl border border-white/10 bg-bg-elev/60 p-1">
+        <TabsTrigger value="sections" className={trigger} aria-label="Vista a sezioni" title="Vista a sezioni">
+          <LayoutGrid className="size-5" aria-hidden />
         </TabsTrigger>
-        <TabsTrigger value="flat" aria-label="Tutte le figurine" title="Tutte le figurine">
-          <Rows3 aria-hidden />
+        <TabsTrigger value="flat" className={trigger} aria-label="Tutte le figurine" title="Tutte le figurine">
+          <Rows3 className="size-5" aria-hidden />
         </TabsTrigger>
-        <TabsTrigger value="more" disabled aria-label="In arrivo" title="In arrivo">
-          <Sparkles aria-hidden />
+        <TabsTrigger value="more" disabled className={trigger} aria-label="In arrivo" title="In arrivo">
+          <Sparkles className="size-5" aria-hidden />
         </TabsTrigger>
       </TabsList>
     </Tabs>
