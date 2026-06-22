@@ -6,10 +6,6 @@ import { STAT_COLORS } from './statColors'
 
 const INTERVAL_MS = 4500
 const NAME_H = 44
-// Due metà della cornice: nomi su rosso (distinto dal rosso di sfondo sotto),
-// copertine su nero.
-const NAMES_BG = '#b5293c'
-const COVERS_BG = '#0a0a0a'
 
 type Status = 'active' | 'prev' | 'next' | 'hidden'
 
@@ -29,8 +25,8 @@ function statusOf(i: number, active: number, len: number): Status {
   return 'hidden'
 }
 
-// Deck album (feature-carousel split, pezzo unico in cornice): colonna nomi a
-// sinistra su rosso + copertine coverflow a destra su nero, sincronizzate.
+// Deck album (feature-carousel split): colonna nomi a sinistra + copertine
+// coverflow a destra, entrambe sopra lo sfondo app (niente cornice/pannelli).
 // Scorri/tocca i nomi e cambia la copertina. Autoplay (pausa su hover desktop).
 // La copertina attiva si apre col tap.
 export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
@@ -80,23 +76,21 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
   return (
     <div ref={wrapRef} className="relative">
       <div
-        className="flex items-stretch overflow-hidden rounded-3xl border border-white/10"
+        className="flex items-stretch gap-3"
         style={{ height: panelH }}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
-        {/* Metà nomi: pannello rosso, lista verticale con attivo al centro */}
-        <div className="relative overflow-hidden" style={{ width: leftW, background: NAMES_BG }} aria-label="Album">
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-10" style={{ background: `linear-gradient(to bottom, ${NAMES_BG}, transparent)` }} />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-10" style={{ background: `linear-gradient(to top, ${NAMES_BG}, transparent)` }} />
-          <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 px-3">
+        {/* Metà nomi: sopra lo sfondo app, lista verticale con attivo al centro */}
+        <div className="relative overflow-hidden" style={{ width: leftW }} aria-label="Album">
+          <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2">
             {ordered.map((a, i) => {
               const d = signedDist(i, active, len)
               const on = d === 0
               return (
                 <motion.div
                   key={a.id}
-                  className="absolute inset-x-3 flex justify-start"
+                  className="absolute inset-x-0 flex justify-start"
                   style={{ height: NAME_H }}
                   initial={false}
                   animate={{ y: d * NAME_H, opacity: Math.max(0, 1 - Math.abs(d) * 0.3) }}
@@ -108,8 +102,10 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
                     aria-label={a.entry.title}
                     aria-current={on ? 'true' : undefined}
                     className={[
-                      'w-full truncate rounded-full px-3 py-2 text-left text-xs font-semibold uppercase tracking-tight transition-colors',
-                      on ? 'bg-white text-[#b5293c]' : 'text-white/70 hover:text-white',
+                      'w-full truncate rounded-full border px-3 py-2 text-left text-xs font-semibold uppercase tracking-tight transition-colors',
+                      on
+                        ? 'border-lime bg-lime text-lime-ink'
+                        : 'border-white/10 bg-bg-elev text-ink-2 hover:text-ink',
                     ].join(' ')}
                   >
                     {a.entry.title}
@@ -120,8 +116,8 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
           </div>
         </div>
 
-        {/* Metà copertine: nero, stack coverflow (prev/active/next) */}
-        <div className="relative flex flex-1 items-center justify-center" style={{ background: COVERS_BG }}>
+        {/* Metà copertine: sopra lo sfondo app, stack coverflow (prev/active/next) */}
+        <div className="relative flex flex-1 items-center justify-center">
           {ordered.map((a, i) => {
             const st = statusOf(i, active, len)
             const isActive = st === 'active'
