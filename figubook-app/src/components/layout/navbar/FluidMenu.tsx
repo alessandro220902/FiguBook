@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { Menu, X, User, Settings, LifeBuoy, LogOut } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { signOut } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
 import { auth } from '@/lib/firebase'
 
-interface FluidItem {
-  title: string
-  icon: typeof User
-  onClick: () => void
-}
+// Adattato da deepaksslibra/fluid-menu (21st): stack verticale di cerchi
+// sovrapposti che si apre con transizione fluida. Solo icone. Dark + lime.
+const SIZE = 52  // diametro cerchio
+const STEP = 40  // passo verticale (overlap -> effetto blob)
 
-// Adattato da deepaksslibra/fluid-menu (21st): trigger che apre uno stack di
-// pillole a comparsa (translateY + opacity, stagger). Dark + lime.
+interface Item { title: string; icon: LucideIcon; onClick: () => void }
+
 export function FluidMenu() {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -31,49 +31,57 @@ export function FluidMenu() {
     navigate('/login', { replace: true })
   }
 
-  // Profilo/Impostazioni/Supporto placeholder (come prima); Esci attivo.
-  const items: FluidItem[] = [
+  const items: Item[] = [
     { title: 'Profilo', icon: User, onClick: () => {} },
     { title: 'Impostazioni', icon: Settings, onClick: () => {} },
     { title: 'Supporto', icon: LifeBuoy, onClick: () => {} },
     { title: 'Esci', icon: LogOut, onClick: logout },
   ]
 
+  const circle =
+    'absolute left-0 top-0 grid place-items-center rounded-full border border-white/10 bg-card text-foreground shadow-lg'
+
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative" style={{ width: SIZE, height: SIZE }}>
+      {/* trigger: sempre visibile, sopra a tutti */}
       <button
         type="button"
         aria-label="Menu"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="grid h-10 w-10 place-items-center rounded-full bg-white/8 text-foreground transition-colors hover:bg-white/15"
+        className="absolute left-0 top-0 z-50 grid place-items-center rounded-full bg-white/10 text-foreground transition-colors hover:bg-white/15"
+        style={{ width: SIZE, height: SIZE }}
       >
         {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
       </button>
 
-      <div className="absolute right-0 top-12 flex flex-col items-end gap-2">
-        {items.map((it, i) => {
-          const Icon = it.icon
-          return (
-            <button
-              key={it.title}
-              type="button"
-              onClick={() => { it.onClick(); setOpen(false) }}
-              style={{ transitionDelay: open ? `${i * 45}ms` : '0ms' }}
-              className={
-                'flex items-center gap-2.5 whitespace-nowrap rounded-full border border-white/10 bg-card px-3 py-2 text-sm font-medium text-foreground shadow-lg transition-[opacity,transform] duration-200 hover:bg-white/10 ' +
-                (open ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0') +
-                (it.title === 'Esci' ? ' text-destructive' : '')
-              }
-            >
-              <span className="grid h-6 w-6 place-items-center rounded-full bg-lime/15 text-lime">
-                <Icon className="h-3.5 w-3.5" />
-              </span>
-              {it.title}
-            </button>
-          )
-        })}
-      </div>
+      {items.map((it, i) => {
+        const Icon = it.icon
+        const last = i === items.length - 1
+        return (
+          <button
+            key={it.title}
+            type="button"
+            title={it.title}
+            aria-label={it.title}
+            onClick={() => { it.onClick(); setOpen(false) }}
+            className={circle + (it.title === 'Esci' ? ' text-destructive' : '')}
+            style={{
+              width: SIZE,
+              height: SIZE,
+              zIndex: 40 - i,
+              transform: `translateY(${open ? (i + 1) * STEP : 0}px)`,
+              opacity: open ? 1 : 0,
+              pointerEvents: open ? 'auto' : 'none',
+              clipPath: last ? 'circle(50% at 50% 50%)' : 'circle(50% at 50% 58%)',
+              transition: `transform ${open ? 300 : 300}ms cubic-bezier(.4,0,.2,1), opacity ${open ? 300 : 350}ms`,
+              backfaceVisibility: 'hidden',
+            }}
+          >
+            <Icon className={'h-5 w-5 ' + (it.title === 'Esci' ? 'text-destructive' : 'text-lime')} />
+          </button>
+        )
+      })}
     </div>
   )
 }

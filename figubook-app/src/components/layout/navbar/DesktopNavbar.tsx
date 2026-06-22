@@ -19,7 +19,7 @@ const NAV: Item[] = [
 export function DesktopNavbar() {
   const { pathname } = useLocation()
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 hidden h-16 items-center gap-4 border-b border-white/[0.06] bg-neutral-950/80 px-6 backdrop-blur-lg md:flex">
+    <nav className="fixed inset-x-0 top-0 z-50 hidden h-16 items-center gap-4 bg-gradient-to-b from-bg/95 via-bg/80 to-transparent px-6 backdrop-blur-md md:flex">
       {/* sinistra: logo + nome */}
       <Link to="/dashboard" className="flex shrink-0 items-center gap-2.5">
         <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">F</span>
@@ -37,7 +37,7 @@ export function DesktopNavbar() {
               className={cn(
                 'inline-flex h-10 items-center rounded-full border px-5 text-[15px] font-medium text-white transition-colors',
                 active
-                  ? 'border-lime/30 bg-[linear-gradient(165deg,#2c3a18,#1a2410_60%,#141c0d)] font-semibold'
+                  ? 'border-lime/30 bg-[linear-gradient(165deg,#2c3a18,#1a2410_60%,#141c0d)]'
                   : 'border-transparent hover:bg-white/[0.06]',
               )}
             >
