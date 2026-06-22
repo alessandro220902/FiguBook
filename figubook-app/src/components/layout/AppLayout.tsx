@@ -2,6 +2,7 @@ import { Outlet, Link } from 'react-router-dom'
 import { Home, BookOpen, ArrowLeftRight, Users } from 'lucide-react'
 import { TubelightNav, type NavItem } from '@/components/layout/TubelightNav'
 import { TopRightMenu } from '@/components/layout/TopRightMenu'
+import { DesktopNavbar } from '@/components/layout/navbar/DesktopNavbar'
 
 // Shell condivisa: nav unica scritta una volta, riusata sulle 4 sezioni private.
 // Dashboard usa l'icona casetta (Home) su mobile.
@@ -22,19 +23,23 @@ export function AppLayout() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_60%_120%,rgba(239,68,68,0.25),transparent)]" />
       </div>
 
-      {/* logo top-left */}
-      <Link to="/dashboard" className="fixed left-4 top-4 z-50 flex items-center gap-2 sm:left-6 sm:top-6">
-        <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">
-          F
-        </span>
-        <span className="hidden font-display text-xl font-extrabold tracking-tight sm:inline">FiguBook</span>
-      </Link>
+      {/* Navbar Netflix-style: solo desktop+iPad (>=md) */}
+      <DesktopNavbar />
 
-      <TubelightNav items={NAV} />
-      <TopRightMenu />
+      {/* Cluster mobile (telefono, <md): logo + bottom-nav + menu destro */}
+      <div className="md:hidden">
+        <Link to="/dashboard" className="fixed left-4 top-4 z-50 flex items-center gap-2 sm:left-6 sm:top-6">
+          <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">
+            F
+          </span>
+          <span className="hidden font-display text-xl font-extrabold tracking-tight sm:inline">FiguBook</span>
+        </Link>
+        <TubelightNav items={NAV} />
+        <TopRightMenu />
+      </div>
 
-      {/* pt per non finire sotto cluster (mobile) / nav (desktop); pb per bottom-bar mobile */}
-      <main className="px-5 pb-28 pt-20 sm:px-10 sm:pt-28">
+      {/* pt: cluster (mobile) / navbar h-16 (desktop). pb: bottom-bar mobile */}
+      <main className="px-5 pb-28 pt-20 sm:px-10 md:pb-12 md:pt-24">
         <Outlet />
       </main>
     </div>
