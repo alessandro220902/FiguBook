@@ -2,3 +2,17 @@
 # skill di terze parti (locali, non nel prodotto)
 .agents/
 .superpowers/
+
+# dipendenze / build
+node_modules/
+figubook-app/node_modules/
+figubook-app/dist/
+
+# tooling locale (non nel prodotto)
+.claude/skills/
+.claude/settings.local.json
+.impeccable/
+skills-lock.json
+
+# macOS
+.DS_Store
