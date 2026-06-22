@@ -201,17 +201,17 @@ function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive
         </div>
       </div>
 
-      {/* PC: pannello nero che sale all'hover con le azioni rapide */}
+      {/* PC: striscia azioni che sale dal basso all'hover (non copre titolo/stats) */}
       {isDesktop && (
-        <div className="pointer-events-none absolute inset-0 z-20 flex translate-y-full flex-col items-center justify-center gap-2.5 rounded-2xl bg-black/85 px-6 opacity-0 backdrop-blur-sm transition-[transform,opacity] duration-200 ease-out group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex translate-y-full items-center justify-center gap-2 rounded-b-2xl border-t border-white/10 bg-black/85 px-4 py-3 opacity-0 backdrop-blur-sm transition-[transform,opacity] duration-200 ease-out group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
           <ActionButton onClick={() => handleShare('doubles')} disabled={busy !== null}>
-            <Share2 size={16} /> Condividi doppie
+            <Share2 size={15} /> Doppie
           </ActionButton>
           <ActionButton onClick={() => handleShare('missing')} disabled={busy !== null}>
-            <Share2 size={16} /> Condividi mancanti
+            <Share2 size={15} /> Mancanti
           </ActionButton>
           <ActionButton onClick={onOpen} primary>
-            Apri <ArrowRight size={16} />
+            Apri <ArrowRight size={15} />
           </ActionButton>
         </div>
       )}
@@ -232,7 +232,7 @@ function ActionButton({ onClick, disabled, primary, children }: { onClick: () =>
       onClick={onClick}
       disabled={disabled}
       className={[
-        'inline-flex w-52 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-50',
+        'inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-50',
         primary ? 'bg-lime text-lime-ink hover:brightness-105' : 'border border-white/25 bg-white/5 text-white hover:bg-white/15',
       ].join(' ')}
     >
