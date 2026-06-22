@@ -28,7 +28,7 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
           onClick={handleClick}
           aria-label={`${code}${name ? ' ' + name : ''}${owned ? ', posseduta' : ', mancante'}`}
           className={[
-            'absolute inset-0 flex items-center justify-center rounded-xl border transition',
+            'absolute inset-0 flex flex-col items-center justify-center gap-0.5 rounded-xl border px-1.5 transition',
             'focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime',
             owned
               ? 'border-white/15 text-white shadow-sm hover:-translate-y-0.5 hover:shadow-lg'
@@ -38,6 +38,7 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
         >
           {owned && <span className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent" />}
           <span className="relative z-10 font-display text-2xl font-bold tracking-wide drop-shadow">{code}</span>
+          <span className="relative z-10 w-full truncate text-center text-[13px] font-semibold leading-tight drop-shadow" title={name || code}>{name || '—'}</span>
         </button>
 
         {owned && (
@@ -46,11 +47,6 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
         {doubles > 0 && (
           <span data-testid="dup-badge" className="pointer-events-none absolute right-1.5 top-1.5 z-20 rounded-md bg-gold px-1.5 text-[10px] font-bold text-[#1a1205]">×{doubles}</span>
         )}
-      </div>
-
-      {/* Nome sotto il numero, sempre visibile */}
-      <div className={`mt-1.5 truncate text-center text-[11px] font-semibold leading-tight ${owned ? 'text-ink' : 'text-muted-foreground'}`} title={name || code}>
-        {name || '—'}
       </div>
 
       {insertOn ? (
