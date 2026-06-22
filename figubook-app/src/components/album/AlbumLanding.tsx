@@ -74,7 +74,7 @@ export function AlbumLanding({ entry, stats, missingCodes, doubleCodes }: AlbumL
             <Stat label="Doppie" value={`${stats.doubles}`} />
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex gap-3">
             <ShareButton label="Condividi doppie" disabled={doubleCodes.length === 0} onClick={() => share('doubles', doubleCodes)} />
             <ShareButton label="Condividi mancanti" disabled={missingCodes.length === 0} onClick={() => share('missing', missingCodes)} />
           </div>
@@ -92,8 +92,8 @@ export function AlbumLanding({ entry, stats, missingCodes, doubleCodes }: AlbumL
 
 function ShareButton({ label, disabled, onClick }: { label: string; disabled: boolean; onClick: () => void }) {
   return (
-    <AlbumButton variant="ghost" onClick={onClick} disabled={disabled} title={disabled ? 'Niente da condividere' : label}>
-      <Share2 size={16} /> {label}
+    <AlbumButton variant="ghost" className="min-w-0 flex-1 px-3" onClick={onClick} disabled={disabled} title={disabled ? 'Niente da condividere' : label}>
+      <Share2 size={16} className="shrink-0" /> <span className="truncate">{label}</span>
     </AlbumButton>
   )
 }
