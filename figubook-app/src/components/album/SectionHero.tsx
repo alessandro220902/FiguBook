@@ -3,7 +3,7 @@ import type { Section } from '@/data/albums/types'
 import { sectionGradient } from '@/lib/album/color'
 import type { SectionStats } from '@/lib/album/stats'
 import type { Filter } from './StickerGrid'
-import { ctrl } from '@/lib/album/controlStyles'
+import { ctrlFilter } from '@/lib/album/controlStyles'
 
 // Tre filtri principali in riga; "Possedute" va sotto accanto al toggle inserimento.
 const TABS: { key: Filter; label: string; n: (s: SectionStats) => number }[] = [
@@ -47,7 +47,7 @@ function ProgressRing({ pct }: { pct: number }) {
 function FilterButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button type="button" onClick={onClick} aria-pressed={active}
-      className={`${ctrl(active)} flex-1 whitespace-nowrap`}>
+      className={`${ctrlFilter(active)} flex-1 whitespace-nowrap`}>
       {children}
     </button>
   )
@@ -83,7 +83,7 @@ export function SectionHero({ section, stats, filter, onFilter, insertOn, onTogg
             Possedute <span className="opacity-70">{stats.have}</span>
           </FilterButton>
           <button type="button" onClick={onToggleInsert} aria-pressed={insertOn}
-            className={`${ctrl(insertOn)} flex-1 whitespace-nowrap`}>
+            className={`${ctrlFilter(insertOn)} flex-1 whitespace-nowrap`}>
             Inserimento rapido
           </button>
         </div>

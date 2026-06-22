@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react'
 import { LIBRARY_FILTERS, type LibraryFilter } from '@/lib/album/libraryFilters'
-import { ctrl, CTRL_BADGE_ON, CTRL_BADGE_OFF } from '@/lib/album/controlStyles'
+import { ctrlFilter, ctrlPrimary, CTRL_BADGE_ON, CTRL_BADGE_OFF } from '@/lib/album/controlStyles'
 
 export interface LibraryFiltersProps {
   active: LibraryFilter
@@ -25,7 +25,7 @@ export function LibraryFilters({ active, counts, onChange, onNew }: LibraryFilte
               type="button"
               onClick={() => onChange(key)}
               aria-pressed={on}
-              className={`shrink-0 ${ctrl(on)}`}
+              className={`shrink-0 ${ctrlFilter(on)}`}
             >
               {label}
               <span className={on ? CTRL_BADGE_ON : CTRL_BADGE_OFF}>{counts[key]}</span>
@@ -36,7 +36,7 @@ export function LibraryFilters({ active, counts, onChange, onNew }: LibraryFilte
       <button
         type="button"
         onClick={onNew}
-        className={`shrink-0 ${ctrl(true)}`}
+        className={`shrink-0 ${ctrlPrimary()}`}
       >
         <Plus className="h-4 w-4" aria-hidden /> Nuovo album
       </button>

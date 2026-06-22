@@ -7,7 +7,7 @@ import { useIsDesktop } from '@/hooks/useMediaQuery'
 import type { PerAlbumStats } from '@/lib/db/albums'
 import { addAlbum, removeAlbum, archiveAlbum, unarchiveAlbum } from '@/lib/db/albums'
 import { fetchShareCodes, shareList, type ShareKind } from '@/lib/album/share'
-import { ctrl } from '@/lib/album/controlStyles'
+import { ctrlPrimary, ctrlGhost } from '@/lib/album/controlStyles'
 import { AlbumButton } from '@/components/album/ui/Button'
 import { LibraryFilters } from '@/components/album/LibraryFilters'
 import { NewAlbumDialog } from '@/components/album/NewAlbumDialog'
@@ -232,7 +232,7 @@ function ActionButton({ onClick, disabled, primary, children }: { onClick: () =>
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`${ctrl(!!primary)} flex-1 whitespace-nowrap disabled:opacity-50`}
+      className={`${primary ? ctrlPrimary() : ctrlGhost()} flex-1 whitespace-nowrap disabled:opacity-50`}
     >
       {children}
     </button>

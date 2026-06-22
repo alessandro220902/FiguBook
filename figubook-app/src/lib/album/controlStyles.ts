@@ -1,22 +1,34 @@
 // Lingua unica per filtri/azioni della sezione album (dark theme).
-// Due soli stati visivi: LIME (attivo/primario) e GHOST (inattivo/neutro).
-// Forma unica: soft-rect rounded-lg. Vedi regole concordate con l'utente.
+// Regole concordate:
+//  - LIME pieno = SOLO azioni principali (Apri, Nuovo album).
+//  - Filtri/toggle: attivo = bianco pieno (massimo contrasto), inattivo = ghost spento.
+//  - Azioni neutre (Condividi): ghost.
+//  - Forma unica: radius 6px (rounded-md), come il mockup minimalist.
 
 export const CTRL_BASE =
-  'inline-flex min-h-[40px] items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold ' +
-  'transition-[background-color,border-color,color,transform] duration-150 ease-out active:scale-[0.97] ' +
+  'inline-flex min-h-[38px] items-center justify-center gap-2 rounded-md px-4 text-sm font-semibold ' +
+  'transition-[background-color,border-color,color,transform] duration-150 ease-out active:scale-[0.98] ' +
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime'
 
-// Attivo / azione primaria (Apri, Nuovo album, filtro selezionato)
-export const CTRL_LIME = 'border border-lime/60 bg-lime/10 text-lime hover:bg-lime/20'
+// Azione principale: lime pieno (riservato, raro)
+export const CTRL_PRIMARY = 'border border-transparent bg-lime text-lime-ink hover:brightness-105'
 
-// Inattivo / azione neutra (filtro non selezionato, Condividi, Inserimento rapido spento)
-export const CTRL_GHOST = 'border border-white/15 bg-white/5 text-ink hover:bg-white/10'
+// Filtro/toggle ATTIVO ("spinto"): bianco pieno, alto contrasto, niente lime
+export const CTRL_ON = 'border border-transparent bg-white text-neutral-900 hover:bg-white/90'
+
+// Inattivo / neutro: ghost spento (contrasto basso => l'attivo salta all'occhio)
+export const CTRL_GHOST = 'border border-white/15 bg-white/[0.04] text-ink-2 hover:bg-white/10 hover:text-ink'
 
 // Badge conteggio dentro un filtro
-export const CTRL_BADGE_ON = 'rounded-md bg-lime px-1.5 text-xs font-bold tabular-nums text-lime-ink'
+export const CTRL_BADGE_ON = 'rounded bg-neutral-900/15 px-1.5 text-xs font-bold tabular-nums text-neutral-900'
 export const CTRL_BADGE_OFF = 'text-xs tabular-nums text-ink-2/70'
 
-export function ctrl(active: boolean): string {
-  return `${CTRL_BASE} ${active ? CTRL_LIME : CTRL_GHOST}`
+export function ctrlFilter(active: boolean): string {
+  return `${CTRL_BASE} ${active ? CTRL_ON : CTRL_GHOST}`
+}
+export function ctrlPrimary(): string {
+  return `${CTRL_BASE} ${CTRL_PRIMARY}`
+}
+export function ctrlGhost(): string {
+  return `${CTRL_BASE} ${CTRL_GHOST}`
 }
