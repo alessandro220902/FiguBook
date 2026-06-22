@@ -92,8 +92,8 @@ export function AlbumLanding({ entry, stats, missingCodes, doubleCodes }: AlbumL
 
 function ShareButton({ label, disabled, onClick }: { label: string; disabled: boolean; onClick: () => void }) {
   return (
-    <AlbumButton variant="ghost" className="min-w-0 flex-1 px-3" onClick={onClick} disabled={disabled} title={disabled ? 'Niente da condividere' : label}>
-      <Share2 size={16} className="shrink-0" /> <span className="truncate">{label}</span>
+    <AlbumButton variant="ghost" className="flex-1 whitespace-nowrap px-2 text-[13px]" onClick={onClick} disabled={disabled} title={disabled ? 'Niente da condividere' : label}>
+      <Share2 size={15} className="shrink-0" /> {label}
     </AlbumButton>
   )
 }
