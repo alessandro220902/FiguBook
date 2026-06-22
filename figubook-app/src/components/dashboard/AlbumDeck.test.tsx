@@ -61,11 +61,4 @@ describe('AlbumDeck', () => {
     await userEvent.click(screen.getByRole('button', { name: /Vai a Beta/ }))
     expect(screen.getByTestId('loc')).toHaveTextContent('/dashboard')
   })
-
-  it('bottone pausa alterna label', async () => {
-    setup(albums)
-    const btn = screen.getByRole('button', { name: 'Pausa' })
-    await userEvent.click(btn)
-    expect(screen.getByRole('button', { name: 'Riprendi' })).toBeInTheDocument()
-  })
 })

@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
-import { Pause, Play } from 'lucide-react'
 import type { PerAlbumStats } from '@/lib/db/albums'
 import { STAT_COLORS } from './statColors'
 
 const INTERVAL_MS = 4500
 const NAME_H = 44
+// Due metà della cornice: nomi su rosso (distinto dal rosso di sfondo sotto),
+// copertine su nero.
+const NAMES_BG = '#b5293c'
+const COVERS_BG = '#0a0a0a'
 
 type Status = 'active' | 'prev' | 'next' | 'hidden'
 
@@ -26,16 +29,16 @@ function statusOf(i: number, active: number, len: number): Status {
   return 'hidden'
 }
 
-// Deck album (effetto feature-carousel split): colonna nomi a sinistra +
-// copertine coverflow a destra, sincronizzate. Scorri/tocca i nomi e cambia la
-// copertina attiva. Autoplay + pausa. La copertina attiva si apre col tap.
+// Deck album (feature-carousel split, pezzo unico in cornice): colonna nomi a
+// sinistra su rosso + copertine coverflow a destra su nero, sincronizzate.
+// Scorri/tocca i nomi e cambia la copertina. Autoplay (pausa su hover desktop).
+// La copertina attiva si apre col tap.
 export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
   const ordered = useMemo(() => [...albums].sort((a, b) => a.missing - b.missing), [albums])
   const len = ordered.length
   const wrapRef = useRef<HTMLDivElement>(null)
   const [w, setW] = useState(460)
   const [active, setActive] = useState(0)
-  const [paused, setPaused] = useState(false)
   const [hover, setHover] = useState(false)
   const reduce = useReducedMotion()
   const navigate = useNavigate()
@@ -53,19 +56,19 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
   const next = useCallback(() => setActive((a) => (a + 1) % len), [len])
 
   useEffect(() => {
-    if (len < 2 || paused || hover) return
+    if (len < 2 || hover) return
     const t = setInterval(next, INTERVAL_MS)
     return () => clearInterval(t)
-  }, [len, paused, hover, next])
+  }, [len, hover, next])
 
   if (!len) return null
 
   const leftW = Math.max(120, Math.round(w * 0.4))
-  const rightW = Math.max(150, w - leftW - 16)
-  const cardWidth = Math.max(150, Math.min(Math.round(rightW * 0.9), 340))
+  const rightW = Math.max(150, w - leftW)
+  const cardWidth = Math.max(150, Math.min(Math.round(rightW * 0.86), 340))
   const cardHeight = Math.round(cardWidth * 1.12)
   const delta = Math.min(44, Math.round(rightW * 0.12))
-  const panelH = Math.round(cardHeight * 1.06)
+  const panelH = Math.round(cardHeight * 1.12)
   const compact = cardWidth < 240
   const spring = reduce
     ? { duration: 0 }
@@ -77,23 +80,23 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
   return (
     <div ref={wrapRef} className="relative">
       <div
-        className="flex items-stretch gap-3"
+        className="flex items-stretch overflow-hidden rounded-3xl border border-white/10"
         style={{ height: panelH }}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
-        {/* Colonna nomi: lista verticale, attivo al centro */}
-        <div className="relative overflow-hidden" style={{ width: leftW }} aria-label="Album">
-          <div className="absolute inset-x-0 top-0 z-10 h-10 bg-gradient-to-b from-[var(--background)] to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 z-10 h-10 bg-gradient-to-t from-[var(--background)] to-transparent" />
-          <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2">
+        {/* Metà nomi: pannello rosso, lista verticale con attivo al centro */}
+        <div className="relative overflow-hidden" style={{ width: leftW, background: NAMES_BG }} aria-label="Album">
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-10" style={{ background: `linear-gradient(to bottom, ${NAMES_BG}, transparent)` }} />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-10" style={{ background: `linear-gradient(to top, ${NAMES_BG}, transparent)` }} />
+          <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 px-3">
             {ordered.map((a, i) => {
               const d = signedDist(i, active, len)
               const on = d === 0
               return (
                 <motion.div
                   key={a.id}
-                  className="absolute inset-x-0 flex justify-start"
+                  className="absolute inset-x-3 flex justify-start"
                   style={{ height: NAME_H }}
                   initial={false}
                   animate={{ y: d * NAME_H, opacity: Math.max(0, 1 - Math.abs(d) * 0.3) }}
@@ -105,10 +108,8 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
                     aria-label={a.entry.title}
                     aria-current={on ? 'true' : undefined}
                     className={[
-                      'w-full truncate rounded-full border px-3 py-2 text-left text-xs font-semibold uppercase tracking-tight transition-colors',
-                      on
-                        ? 'border-lime bg-lime text-lime-ink'
-                        : 'border-white/15 text-ink-2 hover:text-ink',
+                      'w-full truncate rounded-full px-3 py-2 text-left text-xs font-semibold uppercase tracking-tight transition-colors',
+                      on ? 'bg-white text-[#b5293c]' : 'text-white/70 hover:text-white',
                     ].join(' ')}
                   >
                     {a.entry.title}
@@ -119,8 +120,8 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
           </div>
         </div>
 
-        {/* Copertine: stack coverflow (prev/active/next) */}
-        <div className="relative flex flex-1 items-center justify-center">
+        {/* Metà copertine: nero, stack coverflow (prev/active/next) */}
+        <div className="relative flex flex-1 items-center justify-center" style={{ background: COVERS_BG }}>
           {ordered.map((a, i) => {
             const st = statusOf(i, active, len)
             const isActive = st === 'active'
@@ -159,17 +160,6 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
           })}
         </div>
       </div>
-
-      <div className="mt-3 flex items-center justify-center">
-        <button
-          type="button"
-          onClick={() => setPaused((p) => !p)}
-          aria-label={paused ? 'Riprendi' : 'Pausa'}
-          className="grid h-8 w-8 place-items-center rounded-full border border-white/15 text-ink-2 transition-colors hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
-        >
-          {paused ? <Play className="h-4 w-4" aria-hidden /> : <Pause className="h-4 w-4" aria-hidden />}
-        </button>
-      </div>
     </div>
   )
 }
@@ -190,7 +180,7 @@ function CoverCard({
       type="button"
       onClick={() => (active ? onOpen() : onActivate())}
       aria-label={active ? `Apri ${entry.title}` : `Vai a ${entry.title}`}
-      className="relative block h-full w-full overflow-hidden rounded-[1.75rem] border-4 border-[var(--bg-elev)] text-left shadow-[0_18px_40px_-20px_rgba(0,0,0,0.7)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
+      className="relative block h-full w-full overflow-hidden rounded-[1.5rem] text-left shadow-[0_18px_40px_-20px_rgba(0,0,0,0.8)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
       style={{ background: `linear-gradient(150deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
     >
       <span
