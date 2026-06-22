@@ -14,6 +14,8 @@ import { SectionSidebar } from '@/components/album/SectionSidebar'
 import { SectionHero } from '@/components/album/SectionHero'
 import { StickerGrid, type Filter } from '@/components/album/StickerGrid'
 import { StickerInfoOverlay } from '@/components/album/StickerInfoOverlay'
+import { AlbumViewTabs, type AlbumView } from '@/components/album/AlbumViewTabs'
+import { AlbumFlatView } from '@/components/album/AlbumFlatView'
 
 export default function Album() {
   const { albumId = '' } = useParams()
@@ -23,6 +25,7 @@ export default function Album() {
   const [loadState, setLoadState] = useState<{ id: string; data: AlbumData | null; error: boolean }>({ id: '', data: null, error: false })
   const [activeId, setActiveId] = useState('')
   const [filter, setFilter] = useState<Filter>('all')
+  const [view, setView] = useState<AlbumView>('sections')
   const [insertOn, setInsertOn] = useState(false)
   const [infoCode, setInfoCode] = useState<string | null>(null)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -84,33 +87,50 @@ export default function Album() {
       <Breadcrumb items={[{ label: 'Album', to: '/album' }, { label: entry.title }]} />
       <AlbumLanding entry={entry} stats={albumStats} missingCodes={missingCodes} doubleCodes={doubleCodes} />
 
-      <h2 className="mt-8 text-center font-display text-2xl font-bold tracking-tight text-ink">Sezioni album</h2>
+      <div className="mt-8 flex justify-center">
+        <AlbumViewTabs value={view} onChange={setView} />
+      </div>
 
-      {/* Pannello ad altezza schermo (sticky sotto la navbar): sidebar e griglia
-          scrollano internamente. La pagina non cresce -> niente vuoto, e la griglia
-          non scorre mai sopra la barra sezioni. Su mobile torna al flusso normale. */}
-      <div
-        ref={panelRef}
-        className="mt-4 grid scroll-mt-24 gap-5 lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:grid-cols-[15rem_1fr]"
-        style={section ? sectionVars(section.c1, section.c2) : undefined}
-      >
-        <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={selectSection} />
-        <div className="flex min-h-0 min-w-0 flex-col">
-          <SectionHero section={section} index={sectionIndex} stats={secStats} filter={filter} onFilter={setFilter} insertOn={insertOn} onToggleInsert={() => setInsertOn((v) => !v)} />
-          <div ref={gridScrollRef} className="mt-4 min-h-0 flex-1 lg:overflow-y-auto">
-            <StickerGrid
-              section={section}
-              names={data.names}
-              countOf={album.countOf}
-              insertOn={insertOn}
-              filter={filter}
-              onAdd={album.increment}
-              onRemove={album.decrement}
-              onInfo={(code) => setInfoCode(code)}
-            />
+      <h2 className="mt-6 text-center font-display text-2xl font-bold tracking-tight text-ink">
+        {view === 'flat' ? 'Tutte le figurine' : 'Sezioni album'}
+      </h2>
+
+      {view === 'flat' ? (
+        <AlbumFlatView
+          data={data}
+          stats={albumStats}
+          countOf={album.countOf}
+          onAdd={album.increment}
+          onRemove={album.decrement}
+          onInfo={(code) => setInfoCode(code)}
+        />
+      ) : (
+        /* Pannello ad altezza schermo (sticky sotto la navbar): sidebar e griglia
+           scrollano internamente. La pagina non cresce -> niente vuoto, e la griglia
+           non scorre mai sopra la barra sezioni. Su mobile torna al flusso normale. */
+        <div
+          ref={panelRef}
+          className="mt-4 grid scroll-mt-24 gap-5 lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:grid-cols-[15rem_1fr]"
+          style={section ? sectionVars(section.c1, section.c2) : undefined}
+        >
+          <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={selectSection} />
+          <div className="flex min-h-0 min-w-0 flex-col">
+            <SectionHero section={section} index={sectionIndex} stats={secStats} filter={filter} onFilter={setFilter} insertOn={insertOn} onToggleInsert={() => setInsertOn((v) => !v)} />
+            <div ref={gridScrollRef} className="mt-4 min-h-0 flex-1 lg:overflow-y-auto">
+              <StickerGrid
+                section={section}
+                names={data.names}
+                countOf={album.countOf}
+                insertOn={insertOn}
+                filter={filter}
+                onAdd={album.increment}
+                onRemove={album.decrement}
+                onInfo={(code) => setInfoCode(code)}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <StickerInfoOverlay
         open={infoCode !== null}
