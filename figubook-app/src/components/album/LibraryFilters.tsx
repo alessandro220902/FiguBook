@@ -8,11 +8,14 @@ export interface LibraryFiltersProps {
   onNew: () => void
 }
 
-// Barra filtri: pills a sinistra, "Nuovo album" a destra. Min touch target 44px.
+// Barra filtri: pills sempre su una riga (scroll-x su mobile), "Nuovo album"
+// sotto su mobile e a destra da sm in su. Min touch target 44px.
 export function LibraryFilters({ active, counts, onChange, onNew }: LibraryFiltersProps) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <div className="flex flex-1 flex-wrap items-center gap-2">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-2">
+      {/* Filtri: una riga sola. Su mobile scrollano in orizzontale (no wrap)
+          invece di andare a capo; scrollbar nascosta. */}
+      <div className="-mx-1 flex flex-1 items-center gap-2 overflow-x-auto px-1 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {LIBRARY_FILTERS.map(({ key, label }) => {
           const on = key === active
           return (
@@ -21,7 +24,7 @@ export function LibraryFilters({ active, counts, onChange, onNew }: LibraryFilte
               type="button"
               onClick={() => onChange(key)}
               aria-pressed={on}
-              className={`inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 text-sm font-medium transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime ${
+              className={`inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full px-4 text-sm font-medium transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime ${
                 on ? 'bg-bg-elev text-ink' : 'border border-white/10 text-ink-2 hover:text-ink'
               }`}
             >
@@ -34,7 +37,7 @@ export function LibraryFilters({ active, counts, onChange, onNew }: LibraryFilte
       <button
         type="button"
         onClick={onNew}
-        className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-lime px-4 text-sm font-semibold text-lime-ink transition-transform duration-150 ease-out hover:brightness-105 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
+        className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full bg-lime px-4 text-sm font-semibold text-lime-ink transition-transform duration-150 ease-out hover:brightness-105 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
       >
         <Plus className="h-4 w-4" aria-hidden /> Nuovo album
       </button>
