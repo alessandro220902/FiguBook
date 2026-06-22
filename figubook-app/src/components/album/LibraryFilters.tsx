@@ -37,7 +37,7 @@ export function LibraryFilters({ active, counts, onChange, onNew }: LibraryFilte
       <button
         type="button"
         onClick={onNew}
-        className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full bg-lime px-4 text-sm font-semibold text-lime-ink transition-transform duration-150 ease-out hover:brightness-105 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
+        className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full border border-lime/60 bg-lime/10 px-4 text-sm font-semibold text-lime transition-colors duration-150 ease-out hover:bg-lime/20 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
       >
         <Plus className="h-4 w-4" aria-hidden /> Nuovo album
       </button>

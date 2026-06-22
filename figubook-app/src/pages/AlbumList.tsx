@@ -203,7 +203,7 @@ function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive
 
       {/* PC: striscia azioni che sale dal basso all'hover (non copre titolo/stats) */}
       {isDesktop && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex translate-y-full items-center justify-center gap-2 rounded-b-2xl border-t border-white/10 bg-black/85 px-4 py-3 opacity-0 backdrop-blur-sm transition-[transform,opacity] duration-200 ease-out group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex translate-y-2 items-center justify-center gap-2 rounded-b-2xl bg-gradient-to-t from-black/95 via-black/85 to-transparent px-4 pb-3 pt-12 opacity-0 transition-[transform,opacity] duration-200 ease-out group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
           <ActionButton onClick={() => handleShare('doubles')} disabled={busy !== null}>
             <Share2 size={15} /> Doppie
           </ActionButton>
