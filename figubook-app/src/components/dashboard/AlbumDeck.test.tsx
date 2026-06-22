@@ -32,34 +32,34 @@ function setup(albums: PerAlbumStats[]) {
 const albums = [mk('a', 'Alpha', 10), mk('b', 'Beta', 20), mk('c', 'Gamma', 30)]
 
 describe('AlbumDeck', () => {
-  it('renderizza tutte le card e la centrale mostra %, frazione e doppie', () => {
+  it('colonna nomi: un chip per album; copertina mostra %, frazione e doppie', () => {
     setup(albums)
-    expect(screen.getByText('Alpha')).toBeInTheDocument()
-    expect(screen.getByText('Beta')).toBeInTheDocument()
-    expect(screen.getByText('Gamma')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Alpha' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Beta' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Gamma' })).toBeInTheDocument()
     expect(screen.getAllByText('60%').length).toBeGreaterThan(0)
     expect(screen.getAllByText(/545/).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/886/).length).toBeGreaterThan(0)
   })
 
-  it('tap sulla card attiva apre /album/:id', async () => {
+  it('tap sulla copertina attiva apre /album/:id', async () => {
     setup(albums)
     await userEvent.click(screen.getByRole('button', { name: /Apri Alpha/ }))
     expect(screen.getByTestId('loc')).toHaveTextContent('/album/a')
   })
 
-  it('tap su card laterale la centra senza navigare', async () => {
+  it('tap su nome cambia attivo senza navigare', async () => {
+    setup(albums)
+    await userEvent.click(screen.getByRole('button', { name: 'Gamma' }))
+    expect(screen.getByTestId('loc')).toHaveTextContent('/dashboard')
+    // Gamma ora attiva: la sua copertina è quella apribile
+    expect(screen.getByRole('button', { name: /Apri Gamma/ })).toBeInTheDocument()
+  })
+
+  it('tap su copertina laterale la centra senza navigare', async () => {
     setup(albums)
     await userEvent.click(screen.getByRole('button', { name: /Vai a Beta/ }))
     expect(screen.getByTestId('loc')).toHaveTextContent('/dashboard')
-  })
-
-  it('dots: uno per album, click cambia attivo', async () => {
-    setup(albums)
-    const dots = screen.getAllByRole('button', { name: /^Mostra / })
-    expect(dots).toHaveLength(3)
-    await userEvent.click(dots[2])
-    expect(screen.getByRole('button', { name: /Apri Gamma/ })).toBeInTheDocument()
   })
 
   it('bottone pausa alterna label', async () => {

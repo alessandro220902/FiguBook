@@ -6,21 +6,29 @@ import type { PerAlbumStats } from '@/lib/db/albums'
 import { STAT_COLORS } from './statColors'
 
 const INTERVAL_MS = 4500
+const NAME_H = 44
 
 type Status = 'active' | 'prev' | 'next' | 'hidden'
 
-function statusOf(i: number, active: number, len: number): Status {
+// distanza ciclica con segno (per il loop)
+function signedDist(i: number, active: number, len: number) {
   let d = i - active
   if (d > len / 2) d -= len
   if (d < -len / 2) d += len
+  return d
+}
+
+function statusOf(i: number, active: number, len: number): Status {
+  const d = signedDist(i, active, len)
   if (d === 0) return 'active'
   if (d === -1) return 'prev'
   if (d === 1) return 'next'
   return 'hidden'
 }
 
-// Carosello album: effetto feature-carousel (prev/active/next). Centro pieno,
-// lati dietro e scalati => la card centrale entra tutta. Autoplay + pausa + dots.
+// Deck album (effetto feature-carousel split): colonna nomi a sinistra +
+// copertine coverflow a destra, sincronizzate. Scorri/tocca i nomi e cambia la
+// copertina attiva. Autoplay + pausa. La copertina attiva si apre col tap.
 export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
   const ordered = useMemo(() => [...albums].sort((a, b) => a.missing - b.missing), [albums])
   const len = ordered.length
@@ -52,61 +60,107 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
 
   if (!len) return null
 
-  const delta = Math.min(110, Math.round(w * 0.28))
-  const cardWidth = Math.max(260, Math.min(Math.round(w * 0.82), 460))
-  const compact = cardWidth < 340
-  const cardHeight = Math.max(184, Math.round(cardWidth * 0.6))
+  const leftW = Math.max(120, Math.round(w * 0.4))
+  const rightW = Math.max(150, w - leftW - 16)
+  const cardWidth = Math.max(150, Math.min(Math.round(rightW * 0.9), 340))
+  const cardHeight = Math.round(cardWidth * 1.12)
+  const delta = Math.min(44, Math.round(rightW * 0.12))
+  const panelH = Math.round(cardHeight * 1.06)
+  const compact = cardWidth < 240
   const spring = reduce
     ? { duration: 0 }
     : { type: 'spring' as const, stiffness: 260, damping: 25, mass: 0.8 }
+  const nameSpring = reduce
+    ? { duration: 0 }
+    : { type: 'spring' as const, stiffness: 90, damping: 22, mass: 1 }
 
   return (
     <div ref={wrapRef} className="relative">
       <div
-        className="relative mx-auto flex items-center justify-center"
-        style={{ height: Math.round(cardHeight * 1.08) }}
+        className="flex items-stretch gap-3"
+        style={{ height: panelH }}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
-        {ordered.map((a, i) => {
-          const st = statusOf(i, active, len)
-          const isActive = st === 'active'
-          const x = st === 'prev' ? -delta : st === 'next' ? delta : 0
-          const scale = isActive ? 1 : st === 'hidden' ? 0.7 : 0.85
-          const opacity = isActive ? 1 : st === 'hidden' ? 0 : 0.4
-          const rotate = st === 'prev' ? -3 : st === 'next' ? 3 : 0
-          const z = isActive ? 20 : st === 'hidden' ? 0 : 10
-          return (
-            <motion.div
-              key={a.id}
-              className="absolute"
-              style={{ width: cardWidth, height: cardHeight, zIndex: z }}
-              initial={false}
-              animate={{ x, scale, opacity, rotate }}
-              transition={spring}
-              drag={isActive ? 'x' : false}
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.18}
-              onPointerDown={() => { movedRef.current = 0 }}
-              onDrag={(_, info) => { movedRef.current = Math.abs(info.offset.x) }}
-              onDragEnd={(_, info) => {
-                if (info.offset.x < -40) next()
-                else if (info.offset.x > 40) goTo(active - 1)
-              }}
-            >
-              <DeckCard
-                a={a}
-                compact={compact}
-                active={isActive}
-                onActivate={() => goTo(i)}
-                onOpen={() => { if (movedRef.current < 8) navigate(`/album/${a.id}`) }}
-              />
-            </motion.div>
-          )
-        })}
+        {/* Colonna nomi: lista verticale, attivo al centro */}
+        <div className="relative overflow-hidden" style={{ width: leftW }} aria-label="Album">
+          <div className="absolute inset-x-0 top-0 z-10 h-10 bg-gradient-to-b from-[var(--background)] to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 z-10 h-10 bg-gradient-to-t from-[var(--background)] to-transparent" />
+          <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2">
+            {ordered.map((a, i) => {
+              const d = signedDist(i, active, len)
+              const on = d === 0
+              return (
+                <motion.div
+                  key={a.id}
+                  className="absolute inset-x-0 flex justify-start"
+                  style={{ height: NAME_H }}
+                  initial={false}
+                  animate={{ y: d * NAME_H, opacity: Math.max(0, 1 - Math.abs(d) * 0.3) }}
+                  transition={nameSpring}
+                >
+                  <button
+                    type="button"
+                    onClick={() => goTo(i)}
+                    aria-label={a.entry.title}
+                    aria-current={on ? 'true' : undefined}
+                    className={[
+                      'w-full truncate rounded-full border px-3 py-2 text-left text-xs font-semibold uppercase tracking-tight transition-colors',
+                      on
+                        ? 'border-lime bg-lime text-lime-ink'
+                        : 'border-white/15 text-ink-2 hover:text-ink',
+                    ].join(' ')}
+                  >
+                    {a.entry.title}
+                  </button>
+                </motion.div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Copertine: stack coverflow (prev/active/next) */}
+        <div className="relative flex flex-1 items-center justify-center">
+          {ordered.map((a, i) => {
+            const st = statusOf(i, active, len)
+            const isActive = st === 'active'
+            const x = st === 'prev' ? -delta : st === 'next' ? delta : 0
+            const scale = isActive ? 1 : st === 'hidden' ? 0.7 : 0.86
+            const opacity = isActive ? 1 : st === 'hidden' ? 0 : 0.45
+            const rotate = st === 'prev' ? -3 : st === 'next' ? 3 : 0
+            const z = isActive ? 20 : st === 'hidden' ? 0 : 10
+            return (
+              <motion.div
+                key={a.id}
+                className="absolute"
+                style={{ width: cardWidth, height: cardHeight, zIndex: z }}
+                initial={false}
+                animate={{ x, scale, opacity, rotate }}
+                transition={spring}
+                drag={isActive ? 'x' : false}
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.18}
+                onPointerDown={() => { movedRef.current = 0 }}
+                onDrag={(_, info) => { movedRef.current = Math.abs(info.offset.x) }}
+                onDragEnd={(_, info) => {
+                  if (info.offset.x < -40) next()
+                  else if (info.offset.x > 40) goTo(active - 1)
+                }}
+              >
+                <CoverCard
+                  a={a}
+                  compact={compact}
+                  active={isActive}
+                  onActivate={() => goTo(i)}
+                  onOpen={() => { if (movedRef.current < 8) navigate(`/album/${a.id}`) }}
+                />
+              </motion.div>
+            )
+          })}
+        </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-center gap-3">
+      <div className="mt-3 flex items-center justify-center">
         <button
           type="button"
           onClick={() => setPaused((p) => !p)}
@@ -115,27 +169,12 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
         >
           {paused ? <Play className="h-4 w-4" aria-hidden /> : <Pause className="h-4 w-4" aria-hidden />}
         </button>
-        <div className="flex items-center gap-1.5">
-          {ordered.map((a, i) => {
-            const on = i === active
-            return (
-              <button
-                key={a.id}
-                type="button"
-                onClick={() => goTo(i)}
-                aria-label={`Mostra ${a.entry.title}`}
-                aria-current={on ? 'true' : undefined}
-                className={`h-1.5 rounded-full transition-all ${on ? 'w-5 bg-lime' : 'w-1.5 bg-white/25 hover:bg-white/40'}`}
-              />
-            )
-          })}
-        </div>
       </div>
     </div>
   )
 }
 
-function DeckCard({
+function CoverCard({
   a, compact, active, onActivate, onOpen,
 }: {
   a: PerAlbumStats
@@ -151,39 +190,39 @@ function DeckCard({
       type="button"
       onClick={() => (active ? onOpen() : onActivate())}
       aria-label={active ? `Apri ${entry.title}` : `Vai a ${entry.title}`}
-      className="relative block h-full w-full overflow-hidden rounded-[1.75rem] border border-white/10 text-left shadow-[0_18px_40px_-20px_rgba(0,0,0,0.7)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
-      style={{ background: `linear-gradient(145deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
+      className="relative block h-full w-full overflow-hidden rounded-[1.75rem] border-4 border-[var(--bg-elev)] text-left shadow-[0_18px_40px_-20px_rgba(0,0,0,0.7)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
+      style={{ background: `linear-gradient(150deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
     >
       <span
         aria-hidden
         className="pointer-events-none absolute inset-0"
-        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.10) 38%, transparent 60%, rgba(0,0,0,0.40) 100%)' }}
+        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.06) 40%, transparent 58%, rgba(0,0,0,0.50) 100%)' }}
       />
-      <span className="relative flex h-full flex-col justify-between p-5">
-        <span className="flex items-start justify-between gap-3">
-          <span className={`min-w-0 truncate font-display font-semibold tracking-tight text-white ${compact ? 'text-2xl' : 'text-[28px] leading-tight'}`}>
-            {entry.title}
-          </span>
-          <span className="shrink-0 font-display text-3xl font-semibold tabular-nums text-white">{a.pct}%</span>
+      <span className={`relative flex h-full flex-col justify-between ${compact ? 'p-3' : 'p-4'}`}>
+        <span className="flex items-start justify-end">
+          <span className={`font-display font-semibold tabular-nums text-white ${compact ? 'text-2xl' : 'text-3xl'}`}>{a.pct}%</span>
         </span>
 
         <span className="block">
-          <span className="block h-2 overflow-hidden rounded-full bg-black/30">
+          <span className={`mb-2 block truncate font-display font-semibold leading-tight tracking-tight text-white ${compact ? 'text-base' : 'text-xl'}`}>
+            {entry.title}
+          </span>
+          <span className="block h-1.5 overflow-hidden rounded-full bg-black/30">
             <span
               className="block h-full rounded-full"
               style={{ width: `${Math.max(2, a.pct)}%`, background: complete ? STAT_COLORS.gold : '#ffffff' }}
             />
           </span>
-          <span className="mt-3 flex items-end gap-6 text-white">
+          <span className="mt-2 flex items-end gap-4 text-white">
             <span className="block">
-              <span className="block text-[11px] text-white/85">Possedute</span>
-              <span className="font-display text-xl font-semibold tabular-nums">
-                {a.have}<span className="text-sm text-white/75"> / {a.total}</span>
+              <span className="block text-[10px] text-white/80">Possedute</span>
+              <span className={`font-display font-semibold tabular-nums ${compact ? 'text-base' : 'text-lg'}`}>
+                {a.have}<span className="text-xs text-white/75"> / {a.total}</span>
               </span>
             </span>
             <span className="block">
-              <span className="block text-[11px] text-white/85">Doppie</span>
-              <span className="font-display text-xl font-semibold tabular-nums">{a.doubles}</span>
+              <span className="block text-[10px] text-white/80">Doppie</span>
+              <span className={`font-display font-semibold tabular-nums ${compact ? 'text-base' : 'text-lg'}`}>{a.doubles}</span>
             </span>
           </span>
         </span>
