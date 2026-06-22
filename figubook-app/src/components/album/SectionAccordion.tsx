@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { ChevronDown, Check } from 'lucide-react'
 import type { AlbumData, Section } from '@/data/albums/types'
 import { sectionGradient, sectionVars } from '@/lib/album/color'
@@ -20,6 +20,11 @@ export interface SectionAccordionProps {
 // aperta è renderizzato dal parent (riusa SectionHero + StickerGrid).
 export function SectionAccordion({ data, states, counts, openId, onToggle, renderDetail }: SectionAccordionProps) {
   const [q, setQ] = useState('')
+  // Porta l'header della sezione appena aperta sotto la barra in alto.
+  const openRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (openId) requestAnimationFrame(() => openRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }, [openId])
 
   const grouped = useMemo(() => {
     const map = new Map<string, Section[]>()
@@ -38,7 +43,7 @@ export function SectionAccordion({ data, states, counts, openId, onToggle, rende
     s.codes.some((c) => c.toLowerCase().includes(needle.replace('#', '')))
 
   return (
-    <section className="flex flex-col rounded-2xl border border-white/8 bg-bg-elev p-3">
+    <section className="flex flex-col rounded-2xl border border-white/8 bg-bg-elev p-2">
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
@@ -56,7 +61,7 @@ export function SectionAccordion({ data, states, counts, openId, onToggle, rende
                 const st = sectionStats(states, counts, s.codes)
                 const open = s.id === openId
                 return (
-                  <div key={s.id}>
+                  <div key={s.id} ref={open ? openRef : undefined} className="scroll-mt-20">
                     <button
                       type="button"
                       aria-expanded={open}
@@ -75,7 +80,7 @@ export function SectionAccordion({ data, states, counts, openId, onToggle, rende
                       <span className="ml-auto text-right text-[10px] leading-tight text-muted-foreground">{st.have}/{st.total}<br />{st.pct}%</span>
                       <ChevronDown size={16} className={`shrink-0 text-muted-foreground transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
                     </button>
-                    {open && <div className="px-1 pb-2 pt-3">{renderDetail()}</div>}
+                    {open && <div className="pb-2 pt-3">{renderDetail()}</div>}
                   </div>
                 )
               })}
