@@ -11,6 +11,7 @@ import { sectionVars } from '@/lib/album/color'
 import { AlbumLanding } from '@/components/album/AlbumLanding'
 import { Breadcrumb } from '@/components/Breadcrumb'
 import { SectionSidebar } from '@/components/album/SectionSidebar'
+import { SectionAccordion } from '@/components/album/SectionAccordion'
 import { SectionHero } from '@/components/album/SectionHero'
 import { StickerGrid, type Filter } from '@/components/album/StickerGrid'
 import { StickerInfoOverlay } from '@/components/album/StickerInfoOverlay'
@@ -28,6 +29,8 @@ export default function Album() {
   const [view, setView] = useState<AlbumView>('sections')
   const [insertOn, setInsertOn] = useState(false)
   const [infoCode, setInfoCode] = useState<string | null>(null)
+  // Accordion mobile: id sezione aperta (single-open), null = tutte chiuse.
+  const [openId, setOpenId] = useState<string | null>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const gridScrollRef = useRef<HTMLDivElement>(null)
 
@@ -42,6 +45,17 @@ export default function Album() {
     })
   }
 
+  // Accordion mobile single-open: ritap chiude; aprire sincronizza la sezione attiva.
+  function toggleSection(id: string) {
+    if (openId === id) {
+      setOpenId(null)
+    } else {
+      setOpenId(id)
+      setActiveId(id)
+      void album.flush()
+    }
+  }
+
   const album = useAlbum(albumId)
 
   useEffect(() => {
@@ -50,7 +64,11 @@ export default function Album() {
       .then((d) => {
         if (!active) return
         setLoadState({ id: albumId, data: d, error: !d })
-        if (d) setActiveId(d.sections[0]?.id ?? '')
+        if (d) {
+          const first = d.sections[0]?.id ?? ''
+          setActiveId(first)
+          setOpenId(first)
+        }
       })
       .catch(() => { if (active) setLoadState({ id: albumId, data: null, error: true }) })
     return () => { active = false }
@@ -104,31 +122,58 @@ export default function Album() {
           onInfo={(code) => setInfoCode(code)}
         />
       ) : (
-        /* Pannello ad altezza schermo (sticky sotto la navbar): sidebar e griglia
-           scrollano internamente. La pagina non cresce -> niente vuoto, e la griglia
-           non scorre mai sopra la barra sezioni. Su mobile torna al flusso normale. */
-        <div
-          ref={panelRef}
-          className="mt-4 grid scroll-mt-24 gap-5 lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:grid-cols-[15rem_1fr]"
-          style={section ? sectionVars(section.c1, section.c2) : undefined}
-        >
-          <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={selectSection} />
-          <div className="flex min-h-0 min-w-0 flex-col">
+        (() => {
+          const hero = (
             <SectionHero section={section} index={sectionIndex} stats={secStats} filter={filter} onFilter={setFilter} insertOn={insertOn} onToggleInsert={() => setInsertOn((v) => !v)} />
-            <div ref={gridScrollRef} className="mt-4 min-h-0 flex-1 lg:overflow-y-auto">
-              <StickerGrid
-                section={section}
-                names={data.names}
-                countOf={album.countOf}
-                insertOn={insertOn}
-                filter={filter}
-                onAdd={album.increment}
-                onRemove={album.decrement}
-                onInfo={(code) => setInfoCode(code)}
-              />
-            </div>
-          </div>
-        </div>
+          )
+          const grid = (
+            <StickerGrid
+              section={section}
+              names={data.names}
+              countOf={album.countOf}
+              insertOn={insertOn}
+              filter={filter}
+              onAdd={album.increment}
+              onRemove={album.decrement}
+              onInfo={(code) => setInfoCode(code)}
+            />
+          )
+          return (
+            <>
+              {/* Desktop: pannello ad altezza schermo (sticky), sidebar + griglia con
+                  scroll interni -> la pagina non cresce. */}
+              <div
+                ref={panelRef}
+                className="mt-4 hidden scroll-mt-24 gap-5 lg:sticky lg:top-24 lg:grid lg:h-[calc(100vh-7rem)] lg:grid-cols-[15rem_1fr]"
+                style={sectionVars(section.c1, section.c2)}
+              >
+                <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={selectSection} />
+                <div className="flex min-h-0 min-w-0 flex-col">
+                  {hero}
+                  <div ref={gridScrollRef} className="mt-4 min-h-0 flex-1 overflow-y-auto">{grid}</div>
+                </div>
+              </div>
+
+              {/* Mobile: accordion single-open. Solo la sezione aperta mostra hero+carte,
+                  così la pagina resta compatta e le carte non finiscono in fondo. */}
+              <div className="mt-4 lg:hidden" style={sectionVars(section.c1, section.c2)}>
+                <SectionAccordion
+                  data={data}
+                  states={album.states}
+                  counts={album.counts}
+                  openId={openId}
+                  onToggle={toggleSection}
+                  renderDetail={() => (
+                    <>
+                      {hero}
+                      <div className="mt-4">{grid}</div>
+                    </>
+                  )}
+                />
+              </div>
+            </>
+          )
+        })()
       )}
 
       <StickerInfoOverlay
