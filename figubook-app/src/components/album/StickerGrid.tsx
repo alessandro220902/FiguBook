@@ -1,7 +1,8 @@
 import { StickerCard } from './StickerCard'
 import type { Section } from '@/data/albums/types'
+import { passes, type Filter } from '@/lib/album/filter'
 
-export type Filter = 'all' | 'missing' | 'double' | 'have'
+export type { Filter }
 
 export interface StickerGridProps {
   section: Section
@@ -12,14 +13,6 @@ export interface StickerGridProps {
   onAdd: (code: string) => void
   onRemove: (code: string) => void
   onInfo: (code: string) => void
-}
-
-function passes(filter: Filter, count: number): boolean {
-  if (filter === 'all') return true
-  if (filter === 'have') return count >= 1
-  if (filter === 'missing') return count === 0
-  if (filter === 'double') return count >= 2
-  return true
 }
 
 export function StickerGrid({ section, names, countOf, insertOn, filter, onAdd, onRemove, onInfo }: StickerGridProps) {
