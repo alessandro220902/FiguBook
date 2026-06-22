@@ -5,6 +5,7 @@ import type { AlbumCatalogEntry } from '@/data/albumCatalog'
 import { sectionGradient } from '@/lib/album/color'
 import type { AlbumStats } from '@/lib/db/albums'
 import { AlbumButton } from './ui/Button'
+import { shareList } from '@/lib/album/share'
 
 export interface AlbumLandingProps {
   entry: AlbumCatalogEntry
@@ -29,16 +30,8 @@ export function AlbumLanding({ entry, stats, missingCodes, doubleCodes }: AlbumL
 
   async function share(kind: 'doubles' | 'missing', codes: string[]) {
     const label = kind === 'doubles' ? 'Doppie' : 'Mancanti'
-    const text = `${entry.title} — ${label} (${codes.length}):\n${codes.join(', ')}`
-    try {
-      if (typeof navigator.share === 'function') {
-        await navigator.share({ title: `FiguBook · ${label}`, text })
-        return
-      }
-      await navigator.clipboard.writeText(text)
+    if ((await shareList(entry.title, kind, codes)) === 'copied') {
       flash(`${label}: lista copiata negli appunti`)
-    } catch {
-      // condivisione annullata dall'utente: nessun feedback
     }
   }
 

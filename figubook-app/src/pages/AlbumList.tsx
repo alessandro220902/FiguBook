@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { Share2, ArrowRight, Check } from 'lucide-react'
 import { useCollection } from '@/hooks/useCollection'
 import { useAuth } from '@/hooks/useAuth'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
 import type { PerAlbumStats } from '@/lib/db/albums'
 import { addAlbum, removeAlbum, archiveAlbum, unarchiveAlbum } from '@/lib/db/albums'
+import { fetchShareCodes, shareList, type ShareKind } from '@/lib/album/share'
 import { AlbumButton } from '@/components/album/ui/Button'
 import { LibraryFilters } from '@/components/album/LibraryFilters'
 import { NewAlbumDialog } from '@/components/album/NewAlbumDialog'
@@ -15,6 +18,8 @@ import {
 export default function AlbumList() {
   const { albums, archived, loading, error, retry } = useCollection()
   const { user } = useAuth()
+  const navigate = useNavigate()
+  const isDesktop = useIsDesktop()
   const [filter, setFilter] = useState<LibraryFilter>(DEFAULT_FILTER)
   const [newOpen, setNewOpen] = useState(false)
 
@@ -81,6 +86,9 @@ export default function AlbumList() {
                   key={a.id}
                   a={a}
                   archived={archived}
+                  uid={user?.uid ?? null}
+                  isDesktop={isDesktop}
+                  onOpen={() => navigate(`/album/${a.id}`)}
                   onArchive={() => user && archiveAlbum(user.uid, a.id)}
                   onUnarchive={() => user && unarchiveAlbum(user.uid, a.id)}
                   onDelete={() => user && removeAlbum(user.uid, a.id)}
@@ -104,17 +112,40 @@ export default function AlbumList() {
 interface TileProps {
   a: PerAlbumStats
   archived: boolean
+  uid: string | null
+  isDesktop: boolean
+  onOpen: () => void
   onArchive: () => void
   onUnarchive: () => void
   onDelete: () => void
 }
 
-// Tile a gradiente pieno colore-album. Il <Link> copre la card come overlay
-// assoluto (z-10); AlbumMenu è fratello sopra (z-20) col proprio stato =>
-// il tap sul menu non naviga. Il contenuto testuale è pointer-events-none
-// così i click passano attraverso al Link overlay.
-function AlbumTile({ a, archived, onArchive, onUnarchive, onDelete }: TileProps) {
+// Tile a gradiente pieno colore-album.
+// Mobile/iPad: il <Link> copre la card (tap = apri), menu z sopra.
+// PC (isDesktop): niente Link; all'hover sale un pannello nero con Condividi
+// doppie/mancanti + Apri. Il menu (3 punti) sta sopra al pannello (z più alto),
+// così cliccarlo non innesca l'apertura.
+function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive, onDelete }: TileProps) {
   const { entry } = a
+  const [toast, setToast] = useState<string | null>(null)
+  const [busy, setBusy] = useState<ShareKind | null>(null)
+
+  async function handleShare(kind: ShareKind) {
+    if (!uid || busy) return
+    setBusy(kind)
+    try {
+      const codes = await fetchShareCodes(uid, a.id)
+      if (!codes) return
+      const list = kind === 'doubles' ? codes.doubleCodes : codes.missingCodes
+      if (await shareList(entry.title, kind, list) === 'copied') {
+        setToast(`${kind === 'doubles' ? 'Doppie' : 'Mancanti'}: lista copiata`)
+        setTimeout(() => setToast(null), 2400)
+      }
+    } finally {
+      setBusy(null)
+    }
+  }
+
   return (
     <div
       className="group relative overflow-hidden rounded-2xl border border-white/10 p-5 shadow-[0_18px_40px_-20px_rgba(0,0,0,0.7)] transition-transform duration-150 ease-out hover:-translate-y-0.5"
@@ -122,15 +153,17 @@ function AlbumTile({ a, archived, onArchive, onUnarchive, onDelete }: TileProps)
     >
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.05) 40%, transparent 60%, rgba(0,0,0,0.45) 100%)' }} />
 
-      {/* Link overlay: copre tutta la card ma sta sotto il menu (z-10 < z-20) */}
-      <Link
-        to={`/album/${a.id}`}
-        className="absolute inset-0 z-10 rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
-        aria-label={`Apri ${entry.title} — ${a.pct}% completo`}
-      />
+      {/* Mobile/iPad: Link overlay (tap = apri). Su PC niente Link: apre il bottone. */}
+      {!isDesktop && (
+        <Link
+          to={`/album/${a.id}`}
+          className="absolute inset-0 z-10 rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
+          aria-label={`Apri ${entry.title} — ${a.pct}% completo`}
+        />
+      )}
 
-      {/* Menu: fratello del Link, z più alto => intercetta i propri click */}
-      <div className="absolute right-3 top-3 z-20">
+      {/* Menu: z più alto del pannello hover => cliccarlo non innesca l'effetto */}
+      <div className="absolute right-3 top-3 z-30">
         <AlbumMenu title={entry.title} archived={archived} onArchive={onArchive} onUnarchive={onUnarchive} onDelete={onDelete} />
       </div>
 
@@ -167,6 +200,43 @@ function AlbumTile({ a, archived, onArchive, onUnarchive, onDelete }: TileProps)
           </dl>
         </div>
       </div>
+
+      {/* PC: pannello nero che sale all'hover con le azioni rapide */}
+      {isDesktop && (
+        <div className="pointer-events-none absolute inset-0 z-20 flex translate-y-full flex-col items-center justify-center gap-2.5 rounded-2xl bg-black/85 px-6 opacity-0 backdrop-blur-sm transition-[transform,opacity] duration-200 ease-out group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
+          <ActionButton onClick={() => handleShare('doubles')} disabled={busy !== null}>
+            <Share2 size={16} /> Condividi doppie
+          </ActionButton>
+          <ActionButton onClick={() => handleShare('missing')} disabled={busy !== null}>
+            <Share2 size={16} /> Condividi mancanti
+          </ActionButton>
+          <ActionButton onClick={onOpen} primary>
+            Apri <ArrowRight size={16} />
+          </ActionButton>
+        </div>
+      )}
+
+      {toast && (
+        <div role="status" className="pointer-events-none absolute bottom-3 left-1/2 z-40 flex -translate-x-1/2 items-center gap-1.5 rounded-lg bg-black/90 px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+          <Check size={13} className="text-lime" /> {toast}
+        </div>
+      )}
     </div>
+  )
+}
+
+function ActionButton({ onClick, disabled, primary, children }: { onClick: () => void; disabled?: boolean; primary?: boolean; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={[
+        'inline-flex w-52 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-50',
+        primary ? 'bg-lime text-lime-ink hover:brightness-105' : 'border border-white/25 bg-white/5 text-white hover:bg-white/15',
+      ].join(' ')}
+    >
+      {children}
+    </button>
   )
 }
