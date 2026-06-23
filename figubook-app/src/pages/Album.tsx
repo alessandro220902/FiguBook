@@ -1,6 +1,6 @@
 // figubook-app/src/pages/Album.tsx
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, useSearchParams, Link } from 'react-router-dom'
 import { albumById } from '@/data/albumCatalog'
 import { loadAlbumData } from '@/data/albums'
 import type { AlbumData } from '@/data/albums/types'
@@ -20,6 +20,7 @@ import { AlbumFlatView } from '@/components/album/AlbumFlatView'
 
 export default function Album() {
   const { albumId = '' } = useParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const entry = albumById[albumId]
   // Carico tipato per albumId: i derivati sono validi solo se loadState.id === albumId,
   // così cambiando album torno a "loading" senza setState sincrono dentro l'effetto.
@@ -73,6 +74,24 @@ export default function Album() {
       .catch(() => { if (active) setLoadState({ id: albumId, data: null, error: true }) })
     return () => { active = false }
   }, [albumId])
+
+  // Deep-link da ricerca navbar: /album/:id?code=N apre la sezione che contiene
+  // la carta e ne mostra l'overlay. Consumo il param così il refresh non ri-apre.
+  useEffect(() => {
+    if (loadState.id !== albumId || !loadState.data) return
+    const code = searchParams.get('code')
+    if (!code) return
+    const sec = loadState.data.sections.find((s) => s.codes.includes(code))
+    const raf = requestAnimationFrame(() => {
+      if (sec) {
+        setActiveId(sec.id)
+        setOpenId(sec.id)
+        setInfoCode(code)
+      }
+      setSearchParams({}, { replace: true })
+    })
+    return () => cancelAnimationFrame(raf)
+  }, [loadState, albumId, searchParams, setSearchParams])
 
   const ready = loadState.id === albumId
   const data = ready ? loadState.data : null
