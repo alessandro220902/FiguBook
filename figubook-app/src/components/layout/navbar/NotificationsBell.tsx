@@ -1,9 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Bell } from 'lucide-react'
+import { Bell, CheckCircle2, ThumbsUp, ArrowLeftRight, PencilLine, XCircle } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useNotifications } from '@/hooks/useNotifications'
 import { markAllRead, resolveHref, timeAgo } from '@/lib/db/notifications'
+
+// Stile alert-toast (21st/lavikatiyar): stripe colorata a sinistra + icona lucide
+// per tipo, niente emoji. Colore = accento, non riempimento.
+const NOTIF_META: Record<string, { color: string; Icon: LucideIcon }> = {
+  completed: { color: '#a3e635', Icon: CheckCircle2 },   // lime
+  accepted: { color: '#34d399', Icon: ThumbsUp },        // emerald
+  proposal: { color: '#38bdf8', Icon: ArrowLeftRight },  // sky
+  revise: { color: '#fbbf24', Icon: PencilLine },        // amber
+  rejected: { color: '#f87171', Icon: XCircle },         // red
+}
+const notifMeta = (type?: string) => NOTIF_META[type ?? ''] ?? { color: '#9ca3af', Icon: Bell }
 
 type Tab = 'all' | 'unread' | 'read'
 const TABS: { key: Tab; label: string }[] = [
@@ -55,7 +67,7 @@ export function NotificationsBell() {
       </button>
 
       {open && (
-        <div className="fixed left-1/2 top-20 z-50 w-[min(21rem,calc(100vw-1.5rem))] -translate-x-1/2 rounded-2xl border border-border bg-card p-2 shadow-2xl">
+        <div className="fixed right-2 top-[4.5rem] z-50 w-[min(20rem,calc(100vw-1rem))] rounded-2xl border border-border bg-card p-2 shadow-2xl md:absolute md:right-auto md:left-1/2 md:top-12 md:w-[22rem] md:-translate-x-1/2">
           <div className="flex items-center justify-between px-2 py-1.5">
             <p className="font-display text-base font-bold">Notifiche</p>
           </div>
@@ -86,23 +98,28 @@ export function NotificationsBell() {
             </div>
           ) : (
             <div className="flex max-h-80 flex-col gap-1.5 overflow-y-auto">
-              {list.map((n) => (
-                <Link
-                  key={n.id}
-                  to={resolveHref(n.href)}
-                  onClick={() => setOpen(false)}
-                  className={
-                    'flex items-start gap-3 rounded-xl border px-3 py-2 transition-colors hover:bg-muted ' +
-                    (n.read ? 'border-border bg-background' : 'border-lime/30 bg-lime/5')
-                  }
-                >
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-semibold leading-snug text-foreground">{n.title}</span>
-                    <span className="block truncate text-xs text-muted-foreground">{(n.info ? n.info + ' · ' : '') + timeAgo(n.at)}</span>
-                  </span>
-                  {!n.read && <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-lime" />}
-                </Link>
-              ))}
+              {list.map((n) => {
+                const m = notifMeta(n.type)
+                return (
+                  <Link
+                    key={n.id}
+                    to={resolveHref(n.href)}
+                    onClick={() => setOpen(false)}
+                    style={{ borderLeftColor: m.color }}
+                    className={
+                      'flex items-start gap-3 rounded-xl border border-l-[3px] border-border px-3 py-2 transition-colors hover:bg-muted ' +
+                      (n.read ? 'bg-background' : 'bg-white/[0.03]')
+                    }
+                  >
+                    <m.Icon className="mt-0.5 h-5 w-5 shrink-0" style={{ color: m.color }} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-semibold leading-snug text-foreground">{n.title}</span>
+                      <span className="block truncate text-xs text-muted-foreground">{(n.info ? n.info + ' · ' : '') + timeAgo(n.at)}</span>
+                    </span>
+                    {!n.read && <span className="mt-1 h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: m.color }} />}
+                  </Link>
+                )
+              })}
             </div>
           )}
         </div>
