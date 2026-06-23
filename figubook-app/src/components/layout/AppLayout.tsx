@@ -44,7 +44,7 @@ export function AppLayout() {
       </div>
 
       {/* pt: cluster (mobile) / navbar h-16 (desktop). pb: bottom-bar mobile */}
-      <main className="px-5 pb-28 pt-20 sm:px-10 md:pb-12 md:pt-24">
+      <main className="px-5 pb-28 pt-16 sm:px-10 md:pb-12 md:pt-24">
         <Outlet />
       </main>
     </div>

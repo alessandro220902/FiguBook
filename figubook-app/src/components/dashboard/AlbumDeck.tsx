@@ -74,7 +74,7 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
     : { type: 'spring' as const, stiffness: 90, damping: 22, mass: 1 }
 
   return (
-    <div ref={wrapRef} className="relative">
+    <div ref={wrapRef} className="relative overflow-x-clip">
       <div
         className="flex items-stretch gap-3"
         style={{ height: panelH }}

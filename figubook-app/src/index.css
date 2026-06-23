@@ -156,6 +156,11 @@ body {
   html {
     @apply font-sans;
   }
+  /* Niente scroll orizzontale: su mobile l'overflow-x impedisce al browser di
+     collassare le barre (indirizzo/strumenti). La pagina deve scrollare solo Y. */
+  html, body {
+    overflow-x: hidden;
+  }
 }
 
 /* Aurora background (21st aceternity) — vars + keyframe, ricolorato lime/pitch/gold */
