@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { ThemeToggle } from './ThemeToggle'
 import { FluidMenu } from './FluidMenu'
 import { NotificationsBell } from './NotificationsBell'
+import { SearchDock } from './SearchDock'
 
 interface Item { name: string; url: string; icon: LucideIcon }
 const NAV: Item[] = [
@@ -19,7 +20,7 @@ const NAV: Item[] = [
 export function DesktopNavbar() {
   const { pathname } = useLocation()
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 hidden h-16 items-center gap-4 bg-gradient-to-b from-bg/95 via-bg/80 to-transparent px-6 backdrop-blur-md md:flex">
+    <nav className="fixed inset-x-0 top-0 z-50 hidden h-20 items-center gap-4 bg-gradient-to-b from-bg/85 via-bg/45 to-transparent px-6 [backdrop-filter:blur(6px)] [mask-image:linear-gradient(to_bottom,black_55%,transparent)] md:flex">
       {/* sinistra: logo + nome */}
       <Link to="/dashboard" className="flex shrink-0 items-center gap-2.5">
         <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">F</span>
@@ -28,6 +29,7 @@ export function DesktopNavbar() {
 
       {/* centro: voci + notifiche */}
       <div className="flex flex-1 items-center justify-center gap-1.5">
+        <SearchDock />
         {NAV.map((item) => {
           const active = pathname === item.url || pathname.startsWith(item.url + '/')
           return (
