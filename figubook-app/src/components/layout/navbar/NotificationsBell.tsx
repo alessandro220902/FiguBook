@@ -55,7 +55,7 @@ export function NotificationsBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-12 w-80 rounded-2xl border border-border bg-card p-2 shadow-2xl">
+        <div className="fixed left-1/2 top-20 z-50 w-[min(21rem,calc(100vw-1.5rem))] -translate-x-1/2 rounded-2xl border border-border bg-card p-2 shadow-2xl">
           <div className="flex items-center justify-between px-2 py-1.5">
             <p className="font-display text-base font-bold">Notifiche</p>
           </div>
@@ -92,11 +92,10 @@ export function NotificationsBell() {
                   to={resolveHref(n.href)}
                   onClick={() => setOpen(false)}
                   className={
-                    'flex items-start gap-3 rounded-xl border px-3 py-2.5 transition-colors hover:bg-muted ' +
+                    'flex items-start gap-3 rounded-xl border px-3 py-2 transition-colors hover:bg-muted ' +
                     (n.read ? 'border-border bg-background' : 'border-lime/30 bg-lime/5')
                   }
                 >
-                  <span className="text-lg leading-none">{n.icon || '🔄'}</span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-semibold leading-snug text-foreground">{n.title}</span>
                     <span className="block truncate text-xs text-muted-foreground">{(n.info ? n.info + ' · ' : '') + timeAgo(n.at)}</span>
