@@ -77,7 +77,8 @@ export function SearchDock({ placeholder = 'Cerca album o carte…' }: { placeho
               onChange={(e) => setQ(e.target.value)}
               onKeyDown={(e) => e.key === 'Escape' && close()}
               placeholder={placeholder}
-              className="h-10 min-w-0 flex-1 bg-transparent text-sm text-foreground caret-foreground outline-none focus:outline-none focus-visible:outline-none placeholder:text-muted-foreground"
+              style={{ outline: 'none' }}
+              className="h-10 min-w-0 flex-1 bg-transparent text-sm text-foreground caret-foreground placeholder:text-muted-foreground"
             />
             <button
               type="button"

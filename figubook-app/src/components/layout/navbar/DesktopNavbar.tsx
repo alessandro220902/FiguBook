@@ -20,7 +20,13 @@ const NAV: Item[] = [
 export function DesktopNavbar() {
   const { pathname } = useLocation()
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 hidden h-20 items-center gap-4 bg-gradient-to-b from-bg/85 via-bg/45 to-transparent px-6 [backdrop-filter:blur(6px)] [mask-image:linear-gradient(to_bottom,black_55%,transparent)] md:flex">
+    <nav className="fixed inset-x-0 top-0 z-50 hidden h-20 items-center gap-4 px-6 md:flex">
+      {/* Sfondo sfumato in un layer separato: il mask sfuma solo lo sfondo, NON
+          il contenuto (le voci FluidMenu / i dropdown che scendono sotto la nav). */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-bg/85 via-bg/45 to-transparent [backdrop-filter:blur(6px)] [mask-image:linear-gradient(to_bottom,black_55%,transparent)]"
+      />
       {/* sinistra: logo + nome */}
       <Link to="/dashboard" className="flex shrink-0 items-center gap-2.5">
         <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">F</span>

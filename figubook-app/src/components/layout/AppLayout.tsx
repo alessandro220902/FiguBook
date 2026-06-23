@@ -1,8 +1,9 @@
 import { Outlet, Link } from 'react-router-dom'
 import { Home, BookOpen, ArrowLeftRight, Users } from 'lucide-react'
 import { TubelightNav, type NavItem } from '@/components/layout/TubelightNav'
-import { TopRightMenu } from '@/components/layout/TopRightMenu'
 import { DesktopNavbar } from '@/components/layout/navbar/DesktopNavbar'
+import { NotificationsBell } from '@/components/layout/navbar/NotificationsBell'
+import { FluidMenu } from '@/components/layout/navbar/FluidMenu'
 
 // Shell condivisa: nav unica scritta una volta, riusata sulle 4 sezioni private.
 // Dashboard usa l'icona casetta (Home) su mobile.
@@ -35,7 +36,11 @@ export function AppLayout() {
           <span className="hidden font-display text-xl font-extrabold tracking-tight sm:inline">FiguBook</span>
         </Link>
         <TubelightNav items={NAV} />
-        <TopRightMenu />
+        {/* Top-right mobile: notifiche live + FluidMenu (stesso menu del desktop) */}
+        <div className="fixed right-4 top-4 z-50 flex items-center gap-2 sm:right-6 sm:top-6">
+          <NotificationsBell />
+          <FluidMenu />
+        </div>
       </div>
 
       {/* pt: cluster (mobile) / navbar h-16 (desktop). pb: bottom-bar mobile */}
