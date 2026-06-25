@@ -3,6 +3,7 @@ import type { AlbumData, Section } from '@/data/albums/types'
 import { passes, type Filter } from '@/lib/album/filter'
 import { StickerCard } from './StickerCard'
 import { Pagination } from '@/components/ui/pagination'
+import { ctrlFilter, CTRL_BADGE_ON, CTRL_BADGE_OFF } from '@/lib/album/controlStyles'
 
 const PAGE_SIZE = 60
 
@@ -57,13 +58,9 @@ export function AlbumFlatView({ data, countOf, onAdd, onRemove, onInfo, stats }:
               type="button"
               onClick={() => changeFilter(t.key)}
               aria-pressed={on}
-              className={[
-                'inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 text-sm font-medium transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime',
-                on ? 'bg-bg-elev text-ink' : 'border border-white/10 text-ink-2 hover:text-ink',
-              ].join(' ')}
+              className={ctrlFilter(on)}
             >
-              {t.label}
-              <span className={`tabular-nums text-xs ${on ? 'rounded-full bg-lime px-1.5 text-lime-ink' : 'text-ink-2/70'}`}>{t.n(stats)}</span>
+              {t.label} <span className={on ? CTRL_BADGE_ON : CTRL_BADGE_OFF}>{t.n(stats)}</span>
             </button>
           )
         })}
@@ -71,12 +68,9 @@ export function AlbumFlatView({ data, countOf, onAdd, onRemove, onInfo, stats }:
           type="button"
           onClick={() => setInsertOn((v) => !v)}
           aria-pressed={insertOn}
-          className={[
-            'ml-auto inline-flex min-h-[44px] items-center rounded-full px-5 text-sm font-semibold transition-transform duration-150 ease-out active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime',
-            insertOn ? 'bg-lime text-lime-ink' : 'border border-white/10 text-ink-2 hover:text-ink',
-          ].join(' ')}
+          className={`${ctrlFilter(insertOn)} ml-auto`}
         >
-          Inserimento rapido {insertOn ? 'ON' : 'OFF'}
+          Inserimento rapido
         </button>
       </div>
 

@@ -126,10 +126,7 @@ export default function Album() {
       <Breadcrumb items={[{ label: 'Album', to: '/album' }, { label: entry.title }]} />
       <AlbumLanding entry={entry} stats={albumStats} missingCodes={missingCodes} doubleCodes={doubleCodes} />
 
-      <div className="mt-8 flex items-center justify-center gap-3">
-        <h2 className="font-display text-2xl font-bold tracking-tight text-ink">
-          {view === 'flat' ? 'Tutte le figurine' : 'Sezioni album'}
-        </h2>
+      <div className="mt-8 flex items-center justify-center">
         <AlbumViewTabs value={view} onChange={setView} />
       </div>
 

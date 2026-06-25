@@ -54,11 +54,13 @@ export function AlbumLanding({ entry, stats, missingCodes, doubleCodes }: AlbumL
         <div className="flex flex-col justify-center gap-6">
           <div>
             <div className="font-mono text-[11px] uppercase tracking-wide text-ink-2">Completamento</div>
-            <div className="mt-1 font-display text-6xl font-bold leading-none tabular-nums text-ink">{stats.pct}%</div>
-          </div>
-
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-lime transition-[width] duration-500" style={{ width: `${stats.pct}%` }} />
+            {/* Barra con % a fine linea (niente numero gigante separato). */}
+            <div className="mt-2 flex items-center gap-3">
+              <div className="h-2 max-w-[440px] flex-1 overflow-hidden rounded-full bg-muted">
+                <div className="h-full rounded-full bg-lime transition-[width] duration-500" style={{ width: `${stats.pct}%` }} />
+              </div>
+              <span className="shrink-0 font-display text-3xl font-bold leading-none tabular-nums text-ink">{stats.pct}%</span>
+            </div>
           </div>
 
           <div className="grid grid-cols-3 gap-6">

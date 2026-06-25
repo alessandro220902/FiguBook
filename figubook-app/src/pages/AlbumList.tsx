@@ -170,18 +170,17 @@ function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive
 
       {/* Contenuto: pointer-events-none => i click passano al Link overlay */}
       <div className="pointer-events-none relative">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <div className="font-mono text-[11px] uppercase tracking-wide text-white/85">{entry.editor} · {entry.season}</div>
-            <h2 className="mt-1 truncate text-2xl font-semibold tracking-tight text-white">{entry.title}</h2>
-          </div>
-          <div className="shrink-0 pr-10 font-display text-3xl font-bold leading-none tabular-nums text-white">
-            {a.pct}<span className="text-xl text-white/75">%</span>
-          </div>
+        <div className="min-w-0 pr-10">
+          <div className="font-mono text-[11px] uppercase tracking-wide text-white/85">{entry.editor} · {entry.season}</div>
+          <h2 className="mt-1 truncate text-2xl font-semibold tracking-tight text-white">{entry.title}</h2>
         </div>
 
-        <div className="mt-4 h-2 overflow-hidden rounded-full bg-black/30">
-          <div className="h-full rounded-full bg-white" style={{ width: `${Math.max(2, a.pct)}%` }} />
+        {/* Barra con % a fine linea (niente numero gigante separato). */}
+        <div className="mt-4 flex items-center gap-3">
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/30">
+            <div className="h-full rounded-full bg-white" style={{ width: `${Math.max(2, a.pct)}%` }} />
+          </div>
+          <span className="shrink-0 font-display text-2xl font-bold leading-none tabular-nums text-white">{a.pct}<span className="text-base text-white/75">%</span></span>
         </div>
 
         <div className="mt-4 flex items-end justify-between">
