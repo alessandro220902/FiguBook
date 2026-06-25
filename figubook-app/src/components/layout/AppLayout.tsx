@@ -6,9 +6,9 @@ import { NotificationsBell } from '@/components/layout/navbar/NotificationsBell'
 import { FluidMenu } from '@/components/layout/navbar/FluidMenu'
 
 // Shell condivisa: nav unica scritta una volta, riusata sulle 4 sezioni private.
-// Dashboard usa l'icona casetta (Home) su mobile.
+// Home (dashboard) usa l'icona casetta su mobile. Label "Home" come su desktop.
 const NAV: NavItem[] = [
-  { name: 'Dashboard', url: '/dashboard', icon: Home },
+  { name: 'Home', url: '/dashboard', icon: Home },
   { name: 'Album', url: '/album', icon: BookOpen },
   { name: 'Scambi', url: '/scambi', icon: ArrowLeftRight },
   { name: 'Community', url: '/community', icon: Users },
