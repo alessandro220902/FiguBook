@@ -1,6 +1,15 @@
 import { Plus, Minus, Check } from 'lucide-react'
 import { sectionGradient } from '@/lib/album/color'
 
+// Nome su due righe: nome sopra, cognome a capo. Le carte a doppia squadra
+// ("Avellino / Bari") si spezzano su " / " (una squadra sopra, una sotto).
+function nameLines(name: string): string[] {
+  if (name.includes(' / ')) return name.split(' / ').map((s) => s.trim())
+  const parts = name.trim().split(/\s+/)
+  if (parts.length <= 1) return [name]
+  return [parts[0], parts.slice(1).join(' ')]
+}
+
 export interface StickerCardProps {
   code: string
   name?: string
@@ -37,9 +46,13 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
           style={owned ? { backgroundImage: sectionGradient(c1, c2) } : undefined}
         >
           {owned && <span className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent" />}
-          <span className="relative z-10 font-display text-2xl font-bold tracking-wide drop-shadow">{code}</span>
+          <span className="relative z-10 font-display text-2xl font-bold tracking-wide drop-shadow md:text-3xl">{code}</span>
           {owned && name && (
-            <span className="relative z-10 w-full truncate text-center text-[13px] font-semibold leading-tight drop-shadow" title={name}>{name}</span>
+            <span className="relative z-10 flex w-full flex-col items-center text-center leading-tight drop-shadow" title={name}>
+              {nameLines(name).map((l, i) => (
+                <span key={i} className="w-full truncate text-[13px] font-semibold md:text-[15px]">{l}</span>
+              ))}
+            </span>
           )}
         </button>
 

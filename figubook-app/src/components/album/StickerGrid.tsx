@@ -17,6 +17,8 @@ export interface StickerGridProps {
 
 export function StickerGrid({ section, names, countOf, insertOn, filter, onAdd, onRemove, onInfo }: StickerGridProps) {
   const codes = section.codes.filter((c) => passes(filter, countOf(c)))
+  // Serie C: nessun nome sulle carte (solo numero).
+  const showNames = section.id !== 'serie-c'
   if (codes.length === 0) {
     return <p className="py-12 text-center text-sm text-muted-foreground">Nessuna figurina in questo filtro.</p>
   }
@@ -26,7 +28,7 @@ export function StickerGrid({ section, names, countOf, insertOn, filter, onAdd, 
         <StickerCard
           key={code}
           code={code}
-          name={names[code]}
+          name={showNames ? names[code] : undefined}
           c1={section.c1}
           c2={section.c2}
           count={countOf(code)}

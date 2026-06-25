@@ -47,7 +47,7 @@ function ProgressRing({ pct }: { pct: number }) {
 function FilterButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button type="button" onClick={onClick} aria-pressed={active}
-      className={`${ctrlFilter(active)} flex-1 whitespace-nowrap`}>
+      className={`${ctrlFilter(active)} flex-1 whitespace-nowrap md:text-base`}>
       {children}
     </button>
   )
@@ -83,7 +83,7 @@ export function SectionHero({ section, stats, filter, onFilter, insertOn, onTogg
             Possedute <span className="opacity-70">{stats.have}</span>
           </FilterButton>
           <button type="button" onClick={onToggleInsert} aria-pressed={insertOn}
-            className={`${ctrlFilter(insertOn)} flex-1 whitespace-nowrap`}>
+            className={`${ctrlFilter(insertOn)} flex-1 whitespace-nowrap md:text-base`}>
             Inserimento rapido
           </button>
         </div>
