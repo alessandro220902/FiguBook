@@ -64,7 +64,7 @@ export default function Notifiche() {
       {list.length === 0 ? (
         <div className="mt-4 grid place-items-center gap-1 rounded-2xl border border-border bg-background px-4 py-12 text-center">
           <Bell className="h-6 w-6 text-muted-foreground" />
-          <p className="text-sm font-semibold">Niente qui</p>
+          <p className="text-sm font-semibold">Nessuna notifica</p>
         </div>
       ) : (
         <div className="mt-4 flex flex-col gap-1.5">

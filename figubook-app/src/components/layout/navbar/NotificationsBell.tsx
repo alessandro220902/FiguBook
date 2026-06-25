@@ -96,7 +96,7 @@ export function NotificationsBell({ asLink = false }: { asLink?: boolean } = {})
           {list.length === 0 ? (
             <div className="grid place-items-center gap-1 rounded-xl border border-border bg-background px-4 py-8 text-center">
               <Bell className="h-6 w-6 text-muted-foreground" />
-              <p className="text-sm font-semibold">Niente qui</p>
+              <p className="text-sm font-semibold">Nessuna notifica</p>
             </div>
           ) : (
             <div className="flex max-h-80 flex-col gap-1.5 overflow-y-auto">
