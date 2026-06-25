@@ -68,7 +68,9 @@ export default function Album() {
         if (d) {
           const first = d.sections[0]?.id ?? ''
           setActiveId(first)
-          setOpenId(first)
+          // Mobile: accordion tutto chiuso all'ingresso -> si vede prima il
+          // landing (statistiche), non si entra dritti nella prima sezione.
+          setOpenId(null)
         }
       })
       .catch(() => { if (active) setLoadState({ id: albumId, data: null, error: true }) })
