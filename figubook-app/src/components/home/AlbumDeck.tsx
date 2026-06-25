@@ -179,6 +179,7 @@ function CoverCard({
       className="relative block h-full w-full overflow-hidden rounded-[1.5rem] text-left shadow-[0_18px_40px_-20px_rgba(0,0,0,0.8)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
       style={{ background: `linear-gradient(150deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
     >
+      {entry.cover && <img src={entry.cover} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />}
       <span
         aria-hidden
         className="pointer-events-none absolute inset-0"

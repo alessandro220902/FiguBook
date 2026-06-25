@@ -152,6 +152,7 @@ function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive
       className="group relative overflow-hidden rounded-2xl border border-white/10 p-5 shadow-[0_18px_40px_-20px_rgba(0,0,0,0.7)] transition-transform duration-150 ease-out hover:-translate-y-0.5"
       style={{ background: `linear-gradient(145deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
     >
+      {entry.cover && <img src={entry.cover} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover object-top" />}
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.05) 40%, transparent 60%, rgba(0,0,0,0.45) 100%)' }} />
 
       {/* Mobile/iPad: Link overlay (tap = apri). Su PC niente Link: apre il bottone. */}

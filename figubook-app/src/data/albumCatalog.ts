@@ -1,6 +1,8 @@
 // Catalogo album condiviso — fonte unica per nome/editore/totale di ogni album.
 // Portato da figubook-db.js (window.ALBUM_CATALOG) a modulo TS tipizzato (fix B13).
 // NB: solo il catalogo, NON le SECTIONS/figurine (quelle arrivano in A2.2).
+import calciatori2526Cover from '@/assets/covers/calciatori-25-26.png'
+
 export interface AlbumCatalogEntry {
   id: string
   title: string
@@ -13,10 +15,12 @@ export interface AlbumCatalogEntry {
   tags: string[]
   c1: string
   c2: string
+  /** copertina-immagine opzionale; se assente si usa il gradiente c1/c2 */
+  cover?: string
 }
 
 export const ALBUM_CATALOG: AlbumCatalogEntry[] = [
-  { id: 'calciatori-25-26', title: 'Calciatori 2025/26', editor: 'Panini', season: '2025/26', total: 784, href: 'figubook-calciatori-2526.html', missingParam: '2526', storageKey: 'figubook-calciatori-2526-v1', tags: ['panini', '2526'], c1: '#1b6fb8', c2: '#0a3d2e' },
+  { id: 'calciatori-25-26', title: 'Calciatori 2025/26', editor: 'Panini', season: '2025/26', total: 784, href: 'figubook-calciatori-2526.html', missingParam: '2526', storageKey: 'figubook-calciatori-2526-v1', tags: ['panini', '2526'], c1: '#1b6fb8', c2: '#0a3d2e', cover: calciatori2526Cover },
   { id: 'calciatori-24-25', title: 'Calciatori 2024/25', editor: 'Panini', season: '2024/25', total: 886, href: 'figubook-calciatori-2425.html', missingParam: '2425', storageKey: 'figubook-calciatori-2425-v1', tags: ['panini', '2425'], c1: '#f2c200', c2: '#1a1a1a' },
   { id: 'calciatori-23-24', title: 'Calciatori 2023/24', editor: 'Panini', season: '2023/24', total: 816, href: 'figubook-calciatori-2324.html', missingParam: '2324', storageKey: 'figubook-calciatori-2324-v1', tags: ['panini'], c1: '#1f7a4d', c2: '#c8d400' },
   { id: 'calciatori-22-23', title: 'Calciatori 2022/23', editor: 'Panini', season: '2022/23', total: 739, href: 'figubook-calciatori-2223.html', missingParam: '2223', storageKey: 'figubook-calciatori-2223-v1', tags: ['panini'], c1: '#2e8b57', c2: '#d4451f' },
