@@ -8,6 +8,7 @@ import AlbumList from '@/pages/AlbumList'
 import Scambi from '@/pages/Scambi'
 import Community from '@/pages/Community'
 import Cerca from '@/pages/Cerca'
+import Notifiche from '@/pages/Notifiche'
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/scambi" element={<Scambi />} />
         <Route path="/community" element={<Community />} />
         <Route path="/cerca" element={<Cerca />} />
+        <Route path="/notifiche" element={<Notifiche />} />
       </Route>
     </Routes>
   )

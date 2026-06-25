@@ -1,37 +1,22 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Bell, CheckCircle2, ThumbsUp, ArrowLeftRight, PencilLine, XCircle } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Bell } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useNotifications } from '@/hooks/useNotifications'
 import { markAllRead, resolveHref, timeAgo } from '@/lib/db/notifications'
-
-// Stile alert-toast (21st/lavikatiyar): stripe colorata a sinistra + icona lucide
-// per tipo, niente emoji. Colore = accento, non riempimento.
-const NOTIF_META: Record<string, { color: string; Icon: LucideIcon }> = {
-  completed: { color: '#a3e635', Icon: CheckCircle2 },   // lime
-  accepted: { color: '#34d399', Icon: ThumbsUp },        // emerald
-  proposal: { color: '#38bdf8', Icon: ArrowLeftRight },  // sky
-  revise: { color: '#fbbf24', Icon: PencilLine },        // amber
-  rejected: { color: '#f87171', Icon: XCircle },         // red
-}
-const notifMeta = (type?: string) => NOTIF_META[type ?? ''] ?? { color: '#9ca3af', Icon: Bell }
-
-type Tab = 'all' | 'unread' | 'read'
-const TABS: { key: Tab; label: string }[] = [
-  { key: 'all', label: 'Tutte' },
-  { key: 'unread', label: 'Non lette' },
-  { key: 'read', label: 'Lette' },
-]
+import { notifMeta, NOTIF_TABS, type Tab } from '@/lib/db/notifMeta'
 
 // Campanella navbar: badge numero + pannello con filtro Tutte/Non lette/Lette.
 // Adattato da ruixenui/notifications-filter, dati live da useNotifications.
-export function NotificationsBell() {
+// asLink: variante mobile -> il bell naviga alla pagina dedicata /notifiche
+// invece di aprire il pannello dropdown (che resta su desktop/iPad).
+export function NotificationsBell({ asLink = false }: { asLink?: boolean } = {}) {
   const { user } = useAuth()
   const { items, unread } = useNotifications()
   const [open, setOpen] = useState(false)
   const [tab, setTab] = useState<Tab>('all')
   const ref = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     function onDown(e: MouseEvent) {
@@ -47,6 +32,27 @@ export function NotificationsBell() {
     if (open && user && unread > 0) void markAllRead(user.uid)
   }, [open, user, unread])
 
+  const badge = unread > 0 && (
+    <span className="absolute right-1 top-1 grid h-[17px] min-w-[17px] place-items-center rounded-full border-2 border-background bg-destructive px-1 text-[10px] font-bold leading-none text-white">
+      {unread > 9 ? '9+' : unread}
+    </span>
+  )
+
+  // Variante mobile: bell che naviga alla pagina dedicata, niente pannello.
+  if (asLink) {
+    return (
+      <button
+        type="button"
+        aria-label="Notifiche"
+        onClick={() => navigate('/notifiche')}
+        className="relative grid h-10 w-10 place-items-center rounded-full text-foreground transition-colors hover:bg-white/8"
+      >
+        <Bell className="h-5 w-5" />
+        {badge}
+      </button>
+    )
+  }
+
   const counts = { all: items.length, unread, read: items.length - unread }
   const list = tab === 'all' ? items : items.filter((n) => (tab === 'unread' ? !n.read : n.read))
 
@@ -59,11 +65,7 @@ export function NotificationsBell() {
         className="relative grid h-10 w-10 place-items-center rounded-full text-foreground transition-colors hover:bg-white/8"
       >
         <Bell className="h-5 w-5" />
-        {unread > 0 && (
-          <span className="absolute right-1 top-1 grid h-[17px] min-w-[17px] place-items-center rounded-full border-2 border-background bg-destructive px-1 text-[10px] font-bold leading-none text-white">
-            {unread > 9 ? '9+' : unread}
-          </span>
-        )}
+        {badge}
       </button>
 
       {open && (
@@ -73,7 +75,7 @@ export function NotificationsBell() {
           </div>
 
           <div className="flex gap-1.5 px-1 pb-2">
-            {TABS.map((t) => {
+            {NOTIF_TABS.map((t) => {
               const on = tab === t.key
               return (
                 <button

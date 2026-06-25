@@ -39,7 +39,7 @@ export function AppLayout() {
         <TubelightNav items={NAV} />
         {/* Top-right mobile: notifiche live + FluidMenu (stesso menu del desktop) */}
         <div className="fixed right-4 top-4 z-50 flex items-center gap-2 sm:right-6 sm:top-6">
-          <NotificationsBell />
+          <NotificationsBell asLink />
           <FluidMenu />
         </div>
       </div>
