@@ -172,9 +172,9 @@ export default function Login() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#080a08] via-transparent to-[#080a08]/40" />
       </div>
 
-      <div className="relative z-10 grid min-h-screen lg:grid-cols-[1.05fr_0.95fr]">
+      <div className="relative z-10 grid min-h-screen md:grid-cols-[1.05fr_0.95fr]">
       {/* ════ LEFT — manifesto ════ */}
-      <section className="relative hidden flex-col overflow-hidden px-14 py-10 lg:flex">
+      <section className="relative hidden flex-col overflow-hidden px-14 py-10 md:flex">
 
         <div className="relative z-10 flex items-center gap-3">
           <span className="grid h-10 w-10 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-2xl font-extrabold text-lime-ink shadow-[0_6px_14px_-2px_rgba(194,242,61,.6)]">
@@ -243,7 +243,7 @@ export default function Login() {
 
         <div className="m-auto w-full max-w-[440px] rounded-3xl border border-white/10 bg-[#0c100c]/70 p-7 shadow-2xl backdrop-blur-xl sm:p-9">
           {/* brand mobile */}
-          <div className="mb-6 flex items-center gap-3 lg:hidden">
+          <div className="mb-6 flex items-center gap-3 md:hidden">
             <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">F</span>
             <span className="font-display text-xl font-extrabold tracking-tight">FiguBook</span>
           </div>

@@ -165,7 +165,7 @@ export default function Album() {
                   scroll interni -> la pagina non cresce. */}
               <div
                 ref={panelRef}
-                className="mt-4 hidden scroll-mt-24 gap-5 lg:sticky lg:top-24 lg:grid lg:h-[calc(100vh-7rem)] lg:grid-cols-[15rem_1fr]"
+                className="mt-4 hidden scroll-mt-24 gap-5 md:sticky md:top-24 md:grid md:h-[calc(100vh-7rem)] md:grid-cols-[15rem_1fr]"
                 style={sectionVars(section.c1, section.c2)}
               >
                 <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={selectSection} />
@@ -177,7 +177,7 @@ export default function Album() {
 
               {/* Mobile: accordion single-open. Solo la sezione aperta mostra hero+carte,
                   così la pagina resta compatta e le carte non finiscono in fondo. */}
-              <div className="mt-4 lg:hidden" style={sectionVars(section.c1, section.c2)}>
+              <div className="mt-4 md:hidden" style={sectionVars(section.c1, section.c2)}>
                 <SectionAccordion
                   data={data}
                   states={album.states}
