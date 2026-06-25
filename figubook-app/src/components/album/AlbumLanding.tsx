@@ -43,7 +43,7 @@ export function AlbumLanding({ entry, stats, missingCodes, doubleCodes }: AlbumL
           className="relative aspect-[3/4] overflow-hidden rounded-lg border border-border lg:aspect-auto lg:min-h-[20rem]"
           style={{ backgroundImage: sectionGradient(entry.c1, entry.c2) }}
         >
-          {entry.cover && <img src={entry.cover} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+          {entry.cover && <img src={entry.cover} alt="" className="absolute inset-0 h-full w-full object-contain" />}
           <div aria-hidden className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.05) 55%, transparent 100%)' }} />
           <div className="absolute inset-x-0 bottom-0 p-6">
             <div className="font-mono text-[11px] uppercase tracking-wide text-white/80">{entry.editor} · {entry.season}</div>
