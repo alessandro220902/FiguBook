@@ -81,7 +81,7 @@ export default function Login() {
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    if (!loading && user) navigate('/dashboard', { replace: true })
+    if (!loading && user) navigate('/home', { replace: true })
   }, [loading, user, navigate])
 
   useEffect(() => {
@@ -96,7 +96,7 @@ export default function Login() {
     try {
       await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence)
       await signInWithEmailAndPassword(auth, loginEmail.trim(), loginPass)
-      navigate('/dashboard', { replace: true })
+      navigate('/home', { replace: true })
     } catch (err) {
       setLoginErr(mapFirebaseError((err as { code?: string }).code))
     } finally {
@@ -123,7 +123,7 @@ export default function Login() {
         { displayName: username, username, ts: Date.now() },
         { merge: true },
       )
-      navigate('/dashboard', { replace: true })
+      navigate('/home', { replace: true })
     } catch (err) {
       setRegErr(mapFirebaseError((err as { code?: string }).code))
     } finally {
@@ -148,7 +148,7 @@ export default function Login() {
           { merge: true },
         )
       }
-      navigate('/dashboard', { replace: true })
+      navigate('/home', { replace: true })
     } catch (err) {
       setErr(mapFirebaseError((err as { code?: string }).code))
     } finally {

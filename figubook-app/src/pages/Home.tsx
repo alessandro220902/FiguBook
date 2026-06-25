@@ -9,7 +9,7 @@ import { FadeIn } from '@/components/dashboard/FadeIn'
 import { Typewriter } from '@/components/dashboard/Typewriter'
 import { useTradesCount } from '@/hooks/useTradesCount'
 
-export default function Dashboard() {
+export default function Home() {
   const { user } = useAuth()
   const { albums, totals, loading, error, retry } = useCollection()
   const trades = useTradesCount()

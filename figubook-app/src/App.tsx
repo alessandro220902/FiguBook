@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { AppLayout } from '@/components/layout/AppLayout'
 import Login from '@/pages/Login'
-import Dashboard from '@/pages/Dashboard'
+import Home from '@/pages/Home'
 import Album from '@/pages/Album'
 import AlbumList from '@/pages/AlbumList'
 import Scambi from '@/pages/Scambi'
@@ -22,7 +22,7 @@ export default function App() {
           </ProtectedRoute>
         }
       >
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/album" element={<AlbumList />} />
         <Route path="/album/:albumId" element={<Album />} />
         <Route path="/scambi" element={<Scambi />} />

@@ -8,7 +8,7 @@ import { FluidMenu } from '@/components/layout/navbar/FluidMenu'
 // Shell condivisa: nav unica scritta una volta, riusata sulle 4 sezioni private.
 // Home (dashboard) usa l'icona casetta su mobile. Label "Home" come su desktop.
 const NAV: NavItem[] = [
-  { name: 'Home', url: '/dashboard', icon: Home },
+  { name: 'Home', url: '/home', icon: Home },
   { name: 'Album', url: '/album', icon: BookOpen },
   { name: 'Scambi', url: '/scambi', icon: ArrowLeftRight },
   { name: 'Community', url: '/community', icon: Users },
@@ -30,7 +30,7 @@ export function AppLayout() {
 
       {/* Cluster mobile (telefono, <md): logo + bottom-nav + menu destro */}
       <div className="md:hidden">
-        <Link to="/dashboard" className="fixed left-4 top-4 z-50 flex items-center gap-2 sm:left-6 sm:top-6">
+        <Link to="/home" className="fixed left-4 top-4 z-50 flex items-center gap-2 sm:left-6 sm:top-6">
           <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">
             F
           </span>

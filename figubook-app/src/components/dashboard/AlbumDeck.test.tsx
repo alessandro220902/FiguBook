@@ -19,7 +19,7 @@ function Loc() {
 
 function setup(albums: PerAlbumStats[]) {
   return render(
-    <MemoryRouter initialEntries={['/dashboard']}>
+    <MemoryRouter initialEntries={['/home']}>
       <AlbumDeck albums={albums} />
       <Routes>
         <Route path="*" element={<Loc />} />
@@ -51,7 +51,7 @@ describe('AlbumDeck', () => {
   it('tap su nome cambia attivo senza navigare', async () => {
     setup(albums)
     await userEvent.click(screen.getByRole('button', { name: 'Gamma' }))
-    expect(screen.getByTestId('loc')).toHaveTextContent('/dashboard')
+    expect(screen.getByTestId('loc')).toHaveTextContent('/home')
     // Gamma ora attiva: la sua copertina è quella apribile
     expect(screen.getByRole('button', { name: /Apri Gamma/ })).toBeInTheDocument()
   })
@@ -59,6 +59,6 @@ describe('AlbumDeck', () => {
   it('tap su copertina laterale la centra senza navigare', async () => {
     setup(albums)
     await userEvent.click(screen.getByRole('button', { name: /Vai a Beta/ }))
-    expect(screen.getByTestId('loc')).toHaveTextContent('/dashboard')
+    expect(screen.getByTestId('loc')).toHaveTextContent('/home')
   })
 })

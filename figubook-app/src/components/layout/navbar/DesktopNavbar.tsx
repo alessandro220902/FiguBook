@@ -9,7 +9,7 @@ import { SearchDock } from './SearchDock'
 
 interface Item { name: string; url: string; icon: LucideIcon }
 const NAV: Item[] = [
-  { name: 'Home', url: '/dashboard', icon: Home },
+  { name: 'Home', url: '/home', icon: Home },
   { name: 'Album', url: '/album', icon: BookOpen },
   { name: 'Scambi', url: '/scambi', icon: ArrowLeftRight },
   { name: 'Community', url: '/community', icon: Users },
@@ -28,7 +28,7 @@ export function DesktopNavbar() {
         className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-bg/85 via-bg/45 to-transparent [backdrop-filter:blur(6px)] [mask-image:linear-gradient(to_bottom,black_55%,transparent)]"
       />
       {/* sinistra: logo + nome */}
-      <Link to="/dashboard" className="flex shrink-0 items-center gap-2.5">
+      <Link to="/home" className="flex shrink-0 items-center gap-2.5">
         <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">F</span>
         <span className="font-display text-xl font-extrabold tracking-tight">FiguBook</span>
       </Link>

@@ -103,7 +103,7 @@ export default function Album() {
   const sectionIndex = useMemo(() => (data && section ? data.sections.indexOf(section) : 0), [data, section])
 
   if (!entry) {
-    return <Centered>Album sconosciuto. <Link className="text-lime underline" to="/dashboard">Torna alla dashboard</Link></Centered>
+    return <Centered>Album sconosciuto. <Link className="text-lime underline" to="/home">Torna alla home</Link></Centered>
   }
   if (dataError) {
     return <Centered>Dati album non disponibili.</Centered>

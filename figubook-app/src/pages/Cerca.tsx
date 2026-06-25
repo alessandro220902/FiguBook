@@ -24,7 +24,7 @@ export default function Cerca() {
   // Fallback alla home se non c'è cronologia (apertura diretta del link).
   function goBack() {
     if (window.history.length > 1) navigate(-1)
-    else navigate('/dashboard')
+    else navigate('/home')
   }
   function go(to: string) {
     navigate(to)

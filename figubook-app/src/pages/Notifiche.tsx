@@ -21,7 +21,7 @@ export default function Notifiche() {
 
   function goBack() {
     if (window.history.length > 1) navigate(-1)
-    else navigate('/dashboard')
+    else navigate('/home')
   }
 
   const counts = { all: items.length, unread, read: items.length - unread }
