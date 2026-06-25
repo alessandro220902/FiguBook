@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom'
@@ -30,20 +30,6 @@ function setup(albums: PerAlbumStats[]) {
 
 // ordine: sort per missing asc => [a(10), b(20), c(30)]
 const albums = [mk('a', 'Alpha', 10), mk('b', 'Beta', 20), mk('c', 'Gamma', 30)]
-
-// jsdom non ha ResizeObserver: stub a larghezza desktop (>=520) così il deck
-// rende la colonna nomi (su mobile resta nascosta, gated da w<520).
-beforeAll(() => {
-  globalThis.ResizeObserver = class {
-    cb: ResizeObserverCallback
-    constructor(cb: ResizeObserverCallback) { this.cb = cb }
-    observe() {
-      this.cb([{ contentRect: { width: 760 } } as ResizeObserverEntry], this)
-    }
-    unobserve() {}
-    disconnect() {}
-  } as unknown as typeof ResizeObserver
-})
 
 describe('AlbumDeck', () => {
   it('colonna nomi: un chip per album; copertina mostra %, frazione e doppie', () => {
