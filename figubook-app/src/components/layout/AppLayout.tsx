@@ -1,5 +1,5 @@
 import { Outlet, Link } from 'react-router-dom'
-import { Home, BookOpen, ArrowLeftRight, Users } from 'lucide-react'
+import { Home, BookOpen, ArrowLeftRight, Users, Search } from 'lucide-react'
 import { TubelightNav, type NavItem } from '@/components/layout/TubelightNav'
 import { DesktopNavbar } from '@/components/layout/navbar/DesktopNavbar'
 import { NotificationsBell } from '@/components/layout/navbar/NotificationsBell'
@@ -12,6 +12,7 @@ const NAV: NavItem[] = [
   { name: 'Album', url: '/album', icon: BookOpen },
   { name: 'Scambi', url: '/scambi', icon: ArrowLeftRight },
   { name: 'Community', url: '/community', icon: Users },
+  { name: 'Cerca', url: '/cerca', icon: Search },
 ]
 
 export function AppLayout() {
