@@ -152,7 +152,6 @@ function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive
       className="group relative overflow-hidden rounded-2xl border border-white/10 p-5 shadow-[0_18px_40px_-20px_rgba(0,0,0,0.7)] transition-transform duration-150 ease-out hover:-translate-y-0.5"
       style={{ background: `linear-gradient(145deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
     >
-      {entry.cover && <img src={entry.cover} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover object-top" />}
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.05) 40%, transparent 60%, rgba(0,0,0,0.45) 100%)' }} />
 
       {/* Mobile/iPad: Link overlay (tap = apri). Su PC niente Link: apre il bottone. */}
@@ -169,37 +168,48 @@ function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive
         <AlbumMenu title={entry.title} archived={archived} onArchive={onArchive} onUnarchive={onUnarchive} onDelete={onDelete} />
       </div>
 
-      {/* Contenuto: pointer-events-none => i click passano al Link overlay */}
-      <div className="pointer-events-none relative">
-        <div className="min-w-0 pr-10">
-          <div className="font-mono text-[11px] uppercase tracking-wide text-white/85">{entry.editor} · {entry.season}</div>
-          <h2 className="mt-1 truncate text-2xl font-semibold tracking-tight text-white">{entry.title}</h2>
-        </div>
-
-        {/* Barra con % a fine linea (niente numero gigante separato). */}
-        <div className="mt-4 flex items-center gap-3">
-          <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/30">
-            <div className="h-full rounded-full bg-white" style={{ width: `${Math.max(2, a.pct)}%` }} />
+      {/* Contenuto: pointer-events-none => i click passano al Link overlay.
+          Copertina = miniatura verticale a destra (intera, niente ritaglio). */}
+      <div className="pointer-events-none relative flex items-stretch gap-4">
+        <div className="min-w-0 flex-1">
+          <div className="pr-10">
+            <div className="font-mono text-[11px] uppercase tracking-wide text-white/85">{entry.editor} · {entry.season}</div>
+            <h2 className="mt-1 truncate text-2xl font-semibold tracking-tight text-white">{entry.title}</h2>
           </div>
-          <span className="shrink-0 font-display text-2xl font-bold leading-none tabular-nums text-white">{a.pct}<span className="text-base text-white/75">%</span></span>
+
+          {/* Barra con % a fine linea (niente numero gigante separato). */}
+          <div className="mt-4 flex items-center gap-3">
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/30">
+              <div className="h-full rounded-full bg-white" style={{ width: `${Math.max(2, a.pct)}%` }} />
+            </div>
+            <span className="shrink-0 font-display text-2xl font-bold leading-none tabular-nums text-white">{a.pct}<span className="text-base text-white/75">%</span></span>
+          </div>
+
+          <div className="mt-4 flex items-end justify-between">
+            <dl className="flex gap-5 text-white">
+              <div>
+                <dt className="font-mono text-[10px] uppercase tracking-wide text-white/75">Possedute</dt>
+                <dd className="mt-0.5 font-display text-lg font-bold tabular-nums">{a.have}<span className="text-sm font-medium text-white/70"> / {a.total}</span></dd>
+              </div>
+              <div>
+                <dt className="font-mono text-[10px] uppercase tracking-wide text-white/75">Mancanti</dt>
+                <dd className="mt-0.5 font-display text-lg font-bold tabular-nums">{a.missing}</dd>
+              </div>
+              <div>
+                <dt className="font-mono text-[10px] uppercase tracking-wide text-white/75">Doppie</dt>
+                <dd className="mt-0.5 font-display text-lg font-bold tabular-nums">{a.doubles}</dd>
+              </div>
+            </dl>
+          </div>
         </div>
 
-        <div className="mt-4 flex items-end justify-between">
-          <dl className="flex gap-5 text-white">
-            <div>
-              <dt className="font-mono text-[10px] uppercase tracking-wide text-white/75">Possedute</dt>
-              <dd className="mt-0.5 font-display text-lg font-bold tabular-nums">{a.have}<span className="text-sm font-medium text-white/70"> / {a.total}</span></dd>
-            </div>
-            <div>
-              <dt className="font-mono text-[10px] uppercase tracking-wide text-white/75">Mancanti</dt>
-              <dd className="mt-0.5 font-display text-lg font-bold tabular-nums">{a.missing}</dd>
-            </div>
-            <div>
-              <dt className="font-mono text-[10px] uppercase tracking-wide text-white/75">Doppie</dt>
-              <dd className="mt-0.5 font-display text-lg font-bold tabular-nums">{a.doubles}</dd>
-            </div>
-          </dl>
-        </div>
+        {entry.cover && (
+          <img
+            src={entry.cover}
+            alt=""
+            className="aspect-[3/4] w-20 shrink-0 self-center rounded-lg border border-white/20 object-cover shadow-lg sm:w-24"
+          />
+        )}
       </div>
 
       {/* PC: striscia azioni che sale dal basso all'hover (non copre titolo/stats) */}
