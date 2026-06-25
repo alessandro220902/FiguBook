@@ -59,11 +59,17 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
 
   if (!len) return null
 
-  const leftW = Math.max(120, Math.round(w * 0.4))
-  const rightW = Math.max(150, w - leftW)
-  const cardWidth = Math.max(150, Math.min(Math.round(rightW * 0.86), 340))
+  // narrow = phone/iPad-portrait: niente colonna nomi, coverflow full-width
+  const narrow = w < 520
+  const leftW = narrow ? 0 : Math.max(120, Math.round(w * 0.4))
+  const rightW = narrow ? w : Math.max(150, w - leftW)
+  const cardWidth = narrow
+    ? Math.max(150, Math.min(Math.round(rightW * 0.72), 300))
+    : Math.max(150, Math.min(Math.round(rightW * 0.86), 340))
   const cardHeight = Math.round(cardWidth * 1.12)
-  const delta = Math.min(44, Math.round(rightW * 0.12))
+  const delta = narrow
+    ? Math.min(64, Math.round(rightW * 0.16))
+    : Math.min(44, Math.round(rightW * 0.12))
   const panelH = Math.round(cardHeight * 1.12)
   const compact = cardWidth < 240
   const spring = reduce
@@ -76,12 +82,14 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
   return (
     <div ref={wrapRef} className="relative overflow-x-clip">
       <div
-        className="flex items-stretch gap-3"
+        className={`flex items-stretch ${narrow ? '' : 'gap-3'}`}
         style={{ height: panelH }}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
-        {/* Metà nomi: sopra lo sfondo app, lista verticale con attivo al centro */}
+        {/* Metà nomi: sopra lo sfondo app, lista verticale con attivo al centro.
+            Nascosta su mobile/iPad-portrait (coverflow full-width, nav via swipe). */}
+        {!narrow && (
         <div className="relative overflow-hidden" style={{ width: leftW }} aria-label="Album">
           <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2">
             {ordered.map((a, i) => {
@@ -115,6 +123,7 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
             })}
           </div>
         </div>
+        )}
 
         {/* Metà copertine: sopra lo sfondo app, stack coverflow (prev/active/next) */}
         <div className="relative flex flex-1 items-center justify-center">
