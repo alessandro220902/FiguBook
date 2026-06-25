@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useCollection } from '@/hooks/useCollection'
-import { StatTicker } from '@/components/dashboard/StatTicker'
-import { AlbumDeck } from '@/components/dashboard/AlbumDeck'
-import { NewsPanel } from '@/components/dashboard/NewsPanel'
-import { GroupsPanel } from '@/components/dashboard/GroupsPanel'
-import { FadeIn } from '@/components/dashboard/FadeIn'
-import { Typewriter } from '@/components/dashboard/Typewriter'
+import { StatTicker } from '@/components/home/StatTicker'
+import { AlbumDeck } from '@/components/home/AlbumDeck'
+import { NewsPanel } from '@/components/home/NewsPanel'
+import { GroupsPanel } from '@/components/home/GroupsPanel'
+import { FadeIn } from '@/components/home/FadeIn'
+import { Typewriter } from '@/components/home/Typewriter'
 import { useTradesCount } from '@/hooks/useTradesCount'
 
 export default function Home() {
