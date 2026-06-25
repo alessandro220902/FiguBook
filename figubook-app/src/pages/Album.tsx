@@ -122,7 +122,7 @@ export default function Album() {
   const doubleCodes = allCodes.filter((c) => album.countOf(c) >= 2)
 
   return (
-    <main className="album-theme w-full px-3 pb-16 pt-6 sm:px-6 lg:px-8">
+    <main className="album-theme w-full px-0 pb-16 pt-6">
       <Breadcrumb items={[{ label: 'Album', to: '/album' }, { label: entry.title }]} />
       <AlbumLanding entry={entry} stats={albumStats} missingCodes={missingCodes} doubleCodes={doubleCodes} />
 
