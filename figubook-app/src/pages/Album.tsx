@@ -165,13 +165,17 @@ export default function Album() {
                   scroll interni -> la pagina non cresce. */}
               <div
                 ref={panelRef}
-                className="mt-4 hidden scroll-mt-24 gap-5 md:sticky md:top-24 md:grid md:h-[calc(100vh-7rem)] md:grid-cols-[15rem_1fr]"
+                className="mt-4 hidden scroll-mt-24 gap-5 md:grid md:grid-cols-[15rem_1fr] md:items-start"
                 style={sectionVars(section.c1, section.c2)}
               >
-                <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={selectSection} />
-                <div className="flex min-h-0 min-w-0 flex-col">
+                {/* Sidebar sticky a tutta altezza (scroll interno se lunga);
+                    la griglia scorre con la pagina -> niente carte tagliate. */}
+                <div className="md:sticky md:top-24 md:h-[calc(100vh-7rem)]">
+                  <SectionSidebar data={data} states={album.states} counts={album.counts} activeId={section.id} onSelect={selectSection} />
+                </div>
+                <div ref={gridScrollRef} className="flex min-w-0 flex-col">
                   {hero}
-                  <div ref={gridScrollRef} className="mt-4 min-h-0 flex-1 overflow-y-auto">{grid}</div>
+                  <div className="mt-4">{grid}</div>
                 </div>
               </div>
 
