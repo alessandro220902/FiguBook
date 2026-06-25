@@ -1,7 +1,35 @@
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
+
+// Stile Instagram (solo mobile, bottom nav): scroll giù -> pill compatta,
+// scroll su / vicino al top -> pill piena. Soglia anti-jitter + rAF.
+function useScrollShrink() {
+  const [compact, setCompact] = useState(false)
+  const lastY = useRef(0)
+  const ticking = useRef(false)
+  useEffect(() => {
+    lastY.current = window.scrollY
+    function onScroll() {
+      if (ticking.current) return
+      ticking.current = true
+      requestAnimationFrame(() => {
+        const y = window.scrollY
+        const dy = y - lastY.current
+        if (y < 48) setCompact(false)
+        else if (dy > 6) setCompact(true)
+        else if (dy < -6) setCompact(false)
+        lastY.current = y
+        ticking.current = false
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  return compact
+}
 
 // Adattata da tubelight-navbar (ayushmxxn, 21st.dev):
 // - niente "use client" (Vite, non Next)
@@ -16,6 +44,7 @@ export interface NavItem {
 
 export function TubelightNav({ items, className }: { items: NavItem[]; className?: string }) {
   const { pathname } = useLocation()
+  const compact = useScrollShrink()
 
   return (
     <div
@@ -24,6 +53,10 @@ export function TubelightNav({ items, className }: { items: NavItem[]; className
         // viewport e largo quanto la pill: una colonna invisibile al centro che
         // intercettava i clic del contenuto sottostante. sm:bottom-auto la rilascia.
         'fixed bottom-0 left-1/2 z-50 mb-6 -translate-x-1/2 sm:top-0 sm:bottom-auto sm:mb-0 sm:pt-6',
+        // Insta: scroll giù rimpicciolisce la pill (solo mobile). origin-bottom
+        // così "scende" verso il bordo; opacità leggera per profondità.
+        'origin-bottom transition-[transform,opacity] duration-300 ease-out',
+        compact && 'max-sm:scale-90 max-sm:opacity-80',
         className,
       )}
     >
