@@ -31,6 +31,19 @@ function useScrollShrink() {
   return compact
 }
 
+// La pill si rimpicciolisce solo su mobile (bottom nav); su desktop è top-nav.
+function useIsMobile() {
+  const [mobile, setMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)')
+    const on = () => setMobile(mq.matches)
+    on()
+    mq.addEventListener('change', on)
+    return () => mq.removeEventListener('change', on)
+  }, [])
+  return mobile
+}
+
 // Adattata da tubelight-navbar (ayushmxxn, 21st.dev):
 // - niente "use client" (Vite, non Next)
 // - next/link -> react-router Link
@@ -45,6 +58,8 @@ export interface NavItem {
 export function TubelightNav({ items, className }: { items: NavItem[]; className?: string }) {
   const { pathname } = useLocation()
   const compact = useScrollShrink()
+  const isMobile = useIsMobile()
+  const shrink = compact && isMobile
 
   return (
     <div
@@ -53,14 +68,17 @@ export function TubelightNav({ items, className }: { items: NavItem[]; className
         // viewport e largo quanto la pill: una colonna invisibile al centro che
         // intercettava i clic del contenuto sottostante. sm:bottom-auto la rilascia.
         'fixed bottom-0 left-1/2 z-50 mb-6 -translate-x-1/2 sm:top-0 sm:bottom-auto sm:mb-0 sm:pt-6',
-        // Insta: scroll giù rimpicciolisce la pill (solo mobile). origin-bottom
-        // così "scende" verso il bordo; opacità leggera per profondità.
-        'origin-bottom transition-[transform,opacity] duration-300 ease-out',
-        compact && 'max-sm:scale-90 max-sm:opacity-80',
         className,
       )}
     >
-      <div className="flex items-center gap-1 rounded-full border border-border bg-card/80 px-1 py-1 shadow-lg backdrop-blur-lg">
+      {/* Insta: scroll giù rimpicciolisce la pill (solo mobile). Spring framer per
+          un movimento fluido invece dello scatto della transizione CSS. */}
+      <motion.div
+        className="flex origin-bottom items-center gap-1 rounded-full border border-border bg-card/80 px-1 py-1 shadow-lg backdrop-blur-lg"
+        initial={false}
+        animate={{ scale: shrink ? 0.9 : 1, opacity: shrink ? 0.8 : 1 }}
+        transition={{ type: 'spring', stiffness: 220, damping: 30, mass: 0.7 }}
+      >
         {items.map((item) => {
           const Icon = item.icon
           // attivo anche su sotto-rotte: /album/:id deve accendere "Album"
@@ -96,7 +114,7 @@ export function TubelightNav({ items, className }: { items: NavItem[]; className
             </Link>
           )
         })}
-      </div>
+      </motion.div>
     </div>
   )
 }
