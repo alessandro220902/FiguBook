@@ -2,6 +2,11 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Wallet, Layers, Users, BookOpen } from 'lucide-react'
 import { ALBUM_CATALOG } from '@/data/albumCatalog'
 
+function manageCookies() {
+  localStorage.removeItem('figubook.cookieConsent')
+  location.reload()
+}
+
 export default function Landing() {
   return (
     <div className="min-h-screen bg-[#080a08] text-[#f4efe6]">
@@ -215,6 +220,62 @@ export default function Landing() {
           ))}
         </div>
       </section>
+
+      {/* ── FINAL CTA ── */}
+      <section className="mx-auto max-w-[1100px] px-6 py-16 md:py-24">
+        <div className="rounded-3xl border border-lime/20 bg-lime/[0.06] p-10 text-center md:p-14">
+          <h2 className="font-display text-4xl font-bold tracking-[-0.02em] md:text-5xl">
+            Inizia a chiudere l&apos;album
+          </h2>
+          <p className="mx-auto mt-4 max-w-[48ch] text-base leading-relaxed text-muted-foreground">
+            Traccia, scambia e completa — gratis, senza abbonamenti.
+          </p>
+          <div className="mt-8 flex justify-center">
+            <Link
+              to="/login"
+              className="flex items-center gap-2 rounded-xl bg-lime px-6 py-3 font-semibold text-lime-ink transition-[filter] hover:brightness-110"
+            >
+              Inizia gratis <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer className="border-t border-white/10">
+        <div className="mx-auto max-w-[1100px] px-6 py-10">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <Link
+              to="/privacy"
+              className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Privacy
+            </Link>
+            <Link
+              to="/termini"
+              className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Termini
+            </Link>
+            <Link
+              to="/cookie"
+              className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Cookie
+            </Link>
+            <button
+              type="button"
+              onClick={manageCookies}
+              className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Gestisci cookie
+            </button>
+          </div>
+          <p className="mt-4 font-mono text-[10.5px] uppercase tracking-[0.1em] text-muted-foreground">
+            Non affiliato a Panini S.p.A. — strumento indipendente di tracking e scambio.
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }
