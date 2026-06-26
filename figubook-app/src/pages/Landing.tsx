@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Wallet, Layers, Users, BookOpen } from 'lucide-react'
 import { ALBUM_CATALOG } from '@/data/albumCatalog'
 
 function manageCookies() {
@@ -7,24 +6,96 @@ function manageCookies() {
   location.reload()
 }
 
+// Mockup pagina album: 24 slot, alcuni presi, alcuni mancanti, qualche doppia.
+const MISSING = new Set([3, 7, 12, 16, 19, 23])
+const DOUBLES = new Set([2, 9, 14])
+
+function AlbumPage() {
+  return (
+    <div className="w-full max-w-[380px] rounded-2xl border border-white/10 bg-[#0c100c] p-5 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.8)]">
+      {/* intestazione album */}
+      <div className="flex items-baseline justify-between border-b border-white/10 pb-3">
+        <div>
+          <p className="text-[17px] font-bold leading-none tracking-tight">Calciatori 2025/26</p>
+          <p className="mt-1 text-[12px] italic text-muted-foreground">Panini · 784 figurine</p>
+        </div>
+        <span className="rounded-full border border-lime/30 bg-lime/10 px-2.5 py-1 text-[11px] font-bold text-lime">
+          +1
+        </span>
+      </div>
+
+      {/* griglia slot */}
+      <div className="mt-4 grid grid-cols-6 gap-1.5">
+        {Array.from({ length: 24 }, (_, i) => i + 1).map((n) => {
+          const missing = MISSING.has(n)
+          const dbl = DOUBLES.has(n)
+          return (
+            <div
+              key={n}
+              className={
+                'relative grid aspect-[3/4] place-items-center rounded-[5px] text-[11px] font-semibold ' +
+                (missing
+                  ? 'border border-dashed border-white/15 text-white/25'
+                  : 'bg-gradient-to-b from-white/[0.16] to-white/[0.04] text-white/80 ring-1 ring-inset ring-white/10')
+              }
+            >
+              {missing ? n : <span className="opacity-60">{n}</span>}
+              {dbl && (
+                <span className="absolute -right-1 -top-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-lime text-[8px] font-bold text-lime-ink">
+                  2
+                </span>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* avanzamento */}
+      <div className="mt-4 flex items-center gap-3">
+        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+          <div className="h-full w-[70%] rounded-full bg-lime" />
+        </div>
+        <span className="text-[12px] font-bold tabular-nums">549<span className="text-muted-foreground">/784</span></span>
+      </div>
+    </div>
+  )
+}
+
+const FEATURES = [
+  {
+    t: 'Smetti di sprecare',
+    d: 'Niente più pacchetti comprati alla cieca. Scambi i doppioni e completi l’album spendendo meno.',
+  },
+  {
+    t: 'Doppie e mancanti, sempre chiare',
+    d: 'In ogni momento sai cosa hai in più e cosa ti manca. La lista si aggiorna mentre attacchi.',
+  },
+  {
+    t: 'Scambi con collezionisti veri',
+    d: 'Trovi chi ha quello che cerchi e cerca quello che hai. Niente intermediari, niente costi.',
+  },
+  {
+    t: 'La collezione in tasca',
+    d: 'Un tocco e l’album è in pari, ovunque tu sia. Dalla bustina alla pagina, senza fogli e penne.',
+  },
+]
+
 export default function Landing() {
+  const covers = ALBUM_CATALOG.slice(0, 6)
   return (
     <div className="min-h-screen bg-[#080a08] text-[#f4efe6]">
       {/* ── NAV ── */}
-      <header className="border-b border-white/5">
-        <div className="mx-auto flex max-w-[1100px] items-center justify-between px-6 py-4">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
-            <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">
+      <header className="sticky top-0 z-30 border-b border-white/5 bg-[#080a08]/80 backdrop-blur">
+        <div className="mx-auto flex max-w-[1080px] items-center justify-between px-6 py-4">
+          <Link to="/" className="flex items-center gap-2.5">
+            <span className="grid h-8 w-8 -rotate-6 place-items-center rounded-[9px] bg-lime text-lg font-extrabold text-lime-ink">
               F
             </span>
-            <span className="font-display text-xl font-extrabold tracking-tight">FiguBook</span>
+            <span className="text-xl font-extrabold tracking-tight">FiguBook</span>
           </Link>
-
-          {/* Accedi */}
           <Link
             to="/login"
-            className="rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#f4efe6] transition-colors hover:border-white/25 hover:bg-white/5"
+            className="rounded-lg px-4 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
           >
             Accedi
           </Link>
@@ -32,210 +103,127 @@ export default function Landing() {
       </header>
 
       {/* ── HERO ── */}
-      <section className="mx-auto max-w-[1100px] px-6 py-16 md:py-24">
-        <div className="grid items-center gap-12 md:grid-cols-2">
-          {/* LEFT — copy */}
-          <div className="flex flex-col gap-6">
-            {/* eyebrow pill */}
-            <div className="flex w-fit items-center gap-2 rounded-full border border-lime/30 bg-lime/10 px-3.5 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-lime">
-              <span className="h-[6px] w-[6px] rounded-full bg-lime" />
-              Gratis per collezionisti
-            </div>
-
-            <h1 className="m-0 font-display text-5xl font-bold leading-[1.04] tracking-[-0.03em] md:text-6xl">
-              Chiudi l&apos;album{' '}
-              <em className="block font-serif font-normal italic text-lime">
-                senza comprare pacchetti alla cieca.
-              </em>
+      <section className="mx-auto max-w-[1080px] px-6 pb-20 pt-14 md:pb-28 md:pt-20">
+        <div className="grid items-center gap-x-12 gap-y-14 md:grid-cols-[1.05fr_0.95fr]">
+          <div>
+            <h1 className="text-balance text-[clamp(2.6rem,6vw,4.4rem)] font-bold leading-[0.98] tracking-[-0.02em]">
+              Chiudi l’album.{' '}
+              <span className="italic text-lime">Una doppia alla volta.</span>
             </h1>
-
-            <p className="max-w-[42ch] text-base leading-relaxed text-muted-foreground">
-              Traccia la collezione, individua le doppie e scambia con altri collezionisti. Gratis.
+            <p className="mt-6 max-w-[46ch] text-[17px] leading-relaxed text-ink-2">
+              FiguBook tiene il conto della tua collezione, ti dice cosa ti manca e ti fa
+              scambiare i doppioni con altri collezionisti. Gratis, senza abbonamenti.
             </p>
-
-            {/* CTA row */}
-            <div className="flex flex-wrap gap-3">
+            <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
               <Link
                 to="/login?r=1"
-                className="flex items-center gap-2 rounded-xl bg-lime px-5 py-3 font-semibold text-lime-ink transition-[filter] hover:brightness-110"
+                className="rounded-lg bg-lime px-6 py-3 text-[15px] font-bold text-lime-ink transition-[filter] hover:brightness-105"
               >
-                Inizia gratis <ArrowRight className="h-4 w-4" />
+                Inizia gratis
               </Link>
               <a
                 href="#funziona"
-                className="flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 font-semibold text-[#f4efe6] transition-colors hover:border-white/30 hover:bg-white/5"
+                className="text-[15px] font-semibold text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
               >
                 Scopri come funziona
               </a>
             </div>
           </div>
 
-          {/* RIGHT — mockup avanzamento album */}
           <div className="flex justify-center md:justify-end">
-            <div className="w-full max-w-[320px] rounded-2xl border border-white/10 bg-[#0c100c] p-6">
-              {/* header row */}
-              <div className="mb-5 flex items-center justify-between">
-                <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                  Album
-                </span>
-                <span className="rounded-full bg-lime/15 px-2.5 py-0.5 font-mono text-[11px] font-bold text-lime">
-                  +1 figurina
-                </span>
-              </div>
+            <AlbumPage />
+          </div>
+        </div>
+      </section>
 
-              {/* album name */}
-              <p className="mb-1 font-display text-lg font-bold leading-tight tracking-tight">
-                Calciatori 2025/26
-              </p>
-              <p className="mb-5 font-mono text-[11px] text-muted-foreground">Panini · 784 figurine</p>
-
-              {/* progress bar */}
-              <div className="mb-2 flex items-center justify-between font-mono text-[11px] text-muted-foreground">
-                <span>Completamento</span>
-                <span className="font-bold text-[#f4efe6]">70%</span>
+      {/* ── FEATURES (blocco editoriale, niente card uguali) ── */}
+      <section id="funziona" className="border-t border-white/8">
+        <div className="mx-auto max-w-[1080px] px-6 py-20 md:py-28">
+          <h2 className="max-w-[16ch] text-balance text-[clamp(1.9rem,4vw,3rem)] font-bold leading-[1.04] tracking-[-0.02em]">
+            Collezionare senza il quaderno dei numeri.
+          </h2>
+          <div className="mt-12 grid border-t border-white/10 sm:grid-cols-2">
+            {FEATURES.map((f, i) => (
+              <div
+                key={f.t}
+                className={
+                  'border-b border-white/10 py-8 sm:py-10 ' +
+                  (i % 2 === 0 ? 'sm:border-r sm:pr-10' : 'sm:pl-10')
+                }
+              >
+                <h3 className="flex items-baseline gap-3 text-[22px] font-bold tracking-tight">
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 self-start rounded-full bg-lime" />
+                  {f.t}
+                </h3>
+                <p className="mt-3 max-w-[48ch] text-[15px] leading-relaxed text-ink-2">{f.d}</p>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
-                <div className="h-full w-[70%] rounded-full bg-lime" />
-              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-              {/* sub-stats */}
-              <div className="mt-5 grid grid-cols-3 gap-3 border-t border-white/10 pt-5">
-                {[
-                  { label: 'Possedute', value: '549' },
-                  { label: 'Mancanti', value: '235' },
-                  { label: 'Doppie', value: '87' },
-                ].map(({ label, value }) => (
-                  <div key={label} className="flex flex-col gap-0.5">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
-                      {label}
-                    </span>
-                    <span className="font-display text-xl font-bold">{value}</span>
+      {/* ── ALBUM (scaffale copertine) ── */}
+      <section className="border-t border-white/8 bg-[#0b0f0b]">
+        <div className="mx-auto max-w-[1080px] px-6 py-20 md:py-28">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2 className="text-[clamp(1.9rem,4vw,3rem)] font-bold leading-[1.04] tracking-[-0.02em]">
+              Album che puoi tracciare oggi
+            </h2>
+            <p className="text-[15px] italic text-muted-foreground">e tanti altri in arrivo</p>
+          </div>
+
+          <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-5">
+            {covers.map((a) => (
+              <article
+                key={a.id}
+                className="group relative aspect-[3/4] overflow-hidden rounded-xl border border-white/10 transition-transform duration-300 hover:-translate-y-1"
+              >
+                {a.cover ? (
+                  <img
+                    src={a.cover}
+                    alt={a.title}
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: `linear-gradient(150deg, ${a.c1}, ${a.c2})` }}
+                  />
+                )}
+                {/* vignetta per leggibilità */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-black/25" />
+                {/* contenuto copertina */}
+                <div className="absolute inset-0 flex flex-col justify-between p-4">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/75">
+                    {a.editor}
+                  </span>
+                  <div>
+                    <h3 className="text-balance text-[19px] font-bold leading-[1.05] tracking-tight text-white drop-shadow">
+                      {a.title}
+                    </h3>
+                    <div className="mt-1.5 h-px w-8 bg-lime" />
+                    <p className="mt-1.5 text-[12px] italic text-white/70">{a.total} figurine</p>
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── FEATURES ── */}
-      <section id="funziona" className="mx-auto max-w-[1100px] px-6 py-16 md:py-24">
-        {/* heading */}
-        <div className="mb-10 flex flex-col gap-2">
-          <h2 className="font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl">
-            Come funziona
+      {/* ── CTA FINALE ── */}
+      <section className="border-t border-white/8">
+        <div className="mx-auto max-w-[1080px] px-6 py-24 text-center md:py-32">
+          <h2 className="mx-auto max-w-[18ch] text-balance text-[clamp(2.2rem,5vw,3.6rem)] font-bold leading-[1.02] tracking-[-0.02em]">
+            La tua raccolta merita di essere <span className="italic text-lime">completata.</span>
           </h2>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            Tutto quello che ti serve per chiudere l&apos;album, in un posto solo.
-          </p>
-        </div>
-
-        {/* bento grid */}
-        <div className="grid gap-4 md:grid-cols-2">
-          {/* card 1 — wide (col-span-2) */}
-          <div className="rounded-2xl border border-white/10 bg-[#0c100c] p-6 md:col-span-2">
-            <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-lime/10 p-2 text-lime">
-              <Wallet className="h-5 w-5" />
-            </div>
-            <h3 className="mb-2 font-display text-xl font-bold tracking-tight">Risparmia</h3>
-            <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
-              Smetti di comprare pacchetti alla cieca. Scambia i doppioni gratis e completa senza sprechi.
-            </p>
-          </div>
-
-          {/* card 2 */}
-          <div className="rounded-2xl border border-white/10 bg-[#0c100c] p-6">
-            <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-lime/10 p-2 text-lime">
-              <Layers className="h-5 w-5" />
-            </div>
-            <h3 className="mb-2 font-display text-xl font-bold tracking-tight">Trova le doppie</h3>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              Sai sempre cosa hai in più e cosa ti manca, aggiornato in tempo reale.
-            </p>
-          </div>
-
-          {/* card 3 */}
-          <div className="rounded-2xl border border-white/10 bg-[#0c100c] p-6">
-            <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-lime/10 p-2 text-lime">
-              <Users className="h-5 w-5" />
-            </div>
-            <h3 className="mb-2 font-display text-xl font-bold tracking-tight">Scambia con persone reali</h3>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              Connettiti con altri collezionisti e chiudi gli scambi giusti.
-            </p>
-          </div>
-
-          {/* card 4 */}
-          <div className="rounded-2xl border border-white/10 bg-[#0c100c] p-6 md:col-span-2">
-            <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-lime/10 p-2 text-lime">
-              <BookOpen className="h-5 w-5" />
-            </div>
-            <h3 className="mb-2 font-display text-xl font-bold tracking-tight">Album sempre aggiornato</h3>
-            <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
-              Un tocco e la collezione è in pari, ovunque tu sia.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── ALBUM IN EVIDENZA ── */}
-      <section className="mx-auto max-w-[1100px] px-6 py-16 md:py-24">
-        <div className="mb-10 flex flex-col gap-2">
-          <h2 className="font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl">
-            Album in evidenza
-          </h2>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            Gli album che puoi tracciare e scambiare già adesso.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {ALBUM_CATALOG.slice(0, 8).map((a) => (
-            <div
-              key={a.id}
-              className="relative aspect-[3/4] overflow-hidden rounded-xl border border-white/10 transition-colors hover:border-white/25"
-            >
-              {a.cover ? (
-                <img
-                  src={a.cover}
-                  alt={a.title}
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                />
-              ) : (
-                <div
-                  className="h-full w-full"
-                  style={{ background: `linear-gradient(135deg, ${a.c1}, ${a.c2})` }}
-                />
-              )}
-
-              {/* bottom overlay */}
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3">
-                <p className="truncate text-sm font-semibold leading-tight text-white drop-shadow">
-                  {a.title}
-                </p>
-                <span className="font-mono text-[10px] text-white/70">{a.total} figurine</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── FINAL CTA ── */}
-      <section className="mx-auto max-w-[1100px] px-6 py-16 md:py-24">
-        <div className="rounded-3xl border border-lime/20 bg-lime/[0.06] p-10 text-center md:p-14">
-          <h2 className="font-display text-4xl font-bold tracking-[-0.02em] md:text-5xl">
-            Inizia a chiudere l&apos;album
-          </h2>
-          <p className="mx-auto mt-4 max-w-[48ch] text-base leading-relaxed text-muted-foreground">
-            Traccia, scambia e completa — gratis, senza abbonamenti.
-          </p>
-          <div className="mt-8 flex justify-center">
+          <div className="mt-10">
             <Link
               to="/login?r=1"
-              className="flex items-center gap-2 rounded-xl bg-lime px-6 py-3 font-semibold text-lime-ink transition-[filter] hover:brightness-110"
+              className="inline-block rounded-lg bg-lime px-8 py-3.5 text-[15px] font-bold text-lime-ink transition-[filter] hover:brightness-105"
             >
-              Inizia gratis <ArrowRight className="h-4 w-4" />
+              Inizia gratis
             </Link>
           </div>
         </div>
@@ -243,36 +231,17 @@ export default function Landing() {
 
       {/* ── FOOTER ── */}
       <footer className="border-t border-white/10">
-        <div className="mx-auto max-w-[1100px] px-6 py-10">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <Link
-              to="/privacy"
-              className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Privacy
-            </Link>
-            <Link
-              to="/termini"
-              className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Termini
-            </Link>
-            <Link
-              to="/cookie"
-              className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Cookie
-            </Link>
-            <button
-              type="button"
-              onClick={manageCookies}
-              className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground transition-colors hover:text-foreground"
-            >
+        <div className="mx-auto flex max-w-[1080px] flex-col gap-5 px-6 py-9 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-muted-foreground">
+            <Link to="/privacy" className="transition-colors hover:text-foreground">Privacy</Link>
+            <Link to="/termini" className="transition-colors hover:text-foreground">Termini</Link>
+            <Link to="/cookie" className="transition-colors hover:text-foreground">Cookie</Link>
+            <button type="button" onClick={manageCookies} className="transition-colors hover:text-foreground">
               Gestisci cookie
             </button>
           </div>
-          <p className="mt-4 font-mono text-[10.5px] uppercase tracking-[0.1em] text-muted-foreground">
-            Non affiliato a Panini S.p.A. — strumento indipendente di tracking e scambio.
+          <p className="text-[12px] italic text-muted-foreground">
+            Non affiliato a Panini S.p.A. — strumento indipendente.
           </p>
         </div>
       </footer>
