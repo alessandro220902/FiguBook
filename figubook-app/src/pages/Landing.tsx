@@ -98,12 +98,20 @@ export default function Landing() {
             </span>
             <span className="text-xl font-extrabold tracking-tight">FiguBook</span>
           </Link>
-          <Link
-            to="/login"
-            className="rounded-lg px-4 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Accedi
-          </Link>
+          <div className="flex items-center gap-2.5">
+            <Link
+              to="/login"
+              className="rounded-lg border border-white/15 px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-white/30 hover:bg-white/5"
+            >
+              Accedi
+            </Link>
+            <Link
+              to="/login?r=1"
+              className="rounded-lg bg-lime px-4 py-2 text-sm font-bold text-lime-ink transition-[filter,transform] hover:brightness-110 active:translate-y-px"
+            >
+              Registrati
+            </Link>
+          </div>
         </div>
       </header>
 
