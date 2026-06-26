@@ -1,62 +1,23 @@
 import { Link } from 'react-router-dom'
 import { ALBUM_CATALOG } from '@/data/albumCatalog'
+import albumTeamImg from '@/assets/landing/album-team.png'
+import albumStatsImg from '@/assets/landing/album-stats.png'
 
 function manageCookies() {
   localStorage.removeItem('figubook.cookieConsent')
   location.reload()
 }
 
-// Mockup pagina album: 24 slot, alcuni presi, alcuni mancanti, qualche doppia.
-const MISSING = new Set([3, 7, 12, 16, 19, 23])
-const DOUBLES = new Set([2, 9, 14])
-
-function AlbumPage() {
+// Anteprima reale dell'app: screenshot della sezione album (squadra + statistiche).
+function AlbumPreview() {
   return (
-    <div className="w-full max-w-[380px] rounded-2xl border border-white/10 bg-[#0c100c] p-5 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.8)]">
-      {/* intestazione album */}
-      <div className="flex items-baseline justify-between border-b border-white/10 pb-3">
-        <div>
-          <p className="text-[17px] font-bold leading-none tracking-tight">Calciatori 2025/26</p>
-          <p className="mt-1 text-[12px] italic text-muted-foreground">Panini · 784 figurine</p>
-        </div>
-        <span className="rounded-full border border-lime/30 bg-lime/10 px-2.5 py-1 text-[11px] font-bold text-lime">
-          +1
-        </span>
-      </div>
-
-      {/* griglia slot */}
-      <div className="mt-4 grid grid-cols-6 gap-1.5">
-        {Array.from({ length: 24 }, (_, i) => i + 1).map((n) => {
-          const missing = MISSING.has(n)
-          const dbl = DOUBLES.has(n)
-          return (
-            <div
-              key={n}
-              className={
-                'relative grid aspect-[3/4] place-items-center rounded-[5px] text-[11px] font-semibold ' +
-                (missing
-                  ? 'border border-dashed border-white/15 text-white/25'
-                  : 'bg-gradient-to-b from-white/[0.16] to-white/[0.04] text-white/80 ring-1 ring-inset ring-white/10')
-              }
-            >
-              {missing ? n : <span className="opacity-60">{n}</span>}
-              {dbl && (
-                <span className="absolute -right-1 -top-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-lime text-[8px] font-bold text-lime-ink">
-                  2
-                </span>
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {/* avanzamento */}
-      <div className="mt-4 flex items-center gap-3">
-        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-          <div className="h-full w-[70%] rounded-full bg-lime" />
-        </div>
-        <span className="text-[12px] font-bold tabular-nums">549<span className="text-muted-foreground">/784</span></span>
-      </div>
+    <div className="flex flex-col gap-4">
+      <figure className="overflow-hidden rounded-xl border border-white/10 shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85)]">
+        <img src={albumTeamImg} alt="Sezione squadra: griglia figurine con doppie e mancanti" loading="lazy" className="block w-full" />
+      </figure>
+      <figure className="overflow-hidden rounded-xl border border-white/10 shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85)]">
+        <img src={albumStatsImg} alt="Statistiche album: completamento, possedute, mancanti, doppie" loading="lazy" className="block w-full" />
+      </figure>
     </div>
   )
 }
@@ -86,7 +47,7 @@ export default function Landing() {
     <div className="min-h-screen bg-[#080a08] text-[#f4efe6]">
       {/* ── NAV ── */}
       <header className="sticky top-0 z-30 border-b border-white/5 bg-[#080a08]/80 backdrop-blur">
-        <div className="mx-auto flex max-w-[1080px] items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-[1240px] items-center justify-between px-6 py-4">
           <Link to="/" className="flex items-center gap-2.5">
             <span className="grid h-8 w-8 -rotate-6 place-items-center rounded-[9px] bg-lime text-lg font-extrabold text-lime-ink">
               F
@@ -103,8 +64,8 @@ export default function Landing() {
       </header>
 
       {/* ── HERO ── */}
-      <section className="mx-auto max-w-[1080px] px-6 pb-20 pt-14 md:pb-28 md:pt-20">
-        <div className="grid items-center gap-x-12 gap-y-14 md:grid-cols-[1.05fr_0.95fr]">
+      <section className="mx-auto max-w-[1240px] px-6 pb-20 pt-14 md:pb-28 md:pt-20">
+        <div className="grid items-center gap-x-12 gap-y-14 md:grid-cols-2">
           <div>
             <h1 className="text-balance text-[clamp(2.6rem,6vw,4.4rem)] font-bold leading-[0.98] tracking-[-0.02em]">
               Chiudi l’album.{' '}
@@ -130,15 +91,15 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="flex justify-center md:justify-end">
-            <AlbumPage />
+          <div className="mx-auto w-full max-w-[460px] md:mx-0 md:ml-auto">
+            <AlbumPreview />
           </div>
         </div>
       </section>
 
       {/* ── FEATURES (blocco editoriale, niente card uguali) ── */}
       <section id="funziona" className="border-t border-white/8">
-        <div className="mx-auto max-w-[1080px] px-6 py-20 md:py-28">
+        <div className="mx-auto max-w-[1240px] px-6 py-20 md:py-28">
           <h2 className="max-w-[16ch] text-balance text-[clamp(1.9rem,4vw,3rem)] font-bold leading-[1.04] tracking-[-0.02em]">
             Collezionare senza il quaderno dei numeri.
           </h2>
@@ -164,7 +125,7 @@ export default function Landing() {
 
       {/* ── ALBUM (scaffale copertine) ── */}
       <section className="border-t border-white/8 bg-[#0b0f0b]">
-        <div className="mx-auto max-w-[1080px] px-6 py-20 md:py-28">
+        <div className="mx-auto max-w-[1240px] px-6 py-20 md:py-28">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <h2 className="text-[clamp(1.9rem,4vw,3rem)] font-bold leading-[1.04] tracking-[-0.02em]">
               Album che puoi tracciare oggi
@@ -214,7 +175,7 @@ export default function Landing() {
 
       {/* ── CTA FINALE ── */}
       <section className="border-t border-white/8">
-        <div className="mx-auto max-w-[1080px] px-6 py-24 text-center md:py-32">
+        <div className="mx-auto max-w-[1240px] px-6 py-24 text-center md:py-32">
           <h2 className="mx-auto max-w-[18ch] text-balance text-[clamp(2.2rem,5vw,3.6rem)] font-bold leading-[1.02] tracking-[-0.02em]">
             La tua raccolta merita di essere <span className="italic text-lime">completata.</span>
           </h2>
@@ -231,7 +192,7 @@ export default function Landing() {
 
       {/* ── FOOTER ── */}
       <footer className="border-t border-white/10">
-        <div className="mx-auto flex max-w-[1080px] flex-col gap-5 px-6 py-9 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex max-w-[1240px] flex-col gap-5 px-6 py-9 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-muted-foreground">
             <Link to="/privacy" className="transition-colors hover:text-foreground">Privacy</Link>
             <Link to="/termini" className="transition-colors hover:text-foreground">Termini</Link>
