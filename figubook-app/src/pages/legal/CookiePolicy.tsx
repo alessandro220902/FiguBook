@@ -37,7 +37,7 @@ export default function CookiePolicy() {
       </Section>
 
       <Section heading="Contatti">
-        <p>Per domande sui cookie scrivi a <b>[EMAIL_CONTATTO]</b>.</p>
+        <p>Per domande sui cookie scrivi a <b>figubook@outlook.com</b>.</p>
       </Section>
     </LegalPage>
   )

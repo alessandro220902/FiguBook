@@ -69,7 +69,7 @@ export default function Termini() {
       </Section>
 
       <Section heading="Contatti">
-        <p>Per qualsiasi domanda scrivi a <b>[EMAIL_CONTATTO]</b>.</p>
+        <p>Per qualsiasi domanda scrivi a <b>figubook@outlook.com</b>.</p>
       </Section>
     </LegalPage>
   )

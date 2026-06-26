@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
       <Section heading="Titolare del trattamento">
         <p>
           Il titolare del trattamento è Alessandro Gelo, in qualità di persona fisica. Per qualsiasi
-          richiesta relativa ai tuoi dati puoi scrivere a <b>[EMAIL_CONTATTO]</b>.
+          richiesta relativa ai tuoi dati puoi scrivere a <b>figubook@outlook.com</b>.
         </p>
       </Section>
 
@@ -63,7 +63,7 @@ export default function PrivacyPolicy() {
         <p>
           Hai diritto di accedere ai tuoi dati, rettificarli, cancellarli, limitarne il trattamento,
           opporti e richiederne la portabilità (artt. 15-22 GDPR). Per esercitarli scrivi a{' '}
-          <b>[EMAIL_CONTATTO]</b>. Hai inoltre diritto di reclamo al Garante per la protezione dei
+          <b>figubook@outlook.com</b>. Hai inoltre diritto di reclamo al Garante per la protezione dei
           dati personali (www.garanteprivacy.it).
         </p>
       </Section>
