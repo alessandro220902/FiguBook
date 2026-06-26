@@ -8,16 +8,27 @@ function manageCookies() {
   location.reload()
 }
 
-// Anteprima reale dell'app: screenshot della sezione album (squadra + statistiche).
+// Anteprima reale dell'app: screenshot della sezione album (squadra + statistiche),
+// dentro una cornice "finestra app" per dare contesto.
+function PreviewFrame({ src, alt, caption }: { src: string; alt: string; caption: string }) {
+  return (
+    <figure className="overflow-hidden rounded-xl border border-white/10 bg-[#0c100c] shadow-[0_30px_80px_-28px_rgba(0,0,0,0.9)]">
+      <div className="flex items-center gap-1.5 border-b border-white/8 px-3 py-2">
+        <span className="h-2 w-2 rounded-full bg-white/20" />
+        <span className="h-2 w-2 rounded-full bg-white/20" />
+        <span className="h-2 w-2 rounded-full bg-white/20" />
+        <figcaption className="ml-2 text-[11px] font-medium tracking-tight text-muted-foreground">{caption}</figcaption>
+      </div>
+      <img src={src} alt={alt} loading="lazy" className="block w-full" />
+    </figure>
+  )
+}
+
 function AlbumPreview() {
   return (
     <div className="flex flex-col gap-4">
-      <figure className="overflow-hidden rounded-xl border border-white/10 shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85)]">
-        <img src={albumTeamImg} alt="Sezione squadra: griglia figurine con doppie e mancanti" loading="lazy" className="block w-full" />
-      </figure>
-      <figure className="overflow-hidden rounded-xl border border-white/10 shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85)]">
-        <img src={albumStatsImg} alt="Statistiche album: completamento, possedute, mancanti, doppie" loading="lazy" className="block w-full" />
-      </figure>
+      <PreviewFrame src={albumTeamImg} alt="Sezione squadra: griglia figurine con doppie e mancanti" caption="Album · Sezione squadra" />
+      <PreviewFrame src={albumStatsImg} alt="Statistiche album: completamento, possedute, mancanti, doppie" caption="Album · Statistiche" />
     </div>
   )
 }
@@ -124,7 +135,7 @@ export default function Landing() {
       </section>
 
       {/* ── ALBUM (scaffale copertine) ── */}
-      <section className="border-t border-white/8 bg-[#0b0f0b]">
+      <section className="border-y border-white/10 bg-[#0e130e]">
         <div className="mx-auto max-w-[1240px] px-6 py-20 md:py-28">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <h2 className="text-[clamp(1.9rem,4vw,3rem)] font-bold leading-[1.04] tracking-[-0.02em]">
@@ -152,8 +163,9 @@ export default function Landing() {
                     style={{ background: `linear-gradient(150deg, ${a.c1}, ${a.c2})` }}
                   />
                 )}
-                {/* vignetta per leggibilità */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-black/25" />
+                {/* vignetta per leggibilità + ring interno per tattilità */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/30" />
+                <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-white/10" />
                 {/* contenuto copertina */}
                 <div className="absolute inset-0 flex flex-col justify-between p-4">
                   <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/75">
