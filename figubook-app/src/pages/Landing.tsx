@@ -19,7 +19,6 @@ export default function Landing() {
           <Link
             to="/login"
             className="rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#f4efe6] transition-colors hover:border-white/25 hover:bg-white/5"
-            style={{ outline: 'none' }}
           >
             Accedi
           </Link>
@@ -39,7 +38,7 @@ export default function Landing() {
 
             <h1 className="m-0 font-display text-5xl font-bold leading-[1.04] tracking-[-0.03em] md:text-6xl">
               Chiudi l&apos;album{' '}
-              <em className="block font-serif italic font-normal text-lime not-italic">
+              <em className="block font-serif font-normal italic text-lime">
                 senza comprare pacchetti alla cieca.
               </em>
             </h1>
@@ -53,14 +52,12 @@ export default function Landing() {
               <Link
                 to="/login"
                 className="flex items-center gap-2 rounded-xl bg-lime px-5 py-3 font-semibold text-lime-ink transition-[filter] hover:brightness-110"
-                style={{ outline: 'none' }}
               >
                 Inizia gratis <ArrowRight className="h-4 w-4" />
               </Link>
               <a
                 href="#funziona"
                 className="flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 font-semibold text-[#f4efe6] transition-colors hover:border-white/30 hover:bg-white/5"
-                style={{ outline: 'none' }}
               >
                 Scopri come funziona
               </a>
