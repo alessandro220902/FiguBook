@@ -3,6 +3,9 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { AppLayout } from '@/components/layout/AppLayout'
 import Login from '@/pages/Login'
 import VerificaEmail from '@/pages/VerificaEmail'
+import PrivacyPolicy from '@/pages/legal/PrivacyPolicy'
+import Termini from '@/pages/legal/Termini'
+import CookiePolicy from '@/pages/legal/CookiePolicy'
 import Home from '@/pages/Home'
 import Album from '@/pages/Album'
 import AlbumList from '@/pages/AlbumList'
@@ -17,6 +20,9 @@ export default function App() {
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/verifica" element={<VerificaEmail />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
+      <Route path="/termini" element={<Termini />} />
+      <Route path="/cookie" element={<CookiePolicy />} />
       <Route
         element={
           <ProtectedRoute>

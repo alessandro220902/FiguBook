@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -368,8 +368,8 @@ export default function Login() {
                 />
                 <span className="text-[13px] leading-snug text-card-foreground">
                   Confermo di avere almeno <b>14 anni</b> e accetto i{' '}
-                  <a href="#" className="font-semibold underline underline-offset-2">Termini di servizio</a> e la{' '}
-                  <a href="#" className="font-semibold underline underline-offset-2">Privacy Policy</a>.
+                  <Link to="/termini" className="font-semibold underline underline-offset-2">Termini di servizio</Link> e la{' '}
+                  <Link to="/privacy" className="font-semibold underline underline-offset-2">Privacy Policy</Link>.
                 </span>
               </label>
 
