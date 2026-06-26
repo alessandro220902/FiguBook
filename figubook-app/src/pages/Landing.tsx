@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Wallet, Layers, Users, BookOpen } from 'lucide-react'
+import { ALBUM_CATALOG } from '@/data/albumCatalog'
 
 export default function Landing() {
   return (
@@ -169,6 +170,49 @@ export default function Landing() {
               Un tocco e la collezione è in pari, ovunque tu sia.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* ── ALBUM IN EVIDENZA ── */}
+      <section className="mx-auto max-w-[1100px] px-6 py-16 md:py-24">
+        <div className="mb-10 flex flex-col gap-2">
+          <h2 className="font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl">
+            Album in evidenza
+          </h2>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Gli album che puoi tracciare e scambiare già adesso.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {ALBUM_CATALOG.slice(0, 8).map((a) => (
+            <div
+              key={a.id}
+              className="relative aspect-[3/4] overflow-hidden rounded-xl border border-white/10"
+            >
+              {a.cover ? (
+                <img
+                  src={a.cover}
+                  alt={a.title}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div
+                  className="h-full w-full"
+                  style={{ background: `linear-gradient(135deg, ${a.c1}, ${a.c2})` }}
+                />
+              )}
+
+              {/* bottom overlay */}
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                <p className="truncate text-sm font-semibold leading-tight text-white drop-shadow">
+                  {a.title}
+                </p>
+                <span className="font-mono text-[10px] text-white/70">{a.total} figurine</span>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>
