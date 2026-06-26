@@ -57,6 +57,14 @@ skill estetiche (frontend-design + minimalismo) in implementazione.
 6. **Footer** — link Privacy / Termini / Cookie + "Gestisci cookie" (riapre il banner /
    imposta consenso) + disclaimer "Non affiliato a Panini S.p.A.".
 
+## Riferimenti 21st.dev (ispirazione, da adattare al brand)
+
+- Hero: https://21st.dev/community/components/mikolajdobrucki/hero-section/default
+- Feature/Album (bento): https://21st.dev/aceternity/feature-section-with-bento-grid
+
+Non si importano i pacchetti as-is: si riprende la struttura/impaginazione e si
+riveste con i token FiguBook (dark `#080a08`, lime, font display). Mockup CSS nostri.
+
 ## Componenti / file
 
 - `src/pages/Landing.tsx` — pagina, composta da sezioni locali (Nav, Hero, Features,
