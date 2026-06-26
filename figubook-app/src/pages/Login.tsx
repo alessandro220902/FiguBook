@@ -2,10 +2,8 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   signInWithPopup,
   getAdditionalUserInfo,
-  updateProfile,
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
@@ -16,6 +14,8 @@ import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react'
 import { auth, db, googleProvider } from '@/lib/firebase'
 import { mapFirebaseError } from '@/lib/authErrors'
 import { useAuth } from '@/hooks/useAuth'
+import { registerWithEmail } from '@/lib/auth/register'
+import { needsVerification } from '@/lib/auth/verification'
 
 // sfondo dot-matrix caricato lazy (porta three.js fuori dal bundle iniziale)
 const CanvasRevealEffect = lazy(() =>
@@ -81,7 +81,9 @@ export default function Login() {
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    if (!loading && user) navigate('/home', { replace: true })
+    if (!loading && user) {
+      navigate(needsVerification(user) ? '/verifica' : '/home', { replace: true })
+    }
   }, [loading, user, navigate])
 
   useEffect(() => {
@@ -109,21 +111,14 @@ export default function Login() {
     setRegErr('')
     setBusy(true)
     try {
-      await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence)
       const username = regUser.trim()
       if (!username) {
         setRegErr('Inserisci un nome utente.')
         setBusy(false)
         return
       }
-      const cred = await createUserWithEmailAndPassword(auth, regEmail.trim(), regPass)
-      await updateProfile(cred.user, { displayName: username })
-      await setDoc(
-        doc(db, 'users', cred.user.uid, 'meta', 'profile'),
-        { displayName: username, username, ts: Date.now() },
-        { merge: true },
-      )
-      navigate('/home', { replace: true })
+      await registerWithEmail({ username, email: regEmail.trim(), password: regPass, remember })
+      navigate('/verifica', { replace: true })
     } catch (err) {
       setRegErr(mapFirebaseError((err as { code?: string }).code))
     } finally {

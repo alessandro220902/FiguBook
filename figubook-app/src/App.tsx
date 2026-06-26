@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { AppLayout } from '@/components/layout/AppLayout'
 import Login from '@/pages/Login'
+import VerificaEmail from '@/pages/VerificaEmail'
 import Home from '@/pages/Home'
 import Album from '@/pages/Album'
 import AlbumList from '@/pages/AlbumList'
@@ -15,6 +16,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/verifica" element={<VerificaEmail />} />
       <Route
         element={
           <ProtectedRoute>

@@ -1,8 +1,10 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import { needsVerification } from '@/lib/auth/verification'
 
 // Guardia rotte private: replica l'auth-guard globale del sito vecchio
 // (firebase-init.js redirigeva a benvenuto). Non autenticato -> /login.
+// Account email/password non verificato (post-cutoff) -> /verifica.
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
   if (loading)
@@ -12,5 +14,6 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
       </div>
     )
   if (!user) return <Navigate to="/login" replace />
+  if (needsVerification(user)) return <Navigate to="/verifica" replace />
   return <>{children}</>
 }
