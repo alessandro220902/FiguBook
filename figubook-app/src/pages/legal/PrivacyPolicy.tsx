@@ -11,7 +11,7 @@ export default function PrivacyPolicy() {
 
       <Section heading="Titolare del trattamento">
         <p>
-          Il titolare del trattamento è [NOME E COGNOME], in qualità di persona fisica. Per qualsiasi
+          Il titolare del trattamento è Alessandro Gelo, in qualità di persona fisica. Per qualsiasi
           richiesta relativa ai tuoi dati puoi scrivere a <b>[EMAIL_CONTATTO]</b>.
         </p>
       </Section>
