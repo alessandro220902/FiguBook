@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -61,8 +61,9 @@ type Mode = 'login' | 'register'
 export default function Login() {
   const navigate = useNavigate()
   const { user, loading } = useAuth()
+  const [params] = useSearchParams()
 
-  const [mode, setMode] = useState<Mode>('login')
+  const [mode, setMode] = useState<Mode>(params.get('r') === '1' ? 'register' : 'login')
   const [slogIdx, setSlogIdx] = useState(0)
 
   const [loginEmail, setLoginEmail] = useState('')

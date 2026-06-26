@@ -56,7 +56,7 @@ export default function Landing() {
             {/* CTA row */}
             <div className="flex flex-wrap gap-3">
               <Link
-                to="/login"
+                to="/login?r=1"
                 className="flex items-center gap-2 rounded-xl bg-lime px-5 py-3 font-semibold text-lime-ink transition-[filter] hover:brightness-110"
               >
                 Inizia gratis <ArrowRight className="h-4 w-4" />
@@ -232,7 +232,7 @@ export default function Landing() {
           </p>
           <div className="mt-8 flex justify-center">
             <Link
-              to="/login"
+              to="/login?r=1"
               className="flex items-center gap-2 rounded-xl bg-lime px-6 py-3 font-semibold text-lime-ink transition-[filter] hover:brightness-110"
             >
               Inizia gratis <ArrowRight className="h-4 w-4" />
