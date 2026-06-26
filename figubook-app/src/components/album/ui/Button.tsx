@@ -16,7 +16,7 @@ const BASE =
   'disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100'
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-lime text-lime-ink hover:brightness-105',
+  primary: 'border border-lime text-lime hover:bg-lime/10',
   ghost: 'border border-border bg-transparent text-ink hover:bg-muted',
 }
 

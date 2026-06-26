@@ -27,7 +27,7 @@ export function Pagination({ page, totalPages, onChange }: PaginationProps) {
             onClick={() => onChange(p)}
             aria-label={`Pagina ${p}`}
             aria-current={on ? 'page' : undefined}
-            className={cn(btn, on && 'border-lime bg-lime text-lime-ink hover:text-lime-ink')}
+            className={cn(btn, on && 'border-lime text-lime hover:text-lime')}
           >
             {p}
           </button>

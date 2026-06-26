@@ -107,7 +107,7 @@ export default function Landing() {
             </Link>
             <Link
               to="/login?r=1"
-              className="rounded-lg bg-lime px-4 py-2 text-sm font-bold text-lime-ink transition-[filter,transform] hover:brightness-110 active:translate-y-px"
+              className="rounded-lg border border-lime px-4 py-2 text-sm font-bold text-lime transition-colors hover:bg-lime/10 active:translate-y-px"
             >
               Registrati
             </Link>
@@ -130,7 +130,7 @@ export default function Landing() {
             <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
               <Link
                 to="/login?r=1"
-                className="rounded-lg bg-lime px-6 py-3 text-[15px] font-bold text-lime-ink transition-[filter,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:brightness-105 active:scale-[0.98]"
+                className="rounded-lg border border-lime px-6 py-3 text-[15px] font-bold text-lime transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-lime/10 active:scale-[0.98]"
               >
                 Inizia gratis
               </Link>
@@ -249,7 +249,7 @@ export default function Landing() {
           <div className="mt-10">
             <Link
               to="/login?r=1"
-              className="inline-block rounded-lg bg-lime px-8 py-3.5 text-[15px] font-bold text-lime-ink transition-[filter,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:brightness-105 active:scale-[0.98]"
+              className="inline-block rounded-lg border border-lime px-8 py-3.5 text-[15px] font-bold text-lime transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-lime/10 active:scale-[0.98]"
             >
               Inizia gratis
             </Link>

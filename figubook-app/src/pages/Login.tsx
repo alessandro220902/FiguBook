@@ -421,7 +421,7 @@ function PrimaryButton({ label, busy, disabled }: { label: string; busy: boolean
     <button
       type="submit"
       disabled={busy || disabled}
-      className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-lime py-3.5 font-semibold text-lime-ink transition-[filter,transform] hover:brightness-110 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
+      className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl border border-lime py-3.5 font-semibold text-lime transition-[filter,transform] hover:bg-lime/10 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
     >
       {label} <ArrowRight className="h-4 w-4" />
     </button>

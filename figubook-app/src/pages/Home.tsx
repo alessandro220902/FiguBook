@@ -50,7 +50,7 @@ export default function Home() {
           <button
             type="button"
             onClick={retry}
-            className="mt-5 rounded-lg bg-lime px-5 py-2.5 text-sm font-medium text-lime-ink transition-transform duration-150 hover:-translate-y-px active:scale-95"
+            className="mt-5 rounded-lg border border-lime px-5 py-2.5 text-sm font-medium text-lime transition-transform duration-150 hover:-translate-y-px active:scale-95"
           >
             Riprova
           </button>
@@ -63,7 +63,7 @@ export default function Home() {
           </p>
           <Link
             to="/album"
-            className="mt-5 rounded-lg bg-lime px-5 py-2.5 text-sm font-medium text-lime-ink transition-transform duration-150 hover:-translate-y-px active:scale-95"
+            className="mt-5 rounded-lg border border-lime px-5 py-2.5 text-sm font-medium text-lime transition-transform duration-150 hover:-translate-y-px active:scale-95"
           >
             Aggiungi il primo album
           </Link>

@@ -31,7 +31,7 @@ export function CookieBanner() {
       <div className="mt-3 flex gap-2">
         <button
           onClick={() => choose('granted')}
-          className="flex-1 rounded-lg bg-lime-400 px-4 py-2 text-[13px] font-semibold text-black transition-colors hover:bg-lime-300"
+          className="flex-1 rounded-lg border border-lime px-4 py-2 text-[13px] font-semibold text-lime transition-colors hover:bg-lime/10"
           style={{ outline: 'none' }}
         >
           Accetta
