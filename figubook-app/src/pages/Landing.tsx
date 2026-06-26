@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Wallet, Layers, Users, BookOpen } from 'lucide-react'
 
 export default function Landing() {
   return (
@@ -108,6 +108,66 @@ export default function Landing() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FEATURES ── */}
+      <section id="funziona" className="mx-auto max-w-[1100px] px-6 py-16 md:py-24">
+        {/* heading */}
+        <div className="mb-10 flex flex-col gap-2">
+          <h2 className="font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl">
+            Come funziona
+          </h2>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Tutto quello che ti serve per chiudere l&apos;album, in un posto solo.
+          </p>
+        </div>
+
+        {/* bento grid */}
+        <div className="grid gap-4 md:grid-cols-2">
+          {/* card 1 — wide (col-span-2) */}
+          <div className="rounded-2xl border border-white/10 bg-[#0c100c] p-6 md:col-span-2">
+            <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-lime/10 p-2 text-lime">
+              <Wallet className="h-5 w-5" />
+            </div>
+            <h3 className="mb-2 font-display text-xl font-bold tracking-tight">Risparmia</h3>
+            <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
+              Smetti di comprare pacchetti alla cieca. Scambia i doppioni gratis e completa senza sprechi.
+            </p>
+          </div>
+
+          {/* card 2 */}
+          <div className="rounded-2xl border border-white/10 bg-[#0c100c] p-6">
+            <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-lime/10 p-2 text-lime">
+              <Layers className="h-5 w-5" />
+            </div>
+            <h3 className="mb-2 font-display text-xl font-bold tracking-tight">Trova le doppie</h3>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Sai sempre cosa hai in più e cosa ti manca, aggiornato in tempo reale.
+            </p>
+          </div>
+
+          {/* card 3 */}
+          <div className="rounded-2xl border border-white/10 bg-[#0c100c] p-6">
+            <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-lime/10 p-2 text-lime">
+              <Users className="h-5 w-5" />
+            </div>
+            <h3 className="mb-2 font-display text-xl font-bold tracking-tight">Scambia con persone reali</h3>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Connettiti con altri collezionisti e chiudi gli scambi giusti.
+            </p>
+          </div>
+
+          {/* card 4 */}
+          <div className="rounded-2xl border border-white/10 bg-[#0c100c] p-6 md:col-span-2">
+            <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-lime/10 p-2 text-lime">
+              <BookOpen className="h-5 w-5" />
+            </div>
+            <h3 className="mb-2 font-display text-xl font-bold tracking-tight">Album sempre aggiornato</h3>
+            <p className="max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
+              Un tocco e la collezione è in pari, ovunque tu sia.
+            </p>
           </div>
         </div>
       </section>
