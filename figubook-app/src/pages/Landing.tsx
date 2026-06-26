@@ -182,40 +182,50 @@ export default function Landing() {
 
           <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-5">
             {covers.map((a, i) => (
-              <Reveal
-                key={a.id}
-                delay={(i % 3) * 80}
-                className="group relative aspect-[3/4] overflow-hidden rounded-xl border border-white/10 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1"
-              >
-                {a.cover ? (
-                  <img
-                    src={a.cover}
-                    alt={a.title}
-                    loading="lazy"
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                ) : (
-                  <div
-                    className="absolute inset-0"
-                    style={{ background: `linear-gradient(150deg, ${a.c1}, ${a.c2})` }}
-                  />
-                )}
-                {/* vignetta per leggibilità + ring interno per tattilità */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/30" />
-                <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-white/10" />
-                {/* contenuto copertina */}
-                <div className="absolute inset-0 flex flex-col justify-between p-4">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/75">
-                    {a.editor}
-                  </span>
-                  <div>
-                    <h3 className="text-balance text-[19px] font-bold leading-[1.05] tracking-tight text-white drop-shadow">
-                      {a.title}
-                    </h3>
-                    <div className="mt-1.5 h-px w-8 bg-lime" />
-                    <p className="mt-1.5 text-[12px] italic text-white/70">{a.total} figurine</p>
+              <Reveal key={a.id} delay={(i % 3) * 80}>
+                <Link
+                  to="/login?r=1"
+                  aria-label={`Traccia ${a.title}`}
+                  className="group relative block aspect-[3/4] overflow-hidden rounded-xl border border-white/10 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1"
+                >
+                  {a.cover ? (
+                    <img
+                      src={a.cover}
+                      alt={a.title}
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                    />
+                  ) : (
+                    <div
+                      className="absolute inset-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
+                      style={{ background: `linear-gradient(150deg, ${a.c1}, ${a.c2})` }}
+                    />
+                  )}
+                  {/* vignetta per leggibilità + ring interno per tattilità */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/30" />
+                  <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-white/10" />
+                  {/* contenuto copertina */}
+                  <div className="absolute inset-0 flex flex-col justify-between p-4">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/75">
+                      {a.editor}
+                    </span>
+                    <div>
+                      <h3 className="text-balance text-[19px] font-bold leading-[1.05] tracking-tight text-white drop-shadow">
+                        {a.title}
+                      </h3>
+                      <div className="mt-1.5 h-px w-8 bg-lime transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:w-16" />
+                      {/* delight: lo stato a riposo mostra il conteggio, l'hover invita all'azione */}
+                      <div className="mt-1.5 grid">
+                        <p className="col-start-1 row-start-1 text-[12px] italic text-white/70 transition-opacity duration-300 group-hover:opacity-0">
+                          {a.total} figurine
+                        </p>
+                        <p className="col-start-1 row-start-1 translate-y-1 text-[12px] font-semibold text-lime opacity-0 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0 group-hover:opacity-100">
+                          Traccia questo album →
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </Link>
               </Reveal>
             ))}
           </div>
