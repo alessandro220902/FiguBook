@@ -1,5 +1,8 @@
+import { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { CookieBanner } from '@/components/CookieBanner'
+import { initConsentedAnalytics } from '@/lib/consent'
 import { AppLayout } from '@/components/layout/AppLayout'
 import Login from '@/pages/Login'
 import VerificaEmail from '@/pages/VerificaEmail'
@@ -15,7 +18,12 @@ import Cerca from '@/pages/Cerca'
 import Notifiche from '@/pages/Notifiche'
 
 export default function App() {
+  useEffect(() => {
+    initConsentedAnalytics()
+  }, [])
+
   return (
+    <>
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
@@ -39,5 +47,7 @@ export default function App() {
         <Route path="/notifiche" element={<Notifiche />} />
       </Route>
     </Routes>
+    <CookieBanner />
+    </>
   )
 }
