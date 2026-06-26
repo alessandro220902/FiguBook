@@ -14,12 +14,12 @@ export default function Landing() {
       <header className="border-b border-white/5">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between px-6 py-4">
           {/* Logo */}
-          <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3">
             <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">
               F
             </span>
             <span className="font-display text-xl font-extrabold tracking-tight">FiguBook</span>
-          </div>
+          </Link>
 
           {/* Accedi */}
           <Link
@@ -99,7 +99,7 @@ export default function Landing() {
               </div>
 
               {/* sub-stats */}
-              <div className="mt-5 grid grid-cols-3 gap-3 border-t border-white/8 pt-5">
+              <div className="mt-5 grid grid-cols-3 gap-3 border-t border-white/10 pt-5">
                 {[
                   { label: 'Possedute', value: '549' },
                   { label: 'Mancanti', value: '235' },
@@ -193,7 +193,7 @@ export default function Landing() {
           {ALBUM_CATALOG.slice(0, 8).map((a) => (
             <div
               key={a.id}
-              className="relative aspect-[3/4] overflow-hidden rounded-xl border border-white/10"
+              className="relative aspect-[3/4] overflow-hidden rounded-xl border border-white/10 transition-colors hover:border-white/25"
             >
               {a.cover ? (
                 <img
