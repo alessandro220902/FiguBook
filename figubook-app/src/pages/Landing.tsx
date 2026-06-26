@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ALBUM_CATALOG } from '@/data/albumCatalog'
 import albumTeamImg from '@/assets/landing/album-team.png'
@@ -6,6 +7,38 @@ import albumStatsImg from '@/assets/landing/album-stats.png'
 function manageCookies() {
   localStorage.removeItem('figubook.cookieConsent')
   location.reload()
+}
+
+const EASE = 'cubic-bezier(0.16,1,0.3,1)'
+
+// Entrata fade-up al primo ingresso in viewport. Rispetta prefers-reduced-motion
+// e ha un fallback timer: il contenuto non resta mai invisibile (anche headless).
+function Reveal({ children, delay = 0, className }: { children: ReactNode; delay?: number; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [shown, setShown] = useState(false)
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setShown(true); return }
+    const el = ref.current
+    const io = el
+      ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { setShown(true); io!.disconnect() } }), { threshold: 0.12, rootMargin: '0px 0px -8% 0px' })
+      : null
+    if (el && io) io.observe(el)
+    const t = setTimeout(() => setShown(true), 900) // fallback anti-blank
+    return () => { io?.disconnect(); clearTimeout(t) }
+  }, [])
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: shown ? 1 : 0,
+        transform: shown ? 'none' : 'translateY(16px)',
+        transition: `opacity 700ms ${EASE} ${delay}ms, transform 700ms ${EASE} ${delay}ms`,
+      }}
+    >
+      {children}
+    </div>
+  )
 }
 
 // Anteprima reale dell'app: screenshot della sezione album (squadra + statistiche),
@@ -77,7 +110,7 @@ export default function Landing() {
       {/* ── HERO ── */}
       <section className="mx-auto max-w-[1240px] px-6 pb-20 pt-14 md:pb-28 md:pt-20">
         <div className="grid items-center gap-x-12 gap-y-14 md:grid-cols-2">
-          <div>
+          <Reveal>
             <h1 className="text-balance text-[clamp(2.6rem,6vw,4.4rem)] font-bold leading-[0.98] tracking-[-0.02em]">
               Chiudi l’album.{' '}
               <span className="italic text-lime">Una doppia alla volta.</span>
@@ -89,7 +122,7 @@ export default function Landing() {
             <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
               <Link
                 to="/login?r=1"
-                className="rounded-lg bg-lime px-6 py-3 text-[15px] font-bold text-lime-ink transition-[filter] hover:brightness-105"
+                className="rounded-lg bg-lime px-6 py-3 text-[15px] font-bold text-lime-ink transition-[filter,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:brightness-105 active:scale-[0.98]"
               >
                 Inizia gratis
               </Link>
@@ -100,24 +133,27 @@ export default function Landing() {
                 Scopri come funziona
               </a>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="mx-auto w-full max-w-[460px] md:mx-0 md:ml-auto">
+          <Reveal delay={120} className="mx-auto w-full max-w-[460px] md:mx-0 md:ml-auto">
             <AlbumPreview />
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ── FEATURES (blocco editoriale, niente card uguali) ── */}
       <section id="funziona" className="border-t border-white/8">
         <div className="mx-auto max-w-[1240px] px-6 py-20 md:py-28">
-          <h2 className="max-w-[16ch] text-balance text-[clamp(1.9rem,4vw,3rem)] font-bold leading-[1.04] tracking-[-0.02em]">
-            Collezionare senza il quaderno dei numeri.
-          </h2>
+          <Reveal>
+            <h2 className="max-w-[16ch] text-balance text-[clamp(1.9rem,4vw,3rem)] font-bold leading-[1.04] tracking-[-0.02em]">
+              Collezionare senza il quaderno dei numeri.
+            </h2>
+          </Reveal>
           <div className="mt-12 grid border-t border-white/10 sm:grid-cols-2">
             {FEATURES.map((f, i) => (
-              <div
+              <Reveal
                 key={f.t}
+                delay={(i % 2) * 90}
                 className={
                   'border-b border-white/10 py-8 sm:py-10 ' +
                   (i % 2 === 0 ? 'sm:border-r sm:pr-10' : 'sm:pl-10')
@@ -128,7 +164,7 @@ export default function Landing() {
                   {f.t}
                 </h3>
                 <p className="mt-3 max-w-[48ch] text-[15px] leading-relaxed text-ink-2">{f.d}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -145,10 +181,11 @@ export default function Landing() {
           </div>
 
           <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-5">
-            {covers.map((a) => (
-              <article
+            {covers.map((a, i) => (
+              <Reveal
                 key={a.id}
-                className="group relative aspect-[3/4] overflow-hidden rounded-xl border border-white/10 transition-transform duration-300 hover:-translate-y-1"
+                delay={(i % 3) * 80}
+                className="group relative aspect-[3/4] overflow-hidden rounded-xl border border-white/10 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1"
               >
                 {a.cover ? (
                   <img
@@ -179,7 +216,7 @@ export default function Landing() {
                     <p className="mt-1.5 text-[12px] italic text-white/70">{a.total} figurine</p>
                   </div>
                 </div>
-              </article>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -187,19 +224,19 @@ export default function Landing() {
 
       {/* ── CTA FINALE ── */}
       <section className="border-t border-white/8">
-        <div className="mx-auto max-w-[1240px] px-6 py-24 text-center md:py-32">
+        <Reveal className="mx-auto max-w-[1240px] px-6 py-24 text-center md:py-32">
           <h2 className="mx-auto max-w-[18ch] text-balance text-[clamp(2.2rem,5vw,3.6rem)] font-bold leading-[1.02] tracking-[-0.02em]">
             La tua raccolta merita di essere <span className="italic text-lime">completata.</span>
           </h2>
           <div className="mt-10">
             <Link
               to="/login?r=1"
-              className="inline-block rounded-lg bg-lime px-8 py-3.5 text-[15px] font-bold text-lime-ink transition-[filter] hover:brightness-105"
+              className="inline-block rounded-lg bg-lime px-8 py-3.5 text-[15px] font-bold text-lime-ink transition-[filter,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:brightness-105 active:scale-[0.98]"
             >
               Inizia gratis
             </Link>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* ── FOOTER ── */}
