@@ -11,9 +11,9 @@ describe('AlbumButton', () => {
     expect(onClick).toHaveBeenCalledOnce()
   })
 
-  it('primary usa fill lime, ghost usa bordo', () => {
+  it('primary usa bordo+testo lime, ghost usa bordo', () => {
     const { rerender } = render(<AlbumButton variant="primary">P</AlbumButton>)
-    expect(screen.getByRole('button')).toHaveClass('bg-lime')
+    expect(screen.getByRole('button')).toHaveClass('text-lime')
     rerender(<AlbumButton variant="ghost">G</AlbumButton>)
     expect(screen.getByRole('button')).toHaveClass('border')
   })

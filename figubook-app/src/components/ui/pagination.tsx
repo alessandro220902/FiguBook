@@ -8,7 +8,7 @@ export interface PaginationProps {
 }
 
 const btn =
-  'inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-white/10 px-2 text-sm font-medium text-ink-2 transition-colors hover:text-ink disabled:pointer-events-none disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime'
+  'inline-flex h-9 min-w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] px-2 text-sm font-medium text-ink-2 transition-[background-color,border-color,color] hover:bg-white/10 hover:text-ink disabled:pointer-events-none disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime'
 
 export function Pagination({ page, totalPages, onChange }: PaginationProps) {
   if (totalPages <= 1) return null
@@ -27,7 +27,7 @@ export function Pagination({ page, totalPages, onChange }: PaginationProps) {
             onClick={() => onChange(p)}
             aria-label={`Pagina ${p}`}
             aria-current={on ? 'page' : undefined}
-            className={cn(btn, on && 'border-lime text-lime hover:text-lime')}
+            className={cn(btn, on && 'border-transparent bg-white text-neutral-900 hover:bg-white/90 hover:text-neutral-900')}
           >
             {p}
           </button>

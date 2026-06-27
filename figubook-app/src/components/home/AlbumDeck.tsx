@@ -104,7 +104,7 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
                     className={[
                       'w-full truncate rounded-full border px-3 py-2 text-left text-xs font-semibold uppercase tracking-tight transition-colors',
                       on
-                        ? 'border-lime text-lime'
+                        ? 'border-transparent bg-white text-neutral-900'
                         : 'border-white/10 bg-bg-elev text-ink-2 hover:text-ink',
                     ].join(' ')}
                   >

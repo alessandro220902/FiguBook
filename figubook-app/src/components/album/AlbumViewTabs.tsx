@@ -11,11 +11,11 @@ export interface AlbumViewTabsProps {
 // Trigger icon-only: target touch >=44px, attivo = lime brand (non i token shadcn
 // che nel tema album rendono l'attivo più scuro della lista). twMerge lascia
 // vincere queste classi sui default di ui/tabs.
-// Attivo = solo contorno lime (niente fill pieno, troppo carico).
+// Attivo = bianco pieno (lingua unica selettori, come i filtri libreria).
 const trigger =
-  'h-11 min-w-11 flex-none rounded-lg border border-transparent px-3 text-ink-2 transition-colors hover:text-ink disabled:opacity-40 ' +
-  'data-active:border-lime data-active:bg-transparent data-active:text-lime data-active:shadow-none ' +
-  'dark:data-active:border-lime dark:data-active:bg-transparent dark:data-active:text-lime'
+  'h-11 min-w-11 flex-none rounded-full border border-transparent px-3 text-ink-2 transition-colors hover:text-ink disabled:opacity-40 ' +
+  'data-active:border-transparent data-active:bg-white data-active:text-neutral-900 data-active:shadow-none ' +
+  'dark:data-active:border-transparent dark:data-active:bg-white dark:data-active:text-neutral-900'
 
 export function AlbumViewTabs({ value, onChange }: AlbumViewTabsProps) {
   return (
