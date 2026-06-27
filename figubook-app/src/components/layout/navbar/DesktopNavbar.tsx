@@ -43,10 +43,10 @@ export function DesktopNavbar() {
               key={item.name}
               to={item.url}
               className={cn(
-                'inline-flex h-10 items-center rounded-full border px-5 text-[15px] font-medium transition-colors',
+                'inline-flex h-10 items-center rounded-full border px-5 text-[15px] font-medium text-white transition-colors',
                 active
-                  ? 'border-transparent bg-white text-neutral-900 hover:bg-white/90'
-                  : 'border-white/15 bg-white/[0.04] text-ink-2 hover:bg-white/10 hover:text-ink active:bg-white active:text-neutral-900',
+                  ? 'border-lime/30 bg-[linear-gradient(165deg,#2c3a18,#1a2410_60%,#141c0d)]'
+                  : 'border-transparent hover:bg-white/[0.06]',
               )}
             >
               {item.name}
