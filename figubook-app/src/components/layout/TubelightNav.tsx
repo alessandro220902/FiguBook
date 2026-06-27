@@ -89,8 +89,7 @@ export function TubelightNav({ items, className }: { items: NavItem[]; className
               to={item.url}
               className={cn(
                 'relative cursor-pointer rounded-full px-6 py-2 text-sm font-semibold transition-colors',
-                'text-foreground/80 hover:text-primary',
-                isActive && 'text-primary',
+                isActive ? 'text-neutral-900' : 'text-foreground/80 hover:text-foreground',
               )}
             >
               <span className="hidden md:inline">{item.name}</span>
@@ -100,16 +99,10 @@ export function TubelightNav({ items, className }: { items: NavItem[]; className
               {isActive && (
                 <motion.div
                   layoutId="lamp"
-                  className="absolute inset-0 -z-10 w-full rounded-full bg-primary/10"
+                  className="absolute inset-0 -z-10 w-full rounded-full bg-white"
                   initial={false}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                >
-                  <div className="absolute -top-2 left-1/2 h-1 w-8 -translate-x-1/2 rounded-t-full bg-primary">
-                    <div className="absolute -left-2 -top-2 h-6 w-12 rounded-full bg-primary/20 blur-md" />
-                    <div className="absolute -top-1 h-6 w-8 rounded-full bg-primary/20 blur-md" />
-                    <div className="absolute left-2 top-0 h-4 w-4 rounded-full bg-primary/20 blur-sm" />
-                  </div>
-                </motion.div>
+                />
               )}
             </Link>
           )
