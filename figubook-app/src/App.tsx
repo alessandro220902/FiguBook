@@ -18,6 +18,7 @@ import Scambi from '@/pages/Scambi'
 import Community from '@/pages/Community'
 import Cerca from '@/pages/Cerca'
 import Notifiche from '@/pages/Notifiche'
+import Profilo from '@/pages/Profilo'
 
 export default function App() {
   const { user } = useAuth()
@@ -49,6 +50,7 @@ export default function App() {
         <Route path="/community" element={<Community />} />
         <Route path="/cerca" element={<Cerca />} />
         <Route path="/notifiche" element={<Notifiche />} />
+        <Route path="/profilo" element={<Profilo />} />
       </Route>
     </Routes>
     <CookieBanner />
