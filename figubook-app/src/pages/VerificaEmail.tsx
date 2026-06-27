@@ -79,7 +79,7 @@ export default function VerificaEmail() {
           type="button"
           onClick={check}
           disabled={checking}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-lime py-3.5 font-semibold text-lime transition-[filter] hover:bg-lime/10 disabled:opacity-50"
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-full border border-lime py-3.5 font-semibold text-lime transition-[filter] hover:bg-lime/10 disabled:opacity-50"
         >
           <RefreshCw className={`h-4 w-4 ${checking ? 'animate-spin' : ''}`} /> Ho verificato, continua
         </button>

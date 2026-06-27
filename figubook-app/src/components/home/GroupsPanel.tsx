@@ -25,7 +25,7 @@ export function GroupsPanel() {
           <p className="text-sm text-ink-2">Non sei ancora in nessun gruppo.</p>
           <Link
             to="/community"
-            className="mt-3 rounded-lg border border-lime px-4 py-2 text-sm font-medium text-lime transition-transform duration-150 hover:-translate-y-px"
+            className="mt-3 rounded-full border border-lime px-4 py-2 text-sm font-medium text-lime transition-transform duration-150 hover:-translate-y-px"
           >
             Trova un gruppo
           </Link>

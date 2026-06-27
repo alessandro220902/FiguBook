@@ -45,14 +45,14 @@ export default function CookiePolicy() {
         <div className="flex flex-wrap gap-2 pt-1">
           <button
             onClick={() => { setConsent('granted'); location.reload() }}
-            className="rounded-lg border border-lime px-4 py-2 text-[13px] font-semibold text-lime transition-colors hover:bg-lime/10"
+            className="rounded-full border border-lime px-4 py-2 text-[13px] font-semibold text-lime transition-colors hover:bg-lime/10"
             style={{ outline: 'none' }}
           >
             Attiva Analytics
           </button>
           <button
             onClick={() => { setConsent('denied'); location.reload() }}
-            className="rounded-lg border border-white/15 px-4 py-2 text-[13px] font-semibold text-[#d8d2c6] transition-colors hover:border-white/30 hover:text-foreground"
+            className="rounded-full border border-white/15 px-4 py-2 text-[13px] font-semibold text-[#d8d2c6] transition-colors hover:border-white/30 hover:text-foreground"
             style={{ outline: 'none' }}
           >
             Rifiuta Analytics

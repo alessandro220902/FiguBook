@@ -17,11 +17,11 @@ export const CTRL_PRIMARY = 'border border-lime/70 bg-transparent text-lime hove
 // Filtro/toggle ATTIVO ("spinto"): bianco pieno, alto contrasto, niente lime
 export const CTRL_ON = 'border border-transparent bg-white text-neutral-900 hover:bg-white/90'
 
-// Inattivo / neutro: ghost spento (contrasto basso => l'attivo salta all'occhio)
-export const CTRL_GHOST = 'border border-white/15 bg-white/[0.04] text-ink-2 hover:bg-white/10 hover:text-ink'
+// Inattivo / neutro: ghost spento; al click diventa bianco (press feedback)
+export const CTRL_GHOST = 'border border-white/15 bg-white/[0.04] text-ink-2 hover:bg-white/10 hover:text-ink active:bg-white active:text-neutral-900'
 
-// Badge conteggio dentro un filtro
-export const CTRL_BADGE_ON = 'rounded-full bg-neutral-900/15 px-1.5 text-xs font-bold tabular-nums text-neutral-900'
+// Badge conteggio dentro un filtro: solo numero, niente tondino
+export const CTRL_BADGE_ON = 'text-xs font-bold tabular-nums text-neutral-900/55'
 export const CTRL_BADGE_OFF = 'text-xs tabular-nums text-ink-2/70'
 
 export function ctrlFilter(active: boolean): string {

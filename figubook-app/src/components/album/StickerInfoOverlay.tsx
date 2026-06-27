@@ -48,7 +48,7 @@ export function StickerInfoOverlay({ open, code, name, sectionName, c1, c2, coun
           </button>
           <span className="min-w-8 text-center font-display text-xl font-bold">{count}</span>
           <button type="button" onClick={onAdd} aria-label="Aggiungi una copia"
-            className="flex h-9 flex-1 items-center justify-center gap-2 rounded-lg border border-lime font-semibold text-lime">
+            className="flex h-9 flex-1 items-center justify-center gap-2 rounded-full border border-lime font-semibold text-lime">
             <Plus size={16} /> Aggiungi
           </button>
         </div>
