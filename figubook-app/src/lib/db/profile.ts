@@ -40,9 +40,10 @@ export interface PublicProfile {
   updatedAt: number
 }
 
+// isPublic NON è qui: si salva subito col toggle (savePrivacy), non col form.
 export type ProfileAccountPatch = Pick<
   ProfileDoc,
-  'nome' | 'username' | 'citta' | 'bio' | 'favTeam' | 'isPublic'
+  'nome' | 'username' | 'citta' | 'bio' | 'favTeam'
 >
 
 // Errore dedicato: username già preso da un altro utente.
@@ -88,7 +89,6 @@ export async function saveProfileAccount(uid: string, patch: ProfileAccountPatch
     citta: patch.citta?.trim() || '',
     bio: patch.bio?.trim() || '',
     favTeam: patch.favTeam || '',
-    isPublic: !!patch.isPublic,
   }
 
   await runTransaction(db, async (tx) => {
@@ -97,6 +97,8 @@ export async function saveProfileAccount(uid: string, patch: ProfileAccountPatch
     const prev = profSnap.data() as ProfileDoc | undefined
     const oldLower = (prev?.username || '').toLowerCase()
     const changed = lower !== oldLower
+    // isPublic gestito dal toggle (savePrivacy): qui si preserva quello esistente.
+    const pub = !!prev?.isPublic
 
     if (changed) {
       const uSnap = await tx.get(usernameRef(lower))
@@ -107,19 +109,19 @@ export async function saveProfileAccount(uid: string, patch: ProfileAccountPatch
 
     tx.set(profileRef(uid), clean, { merge: true })
 
-    const pub: PublicProfile = {
+    const pubDoc: PublicProfile = {
       uid,
       username,
       usernameLower: lower,
       nome: clean.nome,
       avatarId: prev?.avatarId || (pubSnap.data() as PublicProfile | undefined)?.avatarId || '',
       favTeam: clean.favTeam,
-      isPublic: clean.isPublic,
-      citta: clean.isPublic ? clean.citta : '',
-      bio: clean.isPublic ? clean.bio : '',
+      isPublic: pub,
+      citta: pub ? clean.citta : '',
+      bio: pub ? clean.bio : '',
       updatedAt: Date.now(),
     }
-    tx.set(publicRef(uid), pub, { merge: true })
+    tx.set(publicRef(uid), pubDoc, { merge: true })
 
     if (changed) {
       tx.set(usernameRef(lower), { uid })
@@ -130,6 +132,25 @@ export async function saveProfileAccount(uid: string, patch: ProfileAccountPatch
   if (auth.currentUser && username && auth.currentUser.displayName !== username) {
     await updateProfile(auth.currentUser, { displayName: username })
   }
+}
+
+// Salva subito la visibilità (toggle). Aggiorna meta/profile.isPublic e
+// rispecchia publicProfiles: città/bio visibili solo se pubblico.
+export async function savePrivacy(uid: string, isPublic: boolean) {
+  await runTransaction(db, async (tx) => {
+    const prev = (await tx.get(profileRef(uid))).data() as ProfileDoc | undefined
+    tx.set(profileRef(uid), { isPublic }, { merge: true })
+    tx.set(
+      publicRef(uid),
+      {
+        isPublic,
+        citta: isPublic ? prev?.citta || '' : '',
+        bio: isPublic ? prev?.bio || '' : '',
+        updatedAt: Date.now(),
+      },
+      { merge: true },
+    )
+  })
 }
 
 // Salva solo l'avatar (matita) + rispecchia su publicProfiles.

@@ -9,7 +9,7 @@ import { TeamCrest } from '@/components/TeamCrest'
 import { AVATARS } from '@/lib/avatars'
 import { TEAMS, teamById } from '@/lib/teams'
 import { teamAccent, teamPageBg, teamCardBg } from '@/lib/teamStyle'
-import { saveProfileAccount, saveAvatar, UsernameTakenError, type ProfileDoc } from '@/lib/db/profile'
+import { saveProfileAccount, saveAvatar, savePrivacy, UsernameTakenError, type ProfileDoc } from '@/lib/db/profile'
 import { FadeIn } from '@/components/home/FadeIn'
 
 const inputCls =
@@ -192,8 +192,7 @@ function InfoForm({
     initial.username !== username.trim() ||
     initial.citta !== citta.trim() ||
     initial.bio !== bio.trim() ||
-    initial.favTeam !== favTeam ||
-    initial.isPublic !== isPublic
+    initial.favTeam !== favTeam
 
   function reset() {
     setNome(initial.nome)
@@ -201,8 +200,14 @@ function InfoForm({
     setCitta(initial.citta)
     setBio(initial.bio)
     setFavTeam(initial.favTeam)
-    setIsPublic(initial.isPublic)
     setError(null)
+  }
+
+  // Visibilità: salvataggio immediato col toggle (no Salva modifiche). Ottimistico.
+  function togglePrivacy() {
+    const next = !isPublic
+    setIsPublic(next)
+    savePrivacy(uid, next).catch(() => setIsPublic(!next))
   }
 
   async function save() {
@@ -214,7 +219,7 @@ function InfoForm({
     setSaving(true)
     setError(null)
     try {
-      await saveProfileAccount(uid, { nome, username, citta, bio, favTeam, isPublic })
+      await saveProfileAccount(uid, { nome, username, citta, bio, favTeam })
     } catch (e) {
       setError(
         e instanceof UsernameTakenError
@@ -287,7 +292,7 @@ function InfoForm({
         />
       </label>
 
-      {/* Visibilità: unico interruttore pubblico/privato */}
+      {/* Visibilità: salva subito (giallo/on = privato). No "Salva modifiche". */}
       <div className="mt-5 flex items-center justify-between gap-4 rounded-xl border border-white/[0.1] bg-surface px-4 py-3.5">
         <div className="min-w-0">
           <p className="text-[15px] font-medium text-ink">
@@ -302,17 +307,18 @@ function InfoForm({
         <button
           type="button"
           role="switch"
-          aria-checked={isPublic}
-          onClick={() => setIsPublic((v) => !v)}
+          aria-checked={!isPublic}
+          aria-label="Profilo privato"
+          onClick={togglePrivacy}
           className={
             'relative h-7 w-12 shrink-0 rounded-full transition-colors ' +
-            (isPublic ? 'bg-lime' : 'bg-white/15')
+            (!isPublic ? 'bg-lime' : 'bg-white/15')
           }
         >
           <span
             className={
               'absolute top-1 h-5 w-5 rounded-full bg-white transition-all ' +
-              (isPublic ? 'left-6' : 'left-1')
+              (!isPublic ? 'left-6' : 'left-1')
             }
           />
         </button>
