@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfile } from '@/hooks/useProfile'
 import { Avatar } from '@/components/Avatar'
+import { TeamCrest } from '@/components/TeamCrest'
 import { teamById } from '@/lib/teams'
 import { teamAccent } from '@/lib/teamStyle'
 
@@ -20,7 +21,12 @@ export function ProfileChip() {
   return (
     <Link
       to="/profilo"
-      className="flex shrink-0 items-center gap-2 rounded-full py-1 pl-1 pr-3 transition-colors hover:bg-white/[0.06]"
+      className="flex shrink-0 items-center gap-2 rounded-full border py-1 pl-1 pr-3 transition-colors"
+      style={
+        team
+          ? { background: `color-mix(in srgb, ${team.c1} 22%, transparent)`, borderColor: `color-mix(in srgb, ${ring} 45%, transparent)` }
+          : { background: 'transparent', borderColor: 'transparent' }
+      }
     >
       <Avatar
         id={profile?.avatarId}
@@ -29,6 +35,7 @@ export function ProfileChip() {
         style={{ boxShadow: `0 0 0 2px ${ring}` }}
       />
       <span className="max-w-[140px] truncate text-[15px] font-medium text-white">{name}</span>
+      {team && <TeamCrest c1={team.c1} c2={team.c2} className="h-5 w-[16px] shrink-0" />}
     </Link>
   )
 }

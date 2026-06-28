@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import { useProfile } from '@/hooks/useProfile'
 import { useCollection } from '@/hooks/useCollection'
+import { TeamCrest } from '@/components/TeamCrest'
+import { teamById } from '@/lib/teams'
 import { StatTicker } from '@/components/home/StatTicker'
 import { AlbumDeck } from '@/components/home/AlbumDeck'
 import { NewsPanel } from '@/components/home/NewsPanel'
@@ -11,9 +14,11 @@ import { useTradesCount } from '@/hooks/useTradesCount'
 
 export default function Home() {
   const { user } = useAuth()
+  const { profile } = useProfile()
   const { albums, totals, loading, error, retry } = useCollection()
   const trades = useTradesCount()
-  const name = user?.displayName?.trim() || user?.email?.split('@')[0] || 'collezionista'
+  const name = profile?.username || user?.displayName?.trim() || user?.email?.split('@')[0] || 'collezionista'
+  const team = profile?.favTeam ? teamById[profile.favTeam] : undefined
 
   if (loading) {
     return (
@@ -30,10 +35,26 @@ export default function Home() {
 
   return (
     <div className="mx-auto w-full max-w-[88rem]">
+      {/* glow tenue colore squadra in cima alla dashboard (casa tua) */}
+      {team && (
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-80"
+          style={{
+            background: `radial-gradient(80% 100% at 50% -20%, color-mix(in srgb, ${team.c1} 28%, transparent), transparent 70%)`,
+          }}
+        />
+      )}
       <FadeIn>
         <h1 className="text-pretty text-[28px] font-medium tracking-tight text-ink sm:text-[32px]">
           Ciao, <Typewriter text={name} className="text-lime" />
         </h1>
+        {team && (
+          <p className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-ink-2">
+            <TeamCrest c1={team.c1} c2={team.c2} className="h-5 w-[16px]" />
+            {team.name}
+          </p>
+        )}
       </FadeIn>
 
       {error ? (
