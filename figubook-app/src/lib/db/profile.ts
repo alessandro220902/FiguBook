@@ -28,7 +28,7 @@ export interface ProfileDoc {
 // Solo i campi che la tab Account modifica.
 export type ProfileAccountPatch = Pick<
   ProfileDoc,
-  'nome' | 'username' | 'citta' | 'bio' | 'avatarId' | 'favTeam'
+  'nome' | 'username' | 'citta' | 'bio' | 'favTeam'
 >
 
 function profileRef(uid: string) {
@@ -56,7 +56,6 @@ export async function saveProfileAccount(uid: string, patch: ProfileAccountPatch
     nome: patch.nome?.trim() || '',
     citta: patch.citta?.trim() || '',
     bio: patch.bio?.trim() || '',
-    avatarId: patch.avatarId || '',
     favTeam: patch.favTeam || '',
   }
   await setDoc(profileRef(uid), clean, { merge: true })
