@@ -140,16 +140,21 @@ export async function savePrivacy(uid: string, isPublic: boolean) {
   await runTransaction(db, async (tx) => {
     const prev = (await tx.get(profileRef(uid))).data() as ProfileDoc | undefined
     tx.set(profileRef(uid), { isPublic }, { merge: true })
-    tx.set(
-      publicRef(uid),
-      {
-        isPublic,
-        citta: isPublic ? prev?.citta || '' : '',
-        bio: isPublic ? prev?.bio || '' : '',
-        updatedAt: Date.now(),
-      },
-      { merge: true },
-    )
+    // Mirror COMPLETO (incl. usernameLower) così il doc resta sempre cercabile.
+    const username = prev?.username || ''
+    const pub: PublicProfile = {
+      uid,
+      username,
+      usernameLower: username.toLowerCase(),
+      nome: prev?.nome || '',
+      avatarId: prev?.avatarId || '',
+      favTeam: prev?.favTeam || '',
+      isPublic,
+      citta: isPublic ? prev?.citta || '' : '',
+      bio: isPublic ? prev?.bio || '' : '',
+      updatedAt: Date.now(),
+    }
+    tx.set(publicRef(uid), pub, { merge: true })
   })
 }
 
