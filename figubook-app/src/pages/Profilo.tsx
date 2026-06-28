@@ -1,11 +1,13 @@
 import { useState } from 'react'
-import { Pencil, MapPin, X, Check } from 'lucide-react'
+import { Pencil, MapPin, X, Check, Search } from 'lucide-react'
 import { sendEmailVerification } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfile } from '@/hooks/useProfile'
 import { Avatar } from '@/components/Avatar'
+import { TeamCrest } from '@/components/TeamCrest'
 import { AVATARS } from '@/lib/avatars'
+import { TEAMS, teamById } from '@/lib/teams'
 import { saveProfileAccount, saveAvatar, type ProfileDoc } from '@/lib/db/profile'
 import { FadeIn } from '@/components/home/FadeIn'
 
@@ -90,6 +92,79 @@ function AvatarModal({
   )
 }
 
+// Picker squadra del cuore: barra ricerca + lista filtrata con stemma 2 colori.
+function TeamPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
+  const [q, setQ] = useState('')
+  const [open, setOpen] = useState(false)
+  const sel = teamById[value]
+  const filtered = q.trim()
+    ? TEAMS.filter((t) => t.name.toLowerCase().includes(q.trim().toLowerCase())).slice(0, 40)
+    : TEAMS.slice(0, 40)
+
+  return (
+    <div className="relative">
+      {sel ? (
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="flex w-full items-center gap-2.5 rounded-xl border border-white/[0.1] bg-surface px-3.5 py-2.5 text-left transition-colors hover:border-white/20"
+        >
+          <TeamCrest c1={sel.c1} c2={sel.c2} className="h-6 w-[22px] shrink-0" />
+          <span className="flex-1 text-[16px] text-ink">{sel.name}</span>
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={(e) => {
+              e.stopPropagation()
+              onChange('')
+            }}
+            className="text-xs text-ink-2 hover:text-ink"
+          >
+            Rimuovi
+          </span>
+        </button>
+      ) : (
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-2" />
+          <input
+            className={inputCls + ' pl-10'}
+            placeholder="Cerca la tua squadra…"
+            value={q}
+            onChange={(e) => {
+              setQ(e.target.value)
+              setOpen(true)
+            }}
+            onFocus={() => setOpen(true)}
+          />
+        </div>
+      )}
+
+      {open && !sel && (
+        <div className="absolute z-30 mt-1.5 max-h-72 w-full overflow-auto rounded-xl border border-white/10 bg-card p-1 shadow-2xl">
+          {filtered.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => {
+                onChange(t.id)
+                setOpen(false)
+                setQ('')
+              }}
+              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-white/10"
+            >
+              <TeamCrest c1={t.c1} c2={t.c2} className="h-5 w-[18px] shrink-0" />
+              <span className="text-[15px] text-ink">{t.name}</span>
+            </button>
+          ))}
+          {filtered.length === 0 && (
+            <p className="px-3 py-3 text-sm text-ink-2">Nessuna squadra trovata.</p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // Form info personali: sempre editabile (no toggle). Barra Salva/Annulla appare
 // solo quando ci sono modifiche. Seminato via initial; il genitore lo rimonta
 // con key al caricamento del doc => niente effect di sync.
@@ -100,12 +175,13 @@ function InfoForm({
 }: {
   uid: string
   email?: string | null
-  initial: { nome: string; username: string; citta: string; bio: string }
+  initial: { nome: string; username: string; citta: string; bio: string; favTeam: string }
 }) {
   const [nome, setNome] = useState(initial.nome)
   const [username, setUsername] = useState(initial.username)
   const [citta, setCitta] = useState(initial.citta)
   const [bio, setBio] = useState(initial.bio)
+  const [favTeam, setFavTeam] = useState(initial.favTeam)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -113,13 +189,15 @@ function InfoForm({
     initial.nome !== nome.trim() ||
     initial.username !== username.trim() ||
     initial.citta !== citta.trim() ||
-    initial.bio !== bio.trim()
+    initial.bio !== bio.trim() ||
+    initial.favTeam !== favTeam
 
   function reset() {
     setNome(initial.nome)
     setUsername(initial.username)
     setCitta(initial.citta)
     setBio(initial.bio)
+    setFavTeam(initial.favTeam)
     setError(null)
   }
 
@@ -132,7 +210,7 @@ function InfoForm({
     setSaving(true)
     setError(null)
     try {
-      await saveProfileAccount(uid, { nome, username, citta, bio })
+      await saveProfileAccount(uid, { nome, username, citta, bio, favTeam })
     } catch {
       setError('Salvataggio non riuscito. Riprova.')
     } finally {
@@ -185,6 +263,11 @@ function InfoForm({
         </label>
       </div>
 
+      <div className="mt-5 flex flex-col gap-1.5">
+        <span className={FIELD_LBL}>Squadra del cuore</span>
+        <TeamPicker value={favTeam} onChange={setFavTeam} />
+      </div>
+
       <label className="mt-5 flex flex-col gap-1.5">
         <span className={FIELD_LBL}>Bio</span>
         <textarea
@@ -231,6 +314,7 @@ function initialFrom(
     username: profile?.username ?? displayName ?? email?.split('@')[0] ?? '',
     citta: profile?.citta ?? '',
     bio: profile?.bio ?? '',
+    favTeam: profile?.favTeam ?? '',
   }
 }
 
@@ -244,6 +328,8 @@ export default function Profilo() {
   const name = profile?.username || user?.displayName?.trim() || user?.email?.split('@')[0] || 'Collezionista'
   const since = memberSince(user?.metadata?.creationTime)
   const verified = user?.emailVerified ?? false
+  const team = profile?.favTeam ? teamById[profile.favTeam] : undefined
+  const accent = team?.c1
 
   async function resendVerification() {
     if (!auth.currentUser) return
@@ -269,12 +355,21 @@ export default function Profilo() {
       <div className="mt-8 grid gap-6 lg:grid-cols-[320px_1fr]">
         {/* Colonna sinistra: card identità */}
         <FadeIn>
-          <aside className="rounded-2xl border border-white/[0.08] bg-surface/40 p-6 text-center">
+          <aside className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-surface/40 p-6 text-center">
+            {/* Accento soft squadra: barra colore in cima alla card */}
+            {accent && (
+              <span
+                aria-hidden
+                className="absolute inset-x-0 top-0 h-1.5"
+                style={{ background: `linear-gradient(90deg, ${team!.c1}, ${team!.c2})` }}
+              />
+            )}
             <div className="relative mx-auto w-fit">
               <Avatar
                 id={profile?.avatarId}
                 name={name}
-                className="h-32 w-32 overflow-hidden rounded-full ring-1 ring-white/10"
+                className="h-32 w-32 overflow-hidden rounded-full"
+                style={accent ? { boxShadow: `0 0 0 3px ${accent}` } : undefined}
               />
               <button
                 type="button"
@@ -289,6 +384,12 @@ export default function Profilo() {
             <h2 className="mt-4 truncate font-display text-2xl font-semibold tracking-tight text-ink">
               {name}
             </h2>
+            {team && (
+              <p className="mt-1.5 inline-flex items-center gap-1.5 text-sm font-medium text-ink">
+                <TeamCrest c1={team.c1} c2={team.c2} className="h-5 w-[18px]" />
+                {team.name}
+              </p>
+            )}
             {(profile?.nome || profile?.citta) && (
               <p className="mt-1 flex flex-wrap items-center justify-center gap-x-2 text-sm text-ink-2">
                 {profile?.nome && <span>{profile.nome}</span>}

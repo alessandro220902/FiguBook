@@ -6,10 +6,12 @@ export function Avatar({
   id,
   name,
   className,
+  style,
 }: {
   id?: string | null
   name: string
   className?: string
+  style?: React.CSSProperties
 }) {
   const uid = useId().replace(/:/g, '')
   const preset = avatarById(id)
@@ -18,7 +20,7 @@ export function Avatar({
   if (!preset) {
     const initial = (name.trim().charAt(0) || '?').toUpperCase()
     return (
-      <svg viewBox="0 0 100 100" className={cls} aria-hidden>
+      <svg viewBox="0 0 100 100" className={cls} style={style} aria-hidden>
         <circle cx="50" cy="50" r="50" fill="#c2f23d" />
         <text
           x="50"
@@ -40,6 +42,7 @@ export function Avatar({
     <svg
       viewBox="0 0 100 100"
       className={cls}
+      style={style}
       aria-label={preset.label}
       dangerouslySetInnerHTML={{ __html: uniquifyIds(preset.inner, uid) }}
     />
