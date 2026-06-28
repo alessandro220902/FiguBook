@@ -6,6 +6,8 @@ import {
   deleteDoc,
   onSnapshot,
   runTransaction,
+  query,
+  where,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 
@@ -63,8 +65,33 @@ export async function acceptFriendRequest(requester: string, me: string, myUsern
   await notify(requester, me, `${myUsername} ha accettato la tua richiesta di amicizia`)
 }
 
-export async function rejectFriendRequest(requester: string, me: string) {
+export async function rejectFriendRequest(requester: string, me: string, myUsername: string) {
   await deleteDoc(reqRef(requester, me))
+  await notify(requester, me, `${myUsername} ha rifiutato la tua richiesta di amicizia`)
+}
+
+export interface IncomingRequest {
+  fromUid: string
+  createdAt: number
+}
+
+// Richieste di amicizia ricevute (pending), live.
+export function subscribeIncomingRequests(
+  me: string,
+  cb: (reqs: IncomingRequest[]) => void,
+): () => void {
+  const q = query(collection(db, 'friendRequests'), where('toUid', '==', me))
+  return onSnapshot(
+    q,
+    (snap) =>
+      cb(
+        snap.docs
+          .map((d) => d.data() as { fromUid: string; createdAt: number })
+          .map((d) => ({ fromUid: d.fromUid, createdAt: d.createdAt || 0 }))
+          .sort((a, b) => b.createdAt - a.createdAt),
+      ),
+    () => cb([]),
+  )
 }
 
 export async function unfriend(a: string, b: string) {

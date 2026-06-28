@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useNotifications } from '@/hooks/useNotifications'
 import { markAllRead, resolveHref, timeAgo } from '@/lib/db/notifications'
 import { notifMeta, NOTIF_TABS, type Tab } from '@/lib/db/notifMeta'
+import { IncomingRequests } from '@/components/IncomingRequests'
 
 // Campanella navbar: badge numero + pannello con filtro Tutte/Non lette/Lette.
 // Adattato da ruixenui/notifications-filter, dati live da useNotifications.
@@ -74,7 +75,11 @@ export function NotificationsBell({ asLink = false }: { asLink?: boolean } = {})
             <p className="font-display text-base font-bold">Notifiche</p>
           </div>
 
-          <div className="flex gap-1.5 px-1 pb-2">
+          <div className="px-1">
+            <IncomingRequests />
+          </div>
+
+          <div className="flex gap-1.5 px-1 pb-2 pt-2">
             {NOTIF_TABS.map((t) => {
               const on = tab === t.key
               return (

@@ -67,7 +67,7 @@ export function FriendButton({ otherUid }: { otherUid: string }) {
         <button
           type="button"
           disabled={busy}
-          onClick={() => run(() => rejectFriendRequest(otherUid, me))}
+          onClick={() => run(() => rejectFriendRequest(otherUid, me, myUsername))}
           className={base + ' border border-white/15 text-ink-2 hover:text-ink'}
         >
           Rifiuta

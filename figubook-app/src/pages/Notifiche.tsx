@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useNotifications } from '@/hooks/useNotifications'
 import { markAllRead, resolveHref, timeAgo } from '@/lib/db/notifications'
 import { notifMeta, NOTIF_TABS, type Tab } from '@/lib/db/notifMeta'
+import { IncomingRequests } from '@/components/IncomingRequests'
 
 // Pagina notifiche dedicata (mobile): stessa logica/render del pannello desktop
 // (useNotifications + filtri). Back -> pagina precedente.
@@ -41,6 +42,9 @@ export default function Notifiche() {
         </button>
         <h1 className="font-display text-xl font-bold tracking-tight text-foreground">Notifiche</h1>
       </div>
+
+      {/* Sezione Amicizia: richieste ricevute con Accetta/Rifiuta */}
+      <IncomingRequests />
 
       <div className="mt-4 flex gap-1.5">
         {NOTIF_TABS.map((t) => {

@@ -1,4 +1,4 @@
-import { Bell, CheckCircle2, ThumbsUp, ArrowLeftRight, PencilLine, XCircle } from 'lucide-react'
+import { Bell, CheckCircle2, ThumbsUp, ArrowLeftRight, PencilLine, XCircle, UserPlus } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 // Stile alert-toast (21st/lavikatiyar): stripe colorata a sinistra + icona lucide
@@ -10,6 +10,7 @@ export const NOTIF_META: Record<string, { color: string; Icon: LucideIcon }> = {
   proposal: { color: '#38bdf8', Icon: ArrowLeftRight },  // sky
   revise: { color: '#fbbf24', Icon: PencilLine },        // amber
   rejected: { color: '#f87171', Icon: XCircle },         // red
+  friend: { color: '#c2f23d', Icon: UserPlus },          // lime brand
 }
 export const notifMeta = (type?: string) => NOTIF_META[type ?? ''] ?? { color: '#9ca3af', Icon: Bell }
 

@@ -1,5 +1,7 @@
 import {
   collection,
+  doc,
+  getDoc,
   query,
   where,
   orderBy,
@@ -26,6 +28,12 @@ export async function searchUsers(prefix: string, max = 8): Promise<PublicProfil
   )
   const snap = await getDocs(q)
   return snap.docs.map((d) => d.data() as PublicProfile)
+}
+
+// Lookup per uid (per risolvere le richieste di amicizia ricevute).
+export async function getPublicByUid(uid: string): Promise<PublicProfile | null> {
+  const snap = await getDoc(doc(db, 'publicProfiles', uid))
+  return snap.exists() ? (snap.data() as PublicProfile) : null
 }
 
 // Lookup esatto per username (per la rotta /u/:username).
