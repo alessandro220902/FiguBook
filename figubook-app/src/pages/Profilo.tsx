@@ -8,6 +8,7 @@ import { Avatar } from '@/components/Avatar'
 import { TeamCrest } from '@/components/TeamCrest'
 import { AVATARS } from '@/lib/avatars'
 import { TEAMS, teamById } from '@/lib/teams'
+import { teamAccent, teamPageBg, teamCardBg } from '@/lib/teamStyle'
 import { saveProfileAccount, saveAvatar, type ProfileDoc } from '@/lib/db/profile'
 import { FadeIn } from '@/components/home/FadeIn'
 
@@ -329,7 +330,7 @@ export default function Profilo() {
   const since = memberSince(user?.metadata?.creationTime)
   const verified = user?.emailVerified ?? false
   const team = profile?.favTeam ? teamById[profile.favTeam] : undefined
-  const accent = team?.c1
+  const accent = team ? teamAccent(team) : undefined
 
   async function resendVerification() {
     if (!auth.currentUser) return
@@ -343,6 +344,15 @@ export default function Profilo() {
 
   return (
     <div className="mx-auto w-full max-w-6xl">
+      {/* Sfondo pagina tinto squadra (solo /profilo): c1 sopra, verde sito in mezzo, c2 sotto */}
+      {team && (
+        <div
+          aria-hidden
+          className="fixed inset-0 -z-10"
+          style={{ background: teamPageBg(team) }}
+        />
+      )}
+
       <FadeIn>
         <h1 className="font-display text-[34px] font-semibold tracking-tight text-ink sm:text-[42px]">
           Profilo
@@ -355,15 +365,10 @@ export default function Profilo() {
       <div className="mt-8 grid gap-6 lg:grid-cols-[320px_1fr]">
         {/* Colonna sinistra: card identità */}
         <FadeIn>
-          <aside className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-surface/40 p-6 text-center">
-            {/* Accento soft squadra: barra colore in cima alla card */}
-            {accent && (
-              <span
-                aria-hidden
-                className="absolute inset-x-0 top-0 h-1.5"
-                style={{ background: `linear-gradient(90deg, ${team!.c1}, ${team!.c2})` }}
-              />
-            )}
+          <aside
+            className="relative overflow-hidden rounded-2xl border border-white/[0.1] bg-surface/40 p-6 text-center"
+            style={team ? { background: teamCardBg(team) } : undefined}
+          >
             <div className="relative mx-auto w-fit">
               <Avatar
                 id={profile?.avatarId}
