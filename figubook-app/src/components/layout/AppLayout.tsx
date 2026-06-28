@@ -4,6 +4,7 @@ import { TubelightNav, type NavItem } from '@/components/layout/TubelightNav'
 import { DesktopNavbar } from '@/components/layout/navbar/DesktopNavbar'
 import { NotificationsBell } from '@/components/layout/navbar/NotificationsBell'
 import { FluidMenu } from '@/components/layout/navbar/FluidMenu'
+import { ProfileChip } from '@/components/layout/navbar/ProfileChip'
 
 // Shell condivisa: nav unica scritta una volta, riusata sulle 4 sezioni private.
 // Home (dashboard) usa l'icona casetta su mobile. Label "Home" come su desktop.
@@ -30,12 +31,14 @@ export function AppLayout() {
 
       {/* Cluster mobile (telefono, <md): logo + bottom-nav + menu destro */}
       <div className="md:hidden">
-        <Link to="/home" className="fixed left-4 top-4 z-50 flex items-center gap-2 sm:left-6 sm:top-6">
-          <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">
-            F
-          </span>
-          <span className="hidden font-display text-xl font-extrabold tracking-tight sm:inline">FiguBook</span>
-        </Link>
+        <div className="fixed left-4 top-4 z-50 flex items-center gap-1.5 sm:left-6 sm:top-6">
+          <Link to="/home" className="flex items-center">
+            <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">
+              F
+            </span>
+          </Link>
+          <ProfileChip />
+        </div>
         <TubelightNav items={NAV} />
         {/* Top-right mobile: notifiche live + FluidMenu (stesso menu del desktop) */}
         <div className="fixed right-4 top-4 z-50 flex items-center gap-2 sm:right-6 sm:top-6">
