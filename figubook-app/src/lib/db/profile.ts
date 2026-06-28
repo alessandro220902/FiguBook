@@ -34,6 +34,9 @@ export interface PublicProfile {
   avatarId: string
   favTeam: string
   isPublic: boolean
+  // Inclusi SOLO se isPublic (altrimenti stringa vuota: niente leak su profilo privato)
+  citta: string
+  bio: string
   updatedAt: number
 }
 
@@ -112,6 +115,8 @@ export async function saveProfileAccount(uid: string, patch: ProfileAccountPatch
       avatarId: prev?.avatarId || (pubSnap.data() as PublicProfile | undefined)?.avatarId || '',
       favTeam: clean.favTeam,
       isPublic: clean.isPublic,
+      citta: clean.isPublic ? clean.citta : '',
+      bio: clean.isPublic ? clean.bio : '',
       updatedAt: Date.now(),
     }
     tx.set(publicRef(uid), pub, { merge: true })

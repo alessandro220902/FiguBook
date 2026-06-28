@@ -20,6 +20,7 @@ import Cerca from '@/pages/Cerca'
 import Notifiche from '@/pages/Notifiche'
 import Profilo from '@/pages/Profilo'
 import ProfiloImpostazioni from '@/pages/ProfiloImpostazioni'
+import ProfiloPubblico from '@/pages/ProfiloPubblico'
 
 export default function App() {
   const { user } = useAuth()
@@ -53,6 +54,7 @@ export default function App() {
         <Route path="/notifiche" element={<Notifiche />} />
         <Route path="/profilo" element={<Profilo />} />
         <Route path="/profilo/impostazioni" element={<ProfiloImpostazioni />} />
+        <Route path="/u/:username" element={<ProfiloPubblico />} />
       </Route>
     </Routes>
     <CookieBanner />

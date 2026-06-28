@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ALBUM_CATALOG } from '@/data/albumCatalog'
 import { buildCardIndex, searchCatalog, type SearchCard } from '@/lib/album/search'
+import { useUserSearch } from '@/hooks/useUserSearch'
+import { Avatar } from '@/components/Avatar'
 
 // Adattato da moumensoliman/expanding-search-dock (21st). La lente si espande in
 // dock; al primo focus carica l'indice carte cross-album (una volta) e mostra un
@@ -34,7 +36,8 @@ export function SearchDock({ placeholder = 'Cerca album o carte…' }: { placeho
   }, [open])
 
   const results = useMemo(() => searchCatalog(ALBUM_CATALOG, cards, q), [cards, q])
-  const hasResults = results.albums.length > 0 || results.cards.length > 0
+  const { results: users } = useUserSearch(q, 5)
+  const hasResults = results.albums.length > 0 || results.cards.length > 0 || users.length > 0
 
   function close() {
     setOpen(false)
@@ -98,6 +101,19 @@ export function SearchDock({ placeholder = 'Cerca album o carte…' }: { placeho
             <p className="px-4 py-3 text-sm text-muted-foreground">Nessun risultato per “{q.trim()}”.</p>
           ) : (
             <div className="max-h-[60vh] overflow-y-auto py-1.5">
+              {users.length > 0 && (
+                <Group label="Collezionisti">
+                  {users.map((u) => (
+                    <Row
+                      key={u.uid}
+                      icon={<Avatar id={u.avatarId} name={u.username} className="h-8 w-8 overflow-hidden rounded-lg" />}
+                      title={u.username}
+                      sub={u.nome || 'Collezionista'}
+                      onClick={() => go(`/u/${u.username}`)}
+                    />
+                  ))}
+                </Group>
+              )}
               {results.albums.length > 0 && (
                 <Group label="Album">
                   {results.albums.map((a) => (
