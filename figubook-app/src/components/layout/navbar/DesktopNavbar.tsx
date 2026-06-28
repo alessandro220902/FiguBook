@@ -6,6 +6,7 @@ import { ThemeToggle } from './ThemeToggle'
 import { FluidMenu } from './FluidMenu'
 import { NotificationsBell } from './NotificationsBell'
 import { SearchDock } from './SearchDock'
+import { ProfileChip } from './ProfileChip'
 
 interface Item { name: string; url: string; icon: LucideIcon }
 const NAV: Item[] = [
@@ -32,6 +33,9 @@ export function DesktopNavbar() {
         <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">F</span>
         <span className="font-display text-xl font-extrabold tracking-tight">FiguBook</span>
       </Link>
+
+      {/* identità: avatar + username (ring colore squadra), cliccabile -> profilo */}
+      <ProfileChip />
 
       {/* centro: voci + notifiche */}
       <div className="flex flex-1 items-center justify-center gap-1.5">
