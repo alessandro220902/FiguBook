@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { MapPin, UserPlus, Lock, Pencil } from 'lucide-react'
+import { MapPin, Lock, Pencil } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { Avatar } from '@/components/Avatar'
 import { TeamCrest } from '@/components/TeamCrest'
 import { teamById } from '@/lib/teams'
 import { teamAccent, teamPageBg, teamCardBg } from '@/lib/teamStyle'
 import { getPublicByUsername } from '@/lib/db/publicProfiles'
+import { FriendButton } from '@/components/FriendButton'
 import type { PublicProfile } from '@/lib/db/profile'
 import { FadeIn } from '@/components/home/FadeIn'
 
@@ -119,14 +120,7 @@ function VetrinaInner({ username }: { username: string }) {
                     <Pencil className="h-4 w-4" /> Modifica profilo
                   </Link>
                 ) : (
-                  <button
-                    type="button"
-                    disabled
-                    title="In arrivo"
-                    className="inline-flex items-center gap-2 rounded-full bg-lime px-5 py-2.5 text-[15px] font-semibold text-lime-ink opacity-60"
-                  >
-                    <UserPlus className="h-4 w-4" /> Aggiungi amico
-                  </button>
+                  <FriendButton otherUid={profile.uid} />
                 )}
               </div>
             </div>

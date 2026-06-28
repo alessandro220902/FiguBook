@@ -29,7 +29,7 @@ service cloud.firestore {
               || (request.resource.data.info is string && request.resource.data.info.size() <= 160))
           // href solo path interni whitelisted (no javascript:/http: -> anti-XSS)
           && (!('href' in request.resource.data)
-              || request.resource.data.href in ['figubook-scambia.html', '/scambi', '/dashboard', '/album'])
+              || request.resource.data.href in ['figubook-scambia.html', '/scambi', '/dashboard', '/album', '/community'])
           // icon da set chiuso, non stringa arbitraria iniettabile
           && (!('icon' in request.resource.data)
               || request.resource.data.icon in ['🔄', '✏️', '✅', '👍', '❌', 'ℹ️']);
@@ -64,6 +64,33 @@ service cloud.firestore {
       // cross-user di completedTrades (era abusabile); il conteggio scambi si
       // deriva dai feedback ricevuti.
       allow create, update, delete: if isUser(userId);
+    }
+
+    // ── Richieste di amicizia: friendRequests/{from__to} ──────────────────
+    match /friendRequests/{rid} {
+      allow read: if signedIn()
+        && (request.auth.uid == resource.data.fromUid || request.auth.uid == resource.data.toUid);
+      // Crei solo richieste a tuo nome, non verso te stesso.
+      allow create: if signedIn()
+        && request.resource.data.fromUid == request.auth.uid
+        && request.resource.data.fromUid != request.resource.data.toUid;
+      // Mittente (annulla) o destinatario (rifiuta/accetta->delete) la cancellano.
+      allow delete: if signedIn()
+        && (request.auth.uid == resource.data.fromUid || request.auth.uid == resource.data.toUid);
+      allow update: if false;
+    }
+
+    // ── Amicizie: friendships/{pair} = { users:[a,b], requester, accepter } ─
+    match /friendships/{pid} {
+      allow read: if signedIn() && request.auth.uid in resource.data.users;
+      // Solo l'accepter crea, e solo se esiste una richiesta requester->accepter.
+      allow create: if signedIn()
+        && request.resource.data.accepter == request.auth.uid
+        && request.resource.data.users.hasOnly([request.resource.data.requester, request.resource.data.accepter])
+        && exists(/databases/$(database)/documents/friendRequests/$(request.resource.data.requester + '__' + request.resource.data.accepter));
+      // Entrambi possono sciogliere l'amicizia.
+      allow delete: if signedIn() && request.auth.uid in resource.data.users;
+      allow update: if false;
     }
 
     // ── Indice username univoci: usernames/{lower} -> { uid } ──────────────
