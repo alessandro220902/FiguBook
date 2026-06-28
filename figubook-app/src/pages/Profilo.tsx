@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useCollection } from '@/hooks/useCollection'
 import { FadeIn } from '@/components/home/FadeIn'
@@ -115,14 +116,13 @@ export default function Profilo() {
       <FadeIn>
         <h2 className="mt-10 text-sm font-medium text-ink-2">Account</h2>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <button
-            type="button"
-            disabled
-            className="flex items-center justify-between rounded-2xl border border-white/[0.08] bg-surface px-4 py-3.5 text-left opacity-60"
+          <Link
+            to="/profilo/impostazioni"
+            className="flex items-center justify-between rounded-2xl border border-white/[0.08] bg-surface px-4 py-3.5 text-left transition-colors hover:border-white/20"
           >
             <span className="text-sm font-medium text-ink">Modifica profilo</span>
-            <span className="text-xs text-ink-2">Presto</span>
-          </button>
+            <span className="text-xs text-lime">Apri</span>
+          </Link>
           <button
             type="button"
             disabled

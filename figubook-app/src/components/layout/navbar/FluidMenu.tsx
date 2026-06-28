@@ -41,7 +41,7 @@ export function FluidMenu() {
 
   const items: Item[] = [
     { title: 'Profilo', icon: User, onClick: () => navigate('/profilo') },
-    { title: 'Impostazioni', icon: Settings, onClick: () => {} },
+    { title: 'Impostazioni', icon: Settings, onClick: () => navigate('/profilo/impostazioni') },
     { title: 'Supporto', icon: LifeBuoy, onClick: () => {} },
     { title: 'Esci', icon: LogOut, onClick: logout },
   ]
