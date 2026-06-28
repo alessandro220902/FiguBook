@@ -62,3 +62,8 @@ export async function saveProfileAccount(uid: string, patch: ProfileAccountPatch
     await updateProfile(auth.currentUser, { displayName: clean.username })
   }
 }
+
+// Salva solo l'avatar (azione diretta dalla matita sulla foto).
+export async function saveAvatar(uid: string, avatarId: string) {
+  await setDoc(profileRef(uid), { avatarId }, { merge: true })
+}
