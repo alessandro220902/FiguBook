@@ -66,6 +66,19 @@ service cloud.firestore {
       allow create, update, delete: if isUser(userId);
     }
 
+    // ── Indice username univoci: usernames/{lower} -> { uid } ──────────────
+    // Lettura: per check disponibilita + lookup uid da /u/:username.
+    match /usernames/{name} {
+      allow read: if signedIn();
+      // Puoi rivendicare un nome libero solo per te stesso.
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      // Aggiorni/cancelli solo un nome che e' gia tuo (rename libera il vecchio).
+      allow update: if signedIn()
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == request.auth.uid;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
     // ── Codici invito gruppo ──────────────────────────────────────────────
     match /inviteCodes/{code} {
       allow read: if signedIn();

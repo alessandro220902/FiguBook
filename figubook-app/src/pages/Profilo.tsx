@@ -9,7 +9,7 @@ import { TeamCrest } from '@/components/TeamCrest'
 import { AVATARS } from '@/lib/avatars'
 import { TEAMS, teamById } from '@/lib/teams'
 import { teamAccent, teamPageBg, teamCardBg } from '@/lib/teamStyle'
-import { saveProfileAccount, saveAvatar, type ProfileDoc } from '@/lib/db/profile'
+import { saveProfileAccount, saveAvatar, UsernameTakenError, type ProfileDoc } from '@/lib/db/profile'
 import { FadeIn } from '@/components/home/FadeIn'
 
 const inputCls =
@@ -176,13 +176,14 @@ function InfoForm({
 }: {
   uid: string
   email?: string | null
-  initial: { nome: string; username: string; citta: string; bio: string; favTeam: string }
+  initial: { nome: string; username: string; citta: string; bio: string; favTeam: string; isPublic: boolean }
 }) {
   const [nome, setNome] = useState(initial.nome)
   const [username, setUsername] = useState(initial.username)
   const [citta, setCitta] = useState(initial.citta)
   const [bio, setBio] = useState(initial.bio)
   const [favTeam, setFavTeam] = useState(initial.favTeam)
+  const [isPublic, setIsPublic] = useState(initial.isPublic)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -191,7 +192,8 @@ function InfoForm({
     initial.username !== username.trim() ||
     initial.citta !== citta.trim() ||
     initial.bio !== bio.trim() ||
-    initial.favTeam !== favTeam
+    initial.favTeam !== favTeam ||
+    initial.isPublic !== isPublic
 
   function reset() {
     setNome(initial.nome)
@@ -199,6 +201,7 @@ function InfoForm({
     setCitta(initial.citta)
     setBio(initial.bio)
     setFavTeam(initial.favTeam)
+    setIsPublic(initial.isPublic)
     setError(null)
   }
 
@@ -211,9 +214,13 @@ function InfoForm({
     setSaving(true)
     setError(null)
     try {
-      await saveProfileAccount(uid, { nome, username, citta, bio, favTeam })
-    } catch {
-      setError('Salvataggio non riuscito. Riprova.')
+      await saveProfileAccount(uid, { nome, username, citta, bio, favTeam, isPublic })
+    } catch (e) {
+      setError(
+        e instanceof UsernameTakenError
+          ? 'Questo username è già preso. Scegline un altro.'
+          : 'Salvataggio non riuscito. Riprova.',
+      )
     } finally {
       setSaving(false)
     }
@@ -280,6 +287,37 @@ function InfoForm({
         />
       </label>
 
+      {/* Visibilità: unico interruttore pubblico/privato */}
+      <div className="mt-5 flex items-center justify-between gap-4 rounded-xl border border-white/[0.1] bg-surface px-4 py-3.5">
+        <div className="min-w-0">
+          <p className="text-[15px] font-medium text-ink">
+            {isPublic ? 'Profilo pubblico' : 'Profilo privato'}
+          </p>
+          <p className="mt-0.5 text-sm text-ink-2">
+            {isPublic
+              ? 'Chiunque può vedere città, album e attività.'
+              : 'Solo gli amici accettati vedono città, album e attività.'}
+          </p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={isPublic}
+          onClick={() => setIsPublic((v) => !v)}
+          className={
+            'relative h-7 w-12 shrink-0 rounded-full transition-colors ' +
+            (isPublic ? 'bg-lime' : 'bg-white/15')
+          }
+        >
+          <span
+            className={
+              'absolute top-1 h-5 w-5 rounded-full bg-white transition-all ' +
+              (isPublic ? 'left-6' : 'left-1')
+            }
+          />
+        </button>
+      </div>
+
       {error && <p className="mt-3 text-sm text-stat-missing">{error}</p>}
 
       {dirty && (
@@ -316,6 +354,7 @@ function initialFrom(
     citta: profile?.citta ?? '',
     bio: profile?.bio ?? '',
     favTeam: profile?.favTeam ?? '',
+    isPublic: profile?.isPublic ?? false,
   }
 }
 
