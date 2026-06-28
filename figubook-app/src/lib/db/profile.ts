@@ -14,6 +14,7 @@ export interface ProfileDoc {
   nome?: string
   citta?: string
   bio?: string
+  avatarId?: string
   // Pianificati (vetrina/scambi) — non ancora in UI
   isPublic?: boolean
   tradesEnabled?: boolean
@@ -24,7 +25,10 @@ export interface ProfileDoc {
 }
 
 // Solo i campi che la tab Account modifica.
-export type ProfileAccountPatch = Pick<ProfileDoc, 'nome' | 'username' | 'citta' | 'bio'>
+export type ProfileAccountPatch = Pick<
+  ProfileDoc,
+  'nome' | 'username' | 'citta' | 'bio' | 'avatarId'
+>
 
 function profileRef(uid: string) {
   return doc(db, 'users', uid, 'meta', 'profile')
@@ -51,6 +55,7 @@ export async function saveProfileAccount(uid: string, patch: ProfileAccountPatch
     nome: patch.nome?.trim() || '',
     citta: patch.citta?.trim() || '',
     bio: patch.bio?.trim() || '',
+    avatarId: patch.avatarId || '',
   }
   await setDoc(profileRef(uid), clean, { merge: true })
   if (auth.currentUser && clean.username && auth.currentUser.displayName !== clean.username) {

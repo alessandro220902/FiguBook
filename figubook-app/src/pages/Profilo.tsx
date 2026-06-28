@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import { useProfile } from '@/hooks/useProfile'
 import { useCollection } from '@/hooks/useCollection'
+import { Avatar } from '@/components/Avatar'
 import { FadeIn } from '@/components/home/FadeIn'
 import { AnimatedNumber } from '@/components/home/AnimatedNumber'
 
@@ -24,10 +26,10 @@ function memberSince(creationTime?: string): string | null {
 
 export default function Profilo() {
   const { user } = useAuth()
+  const { profile } = useProfile()
   const { totals, albums, loading } = useCollection()
 
   const name = user?.displayName?.trim() || user?.email?.split('@')[0] || 'Collezionista'
-  const initial = name.charAt(0).toUpperCase()
   const since = memberSince(user?.metadata?.creationTime)
   const verified = user?.emailVerified ?? false
 
@@ -36,17 +38,11 @@ export default function Profilo() {
       {/* Intestazione: avatar monogramma (eco del logo F) + identità */}
       <FadeIn>
         <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center sm:gap-6">
-          {user?.photoURL ? (
-            <img
-              src={user.photoURL}
-              alt=""
-              className="h-20 w-20 shrink-0 -rotate-6 rounded-[18px] object-cover sm:h-24 sm:w-24"
-            />
-          ) : (
-            <span className="grid h-20 w-20 shrink-0 -rotate-6 place-items-center rounded-[18px] bg-lime font-display text-4xl font-extrabold text-lime-ink sm:h-24 sm:w-24 sm:text-5xl">
-              {initial}
-            </span>
-          )}
+          <Avatar
+            id={profile?.avatarId}
+            name={name}
+            className="h-20 w-20 shrink-0 overflow-hidden rounded-full sm:h-24 sm:w-24"
+          />
 
           <div className="min-w-0 text-center sm:text-left">
             <h1 className="truncate font-display text-[28px] font-semibold tracking-tight text-ink sm:text-[34px]">
@@ -123,14 +119,13 @@ export default function Profilo() {
             <span className="text-sm font-medium text-ink">Modifica profilo</span>
             <span className="text-xs text-lime">Apri</span>
           </Link>
-          <button
-            type="button"
-            disabled
-            className="flex items-center justify-between rounded-2xl border border-white/[0.08] bg-surface px-4 py-3.5 text-left opacity-60"
+          <Link
+            to="/profilo/impostazioni"
+            className="flex items-center justify-between rounded-2xl border border-white/[0.08] bg-surface px-4 py-3.5 text-left transition-colors hover:border-white/20"
           >
             <span className="text-sm font-medium text-ink">Cambia avatar</span>
-            <span className="text-xs text-ink-2">Presto</span>
-          </button>
+            <span className="text-xs text-lime">Apri</span>
+          </Link>
         </div>
       </FadeIn>
     </div>

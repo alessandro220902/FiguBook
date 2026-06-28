@@ -4,6 +4,8 @@ import { ArrowLeft, User, Bell, ShieldCheck, Check } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfile } from '@/hooks/useProfile'
 import { saveProfileAccount, type ProfileDoc } from '@/lib/db/profile'
+import { AVATARS } from '@/lib/avatars'
+import { Avatar } from '@/components/Avatar'
 import { FadeIn } from '@/components/home/FadeIn'
 
 type Tab = 'account' | 'scambi' | 'privacy'
@@ -35,12 +37,13 @@ function AccountForm({
   initial,
 }: {
   uid: string
-  initial: { nome: string; username: string; citta: string; bio: string }
+  initial: { nome: string; username: string; citta: string; bio: string; avatarId: string }
 }) {
   const [nome, setNome] = useState(initial.nome)
   const [username, setUsername] = useState(initial.username)
   const [citta, setCitta] = useState(initial.citta)
   const [bio, setBio] = useState(initial.bio)
+  const [avatarId, setAvatarId] = useState(initial.avatarId)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -49,7 +52,8 @@ function AccountForm({
     initial.nome !== nome.trim() ||
     initial.username !== username.trim() ||
     initial.citta !== citta.trim() ||
-    initial.bio !== bio.trim()
+    initial.bio !== bio.trim() ||
+    initial.avatarId !== avatarId
 
   async function onSave(e: React.FormEvent) {
     e.preventDefault()
@@ -61,7 +65,7 @@ function AccountForm({
     setSaving(true)
     setError(null)
     try {
-      await saveProfileAccount(uid, { nome, username, citta, bio })
+      await saveProfileAccount(uid, { nome, username, citta, bio, avatarId })
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
     } catch {
@@ -73,6 +77,42 @@ function AccountForm({
 
   return (
     <form onSubmit={onSave} className="mt-6 flex flex-col gap-4">
+      {/* Avatar: preset oggetti calcio + monogramma (nessuna selezione = monogramma) */}
+      <div className="flex flex-col gap-2.5">
+        <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-2">
+          Avatar
+        </span>
+        <div className="grid grid-cols-5 gap-2.5 sm:grid-cols-9">
+          <button
+            type="button"
+            onClick={() => setAvatarId('')}
+            aria-pressed={avatarId === ''}
+            title="Monogramma"
+            className={
+              'overflow-hidden rounded-full border-2 transition-colors ' +
+              (avatarId === '' ? 'border-lime' : 'border-transparent hover:border-white/20')
+            }
+          >
+            <Avatar id="" name={username || nome} className="h-full w-full" />
+          </button>
+          {AVATARS.map((a) => (
+            <button
+              key={a.id}
+              type="button"
+              onClick={() => setAvatarId(a.id)}
+              aria-pressed={avatarId === a.id}
+              title={a.label}
+              className={
+                'overflow-hidden rounded-full border-2 transition-colors ' +
+                (avatarId === a.id ? 'border-lime' : 'border-transparent hover:border-white/20')
+              }
+            >
+              <Avatar id={a.id} name={username || nome} className="h-full w-full" />
+            </button>
+          ))}
+        </div>
+      </div>
+
       <Field label="Nome">
         <input
           className={inputCls}
@@ -140,6 +180,7 @@ function initialFrom(
     username: profile?.username ?? displayName ?? email?.split('@')[0] ?? '',
     citta: profile?.citta ?? '',
     bio: profile?.bio ?? '',
+    avatarId: profile?.avatarId ?? '',
   }
 }
 
