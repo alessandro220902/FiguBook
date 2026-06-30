@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { MapPin, Lock, Pencil } from 'lucide-react'
+import { MapPin, Lock, Pencil, Ban } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { Avatar } from '@/components/Avatar'
 import { TeamCrest } from '@/components/TeamCrest'
@@ -10,6 +10,8 @@ import { getPublicByUsername } from '@/lib/db/publicProfiles'
 import { FriendButton } from '@/components/FriendButton'
 import type { PublicProfile } from '@/lib/db/profile'
 import { FadeIn } from '@/components/home/FadeIn'
+import { useProfile } from '@/hooks/useProfile'
+import { ProfileActionsMenu } from '@/components/ProfileActionsMenu'
 import { getOtherAlbumIds, getOtherAlbum } from '@/lib/db/otherAlbums'
 import { computeStats } from '@/lib/db/albums'
 import { albumById } from '@/data/albumCatalog'
@@ -22,6 +24,7 @@ export default function ProfiloPubblico() {
 
 function VetrinaInner({ username }: { username: string }) {
   const { user } = useAuth()
+  const { profile: myProfile } = useProfile()
   const [profile, setProfile] = useState<PublicProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [albums, setAlbums] = useState<{ id: string; pct: number }[]>([])
@@ -40,6 +43,7 @@ function VetrinaInner({ username }: { username: string }) {
 
   useEffect(() => {
     if (!profile) return
+    if (myProfile?.blocked?.includes(profile.uid)) return
     let active = true
     ;(async () => {
       const ids = await getOtherAlbumIds(profile.uid)
@@ -53,7 +57,7 @@ function VetrinaInner({ username }: { username: string }) {
       if (active) setAlbums(withPct)
     })()
     return () => { active = false }
-  }, [profile])
+  }, [profile, myProfile])
 
   if (loading) {
     return (
@@ -79,6 +83,7 @@ function VetrinaInner({ username }: { username: string }) {
   }
 
   const isMe = user?.uid === profile.uid
+  const isBlocked = !isMe && (myProfile?.blocked?.includes(profile.uid) ?? false)
   const team = profile.favTeam ? teamById[profile.favTeam] : undefined
   const accent = team ? teamAccent(team) : undefined
   const name = profile.username
@@ -103,9 +108,12 @@ function VetrinaInner({ username }: { username: string }) {
               style={accent ? { boxShadow: `0 0 0 3px ${accent}` } : undefined}
             />
             <div className="min-w-0 flex-1">
-              <h1 className="truncate font-display text-[30px] font-semibold tracking-tight text-ink sm:text-[36px]">
-                {name}
-              </h1>
+              <div className="flex items-start justify-center gap-2 sm:justify-start">
+                <h1 className="truncate font-display text-[30px] font-semibold tracking-tight text-ink sm:text-[36px]">
+                  {name}
+                </h1>
+                {!isMe && <ProfileActionsMenu otherUid={profile.uid} />}
+              </div>
               {profile.nome && <p className="mt-0.5 text-base text-ink-2">{profile.nome}</p>}
               <div className="mt-2.5 flex flex-wrap items-center justify-center gap-3 sm:justify-start">
                 {team && (
@@ -140,6 +148,10 @@ function VetrinaInner({ username }: { username: string }) {
                   >
                     <Pencil className="h-4 w-4" /> Modifica profilo
                   </Link>
+                ) : isBlocked ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-stat-missing/15 px-4 py-2 text-sm font-medium text-stat-missing">
+                    Utente bloccato
+                  </span>
                 ) : (
                   <FriendButton otherUid={profile.uid} />
                 )}
@@ -151,7 +163,13 @@ function VetrinaInner({ username }: { username: string }) {
 
       {/* Album (gated lato rules: vuoto se privato e non amico) */}
       <FadeIn>
-        {albums.length > 0 ? (
+        {isBlocked ? (
+          <div className="mt-6 rounded-2xl border border-white/[0.08] bg-surface/40 px-5 py-12 text-center">
+            <Ban className="mx-auto h-6 w-6 text-stat-missing" />
+            <p className="mt-2 text-base font-medium text-ink">Utente bloccato</p>
+            <p className="mt-1.5 text-sm text-ink-2">Sbloccalo dal menu accanto al nome per rivedere il profilo.</p>
+          </div>
+        ) : albums.length > 0 ? (
           <div className="mt-6">
             <h2 className="mb-3 px-1 font-display text-lg font-semibold text-ink">Album</h2>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
