@@ -15,11 +15,15 @@ service cloud.firestore {
       // pairId: si provano entrambi gli ordini.
       match /albums/{albumId} {
         allow write: if isUser(userId);
+        // Owner sempre. Per gli altri vale (amico O pubblico) E non bloccato dal proprietario.
         allow read: if isUser(userId)
-          || exists(/databases/$(database)/documents/friendships/$(userId + '__' + request.auth.uid))
-          || exists(/databases/$(database)/documents/friendships/$(request.auth.uid + '__' + userId))
-          || (exists(/databases/$(database)/documents/publicProfiles/$(userId))
-              && get(/databases/$(database)/documents/publicProfiles/$(userId)).data.isPublic == true);
+          || (
+            (exists(/databases/$(database)/documents/friendships/$(userId + '__' + request.auth.uid))
+             || exists(/databases/$(database)/documents/friendships/$(request.auth.uid + '__' + userId))
+             || (exists(/databases/$(database)/documents/publicProfiles/$(userId))
+                 && get(/databases/$(database)/documents/publicProfiles/$(userId)).data.isPublic == true))
+            && !(request.auth.uid in get(/databases/$(database)/documents/users/$(userId)/meta/profile).data.get('blocked', []))
+          );
       }
       match /meta/{docId}     { allow read, write: if isUser(userId); }
       match /groups/{groupId} { allow read, write: if isUser(userId); }
@@ -83,7 +87,8 @@ service cloud.firestore {
       // Crei solo richieste a tuo nome, non verso te stesso.
       allow create: if signedIn()
         && request.resource.data.fromUid == request.auth.uid
-        && request.resource.data.fromUid != request.resource.data.toUid;
+        && request.resource.data.fromUid != request.resource.data.toUid
+        && !(request.resource.data.fromUid in get(/databases/$(database)/documents/users/$(request.resource.data.toUid)/meta/profile).data.get('blocked', []));
       // Mittente (annulla) o destinatario (rifiuta/accetta->delete) la cancellano.
       allow delete: if signedIn()
         && (request.auth.uid == resource.data.fromUid || request.auth.uid == resource.data.toUid);
