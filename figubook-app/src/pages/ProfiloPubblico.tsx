@@ -10,6 +10,9 @@ import { getPublicByUsername } from '@/lib/db/publicProfiles'
 import { FriendButton } from '@/components/FriendButton'
 import type { PublicProfile } from '@/lib/db/profile'
 import { FadeIn } from '@/components/home/FadeIn'
+import { getOtherAlbumIds, getOtherAlbum } from '@/lib/db/otherAlbums'
+import { computeStats } from '@/lib/db/albums'
+import { albumById } from '@/data/albumCatalog'
 
 export default function ProfiloPubblico() {
   // Rimonta per username => stato seminato pulito, niente setState sincrono in effect.
@@ -21,6 +24,7 @@ function VetrinaInner({ username }: { username: string }) {
   const { user } = useAuth()
   const [profile, setProfile] = useState<PublicProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [albums, setAlbums] = useState<{ id: string; pct: number }[]>([])
 
   useEffect(() => {
     let active = true
@@ -33,6 +37,23 @@ function VetrinaInner({ username }: { username: string }) {
       active = false
     }
   }, [username])
+
+  useEffect(() => {
+    if (!profile) return
+    let active = true
+    ;(async () => {
+      const ids = await getOtherAlbumIds(profile.uid)
+      const withPct = await Promise.all(
+        ids.filter((id) => albumById[id]).map(async (id) => {
+          const a = await getOtherAlbum(profile.uid, id)
+          const pct = a ? computeStats(id, a.states, a.counts).pct : 0
+          return { id, pct }
+        }),
+      )
+      if (active) setAlbums(withPct)
+    })()
+    return () => { active = false }
+  }, [profile])
 
   if (loading) {
     return (
@@ -128,24 +149,49 @@ function VetrinaInner({ username }: { username: string }) {
         </div>
       </FadeIn>
 
-      {/* Album e attività (gated) */}
+      {/* Album (gated lato rules: vuoto se privato e non amico) */}
       <FadeIn>
-        <div className="mt-6 rounded-2xl border border-white/[0.08] bg-surface/40 px-5 py-12 text-center">
-          {profile.isPublic ? (
-            <>
-              <p className="text-base font-medium text-ink">Album e attività</p>
-              <p className="mt-1.5 text-sm text-ink-2">In arrivo.</p>
-            </>
-          ) : (
-            <>
-              <Lock className="mx-auto h-6 w-6 text-ink-2" />
-              <p className="mt-2 text-base font-medium text-ink">Profilo privato</p>
-              <p className="mt-1.5 text-sm text-ink-2">
-                Aggiungilo come amico per vedere album e attività.
-              </p>
-            </>
-          )}
-        </div>
+        {albums.length > 0 ? (
+          <div className="mt-6">
+            <h2 className="mb-3 px-1 font-display text-lg font-semibold text-ink">Album</h2>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {albums.map(({ id, pct }) => {
+                const entry = albumById[id]
+                return (
+                  <Link
+                    key={id}
+                    to={`/u/${profile.username}/album/${id}`}
+                    className="group flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-surface/40 p-4 transition-colors hover:border-white/20"
+                  >
+                    <div
+                      className="h-12 w-9 shrink-0 overflow-hidden rounded-md bg-cover bg-center"
+                      style={{ background: `linear-gradient(135deg, ${entry.c1}, ${entry.c2})` }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-ink">{entry.title}</p>
+                      <p className="text-xs text-ink-2">{pct}% completo</p>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        ) : (
+          <div className="mt-6 rounded-2xl border border-white/[0.08] bg-surface/40 px-5 py-12 text-center">
+            {profile.isPublic ? (
+              <>
+                <p className="text-base font-medium text-ink">Nessun album pubblico</p>
+                <p className="mt-1.5 text-sm text-ink-2">Questo collezionista non ha ancora album da mostrare.</p>
+              </>
+            ) : (
+              <>
+                <Lock className="mx-auto h-6 w-6 text-ink-2" />
+                <p className="mt-2 text-base font-medium text-ink">Profilo privato</p>
+                <p className="mt-1.5 text-sm text-ink-2">Aggiungilo come amico per vedere i suoi album.</p>
+              </>
+            )}
+          </div>
+        )}
       </FadeIn>
     </div>
   )
