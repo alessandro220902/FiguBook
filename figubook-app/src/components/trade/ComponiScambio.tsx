@@ -69,8 +69,9 @@ function SelectList({
 export function ComponiScambio({
   username, albumNames, receiveCodes, giveCodes, onSend, onCancel,
 }: Props) {
-  const recv = useSelection(receiveCodes)
-  const give = useSelection(giveCodes)
+  // Selezione manuale: si parte da zero, l'utente spunta cosa vuole.
+  const recv = useSelection([])
+  const give = useSelection([])
 
   const canSend = recv.sel.size > 0 || give.sel.size > 0
 
