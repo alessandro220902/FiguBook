@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Inbox, Layers } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Inbox } from 'lucide-react'
 import { requireUid } from '@/lib/firebase'
 import { fetchIndexUsers, type TradeIndexEntry } from '@/lib/db/tradeIndex'
 import { subscribeAlbum, subscribeMyAlbumIds } from '@/lib/db/albums'
@@ -88,7 +88,7 @@ export default function Scambi() {
   // Stato 1: scelta dell'album (solo quelli attivati per gli scambi).
   if (!albumId) {
     return (
-      <div className="mx-auto w-full max-w-3xl">
+      <div className="mx-auto w-full max-w-[88rem]">
         <h1 className="font-display text-[34px] font-semibold tracking-tight text-ink sm:text-[42px]">Scambi</h1>
         <p className="mt-1.5 text-base text-ink-2">Scegli un album per trovare scambi.</p>
 
@@ -102,20 +102,39 @@ export default function Scambi() {
             </p>
           </div>
         ) : (
-          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3">
-            {myAlbums.map((id) => (
-              <button
-                key={id}
-                onClick={() => setAlbumId(id)}
-                className="group flex flex-col gap-2 rounded-2xl border border-white/[0.08] bg-surface/40 p-4 text-left transition-colors hover:border-lime/40"
-              >
-                <Layers className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-lime" />
-                <div>
-                  <div className="font-semibold text-ink">{albumById[id]?.title ?? id}</div>
-                  <div className="text-xs text-muted-foreground">{albumById[id]?.season}</div>
-                </div>
-              </button>
-            ))}
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {myAlbums.map((id) => {
+              const entry = albumById[id]
+              if (!entry) return null
+              return (
+                <button
+                  key={id}
+                  onClick={() => setAlbumId(id)}
+                  className="group relative h-44 overflow-hidden rounded-2xl border border-white/10 p-5 text-left shadow-[0_18px_40px_-20px_rgba(0,0,0,0.7)] transition-transform duration-150 ease-out hover:-translate-y-0.5"
+                  style={{ background: `linear-gradient(145deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
+                >
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0"
+                    style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.05) 40%, transparent 60%, rgba(0,0,0,0.45) 100%)' }}
+                  />
+                  {entry.cover && (
+                    <img
+                      src={entry.cover}
+                      alt=""
+                      className="pointer-events-none absolute inset-y-0 right-0 aspect-[3/4] h-full rounded-r-2xl border-l border-white/15 object-cover"
+                    />
+                  )}
+                  <div className="relative pr-[32%]">
+                    <div className="font-mono text-[11px] uppercase tracking-wide text-white/85">{entry.editor} · {entry.season}</div>
+                    <h2 className="mt-1 truncate text-2xl font-semibold tracking-tight text-white">{entry.title}</h2>
+                  </div>
+                  <span className="absolute bottom-5 left-5 inline-flex items-center gap-1 text-sm font-semibold text-white/90 transition-colors group-hover:text-lime">
+                    Trova scambi <ArrowRight className="h-4 w-4" />
+                  </span>
+                </button>
+              )
+            })}
           </div>
         )}
       </div>
@@ -124,7 +143,7 @@ export default function Scambi() {
 
   // Stato 2: griglia dei match per l'album scelto (+ modale componi scambio).
   return (
-    <div className="mx-auto w-full max-w-5xl">
+    <div className="mx-auto w-full max-w-[88rem]">
       <div className="mb-4 flex items-center gap-3">
         <button
           type="button"
