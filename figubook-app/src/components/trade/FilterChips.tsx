@@ -1,3 +1,5 @@
+import { MapPin, Repeat2 } from 'lucide-react'
+
 export interface TradeFilters {
   reciprocal: boolean
   nearMe: boolean
@@ -9,26 +11,32 @@ interface Props {
 }
 
 const base =
-  'rounded-full px-3 py-1 text-sm border transition select-none cursor-pointer'
+  'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors select-none cursor-pointer active:scale-95'
 
 export function FilterChips({ filters, onChange }: Props) {
   // chip attiva = accento lime brand; inattiva = bordo neutro
   const chip = (active: boolean) =>
     active
-      ? `${base} border-lime bg-lime/15 text-lime`
-      : `${base} border-white/15 text-muted-foreground hover:border-white/30`
+      ? `${base} border border-lime bg-lime/15 text-lime`
+      : `${base} border border-white/12 text-muted-foreground hover:border-white/30 hover:text-foreground`
   return (
     <div className="flex flex-wrap gap-2">
       <button
+        type="button"
+        aria-pressed={filters.reciprocal}
         className={chip(filters.reciprocal)}
         onClick={() => onChange({ ...filters, reciprocal: !filters.reciprocal })}
       >
+        <Repeat2 className="h-3.5 w-3.5" />
         Reciproci
       </button>
       <button
+        type="button"
+        aria-pressed={filters.nearMe}
         className={chip(filters.nearMe)}
         onClick={() => onChange({ ...filters, nearMe: !filters.nearMe })}
       >
+        <MapPin className="h-3.5 w-3.5" />
         Vicino a me
       </button>
     </div>

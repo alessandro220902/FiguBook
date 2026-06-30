@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ArrowLeft, Inbox, Layers } from 'lucide-react'
 import { requireUid } from '@/lib/firebase'
 import { subscribeTradeAlbums } from '@/lib/db/trade'
 import { fetchIndexUsers, type TradeIndexEntry } from '@/lib/db/tradeIndex'
@@ -88,40 +89,61 @@ export default function Scambi() {
   // Stato 1: scelta dell'album (solo quelli attivati per gli scambi).
   if (!albumId) {
     return (
-      <main className="max-w-3xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-1">Scambi</h1>
-        <p className="text-muted-foreground mb-6">Scegli un album per trovare scambi.</p>
-        {tradeAlbums.length === 0 && (
-          <p className="text-sm text-muted-foreground">
-            Nessun album attivo per gli scambi. Attivali da{' '}
-            <Link to="/album" className="text-lime underline">i tuoi album</Link>.
-          </p>
+      <div className="mx-auto w-full max-w-3xl">
+        <h1 className="font-display text-[34px] font-semibold tracking-tight text-ink sm:text-[42px]">Scambi</h1>
+        <p className="mt-1.5 text-base text-ink-2">Scegli un album per trovare scambi.</p>
+
+        {tradeAlbums.length === 0 ? (
+          <div className="mt-6 grid place-items-center gap-2 rounded-2xl border border-border bg-background px-4 py-12 text-center">
+            <Inbox className="h-6 w-6 text-muted-foreground" />
+            <p className="text-sm font-semibold text-ink">Nessun album attivo per gli scambi</p>
+            <p className="text-sm text-muted-foreground">
+              Attivali da{' '}
+              <Link to="/album" className="font-medium text-lime hover:underline">i tuoi album</Link>.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3">
+            {tradeAlbums.map((id) => (
+              <button
+                key={id}
+                onClick={() => setAlbumId(id)}
+                className="group flex flex-col gap-2 rounded-2xl border border-white/[0.08] bg-surface/40 p-4 text-left transition-colors hover:border-lime/40"
+              >
+                <Layers className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-lime" />
+                <div>
+                  <div className="font-semibold text-ink">{albumById[id]?.title ?? id}</div>
+                  <div className="text-xs text-muted-foreground">{albumById[id]?.season}</div>
+                </div>
+              </button>
+            ))}
+          </div>
         )}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {tradeAlbums.map((id) => (
-            <button
-              key={id}
-              onClick={() => setAlbumId(id)}
-              className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-left hover:border-lime/40 transition"
-            >
-              <div className="font-semibold">{albumById[id]?.title ?? id}</div>
-              <div className="text-xs text-muted-foreground">{albumById[id]?.season}</div>
-            </button>
-          ))}
-        </div>
-      </main>
+      </div>
     )
   }
 
   // Stato 2: griglia dei match per l'album scelto (+ modale componi scambio).
   return (
-    <main className="max-w-5xl mx-auto p-6">
-      <div className="flex items-center gap-3 mb-4">
-        <button onClick={() => setAlbumId(null)} className="text-sm text-muted-foreground">← Album</button>
-        <h1 className="text-2xl font-bold">{albumById[albumId]?.title}</h1>
-        <Link to="/scambi/miei" className="ml-auto text-sm text-lime underline">I miei scambi</Link>
+    <div className="mx-auto w-full max-w-5xl">
+      <div className="mb-4 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => setAlbumId(null)}
+          aria-label="Torna agli album"
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/12 bg-white/[0.06] text-foreground transition-colors hover:bg-white/10 active:scale-95"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </button>
+        <h1 className="min-w-0 truncate font-display text-2xl font-bold tracking-tight text-ink">{albumById[albumId]?.title}</h1>
+        <Link
+          to="/scambi/miei"
+          className="ml-auto shrink-0 rounded-full border border-white/12 px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-white/30 hover:text-foreground"
+        >
+          I miei scambi
+        </Link>
       </div>
-      <div className="mb-4"><FilterChips filters={filters} onChange={setFilters} /></div>
+      <div className="mb-5"><FilterChips filters={filters} onChange={setFilters} /></div>
       {composing ? (
         <ComponiScambio
           username={composing.username}
@@ -132,9 +154,13 @@ export default function Scambi() {
           onCancel={() => setComposing(null)}
         />
       ) : visible.length === 0 ? (
-        <p className="text-muted-foreground">Nessuno scambio disponibile per ora.</p>
+        <div className="grid place-items-center gap-2 rounded-2xl border border-border bg-background px-4 py-12 text-center">
+          <Inbox className="h-6 w-6 text-muted-foreground" />
+          <p className="text-sm font-semibold text-ink">Nessuno scambio disponibile</p>
+          <p className="text-sm text-muted-foreground">Prova a togliere i filtri o riprova più tardi.</p>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {visible.map((r) => (
             <MatchCard
               key={r.entry.uid}
@@ -146,6 +172,6 @@ export default function Scambi() {
           ))}
         </div>
       )}
-    </main>
+    </div>
   )
 }
