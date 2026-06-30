@@ -8,7 +8,7 @@ describe('allCodesFromSections', () => {
         { id: 'a', codes: ['1', '2'] },
         { id: 'b', codes: ['3'] },
       ],
-    } as any
+    } as unknown as Parameters<typeof allCodesFromSections>[0]
     expect(allCodesFromSections(data)).toEqual(['1', '2', '3'])
   })
 })

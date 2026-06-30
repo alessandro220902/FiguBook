@@ -10,25 +10,32 @@ interface Props {
   onCancel: () => void
 }
 
-function useSelection(initial: string[]) {
+interface Selection {
+  sel: Set<string>
+  toggle: (c: string) => void
+}
+
+function useSelection(initial: string[]): Selection {
   const [sel, setSel] = useState<Set<string>>(new Set(initial))
   const toggle = (c: string) =>
     setSel((s) => {
       const n = new Set(s)
-      n.has(c) ? n.delete(c) : n.add(c)
+      if (n.has(c)) n.delete(c)
+      else n.add(c)
       return n
     })
   return { sel, toggle }
 }
 
-export function ComponiScambio({
-  username, albumNames, receiveCodes, giveCodes, onSend, onCancel,
-}: Props) {
-  const recv = useSelection(receiveCodes)
-  const give = useSelection(giveCodes)
-  const label = (c: string) => albumNames[c] ?? c
-
-  const List = ({ codes, state }: { codes: string[]; state: ReturnType<typeof useSelection> }) => (
+// Lista di selezione (hoistata fuori dal render: no re-creazione componente).
+function SelectList({
+  codes, state, names,
+}: {
+  codes: string[]
+  state: Selection
+  names: Record<string, string>
+}) {
+  return (
     <div className="flex max-h-72 flex-col gap-0.5 overflow-auto rounded-xl border border-white/[0.06] bg-white/[0.02] p-1">
       {codes.length === 0 && (
         <div className="px-2 py-3 text-sm text-muted-foreground">Niente da selezionare.</div>
@@ -50,13 +57,20 @@ export function ComponiScambio({
               className="h-4 w-4 shrink-0 accent-lime"
             />
             <span className="min-w-0 truncate">
-              <span className="text-muted-foreground">#{c}</span> {label(c)}
+              <span className="text-muted-foreground">#{c}</span> {names[c] ?? c}
             </span>
           </label>
         )
       })}
     </div>
   )
+}
+
+export function ComponiScambio({
+  username, albumNames, receiveCodes, giveCodes, onSend, onCancel,
+}: Props) {
+  const recv = useSelection(receiveCodes)
+  const give = useSelection(giveCodes)
 
   const canSend = recv.sel.size > 0 || give.sel.size > 0
 
@@ -73,14 +87,14 @@ export function ComponiScambio({
             <span className="text-sm font-medium text-lime">Ricevi</span>
             <span className="text-xs text-muted-foreground">{recv.sel.size} di {receiveCodes.length}</span>
           </div>
-          <List codes={receiveCodes} state={recv} />
+          <SelectList codes={receiveCodes} state={recv} names={albumNames} />
         </div>
         <div>
           <div className="mb-2 flex items-baseline justify-between">
             <span className="text-sm font-medium text-ink">Dai</span>
             <span className="text-xs text-muted-foreground">{give.sel.size} di {giveCodes.length}</span>
           </div>
-          <List codes={giveCodes} state={give} />
+          <SelectList codes={giveCodes} state={give} names={albumNames} />
         </div>
       </div>
 
