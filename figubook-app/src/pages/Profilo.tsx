@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Pencil, MapPin, X, Check, Search } from 'lucide-react'
 import { sendEmailVerification } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
@@ -9,7 +9,9 @@ import { TeamCrest } from '@/components/TeamCrest'
 import { AVATARS } from '@/lib/avatars'
 import { TEAMS, teamById } from '@/lib/teams'
 import { teamAccent, teamPageBg, teamCardBg } from '@/lib/teamStyle'
-import { saveProfileAccount, saveAvatar, savePrivacy, UsernameTakenError, type ProfileDoc } from '@/lib/db/profile'
+import { saveProfileAccount, saveAvatar, savePrivacy, UsernameTakenError, type ProfileDoc, type PublicProfile } from '@/lib/db/profile'
+import { getPublicByUid } from '@/lib/db/publicProfiles'
+import { unblockUser } from '@/lib/db/blocks'
 import { FadeIn } from '@/components/home/FadeIn'
 
 const inputCls =
@@ -364,6 +366,52 @@ function initialFrom(
   }
 }
 
+function BlockedUsers({ uid, blocked }: { uid: string; blocked: string[] }) {
+  const [list, setList] = useState<PublicProfile[]>([])
+
+  useEffect(() => {
+    let active = true
+    Promise.all(blocked.map((id) => getPublicByUid(id))).then(
+      (rs) => active && setList(rs.filter((r): r is PublicProfile => !!r)),
+    )
+    return () => {
+      active = false
+    }
+  }, [blocked])
+
+  return (
+    <section className="rounded-2xl border border-white/[0.1] bg-surface/40 p-6">
+      <h2 className="font-display text-xl font-semibold text-ink">Utenti bloccati</h2>
+      {blocked.length === 0 ? (
+        <p className="mt-3 text-sm text-ink-2">Nessun utente bloccato.</p>
+      ) : (
+        <ul className="mt-4 flex flex-col gap-2">
+          {list.map((u) => (
+            <li
+              key={u.uid}
+              className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-surface px-4 py-3"
+            >
+              <Avatar
+                id={u.avatarId}
+                name={u.username}
+                className="h-9 w-9 shrink-0 overflow-hidden rounded-full"
+              />
+              <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{u.username}</span>
+              <button
+                type="button"
+                onClick={() => unblockUser(uid, u.uid)}
+                className="rounded-full border border-white/15 px-3.5 py-1.5 text-sm font-medium text-ink-2 transition-colors hover:text-ink"
+              >
+                Sblocca
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  )
+}
+
 export default function Profilo() {
   const { user } = useAuth()
   const { profile } = useProfile()
@@ -488,6 +536,14 @@ export default function Profilo() {
           )}
         </FadeIn>
       </div>
+
+      {user && (
+        <FadeIn>
+          <div className="mt-6">
+            <BlockedUsers uid={user.uid} blocked={profile?.blocked ?? []} />
+          </div>
+        </FadeIn>
+      )}
 
       {avatarOpen && user && (
         <AvatarModal
