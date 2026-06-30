@@ -15,6 +15,7 @@ import { auth, db, googleProvider } from '@/lib/firebase'
 import { mapFirebaseError } from '@/lib/authErrors'
 import { useAuth } from '@/hooks/useAuth'
 import { registerWithEmail } from '@/lib/auth/register'
+import { isUsernameFree, UsernameTakenError } from '@/lib/db/profile'
 import { needsVerification } from '@/lib/auth/verification'
 
 // sfondo dot-matrix caricato lazy (porta three.js fuori dal bundle iniziale)
@@ -118,10 +119,21 @@ export default function Login() {
         setBusy(false)
         return
       }
+      // Pre-check disponibilità (UX): il vincolo forte è la transazione in
+      // registerWithEmail, qui evitiamo solo di creare l'account se è già preso.
+      if (!(await isUsernameFree(username, ''))) {
+        setRegErr('Nome utente già in uso, scegline un altro.')
+        setBusy(false)
+        return
+      }
       await registerWithEmail({ username, email: regEmail.trim(), password: regPass, remember })
       navigate('/verifica', { replace: true })
     } catch (err) {
-      setRegErr(mapFirebaseError((err as { code?: string }).code))
+      if (err instanceof UsernameTakenError) {
+        setRegErr('Nome utente già in uso, scegline un altro.')
+      } else {
+        setRegErr(mapFirebaseError((err as { code?: string }).code))
+      }
     } finally {
       setBusy(false)
     }
