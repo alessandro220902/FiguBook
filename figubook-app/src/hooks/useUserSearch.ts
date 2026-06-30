@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 import { searchUsers } from '@/lib/db/publicProfiles'
+import { useProfile } from '@/hooks/useProfile'
 import type { PublicProfile } from '@/lib/db/profile'
 
 // Ricerca utenti debounced per prefisso username. results vuoto se query corta.
+// Esclude gli utenti che ho bloccato.
 export function useUserSearch(q: string, max = 8) {
+  const { profile } = useProfile()
   const [results, setResults] = useState<PublicProfile[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -28,5 +31,7 @@ export function useUserSearch(q: string, max = 8) {
     }
   }, [q, max])
 
-  return { results, loading }
+  const blocked = profile?.blocked ?? []
+  const filtered = blocked.length ? results.filter((r) => !blocked.includes(r.uid)) : results
+  return { results: filtered, loading }
 }
