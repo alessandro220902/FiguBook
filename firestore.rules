@@ -9,8 +9,18 @@ service cloud.firestore {
     match /users/{userId} {
       allow read, write: if isUser(userId);
 
-      // Album personali, meta, lista gruppi: solo il proprietario
-      match /albums/{albumId} { allow read, write: if isUser(userId); }
+      // Album: owner sempre (read+write). Lettura ad altri utenti loggati se il
+      // proprietario e' pubblico (publicProfiles.isPublic) OPPURE se sono amici
+      // accettati (friendships). Le rules non ordinano gli uid per costruire il
+      // pairId: si provano entrambi gli ordini.
+      match /albums/{albumId} {
+        allow write: if isUser(userId);
+        allow read: if isUser(userId)
+          || exists(/databases/$(database)/documents/friendships/$(userId + '__' + request.auth.uid))
+          || exists(/databases/$(database)/documents/friendships/$(request.auth.uid + '__' + userId))
+          || (exists(/databases/$(database)/documents/publicProfiles/$(userId))
+              && get(/databases/$(database)/documents/publicProfiles/$(userId)).data.isPublic == true);
+      }
       match /meta/{docId}     { allow read, write: if isUser(userId); }
       match /groups/{groupId} { allow read, write: if isUser(userId); }
 
