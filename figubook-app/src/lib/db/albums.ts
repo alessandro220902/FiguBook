@@ -114,6 +114,12 @@ export function buildAlbumUpdate(deltas: Record<string, number>) {
   return { states, counts, ts: Date.now() }
 }
 
+// Hook opzionale chiamato dopo ogni flush riuscito (usato dal layer scambi per
+// risincronizzare l'indice solo se l'album è opted-in). Disaccoppia albums<->trade.
+type FlushHook = (uid: string, albumId: string) => void
+let afterFlush: FlushHook | null = null
+export function setAfterFlushHook(fn: FlushHook | null) { afterFlush = fn }
+
 // Un solo setDoc merge con tutti i delta accumulati (fix B1: niente 1-write-per-tap).
 // NB: non porta _syncInventory del vecchio sito (layer scambi, fuori scope A2.3).
 export async function flushAlbumCounts(
@@ -124,6 +130,7 @@ export async function flushAlbumCounts(
   if (Object.keys(deltas).length === 0) return
   const ref = doc(db, 'users', uid, 'albums', albumId)
   await setDoc(ref, buildAlbumUpdate(deltas), { merge: true })
+  if (afterFlush) afterFlush(uid, albumId)
 }
 
 const myAlbumsRef = (uid: string) => doc(db, 'users', uid, 'albums', '_my-albums')

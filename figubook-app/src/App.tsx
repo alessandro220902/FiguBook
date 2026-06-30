@@ -4,6 +4,9 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { useAuth } from '@/hooks/useAuth'
 import { CookieBanner } from '@/components/CookieBanner'
 import { initConsentedAnalytics } from '@/lib/consent'
+import { setAfterFlushHook } from '@/lib/db/albums'
+import { subscribeTradeAlbums, syncIndexForAlbum } from '@/lib/db/trade'
+import { getPublicByUid } from '@/lib/db/publicProfiles'
 import { AppLayout } from '@/components/layout/AppLayout'
 import Landing from '@/pages/Landing'
 import Login from '@/pages/Login'
@@ -15,6 +18,7 @@ import Home from '@/pages/Home'
 import Album from '@/pages/Album'
 import AlbumList from '@/pages/AlbumList'
 import Scambi from '@/pages/Scambi'
+import ScambiMiei from '@/pages/ScambiMiei'
 import Community from '@/pages/Community'
 import Cerca from '@/pages/Cerca'
 import Notifiche from '@/pages/Notifiche'
@@ -29,6 +33,19 @@ export default function App() {
   useEffect(() => {
     initConsentedAnalytics()
   }, [])
+
+  useEffect(() => {
+    const uid = user?.uid
+    if (!uid) return
+    let tradeAlbums: string[] = []
+    const unsub = subscribeTradeAlbums(uid, (ids) => { tradeAlbums = ids })
+    setAfterFlushHook(async (u, albumId) => {
+      if (!tradeAlbums.includes(albumId)) return
+      const p = await getPublicByUid(u)
+      syncIndexForAlbum(u, albumId, p?.citta ?? '')
+    })
+    return () => { unsub(); setAfterFlushHook(null) }
+  }, [user])
 
   return (
     <>
@@ -50,6 +67,7 @@ export default function App() {
         <Route path="/album" element={<AlbumList />} />
         <Route path="/album/:albumId" element={<Album />} />
         <Route path="/scambi" element={<Scambi />} />
+        <Route path="/scambi/miei" element={<ScambiMiei />} />
         <Route path="/community" element={<Community />} />
         <Route path="/cerca" element={<Cerca />} />
         <Route path="/notifiche" element={<Notifiche />} />

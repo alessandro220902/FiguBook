@@ -165,7 +165,7 @@ function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive
 
       {/* Menu: z più alto del pannello hover => cliccarlo non innesca l'effetto */}
       <div className="absolute right-3 top-3 z-30">
-        <AlbumMenu title={entry.title} archived={archived} onArchive={onArchive} onUnarchive={onUnarchive} onDelete={onDelete} />
+        <AlbumMenu albumId={a.id} title={entry.title} archived={archived} onArchive={onArchive} onUnarchive={onUnarchive} onDelete={onDelete} />
       </div>
 
       {/* Copertina: piena altezza a filo dell'angolo destro (object-cover). */}
