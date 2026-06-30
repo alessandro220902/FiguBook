@@ -21,6 +21,7 @@ import Notifiche from '@/pages/Notifiche'
 import Profilo from '@/pages/Profilo'
 import ProfiloImpostazioni from '@/pages/ProfiloImpostazioni'
 import ProfiloPubblico from '@/pages/ProfiloPubblico'
+import ProfiloPubblicoAlbum from '@/pages/ProfiloPubblicoAlbum'
 
 export default function App() {
   const { user } = useAuth()
@@ -55,6 +56,7 @@ export default function App() {
         <Route path="/profilo" element={<Profilo />} />
         <Route path="/profilo/impostazioni" element={<ProfiloImpostazioni />} />
         <Route path="/u/:username" element={<ProfiloPubblico />} />
+        <Route path="/u/:username/album/:albumId" element={<ProfiloPubblicoAlbum />} />
       </Route>
     </Routes>
     <CookieBanner />
