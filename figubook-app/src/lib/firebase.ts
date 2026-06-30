@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app'
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
@@ -14,6 +15,18 @@ const firebaseConfig = {
 }
 
 export const app = initializeApp(firebaseConfig)
+
+// App Check (reCAPTCHA v3): attesta che le richieste arrivino dalla nostra app.
+// Site key pubblica per design (sta nell'HTML client, non è un segreto).
+// In dev abilita un debug token (registralo in Console → App Check → Debug tokens).
+if (import.meta.env.DEV) {
+  // @ts-expect-error proprietà non tipizzata usata dal SDK App Check in locale
+  self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
+}
+export const appCheck = initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider('6Lf4NT4tAAAAAGjEPZV-DuHzKJfIjrQmIOWKk_J6'),
+  isTokenAutoRefreshEnabled: true,
+})
 
 export const auth = getAuth(app)
 export const db = getFirestore(app)
