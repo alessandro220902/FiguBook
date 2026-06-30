@@ -113,7 +113,9 @@ export async function saveProfileAccount(uid: string, patch: ProfileAccountPatch
       uid,
       username,
       usernameLower: lower,
-      nome: clean.nome,
+      // nome è PII: esposto solo se il profilo è pubblico (publicProfiles è
+      // leggibile da ogni utente loggato).
+      nome: pub ? clean.nome : '',
       avatarId: prev?.avatarId || (pubSnap.data() as PublicProfile | undefined)?.avatarId || '',
       favTeam: clean.favTeam,
       isPublic: pub,
@@ -146,7 +148,8 @@ export async function savePrivacy(uid: string, isPublic: boolean) {
       uid,
       username,
       usernameLower: username.toLowerCase(),
-      nome: prev?.nome || '',
+      // nome è PII: solo se pubblico (come città/bio).
+      nome: isPublic ? prev?.nome || '' : '',
       avatarId: prev?.avatarId || '',
       favTeam: prev?.favTeam || '',
       isPublic,
