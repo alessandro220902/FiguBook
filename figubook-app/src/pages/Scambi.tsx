@@ -2,9 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Inbox, Layers } from 'lucide-react'
 import { requireUid } from '@/lib/firebase'
-import { subscribeTradeAlbums } from '@/lib/db/trade'
 import { fetchIndexUsers, type TradeIndexEntry } from '@/lib/db/tradeIndex'
-import { subscribeAlbum } from '@/lib/db/albums'
+import { subscribeAlbum, subscribeMyAlbumIds } from '@/lib/db/albums'
 import { loadAlbumData } from '@/data/albums'
 import { allCodesFromSections } from '@/lib/trade/albumCodes'
 import { deriveInventory, computeMatch, type Inventory } from '@/lib/trade/match'
@@ -24,7 +23,7 @@ interface Row {
 
 export default function Scambi() {
   const uid = requireUid()
-  const [tradeAlbums, setTradeAlbums] = useState<string[]>([])
+  const [myAlbums, setMyAlbums] = useState<string[]>([])
   const [albumId, setAlbumId] = useState<string | null>(null)
   const [myInv, setMyInv] = useState<Inventory | null>(null)
   const [names, setNames] = useState<Record<string, string>>({})
@@ -34,7 +33,7 @@ export default function Scambi() {
   const [myCitta, setMyCitta] = useState('')
 
   // Album che ho attivato per gli scambi.
-  useEffect(() => subscribeTradeAlbums(uid, setTradeAlbums), [uid])
+  useEffect(() => subscribeMyAlbumIds(uid, ({ ids }) => setMyAlbums(ids)), [uid])
   // La mia città (per il filtro "vicino a me").
   useEffect(() => { getPublicByUid(uid).then((p) => setMyCitta(p?.citta ?? '')) }, [uid])
 
@@ -93,18 +92,18 @@ export default function Scambi() {
         <h1 className="font-display text-[34px] font-semibold tracking-tight text-ink sm:text-[42px]">Scambi</h1>
         <p className="mt-1.5 text-base text-ink-2">Scegli un album per trovare scambi.</p>
 
-        {tradeAlbums.length === 0 ? (
+        {myAlbums.length === 0 ? (
           <div className="mt-6 grid place-items-center gap-2 rounded-2xl border border-border bg-background px-4 py-12 text-center">
             <Inbox className="h-6 w-6 text-muted-foreground" />
-            <p className="text-sm font-semibold text-ink">Nessun album attivo per gli scambi</p>
+            <p className="text-sm font-semibold text-ink">Non hai ancora album</p>
             <p className="text-sm text-muted-foreground">
-              Attivali da{' '}
+              Aggiungine uno da{' '}
               <Link to="/album" className="font-medium text-lime hover:underline">i tuoi album</Link>.
             </p>
           </div>
         ) : (
           <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3">
-            {tradeAlbums.map((id) => (
+            {myAlbums.map((id) => (
               <button
                 key={id}
                 onClick={() => setAlbumId(id)}

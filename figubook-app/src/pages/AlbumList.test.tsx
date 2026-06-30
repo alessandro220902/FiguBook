@@ -13,15 +13,6 @@ const { addAlbum, removeAlbum, archiveAlbum, unarchiveAlbum } = vi.hoisted(() =>
 
 vi.mock('@/lib/db/albums', () => ({ addAlbum, removeAlbum, archiveAlbum, unarchiveAlbum }))
 vi.mock('@/hooks/useAuth', () => ({ useAuth: () => ({ user: { uid: 'u1' } }) }))
-// AlbumMenu (reso da AlbumList) usa il layer scambi: mock minimi per il render.
-vi.mock('@/lib/firebase', () => ({ requireUid: () => 'u1' }))
-vi.mock('@/lib/db/trade', () => ({
-  subscribeTradeAlbums: () => () => {},
-  setTradeAlbum: vi.fn(() => Promise.resolve()),
-}))
-vi.mock('@/lib/db/publicProfiles', () => ({
-  getPublicByUid: () => Promise.resolve({ citta: '' }),
-}))
 
 const entry = (id: string, title: string) => ({ id, title, editor: 'Panini', season: '2024/25', c1: '#111', c2: '#222' })
 let mockData: { albums: unknown[]; archived: string[]; loading: boolean; error: boolean }

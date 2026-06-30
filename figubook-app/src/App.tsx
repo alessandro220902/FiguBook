@@ -4,8 +4,8 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { useAuth } from '@/hooks/useAuth'
 import { CookieBanner } from '@/components/CookieBanner'
 import { initConsentedAnalytics } from '@/lib/consent'
-import { setAfterFlushHook } from '@/lib/db/albums'
-import { subscribeTradeAlbums, syncIndexForAlbum } from '@/lib/db/trade'
+import { setAfterFlushHook, subscribeMyAlbumIds } from '@/lib/db/albums'
+import { syncIndexForAlbum } from '@/lib/db/trade'
 import { getPublicByUid } from '@/lib/db/publicProfiles'
 import { AppLayout } from '@/components/layout/AppLayout'
 import Landing from '@/pages/Landing'
@@ -34,16 +34,17 @@ export default function App() {
     initConsentedAnalytics()
   }, [])
 
+  // Ogni album che possiedi è scambiabile in automatico: pubblica l'indice di
+  // tutti i tuoi album (backfill al cambio lista) e risincronizza ad ogni flush.
   useEffect(() => {
     const uid = user?.uid
     if (!uid) return
-    let tradeAlbums: string[] = []
-    const unsub = subscribeTradeAlbums(uid, (ids) => { tradeAlbums = ids })
-    setAfterFlushHook(async (u, albumId) => {
-      if (!tradeAlbums.includes(albumId)) return
-      const p = await getPublicByUid(u)
-      syncIndexForAlbum(u, albumId, p?.citta ?? '')
+    let citta = ''
+    getPublicByUid(uid).then((p) => { citta = p?.citta ?? '' })
+    const unsub = subscribeMyAlbumIds(uid, ({ ids }) => {
+      for (const albumId of ids) syncIndexForAlbum(uid, albumId, citta)
     })
+    setAfterFlushHook((u, albumId) => { syncIndexForAlbum(u, albumId, citta) })
     return () => { unsub(); setAfterFlushHook(null) }
   }, [user])
 
