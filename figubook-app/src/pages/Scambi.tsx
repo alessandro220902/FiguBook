@@ -10,11 +10,18 @@ import { allCodesFromSections } from '@/lib/trade/albumCodes'
 import { deriveInventory, computeMatch, type Inventory } from '@/lib/trade/match'
 import { albumById } from '@/data/albumCatalog'
 import { getPublicByUid } from '@/lib/db/publicProfiles'
-import { getRating, type Rating } from '@/lib/db/feedback'
-import { createProposal } from '@/lib/db/proposals'
+import { getRating, getReviews, createReview, type Rating } from '@/lib/db/feedback'
+import {
+  createProposal, subscribeMyProposals, acceptProposal, declineProposal, confirmProposal,
+  cancelProposal, updateProposalOffer, otherParticipant, type Proposal,
+} from '@/lib/db/proposals'
+import { proposalView } from '@/lib/trade/proposalView'
 import { FilterChips, type TradeFilters } from '@/components/trade/FilterChips'
 import { MatchCard } from '@/components/trade/MatchCard'
 import { ComponiScambio } from '@/components/trade/ComponiScambio'
+import { SwapCard, type Person } from '@/components/trade/SwapCard'
+import { CardsDialog } from '@/components/trade/CardsDialog'
+import { ReviewDialog } from '@/components/trade/ReviewDialog'
 
 // Una riga = un utente candidato allo scambio, col match già calcolato.
 interface Row {
@@ -34,6 +41,31 @@ async function ratingFor(uid: string): Promise<Rating> {
   return r
 }
 
+const btnPrimary = 'rounded-xl bg-lime px-3 py-1.5 text-sm font-semibold text-black transition-opacity hover:opacity-90 active:scale-[0.98]'
+const btnGhost = 'rounded-xl border border-white/15 px-3 py-1.5 text-sm text-ink transition-colors hover:bg-white/[0.05] active:scale-[0.98]'
+
+// Notifica l'altro partecipante (secondaria: se fallisce non blocca l'azione).
+// A livello modulo: evita che react-compiler la tratti come impura in render.
+async function notifyTrade(fromUid: string, toUid: string, title: string) {
+  try {
+    const { addDoc, collection } = await import('firebase/firestore')
+    const { db } = await import('@/lib/firebase')
+    await addDoc(collection(db, 'users', toUid, 'notifications'), {
+      fromUid, type: 'trade', title, icon: '🔄', href: '/scambi', read: false, at: Date.now(),
+    })
+  } catch (e) { console.error('notifica scambio', e) }
+}
+
+function Section({ title, items, render }: { title: string; items: Proposal[]; render: (p: Proposal) => React.ReactNode }) {
+  if (items.length === 0) return null
+  return (
+    <section className="mt-10">
+      <h2 className="mb-3 font-display text-xl font-bold tracking-tight text-ink">{title} <span className="text-muted-foreground">({items.length})</span></h2>
+      <div className="grid gap-3 sm:grid-cols-2">{items.map(render)}</div>
+    </section>
+  )
+}
+
 export default function Scambi() {
   const uid = requireUid()
   const { albums, archived } = useCollection()
@@ -47,6 +79,17 @@ export default function Scambi() {
   const [sending, setSending] = useState(false)
   const [notice, setNotice] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
+  // Le mie proposte (tutte le sezioni) + risoluzione persone/album/recensioni.
+  const [props_, setProps_] = useState<Proposal[]>([])
+  const [people, setPeople] = useState<Record<string, Person>>({})
+  const [albumMeta, setAlbumMeta] = useState<Record<string, { title: string; cover?: string; names: Record<string, string> }>>({})
+  const [viewing, setViewing] = useState<Proposal | null>(null)
+  const [reviewed, setReviewed] = useState<Set<string>>(new Set())
+  const [reviewing, setReviewing] = useState<Proposal | null>(null)
+  const [editing, setEditing] = useState<Proposal | null>(null)
+
+  useEffect(() => subscribeMyProposals(uid, setProps_), [uid])
+
   // Album miei non archiviati (ogni album posseduto è scambiabile).
   const myAlbums = useMemo(
     () => albums.filter((a) => !archived.includes(a.id)),
@@ -54,6 +97,55 @@ export default function Scambi() {
   )
   // La mia città (per il filtro "vicino a me").
   useEffect(() => { getPublicByUid(uid).then((p) => setMyCitta(p?.citta ?? '')) }, [uid])
+
+  // Risolvo profili (username+rating), meta album (titolo/cover/nomi carte) e le
+  // recensioni già lasciate da me, on-demand per le proposte presenti (con cache).
+  useEffect(() => {
+    let off = false
+    ;(async () => {
+      const uids = new Set<string>()
+      const albums = new Set<string>()
+      props_.forEach((p) => { p.participants.forEach((u) => uids.add(u)); albums.add(p.albumId) })
+      const ppl: Record<string, Person> = { ...people }
+      for (const u of uids) {
+        if (ppl[u]) continue
+        const pr = await getPublicByUid(u)
+        const r = await getRating(u)
+        ppl[u] = { uid: u, username: pr?.username ?? 'utente', rating: r.avg }
+      }
+      const meta = { ...albumMeta }
+      for (const a of albums) {
+        if (meta[a]) continue
+        const data = await loadAlbumData(a)
+        meta[a] = { title: albumById[a]?.title ?? a, cover: albumById[a]?.cover, names: data?.names ?? {} }
+      }
+      const done = new Set<string>()
+      for (const p of props_.filter((x) => x.status === 'completed')) {
+        const ou = otherParticipant(p.participants, uid)
+        const revs = await getReviews(ou)
+        if (revs.some((r) => r.id === p.id && r.fromUid === uid)) done.add(p.id)
+      }
+      if (!off) { setPeople(ppl); setAlbumMeta(meta); setReviewed(done) }
+    })()
+    return () => { off = true }
+  }, [props_, uid]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const notify = (toUid: string, title: string) => notifyTrade(uid, toUid, title)
+
+  // Suddivisione in sezioni + etichette stato.
+  const active = props_.filter((p) => p.status !== 'declined' && p.status !== 'cancelled')
+  const received = active.filter((p) => p.status === 'pending' && p.turnUid === uid)
+  const sent = active.filter((p) => p.status === 'pending' && p.turnUid !== uid)
+  const inProgress = active.filter((p) => p.status === 'accepted')
+  const completed = active.filter((p) => p.status === 'completed')
+
+  const statusLabel = (p: Proposal) =>
+    p.status === 'completed' ? 'Completato'
+    : p.status === 'accepted' ? (p.confirmedBy.includes(uid) ? 'In attesa conferma' : 'Conferma quando fatto')
+    : p.turnUid === uid ? 'Tocca a te' : 'In attesa di risposta'
+  const statusClass = (p: Proposal) =>
+    p.status === 'completed' ? 'border-lime/30 bg-lime/10 text-lime'
+    : 'border-white/12 bg-white/[0.04] text-muted-foreground'
 
   // Quando scelgo un album: carico i suoi codici e mi sottoscrivo al mio inventario live.
   useEffect(() => {
@@ -105,7 +197,7 @@ export default function Scambi() {
         const { db } = await import('@/lib/firebase')
         await addDoc(collection(db, 'users', row.entry.uid, 'notifications'), {
           fromUid: uid, type: 'trade', title: 'Hai ricevuto una proposta di scambio',
-          icon: '🔄', href: '/scambi/miei', read: false, at: Date.now(),
+          icon: '🔄', href: '/scambi', read: false, at: Date.now(),
         })
       } catch (e) { console.error('notifica scambio', e) }
       setComposing(null)
@@ -122,8 +214,8 @@ export default function Scambi() {
   if (!albumId) {
     return (
       <div className="mx-auto w-full max-w-[88rem]">
-        <h1 className="font-display text-[34px] font-semibold tracking-tight text-ink sm:text-[42px]">Scambi</h1>
-        <p className="mt-1.5 text-base text-ink-2">Scegli un album per trovare scambi.</p>
+        <h1 className="font-display text-[34px] font-semibold tracking-tight text-ink sm:text-[42px]">I miei scambi</h1>
+        <p className="mt-1.5 text-base text-ink-2">Scegli un album per proporre scambi, o gestisci le tue proposte qui sotto.</p>
 
         {myAlbums.length === 0 ? (
           <div className="mt-6 grid place-items-center gap-2 rounded-2xl border border-border bg-background px-4 py-12 text-center">
@@ -174,6 +266,98 @@ export default function Scambi() {
             })}
           </div>
         )}
+
+        <Section title="Proposte ricevute" items={received} render={(p) => (
+          <SwapCard key={p.id} proposal={p} meUid={uid} people={people}
+            albumTitle={albumMeta[p.albumId]?.title ?? ''} albumCover={albumMeta[p.albumId]?.cover}
+            onViewCards={() => setViewing(p)} statusLabel={statusLabel(p)} statusClass={statusClass(p)}
+            actions={<>
+              <button onClick={async () => { await acceptProposal(p.id); await notify(otherParticipant(p.participants, uid), 'Proposta accettata') }} className={btnPrimary}>Accetta</button>
+              <button onClick={() => declineProposal(p.id)} className={btnGhost}>Rifiuta</button>
+              <button onClick={() => setEditing(p)} className={btnGhost}>Modifica proposta</button>
+            </>} />
+        )} />
+
+        <Section title="Proposte inviate" items={sent} render={(p) => (
+          <SwapCard key={p.id} proposal={p} meUid={uid} people={people}
+            albumTitle={albumMeta[p.albumId]?.title ?? ''} albumCover={albumMeta[p.albumId]?.cover}
+            onViewCards={() => setViewing(p)} statusLabel={statusLabel(p)} statusClass={statusClass(p)}
+            actions={<>
+              <button onClick={() => cancelProposal(p.id)} className={btnGhost}>Annulla scambio</button>
+              <button onClick={() => setEditing(p)} className={btnGhost}>Modifica proposta</button>
+            </>} />
+        )} />
+
+        <Section title="Scambi in corso" items={inProgress} render={(p) => (
+          <SwapCard key={p.id} proposal={p} meUid={uid} people={people}
+            albumTitle={albumMeta[p.albumId]?.title ?? ''} albumCover={albumMeta[p.albumId]?.cover}
+            onViewCards={() => setViewing(p)} statusLabel={statusLabel(p)} statusClass={statusClass(p)}
+            actions={!p.confirmedBy.includes(uid)
+              ? <button onClick={() => confirmProposal(p, uid)} className={btnPrimary}>Conferma scambio fatto</button>
+              : null} />
+        )} />
+
+        <Section title="Scambi completati" items={completed} render={(p) => (
+          <SwapCard key={p.id} proposal={p} meUid={uid} people={people}
+            albumTitle={albumMeta[p.albumId]?.title ?? ''} albumCover={albumMeta[p.albumId]?.cover}
+            onViewCards={() => setViewing(p)} statusLabel={statusLabel(p)} statusClass={statusClass(p)}
+            actions={reviewed.has(p.id)
+              ? <span className="text-sm text-muted-foreground">Recensione inviata</span>
+              : <button onClick={() => setReviewing(p)} className={btnPrimary}>Lascia recensione</button>} />
+        )} />
+
+        {viewing && (() => {
+          const v = proposalView(viewing, uid)
+          const nm = albumMeta[viewing.albumId]?.names ?? {}
+          return <CardsDialog
+            fromLabel={`${people[v.fromUid]?.username ?? 'utente'} dà`}
+            toLabel={`${people[v.toUid]?.username ?? 'utente'} dà`}
+            fromCodes={v.fromGives} toCodes={v.toGives} names={nm}
+            onClose={() => setViewing(null)} />
+        })()}
+
+        {reviewing && (
+          <div className="fixed inset-0 z-50 grid place-items-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setReviewing(null)} />
+            <div className="relative w-full max-w-md">
+              <ReviewDialog
+                username={people[otherParticipant(reviewing.participants, uid)]?.username ?? 'utente'}
+                onSubmit={async (r, c) => {
+                  await createReview(otherParticipant(reviewing.participants, uid), reviewing.id, uid, r, c)
+                  setReviewed((s) => new Set(s).add(reviewing.id)); setReviewing(null)
+                }}
+                onCancel={() => setReviewing(null)} />
+            </div>
+          </div>
+        )}
+
+        {editing && (() => {
+          const meta = albumMeta[editing.albumId]
+          const iAmFrom = editing.fromUid === uid
+          const myGiveInit = iAmFrom ? editing.give : editing.receive
+          const myRecvInit = iAmFrom ? editing.receive : editing.give
+          return (
+            <div className="fixed inset-0 z-50 grid place-items-center overflow-auto p-4">
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setEditing(null)} />
+              <div className="relative w-full max-w-2xl">
+                <ComponiScambio
+                  username={people[otherParticipant(editing.participants, uid)]?.username ?? 'utente'}
+                  albumNames={meta?.names ?? {}}
+                  receiveCodes={myRecvInit} giveCodes={myGiveInit}
+                  initialReceive={myRecvInit} initialGive={myGiveInit}
+                  mode="edit"
+                  onCancel={() => setEditing(null)}
+                  onSend={async (give, receive) => {
+                    const g = iAmFrom ? give : receive
+                    const r = iAmFrom ? receive : give
+                    await updateProposalOffer(editing, uid, g, r)
+                    await notify(otherParticipant(editing.participants, uid), 'Proposta aggiornata')
+                    setEditing(null)
+                  }} />
+              </div>
+            </div>
+          )
+        })()}
       </div>
     )
   }
@@ -191,12 +375,6 @@ export default function Scambi() {
           <ArrowLeft className="h-4 w-4" />
         </button>
         <h1 className="min-w-0 truncate font-display text-2xl font-bold tracking-tight text-ink">{albumById[albumId]?.title}</h1>
-        <Link
-          to="/scambi/miei"
-          className="ml-auto shrink-0 rounded-full border border-white/12 px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-white/30 hover:text-foreground"
-        >
-          I miei scambi
-        </Link>
       </div>
       <div className="mb-5"><FilterChips filters={filters} onChange={setFilters} /></div>
       {notice && (
