@@ -38,11 +38,11 @@ export function MatchCard({ username, citta, match, rating, onCompose }: Props) 
       <div className="grid grid-cols-2 gap-2 text-center">
         <div className="rounded-xl bg-white/[0.04] py-2.5">
           <div className="text-2xl font-bold leading-none text-lime">{match.receiveCount}</div>
-          <div className="mt-1 text-[11px] font-medium tracking-wide text-muted-foreground">RICEVI</div>
+          <div className="mt-1 text-[11px] font-medium tracking-wide text-muted-foreground">POTRESTI RICEVERE</div>
         </div>
         <div className="rounded-xl bg-white/[0.04] py-2.5">
           <div className="text-2xl font-bold leading-none text-ink">{match.giveCount}</div>
-          <div className="mt-1 text-[11px] font-medium tracking-wide text-muted-foreground">OFFRI</div>
+          <div className="mt-1 text-[11px] font-medium tracking-wide text-muted-foreground">POTRESTI OFFRIRE</div>
         </div>
       </div>
 
