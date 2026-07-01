@@ -21,6 +21,7 @@ import { FilterChips, type TradeFilters } from '@/components/trade/FilterChips'
 import { MatchCard } from '@/components/trade/MatchCard'
 import { ComponiScambio } from '@/components/trade/ComponiScambio'
 import { SwapCard, type Person } from '@/components/trade/SwapCard'
+import { CompletedCard } from '@/components/trade/CompletedCard'
 import { CardsDialog } from '@/components/trade/CardsDialog'
 import { ReviewDialog } from '@/components/trade/ReviewDialog'
 
@@ -142,7 +143,7 @@ export default function Scambi() {
         if (ppl[u]) continue
         const pr = await getPublicByUid(u)
         const r = await getRating(u)
-        ppl[u] = { uid: u, username: pr?.username ?? 'utente', rating: r.avg }
+        ppl[u] = { uid: u, username: pr?.username ?? 'utente', rating: r.avg, avatarId: pr?.avatarId }
       }
       const meta = { ...albumMeta }
       for (const a of albums) {
@@ -330,12 +331,13 @@ export default function Scambi() {
         )} />
 
         <Section title="Scambi completati" items={completed} render={(p) => (
-          <SwapCard key={p.id} proposal={p} meUid={uid} people={people}
+          <CompletedCard key={p.id}
             albumTitle={albumMeta[p.albumId]?.title ?? ''} albumCover={albumMeta[p.albumId]?.cover}
-            onViewCards={() => setViewing(p)} statusLabel={statusLabel(p)} statusClass={statusClass(p)}
-            actions={reviewed.has(p.id)
-              ? <span className="text-sm text-muted-foreground">Recensione inviata</span>
-              : <button onClick={() => setReviewing(p)} className={btnPrimary}>Lascia recensione</button>} />
+            other={people[otherParticipant(p.participants, uid)]}
+            completedAt={p.updatedAt}
+            reviewed={reviewed.has(p.id)}
+            onViewCards={() => setViewing(p)}
+            onReview={() => setReviewing(p)} />
         )} />
 
         {viewing && (() => {

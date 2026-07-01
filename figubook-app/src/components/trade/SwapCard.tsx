@@ -3,7 +3,7 @@ import { ArrowUpDown } from 'lucide-react'
 import type { Proposal } from '@/lib/db/proposals'
 import { proposalView } from '@/lib/trade/proposalView'
 
-export interface Person { uid: string; username: string; rating?: number; avatar?: string }
+export interface Person { uid: string; username: string; rating?: number; avatarId?: string }
 
 interface Props {
   proposal: Proposal
