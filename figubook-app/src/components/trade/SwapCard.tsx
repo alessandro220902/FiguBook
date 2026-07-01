@@ -19,20 +19,18 @@ interface Props {
 
 function Panel({ person, count, onViewCards }: { person?: Person; count: number; onViewCards: () => void }) {
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3.5">
-      <div className="flex items-center justify-between gap-2">
-        <Link to={person ? `/u/${person.username}` : '#'} className="flex min-w-0 items-center gap-2 hover:underline">
-          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-lime/15 text-xs font-bold text-lime">
-            {(person?.username ?? '?').slice(0, 1).toUpperCase()}
-          </span>
-          <span className="truncate text-sm font-semibold text-ink">{person?.username ?? 'utente'}</span>
-          {person?.rating != null && person.rating > 0 && (
-            <span className="shrink-0 text-xs text-muted-foreground">⭐ {person.rating.toFixed(1)}</span>
-          )}
-        </Link>
-      </div>
-      <div className="mt-2 flex items-center justify-between">
-        <span className="text-sm text-muted-foreground">Dà <span className="font-semibold text-ink">{count}</span> {count === 1 ? 'carta' : 'carte'}</span>
+    <div className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2">
+      <Link to={person ? `/u/${person.username}` : '#'} className="flex min-w-0 items-center gap-2 hover:underline">
+        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-lime/15 text-xs font-bold text-lime">
+          {(person?.username ?? '?').slice(0, 1).toUpperCase()}
+        </span>
+        <span className="truncate text-sm font-semibold text-ink">{person?.username ?? 'utente'}</span>
+        {person?.rating != null && person.rating > 0 && (
+          <span className="shrink-0 text-xs text-muted-foreground">⭐ {person.rating.toFixed(1)}</span>
+        )}
+      </Link>
+      <div className="flex shrink-0 items-center gap-2.5">
+        <span className="text-sm text-muted-foreground">Dà <span className="font-semibold text-ink">{count}</span></span>
         <button onClick={onViewCards} className="text-xs font-semibold text-lime hover:underline">Visualizza →</button>
       </div>
     </div>
@@ -44,8 +42,8 @@ export function SwapCard({
 }: Props) {
   const v = proposalView(proposal, meUid)
   return (
-    <div className="rounded-2xl border border-white/[0.08] bg-surface/40 p-4 backdrop-blur-sm">
-      <div className="mb-3 flex items-center gap-2.5">
+    <div className="rounded-2xl border border-white/[0.08] bg-surface/40 p-3 backdrop-blur-sm">
+      <div className="mb-2.5 flex items-center gap-2.5">
         {albumCover
           ? <img src={albumCover} alt="" className="h-9 w-7 shrink-0 rounded object-cover" />
           : <div className="h-9 w-7 shrink-0 rounded bg-white/10" />}

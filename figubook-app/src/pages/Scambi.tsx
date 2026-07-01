@@ -87,8 +87,34 @@ export default function Scambi() {
   const [reviewed, setReviewed] = useState<Set<string>>(new Set())
   const [reviewing, setReviewing] = useState<Proposal | null>(null)
   const [editing, setEditing] = useState<Proposal | null>(null)
+  // Candidati completi per la modifica: mie doppie∩sue mancanti e viceversa.
+  const [editCand, setEditCand] = useState<{ receive: string[]; give: string[] } | null>(null)
 
   useEffect(() => subscribeMyProposals(uid, setProps_), [uid])
+
+  // Quando apro "Modifica proposta": ricalcolo la lista completa dei candidati
+  // reciproci per quell'album/utente, così posso aggiungere carte (non solo
+  // quelle già offerte). Le carte già nella proposta restano pre-spuntate.
+  useEffect(() => {
+    if (!editing) return
+    const p = editing
+    const ou = otherParticipant(p.participants, uid)
+    let off = false
+    let unsub = () => {}
+    ;(async () => {
+      const data = await loadAlbumData(p.albumId)
+      if (!data || off) return
+      const allCodes = allCodesFromSections(data)
+      const entries = await fetchIndexUsers(p.albumId, uid)
+      const them = entries.find((e) => e.uid === ou)
+      unsub = subscribeAlbum(uid, p.albumId, (d) => {
+        const myInv = deriveInventory(allCodes, d.states)
+        const m = computeMatch(myInv, { doubles: them?.doubles ?? [], missing: them?.missing ?? [] }, allCodes.length)
+        if (!off) setEditCand({ receive: m.receive, give: m.give })
+      })
+    })()
+    return () => { off = true; unsub(); setEditCand(null) }
+  }, [editing, uid])
 
   // Album miei non archiviati (ogni album posseduto è scambiabile).
   const myAlbums = useMemo(
@@ -202,6 +228,7 @@ export default function Scambi() {
       } catch (e) { console.error('notifica scambio', e) }
       setComposing(null)
       setNotice({ type: 'ok', text: 'Proposta inviata! La trovi in "I miei scambi".' })
+      setTimeout(() => setNotice(null), 4000)
     } catch (e) {
       console.error('invio proposta', e)
       setNotice({ type: 'err', text: 'Impossibile inviare la proposta. Verifica di aver confermato la tua email, poi riprova.' })
@@ -336,6 +363,11 @@ export default function Scambi() {
           const iAmFrom = editing.fromUid === uid
           const myGiveInit = iAmFrom ? editing.give : editing.receive
           const myRecvInit = iAmFrom ? editing.receive : editing.give
+          // Lista completa candidati (unione con l'offerta corrente, così le carte
+          // già proposte restano visibili anche se cambiassero gli inventari).
+          const uniq = (a: string[], b: string[]) => Array.from(new Set([...a, ...b]))
+          const recvCodes = uniq(editCand?.receive ?? [], myRecvInit)
+          const giveCodes = uniq(editCand?.give ?? [], myGiveInit)
           return (
             <div className="fixed inset-0 z-50 grid place-items-center overflow-auto p-4">
               <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setEditing(null)} />
@@ -343,7 +375,7 @@ export default function Scambi() {
                 <ComponiScambio
                   username={people[otherParticipant(editing.participants, uid)]?.username ?? 'utente'}
                   albumNames={meta?.names ?? {}}
-                  receiveCodes={myRecvInit} giveCodes={myGiveInit}
+                  receiveCodes={recvCodes} giveCodes={giveCodes}
                   initialReceive={myRecvInit} initialGive={myGiveInit}
                   mode="edit"
                   onCancel={() => setEditing(null)}
@@ -380,7 +412,7 @@ export default function Scambi() {
       {notice && (
         <div
           className={
-            'mb-4 rounded-xl border px-4 py-3 text-sm ' +
+            'mb-4 inline-flex max-w-fit rounded-xl border px-3.5 py-2 text-sm ' +
             (notice.type === 'ok'
               ? 'border-lime/30 bg-lime/10 text-lime'
               : 'border-red-500/30 bg-red-500/10 text-red-300')
