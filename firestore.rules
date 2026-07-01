@@ -179,12 +179,8 @@ service cloud.firestore {
         && request.resource.data.participants == resource.data.participants
         && request.resource.data.fromUid == resource.data.fromUid
         && request.resource.data.toUid == resource.data.toUid
-        && request.resource.data.groupId == resource.data.groupId
         && request.resource.data.albumId == resource.data.albumId
         && request.resource.data.createdAt == resource.data.createdAt
-        // i nuovi campi turno devono restare coerenti coi partecipanti
-        && request.resource.data.lastEditedBy in resource.data.participants
-        && request.resource.data.turnUid in resource.data.participants
         // confirmedBy puo contenere solo partecipanti (no uid finti)
         && request.resource.data.confirmedBy.hasOnly(resource.data.participants)
         // 'completed' SOLO se entrambi i partecipanti hanno confermato
