@@ -1,8 +1,9 @@
-import { MapPin, Repeat2 } from 'lucide-react'
+import { MapPin, Repeat2, Star } from 'lucide-react'
 
 export interface TradeFilters {
   reciprocal: boolean
   nearMe: boolean
+  minStars: boolean
 }
 
 interface Props {
@@ -38,6 +39,15 @@ export function FilterChips({ filters, onChange }: Props) {
       >
         <MapPin className="h-3.5 w-3.5" />
         Vicino a me
+      </button>
+      <button
+        type="button"
+        aria-pressed={filters.minStars}
+        className={chip(filters.minStars)}
+        onClick={() => onChange({ ...filters, minStars: !filters.minStars })}
+      >
+        <Star className="h-3.5 w-3.5" />
+        4+
       </button>
     </div>
   )

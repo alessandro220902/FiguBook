@@ -1,18 +1,32 @@
 import { ArrowRightLeft, MapPin } from 'lucide-react'
 import type { MatchResult } from '@/lib/trade/match'
+import { StarRating } from './StarRating'
 
 interface Props {
   username: string
   citta: string
   match: MatchResult
+  rating?: { avg: number; count: number }
   onCompose: () => void
 }
 
-export function MatchCard({ username, citta, match, onCompose }: Props) {
+export function MatchCard({ username, citta, match, rating, onCompose }: Props) {
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-white/[0.08] bg-surface/40 p-4 transition-colors hover:border-white/20">
       <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0 truncate font-semibold text-ink">{username}</div>
+        <div className="min-w-0">
+          <div className="truncate font-semibold text-ink">{username}</div>
+          {rating && rating.count > 0 ? (
+            <div className="mt-1 flex items-center gap-1.5">
+              <StarRating value={rating.avg} size={14} />
+              <span className="text-xs text-muted-foreground">
+                {rating.avg} ({rating.count})
+              </span>
+            </div>
+          ) : (
+            <div className="mt-1 text-xs text-muted-foreground">Nuovo</div>
+          )}
+        </div>
         {citta && (
           <div className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
             <MapPin className="h-3.5 w-3.5" />
