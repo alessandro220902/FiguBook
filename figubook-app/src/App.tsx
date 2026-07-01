@@ -6,7 +6,7 @@ import { CookieBanner } from '@/components/CookieBanner'
 import { initConsentedAnalytics } from '@/lib/consent'
 import { setAfterFlushHook, subscribeMyAlbumIds } from '@/lib/db/albums'
 import { syncIndexForAlbum } from '@/lib/db/trade'
-import { subscribeProfile } from '@/lib/db/profile'
+import { subscribeProfile, touchLastSeen } from '@/lib/db/profile'
 import { AppLayout } from '@/components/layout/AppLayout'
 import Landing from '@/pages/Landing'
 import Login from '@/pages/Login'
@@ -38,6 +38,7 @@ export default function App() {
   useEffect(() => {
     const uid = user?.uid
     if (!uid) return
+    touchLastSeen(uid)   // segna l'ultimo accesso (throttled)
     // Città dal profilo PRIVATO (reattiva): la città di scambio nel tradeIndex
     // non dipende da profilo pubblico/privato, e resta fresca ad ogni flush.
     let citta = ''

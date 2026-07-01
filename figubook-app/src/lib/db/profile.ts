@@ -35,10 +35,11 @@ export interface PublicProfile {
   avatarId: string
   favTeam: string
   isPublic: boolean
-  // Inclusi SOLO se isPublic (altrimenti stringa vuota: niente leak su profilo privato)
+  // Sempre pubblici (privato nasconde solo lo sfoglio album).
   citta: string
   bio: string
   updatedAt: number
+  lastSeen?: number   // ultimo accesso app (ms); assente = mai tracciato
 }
 
 // isPublic NON è qui: si salva subito col toggle (savePrivacy), non col form.
@@ -169,6 +170,19 @@ export async function savePrivacy(uid: string, isPublic: boolean) {
 export async function saveAvatar(uid: string, avatarId: string) {
   await setDoc(profileRef(uid), { avatarId }, { merge: true })
   await setDoc(publicRef(uid), { avatarId }, { merge: true })
+}
+
+// Aggiorna lastSeen (ultimo accesso) sul profilo pubblico, con throttle locale
+// (una scrittura ogni ~30 min per utente) per non scrivere ad ogni navigazione.
+export async function touchLastSeen(uid: string): Promise<void> {
+  const key = `figubook:lastSeen:${uid}`
+  const now = Date.now()
+  const prev = Number(localStorage.getItem(key) || 0)
+  if (now - prev < 30 * 60_000) return
+  localStorage.setItem(key, String(now))
+  try {
+    await setDoc(publicRef(uid), { lastSeen: now }, { merge: true })
+  } catch (e) { console.error('lastSeen', e) }
 }
 
 // Disponibilità username (per check live nel form). true = libero o già mio.

@@ -30,6 +30,7 @@ interface Row {
   username: string
   avatarId?: string
   citta: string
+  lastSeen?: number
   match: ReturnType<typeof computeMatch>
   rating: Rating
 }
@@ -200,7 +201,7 @@ export default function Scambi() {
         const match = computeMatch(myInv, { doubles: e.doubles, missing: e.missing }, total)
         const p = await getPublicByUid(e.uid)
         const rating = await ratingFor(e.uid)
-        out.push({ entry: e, username: p?.username ?? 'utente', avatarId: p?.avatarId, citta: e.citta ?? '', match, rating })
+        out.push({ entry: e, username: p?.username ?? 'utente', avatarId: p?.avatarId, citta: e.citta ?? '', lastSeen: p?.lastSeen, match, rating })
       }
       setRows(out)
     })
@@ -449,6 +450,7 @@ export default function Scambi() {
               username={r.username}
               avatarId={r.avatarId}
               citta={r.citta}
+              lastSeen={r.lastSeen}
               match={r.match}
               rating={r.rating}
               onCompose={() => setComposing(r)}
