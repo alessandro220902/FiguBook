@@ -49,8 +49,13 @@ export default function VerificaEmail() {
     setMsg('')
     try {
       await auth.currentUser.reload()
-      if (auth.currentUser.emailVerified) window.location.reload()
-      else setMsg('Email non ancora verificata. Clicca il link nella mail e riprova.')
+      if (auth.currentUser.emailVerified) {
+        // Conia un token FRESCO: il claim email_verified viene dal token, non
+        // dallo stato live. Senza questo refresh le rules vedrebbero ancora
+        // email_verified=false finche' il token non scade (~1h) o si rifa' login.
+        await auth.currentUser.getIdToken(true)
+        window.location.reload()
+      } else setMsg('Email non ancora verificata. Clicca il link nella mail e riprova.')
     } finally {
       setChecking(false)
     }
