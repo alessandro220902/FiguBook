@@ -106,32 +106,23 @@ export default function Scambi() {
             </p>
           </div>
         ) : (
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {myAlbums.map((a) => {
               const entry = a.entry
               return (
                 <button
                   key={a.id}
                   onClick={() => setAlbumId(a.id)}
-                  className="group relative h-56 overflow-hidden rounded-2xl border border-white/10 text-left shadow-[0_18px_40px_-20px_rgba(0,0,0,0.7)] transition-transform duration-150 ease-out hover:-translate-y-0.5"
+                  className="group relative aspect-[3/4] overflow-hidden rounded-2xl border border-white/10 text-left shadow-[0_18px_40px_-20px_rgba(0,0,0,0.7)] transition-transform duration-150 ease-out hover:-translate-y-0.5"
                   style={entry.cover ? undefined : { background: `linear-gradient(145deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
                 >
-                  {/* Sfondo: copertina intera (contain) su riempimento sfocato;
-                      altrimenti resta il gradiente colore. */}
+                  {/* Copertina che riempie la card portrait; altrimenti gradiente colore. */}
                   {entry.cover && (
-                    <>
-                      <img
-                        src={entry.cover}
-                        alt=""
-                        aria-hidden
-                        className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover blur-2xl"
-                      />
-                      <img
-                        src={entry.cover}
-                        alt=""
-                        className="pointer-events-none absolute inset-0 h-full w-full object-contain"
-                      />
-                    </>
+                    <img
+                      src={entry.cover}
+                      alt=""
+                      className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+                    />
                   )}
                   {/* Sfumatura morbida e alta: stacco lieve, nessuna linea netta. */}
                   <div
