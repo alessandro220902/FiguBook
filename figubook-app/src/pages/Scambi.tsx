@@ -28,6 +28,7 @@ interface Row {
   entry: TradeIndexEntry
   username: string
   avatarId?: string
+  citta: string
   match: ReturnType<typeof computeMatch>
   rating: Rating
 }
@@ -197,7 +198,7 @@ export default function Scambi() {
         const match = computeMatch(myInv, { doubles: e.doubles, missing: e.missing }, total)
         const p = await getPublicByUid(e.uid)
         const rating = await ratingFor(e.uid)
-        out.push({ entry: e, username: p?.username ?? 'utente', avatarId: p?.avatarId, match, rating })
+        out.push({ entry: e, username: p?.username ?? 'utente', avatarId: p?.avatarId, citta: p?.citta ?? '', match, rating })
       }
       setRows(out)
     })
@@ -206,7 +207,7 @@ export default function Scambi() {
   const visible = useMemo(() => {
     return rows
       .filter((r) => (filters.reciprocal ? r.match.reciprocal : r.match.receiveCount + r.match.giveCount > 0))
-      .filter((r) => (filters.nearMe ? r.entry.citta && r.entry.citta === myCitta : true))
+      .filter((r) => (filters.nearMe ? r.citta && r.citta === myCitta : true))
       .filter((r) => (filters.minStars ? r.rating.avg >= 4 : true))
       .sort((a, b) =>
         b.match.receiveCount + b.match.giveCount - (a.match.receiveCount + a.match.giveCount))
@@ -445,7 +446,7 @@ export default function Scambi() {
               key={r.entry.uid}
               username={r.username}
               avatarId={r.avatarId}
-              citta={r.entry.citta}
+              citta={r.citta}
               match={r.match}
               rating={r.rating}
               onCompose={() => setComposing(r)}
