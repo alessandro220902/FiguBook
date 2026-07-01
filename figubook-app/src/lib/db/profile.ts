@@ -1,6 +1,7 @@
 import { doc, onSnapshot, setDoc, runTransaction, getDoc } from 'firebase/firestore'
 import { updateProfile } from 'firebase/auth'
 import { auth, db } from '@/lib/firebase'
+import { isValidComune } from '@/lib/geo/searchComuni'
 
 // Doc profilo privato: users/{uid}/meta/profile.
 // Campi base (displayName, username, ts) scritti alla registrazione (register.ts);
@@ -86,7 +87,8 @@ export async function saveProfileAccount(uid: string, patch: ProfileAccountPatch
   const clean = {
     username,
     nome: patch.nome?.trim() || '',
-    citta: patch.citta?.trim() || '',
+    // Solo comuni canonici ("Nome (PROV)"); testo non valido -> città non impostata.
+    citta: isValidComune((patch.citta ?? '').trim()) ? patch.citta!.trim() : '',
     bio: patch.bio?.trim() || '',
     favTeam: patch.favTeam || '',
   }
