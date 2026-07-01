@@ -10,15 +10,15 @@ describe('lastSeenLabel', () => {
     expect(lastSeenLabel(0, NOW)).toBe('')
   })
   it('oggi se < 24h', () => {
-    expect(lastSeenLabel(NOW - 2 * 3_600_000, NOW)).toBe('Attivo oggi')
+    expect(lastSeenLabel(NOW - 2 * 3_600_000, NOW)).toBe('ultimo accesso: oggi')
   })
   it('ieri se 24-48h', () => {
-    expect(lastSeenLabel(NOW - 30 * 3_600_000, NOW)).toBe('Attivo ieri')
+    expect(lastSeenLabel(NOW - 30 * 3_600_000, NOW)).toBe('ultimo accesso: ieri')
   })
-  it('N giorni fa se < 7g', () => {
-    expect(lastSeenLabel(NOW - 3 * day, NOW)).toBe('Attivo 3 giorni fa')
+  it('N gg fa se < 7g', () => {
+    expect(lastSeenLabel(NOW - 3 * day, NOW)).toBe('ultimo accesso: 3 gg fa')
   })
   it('data gg/mm oltre 7 giorni', () => {
-    expect(lastSeenLabel(NOW - 20 * day, NOW)).toMatch(/^Attivo il \d\d\/\d\d$/)
+    expect(lastSeenLabel(NOW - 20 * day, NOW)).toMatch(/^ultimo accesso: \d\d\/\d\d$/)
   })
 })
