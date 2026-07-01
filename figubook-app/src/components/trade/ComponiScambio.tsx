@@ -9,6 +9,9 @@ interface Props {
   onSend: (give: string[], receive: string[]) => void
   onCancel: () => void
   sending?: boolean
+  initialGive?: string[]
+  initialReceive?: string[]
+  mode?: 'create' | 'edit'
 }
 
 interface Selection {
@@ -69,10 +72,11 @@ function SelectList({
 
 export function ComponiScambio({
   username, albumNames, receiveCodes, giveCodes, onSend, onCancel, sending = false,
+  initialGive = [], initialReceive = [], mode = 'create',
 }: Props) {
-  // Selezione manuale: si parte da zero, l'utente spunta cosa vuole.
-  const recv = useSelection([])
-  const give = useSelection([])
+  // Selezione manuale: create parte da zero, edit precompila con l'offerta attuale.
+  const recv = useSelection(initialReceive)
+  const give = useSelection(initialGive)
 
   const canSend = recv.sel.size > 0 || give.sel.size > 0
 
@@ -117,7 +121,7 @@ export function ComponiScambio({
             onClick={() => onSend([...give.sel], [...recv.sel])}
             className="rounded-xl bg-lime px-4 py-2 font-semibold text-black transition-opacity hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
           >
-            {sending ? 'Invio…' : 'Invia proposta'}
+            {sending ? 'Invio…' : mode === 'edit' ? 'Salva modifiche' : 'Invia proposta'}
           </button>
         </div>
       </div>
