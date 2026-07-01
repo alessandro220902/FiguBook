@@ -10,6 +10,7 @@ import { allCodesFromSections } from '@/lib/trade/albumCodes'
 import { deriveInventory, computeMatch, type Inventory } from '@/lib/trade/match'
 import { albumById } from '@/data/albumCatalog'
 import { getPublicByUid } from '@/lib/db/publicProfiles'
+import { getRating, type Rating } from '@/lib/db/feedback'
 import { createProposal } from '@/lib/db/proposals'
 import { FilterChips, type TradeFilters } from '@/components/trade/FilterChips'
 import { MatchCard } from '@/components/trade/MatchCard'
@@ -20,6 +21,17 @@ interface Row {
   entry: TradeIndexEntry
   username: string
   match: ReturnType<typeof computeMatch>
+  rating: Rating
+}
+
+// Cache reputazione per sessione: evita riletture dello stesso uid.
+const ratingCache = new Map<string, Rating>()
+async function ratingFor(uid: string): Promise<Rating> {
+  const cached = ratingCache.get(uid)
+  if (cached) return cached
+  const r = await getRating(uid)
+  ratingCache.set(uid, r)
+  return r
 }
 
 export default function Scambi() {
@@ -29,7 +41,7 @@ export default function Scambi() {
   const [myInv, setMyInv] = useState<Inventory | null>(null)
   const [names, setNames] = useState<Record<string, string>>({})
   const [rows, setRows] = useState<Row[]>([])
-  const [filters, setFilters] = useState<TradeFilters>({ reciprocal: true, nearMe: false })
+  const [filters, setFilters] = useState<TradeFilters>({ reciprocal: true, nearMe: false, minStars: false })
   const [composing, setComposing] = useState<Row | null>(null)
   const [myCitta, setMyCitta] = useState('')
 
@@ -63,7 +75,8 @@ export default function Scambi() {
       for (const e of entries) {
         const match = computeMatch(myInv, { doubles: e.doubles, missing: e.missing }, total)
         const p = await getPublicByUid(e.uid)
-        out.push({ entry: e, username: p?.username ?? 'utente', match })
+        const rating = await ratingFor(e.uid)
+        out.push({ entry: e, username: p?.username ?? 'utente', match, rating })
       }
       setRows(out)
     })
@@ -73,6 +86,7 @@ export default function Scambi() {
     return rows
       .filter((r) => (filters.reciprocal ? r.match.reciprocal : r.match.receiveCount + r.match.giveCount > 0))
       .filter((r) => (filters.nearMe ? r.entry.citta && r.entry.citta === myCitta : true))
+      .filter((r) => (filters.minStars ? r.rating.avg >= 4 : true))
       .sort((a, b) =>
         b.match.receiveCount + b.match.giveCount - (a.match.receiveCount + a.match.giveCount))
   }, [rows, filters, myCitta])
@@ -193,6 +207,7 @@ export default function Scambi() {
               username={r.username}
               citta={r.entry.citta}
               match={r.match}
+              rating={r.rating}
               onCompose={() => setComposing(r)}
             />
           ))}

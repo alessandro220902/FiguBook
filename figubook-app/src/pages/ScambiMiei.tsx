@@ -5,13 +5,44 @@ import { requireUid } from '@/lib/firebase'
 import {
   subscribeMyProposals, acceptProposal, declineProposal, confirmProposal, type Proposal,
 } from '@/lib/db/proposals'
+import { createReview, getReviews } from '@/lib/db/feedback'
+import { ReviewDialog } from '@/components/trade/ReviewDialog'
+import { getPublicByUid } from '@/lib/db/publicProfiles'
 
 export default function ScambiMiei() {
   const uid = requireUid()
   const [tab, setTab] = useState<'in' | 'out'>('in')
   const [list, setList] = useState<Proposal[]>([])
 
+  const other = (p: Proposal) => (p.fromUid === uid ? p.toUid : p.fromUid)
+  const [reviewed, setReviewed] = useState<Set<string>>(new Set())
+  const [reviewing, setReviewing] = useState<Proposal | null>(null)
+  const [names, setNames] = useState<Record<string, string>>({})
+
   useEffect(() => subscribeMyProposals(uid, setList), [uid])
+
+  useEffect(() => {
+    const completed = list.filter((p) => p.status === 'completed')
+    let cancelled = false
+    ;(async () => {
+      const done = new Set<string>()
+      const nm: Record<string, string> = {}
+      for (const p of completed) {
+        const ou = other(p)
+        const revs = await getReviews(ou)
+        if (revs.some((r) => r.id === p.id && r.fromUid === uid)) done.add(p.id)
+        if (!nm[ou]) { const pr = await getPublicByUid(ou); nm[ou] = pr?.username ?? 'utente' }
+      }
+      if (!cancelled) { setReviewed(done); setNames(nm) }
+    })()
+    return () => { cancelled = true }
+  }, [list, uid])
+
+  async function submitReview(p: Proposal, rating: number, comment: string) {
+    await createReview(other(p), p.id, uid, rating, comment)
+    setReviewed((s) => new Set(s).add(p.id))
+    setReviewing(null)
+  }
 
   const incoming = list.filter((p) => p.toUid === uid)
   const outgoing = list.filter((p) => p.fromUid === uid)
@@ -88,6 +119,29 @@ export default function ScambiMiei() {
                   {p.status === 'accepted' && !p.confirmedBy.includes(uid) && (
                     <button onClick={() => confirmProposal(p, uid)} className="rounded-xl bg-lime px-3 py-1.5 text-sm font-semibold text-black transition-opacity hover:opacity-90 active:scale-[0.98]">Conferma scambio fatto</button>
                   )}
+                </div>
+              )}
+              {p.status === 'completed' && (
+                <div className="mt-3">
+                  {reviewed.has(p.id) ? (
+                    <span className="text-sm text-muted-foreground">Recensione inviata</span>
+                  ) : (
+                    <button
+                      onClick={() => setReviewing(p)}
+                      className="rounded-xl bg-lime px-3 py-1.5 text-sm font-semibold text-black transition-opacity hover:opacity-90 active:scale-[0.98]"
+                    >
+                      Lascia recensione
+                    </button>
+                  )}
+                </div>
+              )}
+              {reviewing?.id === p.id && (
+                <div className="mt-3">
+                  <ReviewDialog
+                    username={names[other(p)] ?? 'utente'}
+                    onSubmit={(r, c) => submitReview(p, r, c)}
+                    onCancel={() => setReviewing(null)}
+                  />
                 </div>
               )}
             </div>
