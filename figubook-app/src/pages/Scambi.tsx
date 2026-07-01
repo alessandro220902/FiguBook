@@ -44,6 +44,8 @@ export default function Scambi() {
   const [filters, setFilters] = useState<TradeFilters>({ reciprocal: true, nearMe: false, minStars: false })
   const [composing, setComposing] = useState<Row | null>(null)
   const [myCitta, setMyCitta] = useState('')
+  const [sending, setSending] = useState(false)
+  const [notice, setNotice] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
   // Album miei non archiviati (ogni album posseduto è scambiabile).
   const myAlbums = useMemo(
@@ -93,14 +95,27 @@ export default function Scambi() {
 
   // Invia una proposta + notifica al destinatario.
   async function handleSend(row: Row, give: string[], receive: string[]) {
-    await createProposal(uid, row.entry.uid, albumId!, give, receive)
-    const { addDoc, collection } = await import('firebase/firestore')
-    const { db } = await import('@/lib/firebase')
-    await addDoc(collection(db, 'users', row.entry.uid, 'notifications'), {
-      fromUid: uid, type: 'trade', title: 'Hai ricevuto una proposta di scambio',
-      icon: '🔄', href: '/scambi/miei', read: false, at: Date.now(),
-    })
-    setComposing(null)
+    setSending(true)
+    setNotice(null)
+    try {
+      await createProposal(uid, row.entry.uid, albumId!, give, receive)
+      // La notifica è secondaria: se fallisce non annulla la proposta.
+      try {
+        const { addDoc, collection } = await import('firebase/firestore')
+        const { db } = await import('@/lib/firebase')
+        await addDoc(collection(db, 'users', row.entry.uid, 'notifications'), {
+          fromUid: uid, type: 'trade', title: 'Hai ricevuto una proposta di scambio',
+          icon: '🔄', href: '/scambi/miei', read: false, at: Date.now(),
+        })
+      } catch (e) { console.error('notifica scambio', e) }
+      setComposing(null)
+      setNotice({ type: 'ok', text: 'Proposta inviata! La trovi in "I miei scambi".' })
+    } catch (e) {
+      console.error('invio proposta', e)
+      setNotice({ type: 'err', text: 'Impossibile inviare la proposta. Verifica di aver confermato la tua email, poi riprova.' })
+    } finally {
+      setSending(false)
+    }
   }
 
   // Stato 1: scelta dell'album (solo quelli attivati per gli scambi).
@@ -184,6 +199,18 @@ export default function Scambi() {
         </Link>
       </div>
       <div className="mb-5"><FilterChips filters={filters} onChange={setFilters} /></div>
+      {notice && (
+        <div
+          className={
+            'mb-4 rounded-xl border px-4 py-3 text-sm ' +
+            (notice.type === 'ok'
+              ? 'border-lime/30 bg-lime/10 text-lime'
+              : 'border-red-500/30 bg-red-500/10 text-red-300')
+          }
+        >
+          {notice.text}
+        </div>
+      )}
       {composing ? (
         <ComponiScambio
           username={composing.username}
@@ -192,6 +219,7 @@ export default function Scambi() {
           giveCodes={composing.match.give}
           onSend={(g, r) => handleSend(composing, g, r)}
           onCancel={() => setComposing(null)}
+          sending={sending}
         />
       ) : visible.length === 0 ? (
         <div className="grid place-items-center gap-2 rounded-2xl border border-border bg-background px-4 py-12 text-center">

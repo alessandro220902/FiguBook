@@ -8,6 +8,7 @@ interface Props {
   giveCodes: string[]                  // mie doubles ∩ sue missing
   onSend: (give: string[], receive: string[]) => void
   onCancel: () => void
+  sending?: boolean
 }
 
 interface Selection {
@@ -67,7 +68,7 @@ function SelectList({
 }
 
 export function ComponiScambio({
-  username, albumNames, receiveCodes, giveCodes, onSend, onCancel,
+  username, albumNames, receiveCodes, giveCodes, onSend, onCancel, sending = false,
 }: Props) {
   // Selezione manuale: si parte da zero, l'utente spunta cosa vuole.
   const recv = useSelection([])
@@ -112,11 +113,11 @@ export function ComponiScambio({
             Annulla
           </button>
           <button
-            disabled={!canSend}
+            disabled={!canSend || sending}
             onClick={() => onSend([...give.sel], [...recv.sel])}
             className="rounded-xl bg-lime px-4 py-2 font-semibold text-black transition-opacity hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
           >
-            Invia proposta
+            {sending ? 'Invio…' : 'Invia proposta'}
           </button>
         </div>
       </div>
