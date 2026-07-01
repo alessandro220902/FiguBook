@@ -2,6 +2,8 @@ import {
   addDoc, collection, doc, onSnapshot, query, updateDoc, where,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
+import { subscribeAlbum, flushAlbumCounts } from '@/lib/db/albums'
+import { applyTradeToAlbum } from '@/lib/trade/applyTradeToAlbum'
 
 export type ProposalStatus = 'pending' | 'accepted' | 'completed' | 'declined'
 
@@ -55,9 +57,22 @@ export async function declineProposal(id: string): Promise<void> {
   await updateDoc(doc(db, 'proposals', id), { status: 'declined', updatedAt: Date.now() })
 }
 
+// Applica lo scambio all'album di chi conferma (una lettura + un flush).
+async function applyToMyAlbum(uid: string, p: Proposal): Promise<void> {
+  await new Promise<void>((resolve) => {
+    const unsub = subscribeAlbum(uid, p.albumId, async (d) => {
+      unsub()
+      const deltas = applyTradeToAlbum(d.states, d.counts, { give: p.give, receive: p.receive })
+      try { await flushAlbumCounts(uid, p.albumId, deltas) } catch (e) { console.error('apply trade', e) }
+      resolve()
+    })
+  })
+}
+
 // Conferma "scambio fatto"; passa a completed se entrambi hanno confermato.
 export async function confirmProposal(p: Proposal, uid: string): Promise<void> {
   const confirmedBy = addConfirmation(p.confirmedBy, uid)
   const status: ProposalStatus = isCompleted(p.participants, confirmedBy) ? 'completed' : p.status
+  await applyToMyAlbum(uid, p)
   await updateDoc(doc(db, 'proposals', p.id), { confirmedBy, status, updatedAt: Date.now() })
 }
