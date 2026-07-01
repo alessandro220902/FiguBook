@@ -116,13 +116,22 @@ export default function Scambi() {
                   className="group relative h-56 overflow-hidden rounded-2xl border border-white/10 text-left shadow-[0_18px_40px_-20px_rgba(0,0,0,0.7)] transition-transform duration-150 ease-out hover:-translate-y-0.5"
                   style={entry.cover ? undefined : { background: `linear-gradient(145deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
                 >
-                  {/* Sfondo: foto album se c'è, altrimenti il gradiente colore. */}
+                  {/* Sfondo: copertina intera (contain) su riempimento sfocato;
+                      altrimenti resta il gradiente colore. */}
                   {entry.cover && (
-                    <img
-                      src={entry.cover}
-                      alt=""
-                      className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-                    />
+                    <>
+                      <img
+                        src={entry.cover}
+                        alt=""
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover blur-2xl"
+                      />
+                      <img
+                        src={entry.cover}
+                        alt=""
+                        className="pointer-events-none absolute inset-0 h-full w-full object-contain"
+                      />
+                    </>
                   )}
                   {/* Sfumatura morbida e alta: stacco lieve, nessuna linea netta. */}
                   <div
