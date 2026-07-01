@@ -13,6 +13,7 @@ import { saveProfileAccount, saveAvatar, savePrivacy, UsernameTakenError, type P
 import { getPublicByUid } from '@/lib/db/publicProfiles'
 import { unblockUser } from '@/lib/db/blocks'
 import { FadeIn } from '@/components/home/FadeIn'
+import { CittaPicker } from '@/components/profile/CittaPicker'
 
 const inputCls =
   'w-full rounded-xl border border-white/[0.1] bg-surface px-3.5 py-3 text-[16px] text-ink outline-none transition-colors placeholder:text-ink-2 focus:border-lime'
@@ -268,13 +269,7 @@ function InfoForm({
         </label>
         <label className="flex flex-col gap-1.5">
           <span className={FIELD_LBL}>Città</span>
-          <input
-            className={inputCls}
-            value={citta}
-            onChange={(e) => setCitta(e.target.value)}
-            placeholder="Es. Milano"
-            maxLength={40}
-          />
+          <CittaPicker value={citta} onChange={setCitta} />
         </label>
       </div>
 
