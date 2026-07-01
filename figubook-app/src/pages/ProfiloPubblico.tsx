@@ -15,6 +15,8 @@ import { ProfileActionsMenu } from '@/components/ProfileActionsMenu'
 import { getOtherAlbumIds, getOtherAlbum } from '@/lib/db/otherAlbums'
 import { computeStats } from '@/lib/db/albums'
 import { albumById } from '@/data/albumCatalog'
+import { subscribeReviews, aggregateRating, type Review } from '@/lib/db/feedback'
+import { StarRating } from '@/components/trade/StarRating'
 
 export default function ProfiloPubblico() {
   // Rimonta per username => stato seminato pulito, niente setState sincrono in effect.
@@ -28,6 +30,7 @@ function VetrinaInner({ username }: { username: string }) {
   const [profile, setProfile] = useState<PublicProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [albums, setAlbums] = useState<{ id: string; pct: number }[]>([])
+  const [reviews, setReviews] = useState<Review[]>([])
 
   useEffect(() => {
     let active = true
@@ -59,6 +62,12 @@ function VetrinaInner({ username }: { username: string }) {
     return () => { active = false }
   }, [profile, myProfile])
 
+  useEffect(() => {
+    const puid = profile?.uid
+    if (!puid) return
+    return subscribeReviews(puid, setReviews)
+  }, [profile?.uid])
+
   if (loading) {
     return (
       <div className="mx-auto w-full max-w-3xl">
@@ -87,6 +96,7 @@ function VetrinaInner({ username }: { username: string }) {
   const team = profile.favTeam ? teamById[profile.favTeam] : undefined
   const accent = team ? teamAccent(team) : undefined
   const name = profile.username
+  const rating = aggregateRating(reviews)
 
   return (
     <div className="mx-auto w-full max-w-3xl">
@@ -211,6 +221,35 @@ function VetrinaInner({ username }: { username: string }) {
           </div>
         )}
       </FadeIn>
+
+      {/* Reputazione */}
+      {!isBlocked && (
+        <FadeIn>
+          <section className="mt-6">
+            <h2 className="mb-3 px-1 font-display text-lg font-semibold text-ink">Reputazione</h2>
+            {rating.count > 0 ? (
+              <div className="flex items-center gap-2 px-1">
+                <StarRating value={rating.avg} size={16} />
+                <span className="text-sm text-ink">
+                  {rating.avg} · {rating.count} {rating.count === 1 ? 'recensione' : 'recensioni'}
+                </span>
+              </div>
+            ) : (
+              <p className="px-1 text-sm text-ink-2">Nessuna recensione</p>
+            )}
+            {reviews.length > 0 && (
+              <div className="mt-3 flex flex-col gap-2">
+                {reviews.map((r) => (
+                  <div key={r.id} className="rounded-2xl border border-white/[0.08] bg-surface/40 p-4">
+                    <StarRating value={r.rating} size={14} />
+                    {r.comment && <p className="mt-1.5 text-sm leading-relaxed text-ink-2">{r.comment}</p>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </FadeIn>
+      )}
     </div>
   )
 }
