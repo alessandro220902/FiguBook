@@ -1,5 +1,5 @@
 import { loadAlbumData } from '@/data/albums'
-import { subscribeAlbum } from '@/lib/db/albums'
+import { subscribeAlbum, subscribeMyAlbumIds } from '@/lib/db/albums'
 import { allCodesFromSections } from '@/lib/trade/albumCodes'
 import { deriveInventory } from '@/lib/trade/match'
 import { publishIndex } from '@/lib/db/tradeIndex'
@@ -18,4 +18,14 @@ export async function syncIndexForAlbum(uid: string, albumId: string, citta: str
       resolve()
     })
   })
+}
+
+// Ripubblica TUTTI i miei indici con la città aggiornata (chiamata al salvataggio
+// del profilo). La città di scambio vive nel tradeIndex (leggibile da tutti i
+// loggati, indipendente da profilo pubblico/privato) e va tenuta fresca.
+export async function syncAllIndexesCitta(uid: string, citta: string): Promise<void> {
+  const ids = await new Promise<string[]>((resolve) => {
+    const unsub = subscribeMyAlbumIds(uid, (d) => { unsub(); resolve(d.ids ?? []) })
+  })
+  for (const albumId of ids) await syncIndexForAlbum(uid, albumId, citta)
 }

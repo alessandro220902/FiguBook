@@ -10,6 +10,7 @@ import { allCodesFromSections } from '@/lib/trade/albumCodes'
 import { deriveInventory, computeMatch, type Inventory } from '@/lib/trade/match'
 import { albumById } from '@/data/albumCatalog'
 import { getPublicByUid } from '@/lib/db/publicProfiles'
+import { subscribeProfile } from '@/lib/db/profile'
 import { getRating, getReviews, createReview, type Rating } from '@/lib/db/feedback'
 import {
   createProposal, subscribeMyProposals, acceptProposal, declineProposal, confirmProposal,
@@ -124,7 +125,8 @@ export default function Scambi() {
     [albums, archived],
   )
   // La mia città (per il filtro "vicino a me").
-  useEffect(() => { getPublicByUid(uid).then((p) => setMyCitta(p?.citta ?? '')) }, [uid])
+  // La mia città dal profilo PRIVATO (funziona anche con profilo non pubblico).
+  useEffect(() => subscribeProfile(uid, (p) => setMyCitta(p?.citta ?? '')), [uid])
 
   // Risolvo profili (username+rating), meta album (titolo/cover/nomi carte) e le
   // recensioni già lasciate da me, on-demand per le proposte presenti (con cache).
@@ -198,7 +200,7 @@ export default function Scambi() {
         const match = computeMatch(myInv, { doubles: e.doubles, missing: e.missing }, total)
         const p = await getPublicByUid(e.uid)
         const rating = await ratingFor(e.uid)
-        out.push({ entry: e, username: p?.username ?? 'utente', avatarId: p?.avatarId, citta: p?.citta ?? '', match, rating })
+        out.push({ entry: e, username: p?.username ?? 'utente', avatarId: p?.avatarId, citta: e.citta ?? '', match, rating })
       }
       setRows(out)
     })

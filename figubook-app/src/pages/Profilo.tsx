@@ -14,6 +14,7 @@ import { getPublicByUid } from '@/lib/db/publicProfiles'
 import { unblockUser } from '@/lib/db/blocks'
 import { FadeIn } from '@/components/home/FadeIn'
 import { CittaPicker } from '@/components/profile/CittaPicker'
+import { syncAllIndexesCitta } from '@/lib/db/trade'
 
 const inputCls =
   'w-full rounded-xl border border-white/[0.1] bg-surface px-3.5 py-3 text-[16px] text-ink outline-none transition-colors placeholder:text-ink-2 focus:border-lime'
@@ -223,6 +224,9 @@ function InfoForm({
     setError(null)
     try {
       await saveProfileAccount(uid, { nome, username, citta, bio, favTeam })
+      // Propaga la città aggiornata al tradeIndex (usato da "Vicino a me" negli
+      // Scambi, indipendente da profilo pubblico/privato). Non blocca il salvataggio.
+      syncAllIndexesCitta(uid, citta).catch((e) => console.error('sync città indici', e))
     } catch (e) {
       setError(
         e instanceof UsernameTakenError

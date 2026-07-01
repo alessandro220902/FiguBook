@@ -6,7 +6,7 @@ import { CookieBanner } from '@/components/CookieBanner'
 import { initConsentedAnalytics } from '@/lib/consent'
 import { setAfterFlushHook, subscribeMyAlbumIds } from '@/lib/db/albums'
 import { syncIndexForAlbum } from '@/lib/db/trade'
-import { getPublicByUid } from '@/lib/db/publicProfiles'
+import { subscribeProfile } from '@/lib/db/profile'
 import { AppLayout } from '@/components/layout/AppLayout'
 import Landing from '@/pages/Landing'
 import Login from '@/pages/Login'
@@ -38,13 +38,15 @@ export default function App() {
   useEffect(() => {
     const uid = user?.uid
     if (!uid) return
+    // Città dal profilo PRIVATO (reattiva): la città di scambio nel tradeIndex
+    // non dipende da profilo pubblico/privato, e resta fresca ad ogni flush.
     let citta = ''
-    getPublicByUid(uid).then((p) => { citta = p?.citta ?? '' })
+    const unsubCitta = subscribeProfile(uid, (p) => { citta = p?.citta ?? '' })
     const unsub = subscribeMyAlbumIds(uid, ({ ids }) => {
       for (const albumId of ids) syncIndexForAlbum(uid, albumId, citta)
     })
     setAfterFlushHook((u, albumId) => { syncIndexForAlbum(u, albumId, citta) })
-    return () => { unsub(); setAfterFlushHook(null) }
+    return () => { unsub(); unsubCitta(); setAfterFlushHook(null) }
   }, [user])
 
   return (
