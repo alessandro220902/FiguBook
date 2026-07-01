@@ -124,13 +124,14 @@ export default function Scambi() {
                       className="pointer-events-none absolute inset-0 h-full w-full object-cover"
                     />
                   )}
+                  {/* Sfumatura morbida e alta: stacco lieve, nessuna linea netta. */}
                   <div
                     aria-hidden
                     className="pointer-events-none absolute inset-0"
-                    style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.35) 45%, transparent 75%)' }}
+                    style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.72) 22%, rgba(0,0,0,0.35) 48%, transparent 80%)' }}
                   />
-                  {/* Pannello testo in basso (blur glass). */}
-                  <div className="absolute inset-x-0 bottom-0 border-t border-white/10 bg-black/25 p-4 backdrop-blur-md">
+                  {/* Testo direttamente sulla sfumatura (no pannello, no bordo). */}
+                  <div className="absolute inset-x-0 bottom-0 p-4">
                     <div className="font-mono text-[10px] uppercase tracking-wide text-white/70">{entry.editor}</div>
                     <h2 className="mt-0.5 truncate text-lg font-semibold tracking-tight text-white">{entry.title}</h2>
                     <div className="mt-1 flex items-center gap-3 text-sm text-white/90">
