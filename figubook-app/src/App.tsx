@@ -18,7 +18,6 @@ import Home from '@/pages/Home'
 import Album from '@/pages/Album'
 import AlbumList from '@/pages/AlbumList'
 import Scambi from '@/pages/Scambi'
-import ScambiMiei from '@/pages/ScambiMiei'
 import Community from '@/pages/Community'
 import Cerca from '@/pages/Cerca'
 import Notifiche from '@/pages/Notifiche'
@@ -68,7 +67,6 @@ export default function App() {
         <Route path="/album" element={<AlbumList />} />
         <Route path="/album/:albumId" element={<Album />} />
         <Route path="/scambi" element={<Scambi />} />
-        <Route path="/scambi/miei" element={<ScambiMiei />} />
         <Route path="/community" element={<Community />} />
         <Route path="/cerca" element={<Cerca />} />
         <Route path="/notifiche" element={<Notifiche />} />
