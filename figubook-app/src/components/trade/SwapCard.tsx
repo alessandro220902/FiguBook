@@ -42,7 +42,7 @@ export function SwapCard({
 }: Props) {
   const v = proposalView(proposal, meUid)
   return (
-    <div className="rounded-2xl border border-white/[0.08] bg-surface/40 p-3 backdrop-blur-sm">
+    <div className="w-full max-w-xl rounded-2xl border border-white/[0.08] bg-surface/40 p-3 backdrop-blur-sm">
       <div className="mb-2.5 flex items-center gap-2.5">
         {albumCover
           ? <img src={albumCover} alt="" className="h-9 w-7 shrink-0 rounded object-cover" />
