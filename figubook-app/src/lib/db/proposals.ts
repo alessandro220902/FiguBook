@@ -5,7 +5,7 @@ import { db } from '@/lib/firebase'
 import { subscribeAlbum, flushAlbumCounts } from '@/lib/db/albums'
 import { applyTradeToAlbum } from '@/lib/trade/applyTradeToAlbum'
 
-export type ProposalStatus = 'pending' | 'accepted' | 'completed' | 'declined'
+export type ProposalStatus = 'pending' | 'accepted' | 'completed' | 'declined' | 'cancelled'
 
 export interface Proposal {
   id: string
@@ -17,6 +17,8 @@ export interface Proposal {
   receive: string[]
   status: ProposalStatus
   confirmedBy: string[]
+  lastEditedBy: string
+  turnUid: string
   createdAt: number
   updatedAt: number
 }
@@ -37,7 +39,9 @@ export async function createProposal(
   await addDoc(collection(db, 'proposals'), {
     participants: [fromUid, toUid],
     fromUid, toUid, albumId, give, receive,
-    status: 'pending', confirmedBy: [], createdAt: now, updatedAt: now,
+    status: 'pending', confirmedBy: [],
+        lastEditedBy: fromUid, turnUid: toUid,
+        createdAt: now, updatedAt: now,
   })
 }
 
