@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Inbox } from 'lucide-react'
+import { ArrowLeft, Inbox } from 'lucide-react'
 import { requireUid } from '@/lib/firebase'
 import { fetchIndexUsers, type TradeIndexEntry } from '@/lib/db/tradeIndex'
-import { subscribeAlbum, subscribeMyAlbumIds } from '@/lib/db/albums'
+import { subscribeAlbum } from '@/lib/db/albums'
+import { useCollection } from '@/hooks/useCollection'
 import { loadAlbumData } from '@/data/albums'
 import { allCodesFromSections } from '@/lib/trade/albumCodes'
 import { deriveInventory, computeMatch, type Inventory } from '@/lib/trade/match'
@@ -23,7 +24,7 @@ interface Row {
 
 export default function Scambi() {
   const uid = requireUid()
-  const [myAlbums, setMyAlbums] = useState<string[]>([])
+  const { albums, archived } = useCollection()
   const [albumId, setAlbumId] = useState<string | null>(null)
   const [myInv, setMyInv] = useState<Inventory | null>(null)
   const [names, setNames] = useState<Record<string, string>>({})
@@ -32,8 +33,11 @@ export default function Scambi() {
   const [composing, setComposing] = useState<Row | null>(null)
   const [myCitta, setMyCitta] = useState('')
 
-  // Album che ho attivato per gli scambi.
-  useEffect(() => subscribeMyAlbumIds(uid, ({ ids }) => setMyAlbums(ids)), [uid])
+  // Album miei non archiviati (ogni album posseduto è scambiabile).
+  const myAlbums = useMemo(
+    () => albums.filter((a) => !archived.includes(a.id)),
+    [albums, archived],
+  )
   // La mia città (per il filtro "vicino a me").
   useEffect(() => { getPublicByUid(uid).then((p) => setMyCitta(p?.citta ?? '')) }, [uid])
 
@@ -103,35 +107,38 @@ export default function Scambi() {
           </div>
         ) : (
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {myAlbums.map((id) => {
-              const entry = albumById[id]
-              if (!entry) return null
+            {myAlbums.map((a) => {
+              const entry = a.entry
               return (
                 <button
-                  key={id}
-                  onClick={() => setAlbumId(id)}
-                  className="group relative h-44 overflow-hidden rounded-2xl border border-white/10 p-5 text-left shadow-[0_18px_40px_-20px_rgba(0,0,0,0.7)] transition-transform duration-150 ease-out hover:-translate-y-0.5"
-                  style={{ background: `linear-gradient(145deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
+                  key={a.id}
+                  onClick={() => setAlbumId(a.id)}
+                  className="group relative h-56 overflow-hidden rounded-2xl border border-white/10 text-left shadow-[0_18px_40px_-20px_rgba(0,0,0,0.7)] transition-transform duration-150 ease-out hover:-translate-y-0.5"
+                  style={entry.cover ? undefined : { background: `linear-gradient(145deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
                 >
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0"
-                    style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.05) 40%, transparent 60%, rgba(0,0,0,0.45) 100%)' }}
-                  />
+                  {/* Sfondo: foto album se c'è, altrimenti il gradiente colore. */}
                   {entry.cover && (
                     <img
                       src={entry.cover}
                       alt=""
-                      className="pointer-events-none absolute inset-y-0 right-0 aspect-[3/4] h-full rounded-r-2xl border-l border-white/15 object-cover"
+                      className="pointer-events-none absolute inset-0 h-full w-full object-cover"
                     />
                   )}
-                  <div className="relative pr-[32%]">
-                    <div className="font-mono text-[11px] uppercase tracking-wide text-white/85">{entry.editor} · {entry.season}</div>
-                    <h2 className="mt-1 truncate text-2xl font-semibold tracking-tight text-white">{entry.title}</h2>
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0"
+                    style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.35) 45%, transparent 75%)' }}
+                  />
+                  {/* Pannello testo in basso (blur glass). */}
+                  <div className="absolute inset-x-0 bottom-0 border-t border-white/10 bg-black/25 p-4 backdrop-blur-md">
+                    <div className="font-mono text-[10px] uppercase tracking-wide text-white/70">{entry.editor}</div>
+                    <h2 className="mt-0.5 truncate text-lg font-semibold tracking-tight text-white">{entry.title}</h2>
+                    <div className="mt-1 flex items-center gap-3 text-sm text-white/90">
+                      <span><span className="font-semibold tabular-nums">{a.have}</span> su {a.total}</span>
+                      <span className="text-white/50">·</span>
+                      <span><span className="font-semibold tabular-nums text-lime">{a.doubles}</span> doppie</span>
+                    </div>
                   </div>
-                  <span className="absolute bottom-5 left-5 inline-flex items-center gap-1 text-sm font-semibold text-white/90 transition-colors group-hover:text-lime">
-                    Trova scambi <ArrowRight className="h-4 w-4" />
-                  </span>
                 </button>
               )
             })}
