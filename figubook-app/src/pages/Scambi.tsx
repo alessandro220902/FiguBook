@@ -27,6 +27,7 @@ import { ReviewDialog } from '@/components/trade/ReviewDialog'
 interface Row {
   entry: TradeIndexEntry
   username: string
+  avatarId?: string
   match: ReturnType<typeof computeMatch>
   rating: Rating
 }
@@ -196,7 +197,7 @@ export default function Scambi() {
         const match = computeMatch(myInv, { doubles: e.doubles, missing: e.missing }, total)
         const p = await getPublicByUid(e.uid)
         const rating = await ratingFor(e.uid)
-        out.push({ entry: e, username: p?.username ?? 'utente', match, rating })
+        out.push({ entry: e, username: p?.username ?? 'utente', avatarId: p?.avatarId, match, rating })
       }
       setRows(out)
     })
@@ -443,6 +444,7 @@ export default function Scambi() {
             <MatchCard
               key={r.entry.uid}
               username={r.username}
+              avatarId={r.avatarId}
               citta={r.entry.citta}
               match={r.match}
               rating={r.rating}
