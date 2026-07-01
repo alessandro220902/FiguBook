@@ -1,7 +1,8 @@
-import { MapPin, Repeat2, Star } from 'lucide-react'
+import { MapPin, Star } from 'lucide-react'
 
+// La reciprocità è SEMPRE richiesta (uno scambio ha senso solo se entrambi hanno
+// almeno una carta per l'altro): non è un filtro opzionale.
 export interface TradeFilters {
-  reciprocal: boolean
   nearMe: boolean
   minStars: boolean
 }
@@ -22,15 +23,6 @@ export function FilterChips({ filters, onChange }: Props) {
       : `${base} border border-white/12 text-muted-foreground hover:border-white/30 hover:text-foreground`
   return (
     <div className="flex flex-wrap gap-2">
-      <button
-        type="button"
-        aria-pressed={filters.reciprocal}
-        className={chip(filters.reciprocal)}
-        onClick={() => onChange({ ...filters, reciprocal: !filters.reciprocal })}
-      >
-        <Repeat2 className="h-3.5 w-3.5" />
-        Reciproci
-      </button>
       <button
         type="button"
         aria-pressed={filters.nearMe}

@@ -76,7 +76,7 @@ export default function Scambi() {
   const [myInv, setMyInv] = useState<Inventory | null>(null)
   const [names, setNames] = useState<Record<string, string>>({})
   const [rows, setRows] = useState<Row[]>([])
-  const [filters, setFilters] = useState<TradeFilters>({ reciprocal: true, nearMe: false, minStars: false })
+  const [filters, setFilters] = useState<TradeFilters>({ nearMe: false, minStars: false })
   const [composing, setComposing] = useState<Row | null>(null)
   const [myCitta, setMyCitta] = useState('')
   const [sending, setSending] = useState(false)
@@ -208,7 +208,7 @@ export default function Scambi() {
 
   const visible = useMemo(() => {
     return rows
-      .filter((r) => (filters.reciprocal ? r.match.reciprocal : r.match.receiveCount + r.match.giveCount > 0))
+      .filter((r) => r.match.reciprocal)
       .filter((r) => (filters.nearMe ? r.citta && r.citta === myCitta : true))
       .filter((r) => (filters.minStars ? r.rating.avg >= 4 : true))
       .sort((a, b) =>
