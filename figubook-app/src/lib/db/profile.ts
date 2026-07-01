@@ -121,8 +121,9 @@ export async function saveProfileAccount(uid: string, patch: ProfileAccountPatch
       avatarId: prev?.avatarId || (pubSnap.data() as PublicProfile | undefined)?.avatarId || '',
       favTeam: clean.favTeam,
       isPublic: pub,
-      citta: pub ? clean.citta : '',
-      bio: pub ? clean.bio : '',
+      // città e bio sono sempre pubblici: "privato" nasconde SOLO lo sfoglio album.
+      citta: clean.citta,
+      bio: clean.bio,
       updatedAt: Date.now(),
     }
     tx.set(publicRef(uid), pubDoc, { merge: true })
@@ -155,8 +156,9 @@ export async function savePrivacy(uid: string, isPublic: boolean) {
       avatarId: prev?.avatarId || '',
       favTeam: prev?.favTeam || '',
       isPublic,
-      citta: isPublic ? prev?.citta || '' : '',
-      bio: isPublic ? prev?.bio || '' : '',
+      // città e bio sempre pubblici (privato nasconde solo gli album).
+      citta: prev?.citta || '',
+      bio: prev?.bio || '',
       updatedAt: Date.now(),
     }
     tx.set(publicRef(uid), pub, { merge: true })

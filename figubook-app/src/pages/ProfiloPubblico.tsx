@@ -131,7 +131,7 @@ function VetrinaInner({ username }: { username: string }) {
                     <TeamCrest c1={team.c1} c2={team.c2} className="h-5 w-[16px]" /> {team.name}
                   </span>
                 )}
-                {profile.isPublic && profile.citta && (
+                {profile.citta && (
                   <span className="inline-flex items-center gap-1 text-sm text-ink-2">
                     <MapPin className="h-4 w-4" /> {profile.citta}
                   </span>
@@ -145,7 +145,7 @@ function VetrinaInner({ username }: { username: string }) {
                   {profile.isPublic ? 'Profilo pubblico' : 'Profilo privato'}
                 </span>
               </div>
-              {profile.isPublic && profile.bio && (
+              {profile.bio && (
                 <p className="mt-3 max-w-prose text-base leading-relaxed text-ink-2">{profile.bio}</p>
               )}
 
