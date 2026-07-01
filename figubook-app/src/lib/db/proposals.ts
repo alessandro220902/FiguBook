@@ -30,6 +30,9 @@ export function addConfirmation(confirmedBy: string[], uid: string): string[] {
 export function isCompleted(participants: string[], confirmedBy: string[]): boolean {
   return participants.every((p) => confirmedBy.includes(p))
 }
+export function otherParticipant(participants: string[], uid: string): string {
+  return participants.find((p) => p !== uid) ?? uid
+}
 
 // --- wrapper Firestore ---
 export async function createProposal(
@@ -71,6 +74,24 @@ async function applyToMyAlbum(uid: string, p: Proposal): Promise<void> {
       resolve()
     })
   })
+}
+
+// Modifica offerta (stesso doc): rimette in attesa e passa il turno all'altro.
+export async function updateProposalOffer(
+  p: Proposal, editorUid: string, give: string[], receive: string[],
+): Promise<void> {
+  await updateDoc(doc(db, 'proposals', p.id), {
+    give, receive,
+    status: 'pending', confirmedBy: [],
+    lastEditedBy: editorUid,
+    turnUid: otherParticipant(p.participants, editorUid),
+    updatedAt: Date.now(),
+  })
+}
+
+// Annulla proposta ancora in attesa (soft-cancel: rules vietano delete).
+export async function cancelProposal(id: string): Promise<void> {
+  await updateDoc(doc(db, 'proposals', id), { status: 'cancelled', updatedAt: Date.now() })
 }
 
 // Conferma "scambio fatto"; passa a completed se entrambi hanno confermato.
