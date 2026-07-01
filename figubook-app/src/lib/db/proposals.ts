@@ -2,8 +2,6 @@ import {
   addDoc, collection, doc, onSnapshot, query, updateDoc, where,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
-import { subscribeAlbum, flushAlbumCounts } from '@/lib/db/albums'
-import { applyTradeToAlbum } from '@/lib/trade/applyTradeToAlbum'
 
 export type ProposalStatus = 'pending' | 'accepted' | 'completed' | 'declined' | 'cancelled'
 
@@ -64,23 +62,6 @@ export async function declineProposal(id: string): Promise<void> {
   await updateDoc(doc(db, 'proposals', id), { status: 'declined', updatedAt: Date.now() })
 }
 
-// Applica lo scambio all'album di chi conferma (una lettura + un flush).
-// give/receive sono nel frame di fromUid: chi conferma ed è toUid vede
-// tutto invertito (riceve p.give, dà p.receive).
-async function applyToMyAlbum(uid: string, p: Proposal): Promise<void> {
-  const mine = uid === p.fromUid
-    ? { give: p.give, receive: p.receive }
-    : { give: p.receive, receive: p.give }
-  await new Promise<void>((resolve) => {
-    const unsub = subscribeAlbum(uid, p.albumId, async (d) => {
-      unsub()
-      const deltas = applyTradeToAlbum(d.states, d.counts, mine)
-      try { await flushAlbumCounts(uid, p.albumId, deltas) } catch (e) { console.error('apply trade', e) }
-      resolve()
-    })
-  })
-}
-
 // Modifica offerta (stesso doc): rimette in attesa e passa il turno all'altro.
 export async function updateProposalOffer(
   p: Proposal, editorUid: string, give: string[], receive: string[],
@@ -103,6 +84,7 @@ export async function cancelProposal(id: string): Promise<void> {
 export async function confirmProposal(p: Proposal, uid: string): Promise<void> {
   const confirmedBy = addConfirmation(p.confirmedBy, uid)
   const status: ProposalStatus = isCompleted(p.participants, confirmedBy) ? 'completed' : p.status
-  await applyToMyAlbum(uid, p)
+  // NB: lo scambio è fisico/offline — NON modifichiamo l'album in automatico
+  // (come Doppy/unacollezione). L'utente aggiorna il suo album quando vuole.
   await updateDoc(doc(db, 'proposals', p.id), { confirmedBy, status, updatedAt: Date.now() })
 }
