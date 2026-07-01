@@ -65,11 +65,16 @@ export async function declineProposal(id: string): Promise<void> {
 }
 
 // Applica lo scambio all'album di chi conferma (una lettura + un flush).
+// give/receive sono nel frame di fromUid: chi conferma ed è toUid vede
+// tutto invertito (riceve p.give, dà p.receive).
 async function applyToMyAlbum(uid: string, p: Proposal): Promise<void> {
+  const mine = uid === p.fromUid
+    ? { give: p.give, receive: p.receive }
+    : { give: p.receive, receive: p.give }
   await new Promise<void>((resolve) => {
     const unsub = subscribeAlbum(uid, p.albumId, async (d) => {
       unsub()
-      const deltas = applyTradeToAlbum(d.states, d.counts, { give: p.give, receive: p.receive })
+      const deltas = applyTradeToAlbum(d.states, d.counts, mine)
       try { await flushAlbumCounts(uid, p.albumId, deltas) } catch (e) { console.error('apply trade', e) }
       resolve()
     })
