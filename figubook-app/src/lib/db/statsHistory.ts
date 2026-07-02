@@ -32,12 +32,12 @@ export async function touchStatsSnapshot(uid: string, totals: Totals): Promise<v
   }
 }
 
-// Ultimi 8 snapshot, dal più recente al più vecchio.
-export async function fetchRecentSnapshots(uid: string): Promise<StatSnapshot[]> {
+// Ultimi N snapshot, dal più recente al più vecchio (default 8).
+export async function fetchRecentSnapshots(uid: string, count = 8): Promise<StatSnapshot[]> {
   const q = query(
     collection(db, 'users', uid, 'stats'),
     orderBy('date', 'desc'),
-    limit(8),
+    limit(count),
   )
   const snap = await getDocs(q)
   return snap.docs.map((d) => d.data() as StatSnapshot)

@@ -14,6 +14,8 @@ import { useTradesCount } from '@/hooks/useTradesCount'
 import { useEffect } from 'react'
 import { useStatsDeltas } from '@/hooks/useStatsDeltas'
 import { touchStatsSnapshot } from '@/lib/db/statsHistory'
+import { useInsertedSeries } from '@/hooks/useInsertedSeries'
+import { InsertedChart } from '@/components/home/InsertedChart'
 
 export default function Home() {
   const { user } = useAuth()
@@ -24,6 +26,7 @@ export default function Home() {
   const team = profile?.favTeam ? teamById[profile.favTeam] : undefined
   const ringColor = '#c2f23d' // verde brand, non colore squadra
   const deltas = useStatsDeltas(totals.have)
+  const insertedSeries = useInsertedSeries(totals.have)
   useEffect(() => {
     if (!user || loading || error || albums.length === 0) return
     void touchStatsSnapshot(user.uid, totals)
@@ -108,8 +111,10 @@ export default function Home() {
           <FadeIn delay={0.12} className="mt-2 lg:grid lg:grid-cols-[minmax(0,52%)_1fr] lg:gap-4">
             <h2 className="sr-only">I tuoi album</h2>
             <AlbumDeck albums={albums} />
-            {/* Spazio riservato a destra del deck: contenuto in arrivo. */}
-            <div aria-hidden className="hidden lg:block" />
+            {/* Grafico figurine inserite/giorno: solo su lg, nello spazio a destra. */}
+            <div className="hidden lg:block">
+              <InsertedChart series={insertedSeries} />
+            </div>
           </FadeIn>
 
           <FadeIn delay={0.2} className="mt-8 grid gap-4 lg:grid-cols-2">
