@@ -1,10 +1,12 @@
+// src/components/home/StatTicker.tsx
 import { Link } from 'react-router-dom'
 import type { AlbumStats } from '@/lib/db/albums'
+import type { StatDeltas } from '@/lib/stats/computeDeltas'
 import { AnimatedNumber } from './AnimatedNumber'
+import { HeroRing } from './HeroRing'
 
 const TILE =
   'rounded-2xl border border-white/[0.08] bg-surface px-4 py-3.5 transition duration-200 hover:border-white/20 active:scale-[0.98]'
-// Label sempre bianche (no grigio), più grandi su PC/iPad.
 const LABEL = 'flex items-center gap-1.5 text-xs font-medium text-ink md:text-sm'
 const NUM = 'mt-1.5 block font-display text-3xl font-semibold tabular-nums tracking-tight text-ink md:text-4xl'
 
@@ -12,60 +14,60 @@ function Dot({ color }: { color: string }) {
   return <span className="h-1.5 w-1.5 rounded-full" style={{ background: color }} />
 }
 
-// Riga compatta. "Possedute" è la primaria, marcata con mezzi sottili (anello
-// inline + tinta campo), non con la massa. Stessa altezza per tutte.
+// Delta settimanale: verde se coerente col "meglio" (doppie ↑ buono, mancanti ↓ buono).
+function DeltaRow({ value, kind }: { value: number | null; kind: 'up-good' | 'down-good' }) {
+  if (value == null || value === 0) return null
+  const up = value > 0
+  const arrow = up ? '↑' : '↓'
+  const good = kind === 'up-good' ? up : !up
+  const color = good ? 'var(--color-lime)' : '#ff7a7a'
+  return (
+    <span className="mt-2 block text-xs font-semibold" style={{ color }}>
+      {arrow} {up ? '+' : ''}{value}
+    </span>
+  )
+}
+
 export function StatTicker({
   totals,
   albumsCount,
   trades,
+  deltas,
+  ringColor,
 }: {
   totals: AlbumStats
   albumsCount: number
   trades: number
+  deltas: StatDeltas
+  ringColor: string
 }) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-      {/* Primaria — Possedute: tinta pitch tenue + anello inline */}
-      <div
-        className="col-span-2 rounded-2xl border px-4 py-3.5 sm:col-span-1"
-        style={{
-          background: 'color-mix(in srgb, var(--color-pitch) 12%, var(--color-surface))',
-          borderColor: 'color-mix(in srgb, var(--color-pitch) 28%, transparent)',
-        }}
-      >
-        <div className={LABEL}>
-          <Dot color="var(--color-stat-have)" /> Possedute
-        </div>
-        <div className="mt-1.5 flex items-baseline gap-1.5">
-          <AnimatedNumber
-            value={totals.have}
-            className="font-display text-3xl font-semibold tabular-nums tracking-tight text-ink md:text-4xl"
-          />
-          <span className="font-display text-sm tabular-nums text-ink-2">
-            / {totals.total.toLocaleString('it-IT')}
-          </span>
-        </div>
-        {/* Niente anello: barra sottile con % a fine linea. */}
-        <div className="mt-2.5 flex items-center gap-2">
-          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-stat-have transition-[width] duration-500" style={{ width: `${totals.pct}%` }} />
-          </div>
-          <span className="shrink-0 font-display text-xs font-bold tabular-nums text-ink">{totals.pct}%</span>
-        </div>
-      </div>
+      <HeroRing
+        pct={totals.pct}
+        have={totals.have}
+        total={totals.total}
+        delta={deltas.haveDelta}
+        color={ringColor}
+      />
 
-      <div className={TILE}>
-        <div className={LABEL}>
-          <Dot color="var(--color-lime)" /> Doppie
+      <Link to="/scambi" className={`group ${TILE}`}>
+        <div className={`${LABEL} justify-between`}>
+          <span className="flex items-center gap-1.5">
+            <Dot color="var(--color-lime)" /> Doppie
+          </span>
+          <span className="text-lime transition-transform group-hover:translate-x-0.5">→</span>
         </div>
         <AnimatedNumber value={totals.doubles} className={NUM} />
-      </div>
+        <DeltaRow value={deltas.doublesDelta} kind="up-good" />
+      </Link>
 
       <div className={TILE}>
         <div className={LABEL}>
           <Dot color="var(--color-stat-missing)" /> Mancanti
         </div>
         <AnimatedNumber value={totals.missing} className={NUM} />
+        <DeltaRow value={deltas.missingDelta} kind="down-good" />
       </div>
 
       <div className={TILE}>
@@ -75,15 +77,12 @@ export function StatTicker({
         <AnimatedNumber value={albumsCount} className={NUM} />
       </div>
 
-      <Link to="/scambi" className={`group ${TILE}`}>
-        <div className={`${LABEL} justify-between`}>
-          <span className="flex items-center gap-1.5">
-            <Dot color="var(--color-lime)" /> Scambi
-          </span>
-          <span className="text-lime transition-transform group-hover:translate-x-0.5">→</span>
+      <div className={TILE}>
+        <div className={LABEL}>
+          <Dot color="var(--color-lime)" /> Scambi completati
         </div>
         <AnimatedNumber value={trades} className={NUM} />
-      </Link>
+      </div>
     </div>
   )
 }
