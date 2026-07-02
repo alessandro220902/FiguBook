@@ -59,7 +59,7 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
 
   if (!len) return null
 
-  const leftW = Math.max(120, Math.round(w * 0.4))
+  const leftW = Math.min(200, Math.max(110, Math.round(w * 0.32)))
   const rightW = Math.max(150, w - leftW)
   const cardWidth = Math.max(150, Math.min(Math.round(rightW * 0.86), 340))
   const cardHeight = Math.round(cardWidth * 1.12)

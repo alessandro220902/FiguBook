@@ -105,9 +105,11 @@ export default function Home() {
             <StatTicker totals={totals} albumsCount={albums.length} trades={trades} deltas={deltas} ringColor={ringColor} />
           </FadeIn>
 
-          <FadeIn delay={0.12} className="mt-2">
+          <FadeIn delay={0.12} className="mt-2 lg:grid lg:grid-cols-[minmax(0,62%)_1fr] lg:gap-4">
             <h2 className="sr-only">I tuoi album</h2>
             <AlbumDeck albums={albums} />
+            {/* Spazio riservato a destra del deck: contenuto in arrivo. */}
+            <div aria-hidden className="hidden lg:block" />
           </FadeIn>
 
           <FadeIn delay={0.2} className="mt-8 grid gap-4 lg:grid-cols-2">
