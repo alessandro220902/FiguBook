@@ -117,7 +117,7 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
         </div>
 
         {/* Metà copertine: sopra lo sfondo app, stack coverflow (prev/active/next) */}
-        <div className="relative flex flex-1 items-center justify-center">
+        <div className="relative flex flex-1 items-center justify-start pl-4">
           {ordered.map((a, i) => {
             const st = statusOf(i, active, len)
             const isActive = st === 'active'

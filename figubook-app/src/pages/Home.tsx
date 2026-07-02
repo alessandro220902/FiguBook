@@ -22,7 +22,7 @@ export default function Home() {
   const trades = useTradesCount()
   const name = profile?.username || user?.displayName?.trim() || user?.email?.split('@')[0] || 'collezionista'
   const team = profile?.favTeam ? teamById[profile.favTeam] : undefined
-  const ringColor = team?.c1 || 'var(--color-lime)'
+  const ringColor = '#c2f23d' // verde brand, non colore squadra
   const deltas = useStatsDeltas(totals.have)
   useEffect(() => {
     if (!user || loading || error || albums.length === 0) return
@@ -105,7 +105,7 @@ export default function Home() {
             <StatTicker totals={totals} albumsCount={albums.length} trades={trades} deltas={deltas} ringColor={ringColor} />
           </FadeIn>
 
-          <FadeIn delay={0.12} className="mt-2 lg:grid lg:grid-cols-[minmax(0,62%)_1fr] lg:gap-4">
+          <FadeIn delay={0.12} className="mt-2 lg:grid lg:grid-cols-[minmax(0,52%)_1fr] lg:gap-4">
             <h2 className="sr-only">I tuoi album</h2>
             <AlbumDeck albums={albums} />
             {/* Spazio riservato a destra del deck: contenuto in arrivo. */}
