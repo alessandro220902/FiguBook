@@ -1,0 +1,44 @@
+// src/lib/db/statsHistory.ts
+import { collection, doc, getDocs, limit, orderBy, query, setDoc } from 'firebase/firestore'
+import { db } from '@/lib/firebase'
+import type { StatSnapshot } from '@/lib/stats/computeDeltas'
+
+export function todayIso(now = new Date()): string {
+  const y = now.getFullYear()
+  const m = String(now.getMonth() + 1).padStart(2, '0')
+  const d = String(now.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
+type Totals = { have: number; doubles: number; missing: number; total: number }
+
+// Salva lo snapshot del giorno corrente, max 1×/giorno (throttle localStorage).
+export async function touchStatsSnapshot(uid: string, totals: Totals): Promise<void> {
+  const today = todayIso()
+  const key = `figubook:statsDay:${uid}`
+  if (localStorage.getItem(key) === today) return
+  localStorage.setItem(key, today)
+  try {
+    await setDoc(doc(db, 'users', uid, 'stats', today), {
+      date: today,
+      have: totals.have,
+      doubles: totals.doubles,
+      missing: totals.missing,
+      total: totals.total,
+    })
+  } catch (e) {
+    console.error('statsSnapshot', e)
+    localStorage.removeItem(key) // riprova al prossimo giro se fallisce
+  }
+}
+
+// Ultimi 8 snapshot, dal più recente al più vecchio.
+export async function fetchRecentSnapshots(uid: string): Promise<StatSnapshot[]> {
+  const q = query(
+    collection(db, 'users', uid, 'stats'),
+    orderBy('date', 'desc'),
+    limit(8),
+  )
+  const snap = await getDocs(q)
+  return snap.docs.map((d) => d.data() as StatSnapshot)
+}
