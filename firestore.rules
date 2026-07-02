@@ -30,6 +30,8 @@ service cloud.firestore {
           );
       }
       match /meta/{docId}     { allow read, write: if isUser(userId); }
+      // Snapshot statistiche giornaliere: privati, solo il proprietario.
+      match /stats/{day}      { allow read, write: if isUser(userId); }
       match /groups/{groupId} { allow read, write: if isUser(userId); }
 
       // Notifiche: le leggo/segno-lette/cancello io; un ALTRO utente può crearmene
