@@ -11,6 +11,9 @@ import { GroupsPanel } from '@/components/home/GroupsPanel'
 import { FadeIn } from '@/components/home/FadeIn'
 import { Typewriter } from '@/components/home/Typewriter'
 import { useTradesCount } from '@/hooks/useTradesCount'
+import { useEffect } from 'react'
+import { useStatsDeltas } from '@/hooks/useStatsDeltas'
+import { touchStatsSnapshot } from '@/lib/db/statsHistory'
 
 export default function Home() {
   const { user } = useAuth()
@@ -19,6 +22,12 @@ export default function Home() {
   const trades = useTradesCount()
   const name = profile?.username || user?.displayName?.trim() || user?.email?.split('@')[0] || 'collezionista'
   const team = profile?.favTeam ? teamById[profile.favTeam] : undefined
+  const ringColor = team?.c1 || 'var(--color-lime)'
+  const deltas = useStatsDeltas(totals.have)
+  useEffect(() => {
+    if (!user || loading || error || albums.length === 0) return
+    void touchStatsSnapshot(user.uid, totals)
+  }, [user, loading, error, albums.length, totals])
 
   if (loading) {
     return (
@@ -93,7 +102,7 @@ export default function Home() {
         <>
           <FadeIn delay={0.06} className="mt-8">
             <h2 className="sr-only">Le tue statistiche</h2>
-            <StatTicker totals={totals} albumsCount={albums.length} trades={trades} />
+            <StatTicker totals={totals} albumsCount={albums.length} trades={trades} deltas={deltas} ringColor={ringColor} />
           </FadeIn>
 
           <FadeIn delay={0.12} className="mt-2">
