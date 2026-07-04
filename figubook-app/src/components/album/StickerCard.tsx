@@ -91,7 +91,7 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
           >
             <Minus size={16} />
           </button>
-          <span className="min-w-6 text-center font-display text-base font-bold tabular-nums text-ink">{count}</span>
+          <span className="type-stat min-w-6 text-center font-display text-base text-ink">{count}</span>
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onAdd() }}

@@ -21,7 +21,7 @@ export const CTRL_ON = 'border border-transparent bg-white text-neutral-900 hove
 export const CTRL_GHOST = 'border border-white/15 bg-white/[0.04] text-ink-2 hover:bg-white/10 hover:text-ink active:bg-white active:text-neutral-900'
 
 // Badge conteggio dentro un filtro: solo numero, niente tondino
-export const CTRL_BADGE_ON = 'text-xs font-bold tabular-nums text-neutral-900/55'
+export const CTRL_BADGE_ON = 'type-stat text-xs text-neutral-900/55'
 export const CTRL_BADGE_OFF = 'text-xs tabular-nums text-ink-2/70'
 
 export function ctrlFilter(active: boolean): string {

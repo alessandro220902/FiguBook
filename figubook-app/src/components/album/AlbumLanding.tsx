@@ -60,7 +60,7 @@ export function AlbumLanding({ entry, stats, missingCodes, doubleCodes }: AlbumL
               <div className="h-2 max-w-[440px] flex-1 overflow-hidden rounded-full bg-muted">
                 <div className="h-full rounded-full bg-lime transition-[width] duration-500" style={{ width: `${stats.pct}%` }} />
               </div>
-              <span className="shrink-0 font-display text-3xl font-bold leading-none tabular-nums text-ink">{stats.pct}%</span>
+              <span className="type-stat shrink-0 font-display text-3xl leading-none text-ink">{stats.pct}%</span>
             </div>
           </div>
 
@@ -99,7 +99,7 @@ function Stat({ label, value, sub, tone }: { label: string; value: string; sub?:
   return (
     <div>
       <div className="font-mono text-[10px] uppercase tracking-wide text-ink-2">{label}</div>
-      <div className={`mt-1 whitespace-nowrap font-display text-3xl font-bold tabular-nums ${color}`}>
+      <div className={`type-stat mt-1 whitespace-nowrap font-display text-3xl ${color}`}>
         {value}{sub && <span className="text-base font-medium text-ink-2"> {sub}</span>}
       </div>
     </div>

@@ -197,15 +197,15 @@ function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive
           <dl className="flex gap-5 text-white">
             <div>
               <dt className="font-mono text-[10px] uppercase tracking-wide text-white/75">Possedute</dt>
-              <dd className="mt-0.5 font-display text-lg font-bold tabular-nums">{a.have}<span className="text-sm font-medium text-white/70"> / {a.total}</span></dd>
+              <dd className="type-stat mt-0.5 font-display text-lg">{a.have}<span className="text-sm font-medium text-white/70"> / {a.total}</span></dd>
             </div>
             <div>
               <dt className="font-mono text-[10px] uppercase tracking-wide text-white/75">Mancanti</dt>
-              <dd className="mt-0.5 font-display text-lg font-bold tabular-nums">{a.missing}</dd>
+              <dd className="type-stat mt-0.5 font-display text-lg">{a.missing}</dd>
             </div>
             <div>
               <dt className="font-mono text-[10px] uppercase tracking-wide text-white/75">Doppie</dt>
-              <dd className="mt-0.5 font-display text-lg font-bold tabular-nums">{a.doubles}</dd>
+              <dd className="type-stat mt-0.5 font-display text-lg">{a.doubles}</dd>
             </div>
           </dl>
         </div>

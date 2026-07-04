@@ -289,9 +289,9 @@ export default function Scambi() {
                     <div className="font-mono text-[10px] uppercase tracking-wide text-white/70">{entry.editor}</div>
                     <h2 className="mt-0.5 truncate text-lg font-semibold tracking-tight text-white">{entry.title}</h2>
                     <div className="mt-1 flex items-center gap-3 text-sm text-white/90">
-                      <span><span className="font-semibold tabular-nums">{a.have}</span> su {a.total}</span>
+                      <span><span className="type-stat">{a.have}</span> su {a.total}</span>
                       <span className="text-white/50">·</span>
-                      <span><span className="font-semibold tabular-nums text-lime">{a.doubles}</span> doppie</span>
+                      <span><span className="type-stat text-lime">{a.doubles}</span> doppie</span>
                     </div>
                   </div>
                 </button>

@@ -37,7 +37,7 @@ function ProgressRing({ pct }: { pct: number }) {
           className="stroke-lime transition-[stroke-dashoffset] duration-500"
         />
       </svg>
-      <span className="absolute inset-0 flex items-center justify-center font-display text-base font-bold tabular-nums text-white">
+      <span className="type-stat absolute inset-0 flex items-center justify-center font-display text-base text-white">
         {pct}%
       </span>
     </div>
