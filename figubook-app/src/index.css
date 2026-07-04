@@ -191,6 +191,20 @@ body {
   }
 }
 
+/* Times New Roman ha SOLO due pesi veri: 400 e 700. Qualsiasi peso intermedio
+   (500/600) verrebbe sintetizzato dal browser (grassetto finto, sporco).
+   Snappiamo tutto ai due pesi reali, in tutto il sito, senza toccare 50 file:
+   medium/normal/light -> 400 (label, testo); semibold/bold -> 700 (titoli).
+   In @layer utilities (dopo l'import Tailwind) cosi vince sulle utility native. */
+@layer utilities {
+  .font-thin, .font-extralight, .font-light, .font-normal, .font-medium {
+    font-weight: 400;
+  }
+  .font-semibold, .font-bold, .font-extrabold, .font-black {
+    font-weight: 700;
+  }
+}
+
 /* Aurora background (21st aceternity) — vars + keyframe, ricolorato lime/pitch/gold */
 :root {
   --white: #ffffff;
