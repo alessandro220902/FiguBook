@@ -119,7 +119,7 @@ function VetrinaInner({ username }: { username: string }) {
             />
             <div className="min-w-0 flex-1">
               <div className="flex items-start justify-center gap-2 sm:justify-start">
-                <h1 className="truncate font-display text-[30px] font-semibold tracking-tight text-ink sm:text-[36px]">
+                <h1 className="type-h1 truncate text-ink">
                   {name}
                 </h1>
                 {!isMe && <ProfileActionsMenu otherUid={profile.uid} />}

@@ -58,11 +58,11 @@ export default function AlbumList() {
 
   return (
     <div className="album-theme mx-auto w-full max-w-[88rem]">
-      <h1 className="text-[28px] font-medium tracking-tight text-ink sm:text-[32px]">I tuoi album</h1>
+      <h1 className="type-h1 text-ink">I tuoi album</h1>
 
       {error ? (
         <div role="alert" className="mt-10 flex flex-col items-center rounded-xl border border-white/[0.07] bg-bg-elev px-6 py-16 text-center">
-          <div className="text-xl font-medium tracking-tight text-ink">Non riesco a caricare gli album</div>
+          <div className="type-h3 text-ink">Non riesco a caricare gli album</div>
           <AlbumButton type="button" onClick={retry} className="mt-5">Riprova</AlbumButton>
         </div>
       ) : (
@@ -73,10 +73,10 @@ export default function AlbumList() {
 
           {visible.length === 0 ? (
             <div className="mt-8 flex flex-col items-center rounded-xl border border-white/[0.07] bg-bg-elev px-6 py-16 text-center">
-              <div className="text-xl font-medium tracking-tight text-ink">
+              <div className="type-h3 text-ink">
                 {albums.length === 0 ? 'Nessun album ancora' : 'Niente in questo filtro'}
               </div>
-              <p className="mt-2 max-w-xs text-sm text-ink-2">
+              <p className="type-body mt-2 max-w-xs text-ink-2">
                 {albums.length === 0 ? 'Aggiungi un album per iniziare a collezionare.' : 'Cambia filtro o aggiungi un nuovo album.'}
               </p>
             </div>
@@ -182,7 +182,7 @@ function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive
       <div className="pointer-events-none relative pr-[32%]">
         <div className="pr-2">
           <div className="font-mono text-[11px] uppercase tracking-wide text-white/85">{entry.editor} · {entry.season}</div>
-          <h2 className="mt-1 truncate text-2xl font-semibold tracking-tight text-white">{entry.title}</h2>
+          <h2 className="mt-1 truncate text-2xl font-bold tracking-tight text-white">{entry.title}</h2>
         </div>
 
         {/* Barra con % a fine linea (niente numero gigante separato). */}
@@ -190,7 +190,7 @@ function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive
           <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/30">
             <div className="h-full rounded-full bg-white" style={{ width: `${Math.max(2, a.pct)}%` }} />
           </div>
-          <span className="shrink-0 font-display text-2xl font-bold leading-none tabular-nums text-white">{a.pct}<span className="text-base text-white/75">%</span></span>
+          <span className="type-stat shrink-0 font-display text-2xl text-white">{a.pct}<span className="text-base text-white/75">%</span></span>
         </div>
 
         <div className="mt-4 flex items-end justify-between">

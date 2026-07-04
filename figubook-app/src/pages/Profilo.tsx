@@ -446,7 +446,7 @@ export default function Profilo() {
       )}
 
       <FadeIn>
-        <h1 className="font-display text-[34px] font-semibold tracking-tight text-ink sm:text-[42px]">
+        <h1 className="type-h1 text-ink">
           Profilo
         </h1>
         <p className="mt-1.5 text-base text-ink-2">

@@ -15,10 +15,10 @@ export default function Community() {
   return (
     <div className="mx-auto w-full max-w-3xl">
       <FadeIn>
-        <h1 className="font-display text-[34px] font-semibold tracking-tight text-ink sm:text-[42px]">
+        <h1 className="type-h1 text-ink">
           Community
         </h1>
-        <p className="mt-1.5 text-base text-ink-2">Cerca altri collezionisti per username.</p>
+        <p className="type-body mt-1.5 text-ink-2">Cerca altri collezionisti per username.</p>
 
         <div className="relative mt-6">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-2" />

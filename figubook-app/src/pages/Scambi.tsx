@@ -247,8 +247,8 @@ export default function Scambi() {
   if (!albumId) {
     return (
       <div className="mx-auto w-full max-w-[88rem]">
-        <h1 className="font-display text-[34px] font-semibold tracking-tight text-ink sm:text-[42px]">I miei scambi</h1>
-        <p className="mt-1.5 text-base text-ink-2">Scegli un album per proporre scambi, o gestisci le tue proposte qui sotto.</p>
+        <h1 className="type-h1 text-ink">I miei scambi</h1>
+        <p className="type-body mt-1.5 text-ink-2">Scegli un album per proporre scambi, o gestisci le tue proposte qui sotto.</p>
 
         {myAlbums.length === 0 ? (
           <div className="mt-6 grid place-items-center gap-2 rounded-2xl border border-border bg-background px-4 py-12 text-center">

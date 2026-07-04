@@ -72,7 +72,7 @@ export default function VerificaEmail() {
         <span className="mx-auto mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-lime/15 text-lime">
           <MailCheck className="h-7 w-7" />
         </span>
-        <h1 className="m-0 font-display text-3xl font-bold tracking-tight">Verifica la tua email</h1>
+        <h1 className="type-h1 m-0">Verifica la tua email</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Abbiamo inviato un link di conferma a{' '}
           <b className="text-foreground">{user?.email}</b>. Aprilo per attivare l'account.

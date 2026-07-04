@@ -93,7 +93,7 @@ export default function ProfiloImpostazioni() {
           className="inline-flex items-center gap-1.5 text-sm text-ink-2 transition-colors hover:text-ink">
           <ArrowLeft className="h-4 w-4" /> Profilo
         </Link>
-        <h1 className="mt-3 font-display text-[34px] font-semibold tracking-tight text-ink sm:text-[42px]">
+        <h1 className="type-h1 mt-3 text-ink">
           Impostazioni
         </h1>
         <p className="mt-1.5 text-base text-ink-2">
