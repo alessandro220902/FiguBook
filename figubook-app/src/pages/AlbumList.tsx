@@ -8,6 +8,7 @@ import type { PerAlbumStats } from '@/lib/db/albums'
 import { addAlbum, removeAlbum, archiveAlbum, unarchiveAlbum } from '@/lib/db/albums'
 import { fetchShareCodes, shareList, type ShareKind } from '@/lib/album/share'
 import { ctrlPrimary, ctrlGhost } from '@/lib/album/controlStyles'
+import { pctColor } from '@/lib/stats/pctColor'
 import { AlbumButton } from '@/components/album/ui/Button'
 import { LibraryFilters } from '@/components/album/LibraryFilters'
 import { NewAlbumDialog } from '@/components/album/NewAlbumDialog'
@@ -188,7 +189,7 @@ function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive
         {/* Barra con % a fine linea (niente numero gigante separato). */}
         <div className="mt-4 flex items-center gap-3">
           <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/30">
-            <div className="h-full rounded-full bg-white" style={{ width: `${Math.max(2, a.pct)}%` }} />
+            <div className="h-full rounded-full" style={{ width: `${Math.max(2, a.pct)}%`, background: pctColor(a.pct) }} />
           </div>
           <span className="type-stat shrink-0 font-display text-2xl text-white">{a.pct}<span className="text-base text-white/75">%</span></span>
         </div>

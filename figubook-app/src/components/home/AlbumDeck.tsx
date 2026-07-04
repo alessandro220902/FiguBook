@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
 import type { PerAlbumStats } from '@/lib/db/albums'
 import { STAT_COLORS } from './statColors'
+import { pctColor } from '@/lib/stats/pctColor'
 
 const INTERVAL_MS = 4500
 const NAME_H = 44
@@ -197,7 +198,7 @@ function CoverCard({
           <span className="block h-1.5 overflow-hidden rounded-full bg-black/30">
             <span
               className="block h-full rounded-full"
-              style={{ width: `${Math.max(2, a.pct)}%`, background: complete ? STAT_COLORS.gold : '#ffffff' }}
+              style={{ width: `${Math.max(2, a.pct)}%`, background: complete ? STAT_COLORS.gold : pctColor(a.pct) }}
             />
           </span>
           <span className="mt-2 flex items-end gap-4 text-white">

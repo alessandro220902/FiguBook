@@ -4,6 +4,7 @@ import { sectionGradient } from '@/lib/album/color'
 import type { SectionStats } from '@/lib/album/stats'
 import type { Filter } from './StickerGrid'
 import { ctrlFilter } from '@/lib/album/controlStyles'
+import { pctColor } from '@/lib/stats/pctColor'
 
 // Tre filtri principali in riga; "Possedute" va sotto accanto al toggle inserimento.
 const TABS: { key: Filter; label: string; n: (s: SectionStats) => number }[] = [
@@ -34,7 +35,8 @@ function ProgressRing({ pct }: { pct: number }) {
         <circle
           cx="32" cy="32" r={r} fill="none" strokeWidth="6"
           strokeLinecap="round" strokeDasharray={c} strokeDashoffset={offset}
-          className="stroke-lime transition-[stroke-dashoffset] duration-500"
+          stroke={pctColor(pct)}
+          className="transition-[stroke-dashoffset] duration-500"
         />
       </svg>
       <span className="type-stat absolute inset-0 flex items-center justify-center font-display text-base text-white">

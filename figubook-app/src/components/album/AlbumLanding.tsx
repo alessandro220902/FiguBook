@@ -3,6 +3,7 @@ import { useRef, useState } from 'react'
 import { Share2, Check } from 'lucide-react'
 import type { AlbumCatalogEntry } from '@/data/albumCatalog'
 import { sectionGradient } from '@/lib/album/color'
+import { pctColor } from '@/lib/stats/pctColor'
 import type { AlbumStats } from '@/lib/db/albums'
 import { AlbumButton } from './ui/Button'
 import { shareList } from '@/lib/album/share'
@@ -58,7 +59,7 @@ export function AlbumLanding({ entry, stats, missingCodes, doubleCodes }: AlbumL
             {/* Barra con % a fine linea (niente numero gigante separato). */}
             <div className="mt-2 flex items-center gap-3">
               <div className="h-2 max-w-[440px] flex-1 overflow-hidden rounded-full bg-muted">
-                <div className="h-full rounded-full bg-lime transition-[width] duration-500" style={{ width: `${stats.pct}%` }} />
+                <div className="h-full rounded-full transition-[width] duration-500" style={{ width: `${stats.pct}%`, background: pctColor(stats.pct) }} />
               </div>
               <span className="type-stat shrink-0 font-display text-3xl leading-none text-ink">{stats.pct}%</span>
             </div>

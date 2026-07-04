@@ -1,16 +1,18 @@
 // src/components/home/HeroRing.tsx
 import { AnimatedNumber } from './AnimatedNumber'
+import { pctColor } from '@/lib/stats/pctColor'
 
-// Anello di completamento globale. pct 0..100. color = accento (colore squadra).
+// Anello di completamento globale. pct 0..100. Colore per percentuale
+// (rosso -> giallo -> verde), scala gauge 21st.
 export function HeroRing({
-  pct, have, total, delta, color,
+  pct, have, total, delta,
 }: {
   pct: number
   have: number
   total: number
   delta: number | null
-  color: string
 }) {
+  const color = pctColor(pct)
   const r = 34
   const circ = 2 * Math.PI * r
   const off = circ * (1 - Math.max(0, Math.min(100, pct)) / 100)
