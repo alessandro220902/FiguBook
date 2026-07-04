@@ -35,7 +35,7 @@ export function InsertedChart({ series }: { series: InsertedPoint[] }) {
 
   return (
     <div className="flex h-full min-h-[240px] flex-col rounded-2xl border border-white/[0.08] bg-surface p-5 sm:p-6">
-      <h2 className="text-base font-medium tracking-tight text-ink">Figurine inserite</h2>
+      <h2 className="type-section">Figurine inserite</h2>
       <p className="text-xs text-muted-foreground">Ultimi 7 giorni</p>
 
       {!hasData ? (

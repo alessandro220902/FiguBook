@@ -8,8 +8,8 @@ export function GroupsPanel() {
   return (
     <div className="flex h-full flex-col rounded-2xl border border-white/[0.08] bg-surface p-5 sm:p-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-medium tracking-tight text-ink">Gruppi a cui partecipi</h2>
-        <Link to="/community" className="text-sm font-medium text-lime">
+        <h2 className="type-section">Gruppi a cui partecipi</h2>
+        <Link to="/community" className="text-sm text-lime">
           Tutti →
         </Link>
       </div>
@@ -25,7 +25,7 @@ export function GroupsPanel() {
           <p className="text-sm text-ink-2">Non sei ancora in nessun gruppo.</p>
           <Link
             to="/community"
-            className="mt-3 rounded-full border border-lime px-4 py-2 text-sm font-medium text-lime transition-transform duration-150 hover:-translate-y-px"
+            className="mt-3 rounded-full border border-lime px-4 py-2 text-sm text-lime transition-transform duration-150 hover:-translate-y-px"
           >
             Trova un gruppo
           </Link>
@@ -41,7 +41,7 @@ export function GroupsPanel() {
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-lime/15 text-lime">
                   <Users className="h-4 w-4" />
                 </span>
-                <span className="truncate text-sm font-medium text-ink">{g.name}</span>
+                <span className="truncate text-sm text-ink">{g.name}</span>
                 <span className="ml-auto text-muted-foreground">→</span>
               </Link>
             </li>

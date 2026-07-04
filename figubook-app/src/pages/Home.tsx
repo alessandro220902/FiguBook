@@ -58,11 +58,11 @@ export default function Home() {
         />
       )}
       <FadeIn>
-        <h1 className="text-pretty text-[28px] font-medium tracking-tight text-ink sm:text-[32px]">
+        <h1 className="type-h1 text-pretty text-ink">
           Ciao, <Typewriter text={name} className="text-lime" />
         </h1>
         {team && (
-          <p className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-ink-2">
+          <p className="mt-2 inline-flex items-center gap-2 text-sm text-ink-2">
             <TeamCrest c1={team.c1} c2={team.c2} className="h-5 w-[16px]" />
             {team.name}
           </p>
@@ -74,29 +74,29 @@ export default function Home() {
           role="alert"
           className="mt-10 flex flex-col items-center rounded-xl border border-white/[0.07] bg-bg-elev px-6 py-16 text-center"
         >
-          <div className="text-xl font-medium tracking-tight text-ink">
+          <div className="type-h3 text-ink">
             Non riesco a caricare la collezione
           </div>
-          <p className="mt-2 max-w-xs text-sm text-ink-2">
+          <p className="type-body mt-2 max-w-xs text-ink-2">
             Controlla la connessione e riprova. I tuoi dati sono al sicuro.
           </p>
           <button
             type="button"
             onClick={retry}
-            className="mt-5 rounded-full border border-lime px-5 py-2.5 text-sm font-medium text-lime transition-transform duration-150 hover:-translate-y-px active:scale-95"
+            className="mt-5 rounded-full border border-lime px-5 py-2.5 text-sm text-lime transition-transform duration-150 hover:-translate-y-px active:scale-95"
           >
             Riprova
           </button>
         </div>
       ) : albums.length === 0 ? (
         <div className="mt-10 flex flex-col items-center rounded-xl border border-white/[0.07] bg-bg-elev px-6 py-16 text-center">
-          <div className="text-xl font-medium tracking-tight text-ink">Nessun album ancora</div>
-          <p className="mt-2 max-w-xs text-sm text-ink-2">
+          <div className="type-h3 text-ink">Nessun album ancora</div>
+          <p className="type-body mt-2 max-w-xs text-ink-2">
             Aggiungi il primo album per vedere i tuoi progressi qui.
           </p>
           <Link
             to="/album"
-            className="mt-5 rounded-full border border-lime px-5 py-2.5 text-sm font-medium text-lime transition-transform duration-150 hover:-translate-y-px active:scale-95"
+            className="mt-5 rounded-full border border-lime px-5 py-2.5 text-sm text-lime transition-transform duration-150 hover:-translate-y-px active:scale-95"
           >
             Aggiungi il primo album
           </Link>

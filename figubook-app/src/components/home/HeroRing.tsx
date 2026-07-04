@@ -35,11 +35,11 @@ export function HeroRing({
         </text>
       </svg>
       <div className="min-w-0">
-        <div className="text-xs font-medium text-ink md:text-sm">Collezione totale</div>
+        <div className="text-xs text-ink md:text-sm">Collezione totale</div>
         <div className="mt-1 flex items-baseline gap-1.5">
           <AnimatedNumber
             value={have}
-            className="font-display text-3xl font-semibold tabular-nums tracking-tight text-ink md:text-4xl"
+            className="type-stat text-3xl text-ink md:text-4xl"
           />
           <span className="font-display text-sm tabular-nums text-ink-2">
             / {total.toLocaleString('it-IT')}
@@ -47,7 +47,7 @@ export function HeroRing({
         </div>
         {delta != null && delta > 0 && (
           <span
-            className="mt-2 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold"
+            className="mt-2 inline-flex items-center rounded-full px-2.5 py-1 text-xs"
             style={{ background: `color-mix(in srgb, ${color} 16%, transparent)`, color }}
           >
             +{delta} settimana

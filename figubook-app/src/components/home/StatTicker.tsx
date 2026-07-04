@@ -7,8 +7,8 @@ import { HeroRing } from './HeroRing'
 
 const TILE =
   'rounded-2xl border border-white/[0.08] bg-surface px-4 py-3.5 transition duration-200 hover:border-white/20 active:scale-[0.98]'
-const LABEL = 'flex items-center gap-1.5 text-xs font-medium text-ink md:text-sm'
-const NUM = 'mt-1.5 block font-display text-3xl font-semibold tabular-nums tracking-tight text-ink md:text-4xl'
+const LABEL = 'flex items-center gap-1.5 text-xs text-ink md:text-sm'
+const NUM = 'type-stat mt-1.5 block text-3xl text-ink md:text-4xl'
 
 function Dot({ color }: { color: string }) {
   return <span className="h-1.5 w-1.5 rounded-full" style={{ background: color }} />
@@ -22,7 +22,7 @@ function DeltaRow({ value, kind }: { value: number | null; kind: 'up-good' | 'do
   const good = kind === 'up-good' ? up : !up
   const color = good ? 'var(--color-lime)' : '#ff7a7a'
   return (
-    <span className="mt-2 block text-xs font-semibold" style={{ color }}>
+    <span className="mt-2 block text-xs" style={{ color }}>
       {arrow} {up ? '+' : ''}{value}
     </span>
   )

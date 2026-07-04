@@ -102,7 +102,7 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
                     aria-label={a.entry.title}
                     aria-current={on ? 'true' : undefined}
                     className={[
-                      'w-full truncate rounded-full border px-3 py-2 text-left text-xs font-semibold uppercase tracking-tight transition-colors',
+                      'w-full truncate rounded-full border px-3 py-2 text-left text-xs font-bold uppercase tracking-tight transition-colors',
                       on
                         ? 'border-transparent bg-white text-neutral-900'
                         : 'border-white/10 bg-bg-elev text-ink-2 hover:text-ink',
@@ -187,11 +187,11 @@ function CoverCard({
       />
       <span className={`relative flex h-full flex-col justify-between ${compact ? 'p-3' : 'p-4'}`}>
         <span className="flex items-start justify-end">
-          <span className={`font-display font-semibold tabular-nums text-white ${compact ? 'text-2xl' : 'text-3xl'}`}>{a.pct}%</span>
+          <span className={`type-stat font-display text-white ${compact ? 'text-2xl' : 'text-3xl'}`}>{a.pct}%</span>
         </span>
 
         <span className="block">
-          <span className={`mb-2 block truncate font-display font-semibold leading-tight tracking-tight text-white ${compact ? 'text-base' : 'text-xl'}`}>
+          <span className={`mb-2 block truncate font-display font-bold leading-tight tracking-tight text-white ${compact ? 'text-base' : 'text-xl'}`}>
             {entry.title}
           </span>
           <span className="block h-1.5 overflow-hidden rounded-full bg-black/30">
@@ -203,13 +203,13 @@ function CoverCard({
           <span className="mt-2 flex items-end gap-4 text-white">
             <span className="block">
               <span className="block text-[10px] text-white/80">Possedute</span>
-              <span className={`font-display font-semibold tabular-nums ${compact ? 'text-base' : 'text-lg'}`}>
+              <span className={`type-stat font-display ${compact ? 'text-base' : 'text-lg'}`}>
                 {a.have}<span className="text-xs text-white/75"> / {a.total}</span>
               </span>
             </span>
             <span className="block">
               <span className="block text-[10px] text-white/80">Doppie</span>
-              <span className={`font-display font-semibold tabular-nums ${compact ? 'text-base' : 'text-lg'}`}>{a.doubles}</span>
+              <span className={`type-stat font-display ${compact ? 'text-base' : 'text-lg'}`}>{a.doubles}</span>
             </span>
           </span>
         </span>
