@@ -22,6 +22,12 @@ const VARIANTS: Record<Variant, string> = {
   ghost: 'border border-white/15 bg-white/[0.04] text-ink-2 hover:bg-white/10 hover:text-ink active:bg-white active:text-neutral-900',
 }
 
+// Stringa classi bottone album, per riusare lo stile in altri bottoni (es. ActionSwapButton).
+// eslint-disable-next-line react-refresh/only-export-components
+export function albumButtonClass(variant: Variant = 'primary', className = ''): string {
+  return `${BASE} ${VARIANTS[variant]} ${className}`
+}
+
 export function AlbumButton({ variant = 'primary', className = '', children, ...rest }: AlbumButtonProps) {
   return (
     <button className={`${BASE} ${VARIANTS[variant]} ${className}`} {...rest}>

@@ -1,11 +1,11 @@
 // figubook-app/src/components/album/AlbumLanding.tsx
-import { useRef, useState } from 'react'
 import { Share2, Check } from 'lucide-react'
 import type { AlbumCatalogEntry } from '@/data/albumCatalog'
 import { sectionGradient } from '@/lib/album/color'
 import { pctColor } from '@/lib/stats/pctColor'
 import type { AlbumStats } from '@/lib/db/albums'
-import { AlbumButton } from './ui/Button'
+import { albumButtonClass } from './ui/Button'
+import { ActionSwapButton } from '@/components/ui/ActionSwapButton'
 import { shareList } from '@/lib/album/share'
 
 export interface AlbumLandingProps {
@@ -20,20 +20,8 @@ export interface AlbumLandingProps {
 // chip solide leggibili. I tasti condividono la lista doppie/mancanti via Web Share
 // API (mobile) con fallback copia-negli-appunti.
 export function AlbumLanding({ entry, stats, missingCodes, doubleCodes }: AlbumLandingProps) {
-  const [toast, setToast] = useState<string | null>(null)
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  function flash(msg: string) {
-    setToast(msg)
-    if (timer.current) clearTimeout(timer.current)
-    timer.current = setTimeout(() => setToast(null), 2600)
-  }
-
   async function share(kind: 'doubles' | 'missing', codes: string[]) {
-    const label = kind === 'doubles' ? 'Doppie' : 'Mancanti'
-    if ((await shareList(entry.title, kind, codes)) === 'copied') {
-      flash(`${label}: lista copiata negli appunti`)
-    }
+    await shareList(entry.title, kind, codes)
   }
 
   return (
@@ -72,26 +60,24 @@ export function AlbumLanding({ entry, stats, missingCodes, doubleCodes }: AlbumL
           </div>
 
           <div className="flex gap-3">
-            <ShareButton label="Condividi doppie" disabled={doubleCodes.length === 0} onClick={() => share('doubles', doubleCodes)} />
-            <ShareButton label="Condividi mancanti" disabled={missingCodes.length === 0} onClick={() => share('missing', missingCodes)} />
+            <ShareButton label="Condividi doppie" disabled={doubleCodes.length === 0} onAction={() => share('doubles', doubleCodes)} />
+            <ShareButton label="Condividi mancanti" disabled={missingCodes.length === 0} onAction={() => share('missing', missingCodes)} />
           </div>
         </div>
       </div>
-
-      {toast && (
-        <div role="status" className="pointer-events-none absolute bottom-0 left-0 flex items-center gap-2 rounded-lg border border-lime/30 bg-bg-elev px-4 py-2.5 text-sm font-medium text-ink shadow-lg">
-          <Check size={16} className="text-lime" /> {toast}
-        </div>
-      )}
     </section>
   )
 }
 
-function ShareButton({ label, disabled, onClick }: { label: string; disabled: boolean; onClick: () => void }) {
+function ShareButton({ label, disabled, onAction }: { label: string; disabled: boolean; onAction: () => Promise<void> }) {
   return (
-    <AlbumButton variant="ghost" className="flex-1 whitespace-nowrap px-2 text-[13px]" onClick={onClick} disabled={disabled} title={disabled ? 'Niente da condividere' : label}>
-      <Share2 size={15} className="shrink-0" /> {label}
-    </AlbumButton>
+    <ActionSwapButton
+      className={albumButtonClass('ghost', 'flex-1 whitespace-nowrap px-2 text-[13px]')}
+      idle={{ label, icon: <Share2 size={15} className="shrink-0" /> }}
+      done={{ label: 'Copiato!', icon: <Check size={15} className="shrink-0" /> }}
+      onAction={onAction}
+      disabled={disabled}
+    />
   )
 }
 

@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { ArrowRightLeft } from 'lucide-react'
+import { ArrowRightLeft, Check } from 'lucide-react'
+import { ActionSwapButton } from '@/components/ui/ActionSwapButton'
 
 interface Props {
   username: string
   albumNames: Record<string, string>   // code -> nome figurina
   receiveCodes: string[]               // sue doubles ∩ mie missing
   giveCodes: string[]                  // mie doubles ∩ sue missing
-  onSend: (give: string[], receive: string[]) => void
+  onSend: (give: string[], receive: string[]) => Promise<unknown>
   onCancel: () => void
   sending?: boolean
   initialGive?: string[]
@@ -71,7 +72,7 @@ function SelectList({
 }
 
 export function ComponiScambio({
-  username, albumNames, receiveCodes, giveCodes, onSend, onCancel, sending = false,
+  username, albumNames, receiveCodes, giveCodes, onSend, onCancel,
   initialGive = [], initialReceive = [], mode = 'create',
 }: Props) {
   // Selezione manuale: create parte da zero, edit precompila con l'offerta attuale.
@@ -116,13 +117,14 @@ export function ComponiScambio({
           >
             Annulla
           </button>
-          <button
-            disabled={!canSend || sending}
-            onClick={() => onSend([...give.sel], [...recv.sel])}
+          <ActionSwapButton
+            disabled={!canSend}
+            onAction={() => onSend([...give.sel], [...recv.sel])}
             className="rounded-xl bg-lime px-4 py-2 font-semibold text-black transition-opacity hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
-          >
-            {sending ? 'Invio…' : mode === 'edit' ? 'Salva modifiche' : 'Invia proposta'}
-          </button>
+            idle={{ label: mode === 'edit' ? 'Salva modifiche' : 'Invia proposta' }}
+            done={{ label: mode === 'edit' ? 'Salvato!' : 'Inviata!', icon: <Check size={16} /> }}
+            loadingLabel="Invio…"
+          />
         </div>
       </div>
     </div>

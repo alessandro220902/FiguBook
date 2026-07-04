@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Inbox } from 'lucide-react'
+import { ArrowLeft, Inbox, Check } from 'lucide-react'
+import { ActionSwapButton } from '@/components/ui/ActionSwapButton'
 import { requireUid } from '@/lib/firebase'
 import { fetchIndexUsers, type TradeIndexEntry } from '@/lib/db/tradeIndex'
 import { subscribeAlbum } from '@/lib/db/albums'
@@ -232,12 +233,14 @@ export default function Scambi() {
           icon: '🔄', href: '/scambi', read: false, at: Date.now(),
         })
       } catch (e) { console.error('notifica scambio', e) }
-      setComposing(null)
       setNotice({ type: 'ok', text: 'Proposta inviata! La trovi in "I miei scambi".' })
       setTimeout(() => setNotice(null), 4000)
+      // Ritarda la chiusura del modale così si vede lo swap "Inviata!" sul bottone.
+      setTimeout(() => setComposing(null), 1200)
     } catch (e) {
       console.error('invio proposta', e)
       setNotice({ type: 'err', text: 'Impossibile inviare la proposta. Verifica di aver confermato la tua email, poi riprova.' })
+      throw e // rilancia: l'ActionSwapButton resta su idle (niente "Inviata!")
     } finally {
       setSending(false)
     }
@@ -326,7 +329,12 @@ export default function Scambi() {
             albumTitle={albumMeta[p.albumId]?.title ?? ''} albumCover={albumMeta[p.albumId]?.cover}
             onViewCards={() => setViewing(p)} statusLabel={statusLabel(p)} statusClass={statusClass(p)}
             actions={!p.confirmedBy.includes(uid)
-              ? <button onClick={() => confirmProposal(p, uid)} className={btnPrimary}>Conferma scambio fatto</button>
+              ? <ActionSwapButton
+                  className={btnPrimary}
+                  idle={{ label: 'Conferma scambio fatto' }}
+                  done={{ label: 'Confermato!', icon: <Check size={16} /> }}
+                  onAction={() => confirmProposal(p, uid)}
+                />
               : null} />
         )} />
 
@@ -391,7 +399,7 @@ export default function Scambi() {
                     const r = iAmFrom ? receive : give
                     await updateProposalOffer(editing, uid, g, r)
                     await notify(otherParticipant(editing.participants, uid), 'Proposta aggiornata')
-                    setEditing(null)
+                    setTimeout(() => setEditing(null), 1200)
                   }} />
               </div>
             </div>
