@@ -213,7 +213,7 @@ function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive
             <Share2 size={15} /> Mancanti
           </ActionButton>
           <ActionButton onClick={onOpen} primary>
-            Apri <ArrowRight size={15} />
+            Apri <ArrowRight size={15} className="transition-transform duration-150 ease-out group-hover/open:translate-x-0.5" />
           </ActionButton>
         </div>
       )}
@@ -233,7 +233,7 @@ function ActionButton({ onClick, disabled, primary, children }: { onClick: () =>
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`${primary ? ctrlPrimary() : ctrlGhost()} flex-1 whitespace-nowrap disabled:opacity-50`}
+      className={`${primary ? `${ctrlPrimary()} group/open` : ctrlGhost()} flex-1 whitespace-nowrap disabled:opacity-50`}
     >
       {children}
     </button>
