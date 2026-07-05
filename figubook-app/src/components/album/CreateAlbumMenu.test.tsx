@@ -29,6 +29,14 @@ describe('CreateAlbumMenu', () => {
     expect(screen.queryByText('Calciatori 2025/26')).toBeNull()
   })
 
+  it('la ricerca filtra per nome', async () => {
+    render(<CreateAlbumMenu ownedIds={[]} onAdd={() => {}} />)
+    await userEvent.click(screen.getByRole('button', { name: /Nuovo album/ }))
+    await userEvent.type(screen.getByRole('textbox', { name: /Cerca album/ }), 'adrenalyn')
+    expect(screen.getByText('Adrenalyn XL 2025/26')).toBeInTheDocument()
+    expect(screen.queryByText('Calciatori 2024/25')).toBeNull()
+  })
+
   it('click su un album chiama onAdd con id', async () => {
     const onAdd = vi.fn()
     render(<CreateAlbumMenu ownedIds={[]} onAdd={onAdd} />)

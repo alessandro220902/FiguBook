@@ -1,7 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { Building2, Calendar, Check, ChevronDown, Plus, X } from 'lucide-react'
+import { Building2, Calendar, Check, ChevronDown, Plus, Search, X } from 'lucide-react'
 import { ALBUM_CATALOG } from '@/data/albumCatalog'
 import { ctrlPrimary } from '@/lib/album/controlStyles'
 
@@ -89,6 +89,7 @@ export function CreateAlbumMenu({ ownedIds, onAdd, className }: CreateAlbumMenuP
   const [editor, setEditor] = useState('all')
   const [year, setYear] = useState('all')
   const [dd, setDd] = useState<'editor' | 'year' | null>(null)
+  const [q, setQ] = useState('')
   const reduce = useReducedMotion()
   const layoutId = useId()
   const filtersRef = useRef<HTMLDivElement>(null)
@@ -106,10 +107,14 @@ export function CreateAlbumMenu({ ownedIds, onAdd, className }: CreateAlbumMenuP
     return [{ value: 'all', label: 'Tutti gli anni' }, ...seen.map((y) => ({ value: y, label: y }))]
   }, [available])
 
-  const visible = useMemo(
-    () => available.filter((a) => (editor === 'all' || a.editor === editor) && (year === 'all' || startYear(a.season) === year)),
-    [available, editor, year],
-  )
+  const visible = useMemo(() => {
+    const needle = q.trim().toLowerCase()
+    return available.filter((a) =>
+      (editor === 'all' || a.editor === editor) &&
+      (year === 'all' || startYear(a.season) === year) &&
+      (needle === '' || a.title.toLowerCase().includes(needle)),
+    )
+  }, [available, editor, year, q])
 
   useEffect(() => {
     if (!open) return
@@ -121,7 +126,7 @@ export function CreateAlbumMenu({ ownedIds, onAdd, className }: CreateAlbumMenuP
   }, [open, dd])
 
   // Apre pulito: azzera i filtri all'apertura.
-  const openMenu = () => { setEditor('all'); setYear('all'); setDd(null); setOpen(true) }
+  const openMenu = () => { setEditor('all'); setYear('all'); setQ(''); setDd(null); setOpen(true) }
 
   const morph = reduce ? { duration: 0.15 } : SPRING_MORPH
 
@@ -185,6 +190,25 @@ export function CreateAlbumMenu({ ownedIds, onAdd, className }: CreateAlbumMenuP
                     <p className="px-5 py-10 text-center type-body text-ink-2">Hai già tutti gli album disponibili.</p>
                   ) : (
                     <>
+                      <div className="border-b border-white/10 px-5 pt-3">
+                        <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5 focus-within:border-lime/60">
+                          <Search className="h-4 w-4 shrink-0 text-ink-2" aria-hidden />
+                          <input
+                            type="text"
+                            value={q}
+                            onChange={(e) => setQ(e.target.value)}
+                            placeholder="Cerca album per nome…"
+                            aria-label="Cerca album per nome"
+                            className="min-w-0 flex-1 bg-transparent text-sm text-ink placeholder:text-ink-2 focus:outline-none"
+                          />
+                          {q ? (
+                            <button type="button" onClick={() => setQ('')} aria-label="Pulisci ricerca" className="text-ink-2 transition-colors hover:text-ink">
+                              <X className="h-4 w-4" />
+                            </button>
+                          ) : null}
+                        </div>
+                      </div>
+
                       <div ref={filtersRef} className="relative z-10 flex items-center gap-2 border-b border-white/10 px-5 py-3">
                         <FilterDropdown
                           icon={Calendar}
