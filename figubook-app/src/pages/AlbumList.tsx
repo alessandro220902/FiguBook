@@ -11,7 +11,6 @@ import { ctrlPrimary, ctrlGhost } from '@/lib/album/controlStyles'
 import { pctColor } from '@/lib/stats/pctColor'
 import { AlbumButton } from '@/components/album/ui/Button'
 import { LibraryFilters } from '@/components/album/LibraryFilters'
-import { NewAlbumDialog } from '@/components/album/NewAlbumDialog'
 import { AlbumMenu } from '@/components/album/AlbumMenu'
 import {
   inBucket, LIBRARY_FILTERS, DEFAULT_FILTER, type LibraryFilter,
@@ -23,7 +22,6 @@ export default function AlbumList() {
   const navigate = useNavigate()
   const isDesktop = useIsDesktop()
   const [filter, setFilter] = useState<LibraryFilter>(DEFAULT_FILTER)
-  const [newOpen, setNewOpen] = useState(false)
 
   const archivedSet = useMemo(() => new Set(archived), [archived])
   const withFlag = useMemo(
@@ -69,7 +67,7 @@ export default function AlbumList() {
       ) : (
         <>
           <div className="mt-6">
-            <LibraryFilters active={filter} counts={counts} onChange={setFilter} onNew={() => setNewOpen(true)} />
+            <LibraryFilters active={filter} counts={counts} onChange={setFilter} ownedIds={ownedIds} onAdd={(id) => user && addAlbum(user.uid, id)} />
           </div>
 
           {visible.length === 0 ? (
@@ -100,13 +98,6 @@ export default function AlbumList() {
           )}
         </>
       )}
-
-      <NewAlbumDialog
-        open={newOpen}
-        onOpenChange={setNewOpen}
-        ownedIds={ownedIds}
-        onAdd={(id) => user && addAlbum(user.uid, id)}
-      />
     </div>
   )
 }

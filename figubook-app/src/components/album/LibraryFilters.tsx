@@ -1,17 +1,18 @@
-import { Plus } from 'lucide-react'
 import { LIBRARY_FILTERS, type LibraryFilter } from '@/lib/album/libraryFilters'
-import { ctrlFilter, ctrlPrimary, CTRL_BADGE_ON, CTRL_BADGE_OFF } from '@/lib/album/controlStyles'
+import { ctrlFilter, CTRL_BADGE_ON, CTRL_BADGE_OFF } from '@/lib/album/controlStyles'
+import { CreateAlbumMenu } from './CreateAlbumMenu'
 
 export interface LibraryFiltersProps {
   active: LibraryFilter
   counts: Record<LibraryFilter, number>
   onChange: (f: LibraryFilter) => void
-  onNew: () => void
+  ownedIds: string[]
+  onAdd: (id: string) => void
 }
 
 // Barra filtri: pills sempre su una riga (scroll-x su mobile), "Nuovo album"
 // sotto su mobile e a destra da sm in su. Min touch target 44px.
-export function LibraryFilters({ active, counts, onChange, onNew }: LibraryFiltersProps) {
+export function LibraryFilters({ active, counts, onChange, ownedIds, onAdd }: LibraryFiltersProps) {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-2">
       {/* Filtri: una riga sola. Su mobile scrollano in orizzontale (no wrap)
@@ -33,13 +34,7 @@ export function LibraryFilters({ active, counts, onChange, onNew }: LibraryFilte
           )
         })}
       </div>
-      <button
-        type="button"
-        onClick={onNew}
-        className={`shrink-0 ${ctrlPrimary()}`}
-      >
-        <Plus className="h-4 w-4" aria-hidden /> Nuovo album
-      </button>
+      <CreateAlbumMenu ownedIds={ownedIds} onAdd={onAdd} />
     </div>
   )
 }
