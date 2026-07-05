@@ -199,7 +199,8 @@ export function CreateAlbumMenu({ ownedIds, onAdd, className }: CreateAlbumMenuP
                             onChange={(e) => setQ(e.target.value)}
                             placeholder="Cerca album per nome…"
                             aria-label="Cerca album per nome"
-                            className="min-w-0 flex-1 bg-transparent text-sm text-ink placeholder:text-ink-2 focus:outline-none"
+                            style={{ outline: 'none', boxShadow: 'none' }}
+                            className="min-w-0 flex-1 bg-transparent text-sm leading-none text-ink placeholder:text-ink-2"
                           />
                           {q ? (
                             <button type="button" onClick={() => setQ('')} aria-label="Pulisci ricerca" className="text-ink-2 transition-colors hover:text-ink">
