@@ -1,9 +1,9 @@
-import { useEffect, useId, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { Plus, X } from 'lucide-react'
-import { ALBUM_CATALOG, type AlbumCatalogEntry } from '@/data/albumCatalog'
-import { ctrlFilter, ctrlPrimary, CTRL_BADGE_ON, CTRL_BADGE_OFF } from '@/lib/album/controlStyles'
+import { Building2, Calendar, Check, ChevronDown, Plus, X } from 'lucide-react'
+import { ALBUM_CATALOG } from '@/data/albumCatalog'
+import { ctrlPrimary } from '@/lib/album/controlStyles'
 
 export interface CreateAlbumMenuProps {
   ownedIds: string[]
@@ -14,18 +14,72 @@ export interface CreateAlbumMenuProps {
 const EASE_OUT = [0.16, 1, 0.3, 1] as const
 const SPRING_MORPH = { type: 'spring', stiffness: 320, damping: 26, mass: 0.9 } as const
 
-type Facet = { key: string; label: string; count: number }
+// Anno d'inizio della stagione: "2024/25" -> "2024", "2026" -> "2026".
+function startYear(season: string): string {
+  return season.match(/\d{4}/)?.[0] ?? season
+}
 
-// Deriva i valori distinti di un campo (in ordine di catalogo) coi conteggi.
-function facets(list: AlbumCatalogEntry[], field: 'editor' | 'season'): Facet[] {
-  const seen: string[] = []
-  const count: Record<string, number> = {}
-  for (const a of list) {
-    const v = a[field]
-    if (!(v in count)) { seen.push(v); count[v] = 0 }
-    count[v]++
-  }
-  return seen.map((key) => ({ key, label: key, count: count[key] }))
+type Option = { value: string; label: string }
+
+// Dropdown "a elenco": trigger (icona + valore + chevron) che apre la lista
+// sotto. Chiusura via click-fuori / Esc gestita a livello di pannello.
+function FilterDropdown({
+  icon: Icon, placeholder, options, value, open, onToggle, onPick,
+}: {
+  icon: typeof Calendar
+  placeholder: string
+  options: Option[]
+  value: string
+  open: boolean
+  onToggle: () => void
+  onPick: (v: string) => void
+}) {
+  const current = options.find((o) => o.value === value)
+  return (
+    <div className="relative flex-1">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className="flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5 text-left text-sm text-ink transition-colors hover:bg-white/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
+      >
+        <Icon className="h-4 w-4 shrink-0 text-ink-2" aria-hidden />
+        <span className={`min-w-0 flex-1 truncate ${current ? 'text-ink' : 'text-ink-2'}`}>{current ? current.label : placeholder}</span>
+        <ChevronDown className={`h-4 w-4 shrink-0 text-ink-2 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
+      </button>
+      <AnimatePresence>
+        {open ? (
+          <motion.ul
+            role="listbox"
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.14 }}
+            className="absolute left-0 top-full z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-white/10 bg-bg-elev p-1 shadow-xl shadow-black/40"
+          >
+            {options.map((o) => {
+              const on = o.value === value
+              return (
+                <li key={o.value}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={on}
+                    onClick={() => onPick(o.value)}
+                    className={`flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors ${on ? 'bg-white/10 text-ink' : 'text-ink-2 hover:bg-white/[0.06] hover:text-ink'}`}
+                  >
+                    <span className="truncate">{o.label}</span>
+                    {on ? <Check className="h-4 w-4 shrink-0 text-lime" aria-hidden /> : null}
+                  </button>
+                </li>
+              )
+            })}
+          </motion.ul>
+        ) : null}
+      </AnimatePresence>
+    </div>
+  )
 }
 
 // Menu "Nuovo album": il trigger morfa (layoutId) in un pannello centrato
@@ -33,58 +87,43 @@ function facets(list: AlbumCatalogEntry[], field: 'editor' | 'season'): Facet[] 
 export function CreateAlbumMenu({ ownedIds, onAdd, className }: CreateAlbumMenuProps) {
   const [open, setOpen] = useState(false)
   const [editor, setEditor] = useState('all')
-  const [season, setSeason] = useState('all')
+  const [year, setYear] = useState('all')
+  const [dd, setDd] = useState<'editor' | 'year' | null>(null)
   const reduce = useReducedMotion()
   const layoutId = useId()
+  const filtersRef = useRef<HTMLDivElement>(null)
 
   const owned = useMemo(() => new Set(ownedIds), [ownedIds])
   const available = useMemo(() => ALBUM_CATALOG.filter((a) => !owned.has(a.id)), [owned])
 
-  // Facet su ciò che è disponibile (non su tutto il catalogo).
-  const editorFacets = useMemo(() => facets(available, 'editor'), [available])
-  const seasonFacets = useMemo(() => facets(available, 'season'), [available])
+  // Opzioni da ciò che è disponibile. Anno = anno d'inizio, crescente.
+  const editorOptions = useMemo<Option[]>(() => {
+    const seen = [...new Set(available.map((a) => a.editor))]
+    return [{ value: 'all', label: 'Tutti gli editori' }, ...seen.map((e) => ({ value: e, label: e }))]
+  }, [available])
+  const yearOptions = useMemo<Option[]>(() => {
+    const seen = [...new Set(available.map((a) => startYear(a.season)))].sort((x, y) => Number(x) - Number(y))
+    return [{ value: 'all', label: 'Tutti gli anni' }, ...seen.map((y) => ({ value: y, label: y }))]
+  }, [available])
 
   const visible = useMemo(
-    () => available.filter((a) => (editor === 'all' || a.editor === editor) && (season === 'all' || a.season === season)),
-    [available, editor, season],
+    () => available.filter((a) => (editor === 'all' || a.editor === editor) && (year === 'all' || startYear(a.season) === year)),
+    [available, editor, year],
   )
 
   useEffect(() => {
     if (!open) return
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { if (dd) setDd(null); else setOpen(false) } }
+    const onPointer = (e: PointerEvent) => { if (filtersRef.current && !filtersRef.current.contains(e.target as Node)) setDd(null) }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [open])
+    window.addEventListener('pointerdown', onPointer)
+    return () => { window.removeEventListener('keydown', onKey); window.removeEventListener('pointerdown', onPointer) }
+  }, [open, dd])
 
   // Apre pulito: azzera i filtri all'apertura.
-  const openMenu = () => { setEditor('all'); setSeason('all'); setOpen(true) }
+  const openMenu = () => { setEditor('all'); setYear('all'); setDd(null); setOpen(true) }
 
   const morph = reduce ? { duration: 0.15 } : SPRING_MORPH
-
-  const filterRow = (
-    label: string,
-    facetList: Facet[],
-    total: number,
-    value: string,
-    onPick: (v: string) => void,
-  ) => (
-    <div className="flex items-center gap-2">
-      <span className="w-20 shrink-0 font-mono text-[11px] uppercase tracking-wide text-ink-2">{label}</span>
-      <div className="-mx-1 flex flex-1 items-center gap-2 overflow-x-auto px-1 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <button type="button" onClick={() => onPick('all')} aria-pressed={value === 'all'} className={`shrink-0 ${ctrlFilter(value === 'all')}`}>
-          Tutti<span className={value === 'all' ? CTRL_BADGE_ON : CTRL_BADGE_OFF}>{total}</span>
-        </button>
-        {facetList.map((f) => {
-          const on = f.key === value
-          return (
-            <button key={f.key} type="button" onClick={() => onPick(f.key)} aria-pressed={on} className={`shrink-0 ${ctrlFilter(on)}`}>
-              {f.label}<span className={on ? CTRL_BADGE_ON : CTRL_BADGE_OFF}>{f.count}</span>
-            </button>
-          )
-        })}
-      </div>
-    </div>
-  )
 
   return (
     <>
@@ -146,9 +185,25 @@ export function CreateAlbumMenu({ ownedIds, onAdd, className }: CreateAlbumMenuP
                     <p className="px-5 py-10 text-center type-body text-ink-2">Hai già tutti gli album disponibili.</p>
                   ) : (
                     <>
-                      <div className="flex flex-col gap-2 border-b border-white/10 px-5 py-3">
-                        {filterRow('Editoriale', editorFacets, available.length, editor, setEditor)}
-                        {filterRow('Annata', seasonFacets, available.length, season, setSeason)}
+                      <div ref={filtersRef} className="relative z-10 flex items-center gap-2 border-b border-white/10 px-5 py-3">
+                        <FilterDropdown
+                          icon={Calendar}
+                          placeholder="Anno"
+                          options={yearOptions}
+                          value={year}
+                          open={dd === 'year'}
+                          onToggle={() => setDd((d) => (d === 'year' ? null : 'year'))}
+                          onPick={(v) => { setYear(v); setDd(null) }}
+                        />
+                        <FilterDropdown
+                          icon={Building2}
+                          placeholder="Editore"
+                          options={editorOptions}
+                          value={editor}
+                          open={dd === 'editor'}
+                          onToggle={() => setDd((d) => (d === 'editor' ? null : 'editor'))}
+                          onPick={(v) => { setEditor(v); setDd(null) }}
+                        />
                       </div>
 
                       <motion.div

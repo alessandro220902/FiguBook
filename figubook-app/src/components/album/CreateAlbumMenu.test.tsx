@@ -11,12 +11,22 @@ describe('CreateAlbumMenu', () => {
     expect(screen.getByText('Calciatori 2024/25')).toBeInTheDocument()
   })
 
-  it('filtro editoriale restringe il catalogo (Topps → solo Match Attax)', async () => {
+  it('filtro editore restringe il catalogo (Topps → solo Match Attax)', async () => {
     render(<CreateAlbumMenu ownedIds={[]} onAdd={() => {}} />)
     await userEvent.click(screen.getByRole('button', { name: /Nuovo album/ }))
-    await userEvent.click(screen.getByRole('button', { name: /^Topps/ }))
+    await userEvent.click(screen.getByRole('button', { name: /Tutti gli editori/ }))
+    await userEvent.click(screen.getByRole('option', { name: 'Topps' }))
     expect(screen.getByText('Match Attax UCL 25/26')).toBeInTheDocument()
     expect(screen.queryByText('Calciatori 2024/25')).toBeNull()
+  })
+
+  it('filtro anno usa anno d\'inizio: 2024 → Calciatori 2024/25, non 2025/26', async () => {
+    render(<CreateAlbumMenu ownedIds={[]} onAdd={() => {}} />)
+    await userEvent.click(screen.getByRole('button', { name: /Nuovo album/ }))
+    await userEvent.click(screen.getByRole('button', { name: /Tutti gli anni/ }))
+    await userEvent.click(screen.getByRole('option', { name: '2024' }))
+    expect(screen.getByText('Calciatori 2024/25')).toBeInTheDocument()
+    expect(screen.queryByText('Calciatori 2025/26')).toBeNull()
   })
 
   it('click su un album chiama onAdd con id', async () => {
