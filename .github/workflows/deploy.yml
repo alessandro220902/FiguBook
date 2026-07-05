@@ -55,7 +55,26 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: https://alessandro220902.github.io/FiguBook/
     steps:
-      - id: deployment
+      # Il backend Pages ogni tanto rifiuta il deploy con
+      # "Deployment failed, try again later." (transiente lato GitHub).
+      # Ritentiamo fino a 3 volte prima di considerare fallito il job.
+      - id: try1
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - if: steps.try1.outcome == 'failure'
+        run: sleep 20
+
+      - id: try2
+        if: steps.try1.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - if: steps.try2.outcome == 'failure'
+        run: sleep 30
+
+      - id: try3
+        if: steps.try2.outcome == 'failure'
         uses: actions/deploy-pages@v4
