@@ -141,6 +141,10 @@ export default function Landing() {
               </Link>
               <a
                 href="#funziona"
+                onClick={(e) => {
+                  e.preventDefault()
+                  document.getElementById('funziona')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }}
                 className="text-[15px] font-semibold text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
               >
                 Scopri come funziona
@@ -152,7 +156,7 @@ export default function Landing() {
 
       {/* ── FEATURES (blocco editoriale, niente card uguali) ── */}
       {/* ── COME FUNZIONA (3 passi) ── */}
-      <section id="funziona" className="border-t border-white/8">
+      <section id="funziona" className="scroll-mt-24 border-t border-white/8">
         <div className="mx-auto max-w-[1240px] px-6 py-20 md:py-28">
           <Reveal>
             <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-lime">Come funziona</p>
@@ -165,7 +169,7 @@ export default function Landing() {
               const Icon = s.icon
               const flip = i % 2 === 1
               return (
-                <Reveal key={s.t}>
+                <Reveal key={s.t} delay={i * 140}>
                   <div className={'grid items-center gap-x-12 gap-y-8 md:grid-cols-2'}>
                     {/* testo */}
                     <div className={flip ? 'md:order-2 md:pl-6' : 'md:pr-6'}>
