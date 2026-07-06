@@ -49,7 +49,7 @@ export function DesktopNavbar() {
               className={cn(
                 'inline-flex h-10 items-center rounded-full border px-5 text-[15px] font-medium text-white transition-colors',
                 active
-                  ? 'border-lime/30 bg-[linear-gradient(165deg,#2c3a18,#1a2410_60%,#141c0d)]'
+                  ? 'border-lime/30 bg-[linear-gradient(165deg,color-mix(in_srgb,var(--color-lime)_26%,transparent),color-mix(in_srgb,var(--color-lime)_10%,transparent)_60%,transparent)]'
                   : 'border-transparent hover:bg-white/[0.06]',
               )}
             >
