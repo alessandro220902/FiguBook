@@ -58,7 +58,7 @@ export function ArcGalleryHero({
   return (
     <section className={`relative overflow-hidden ${className}`}>
       {/* Contenitore arco: geometria del ventaglio */}
-      <div className="relative mx-auto" style={{ width: '100%', height: dim.radius * 0.92 }}>
+      <div className="relative mx-auto" style={{ width: '100%', height: dim.radius + dim.cardSize * 0.6 }}>
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
           {images.map((src, i) => {
             const angle = startAngle + step * i
@@ -99,7 +99,7 @@ export function ArcGalleryHero({
       </div>
 
       {/* Contenuto sotto l'arco */}
-      <div className="relative z-10 -mt-32 flex justify-center px-6 md:-mt-40 lg:-mt-48">
+      <div className="relative z-10 flex justify-center px-6" style={{ marginTop: -(dim.radius * 0.52) }}>
         <div
           className="animate-arc-fade max-w-2xl text-center opacity-0"
           style={{ animationDelay: '760ms', animationFillMode: 'forwards' }}
