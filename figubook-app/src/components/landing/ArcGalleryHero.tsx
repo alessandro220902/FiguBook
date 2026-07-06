@@ -82,7 +82,7 @@ export function ArcGalleryHero({
               >
                 <div
                   className="h-full w-full overflow-hidden rounded-2xl border border-[color:var(--card-hair)] bg-bg-elev shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7)] transition-transform duration-300 hover:scale-[1.06]"
-                  style={{ transform: `rotate(${angle / 4}deg)` }}
+                  style={{ transform: `rotate(${(angle - 90) / 3.4}deg)` }}
                 >
                   <img
                     src={src}
@@ -99,7 +99,7 @@ export function ArcGalleryHero({
       </div>
 
       {/* Contenuto sotto l'arco */}
-      <div className="relative z-10 -mt-24 flex justify-center px-6 md:-mt-28 lg:-mt-32">
+      <div className="relative z-10 -mt-32 flex justify-center px-6 md:-mt-40 lg:-mt-48">
         <div
           className="animate-arc-fade max-w-2xl text-center opacity-0"
           style={{ animationDelay: '760ms', animationFillMode: 'forwards' }}
