@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { LayoutGrid, CheckSquare, ArrowLeftRight, Image as ImageIcon } from 'lucide-react'
+import { LayoutGrid, CheckSquare, ArrowLeftRight, Image as ImageIcon, Trophy } from 'lucide-react'
 import { ALBUM_CATALOG } from '@/data/albumCatalog'
 import { ArcGalleryHero } from '@/components/landing/ArcGalleryHero'
 
@@ -112,7 +112,7 @@ export default function Landing() {
             </Link>
             <Link
               to="/login?r=1"
-              className="rounded-full border border-lime/70 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-lime/10 active:scale-[0.98]"
+              className="rounded-full bg-lime px-4 py-2 text-sm font-bold text-lime-ink transition-all hover:-translate-y-0.5 hover:brightness-105 active:scale-[0.98]"
             >
               Registrati
             </Link>
@@ -124,13 +124,14 @@ export default function Landing() {
       <section className="px-6 pt-6 pb-20 md:pb-28">
         <ArcGalleryHero
           images={HERO_COVERS}
+          badge={<><Trophy className="h-4 w-4" strokeWidth={2} /> La casa del collezionismo sportivo</>}
           title={<>Chiudi l’album. <span className="italic text-lime">Una doppia alla volta.</span></>}
           subtitle="FiguBook tiene il conto della tua collezione, ti dice cosa ti manca e ti fa scambiare i doppioni con altri collezionisti. Gratis, senza abbonamenti."
           actions={
             <>
               <Link
                 to="/login?r=1"
-                className="rounded-full border border-lime/70 px-6 py-3 text-[15px] font-bold text-white transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-lime/10 active:scale-[0.98]"
+                className="rounded-full bg-lime px-7 py-3 text-[15px] font-bold text-lime-ink shadow-[0_10px_30px_-10px_rgba(200,169,110,0.6)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:brightness-105 active:scale-[0.98]"
               >
                 Inizia gratis
               </Link>
@@ -233,7 +234,7 @@ export default function Landing() {
           <div className="mt-10">
             <Link
               to="/login?r=1"
-              className="inline-block rounded-full border border-lime/70 px-8 py-3.5 text-[15px] font-bold text-white transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-lime/10 active:scale-[0.98]"
+              className="inline-block rounded-full bg-lime px-9 py-3.5 text-[15px] font-bold text-lime-ink shadow-[0_10px_30px_-10px_rgba(200,169,110,0.6)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:brightness-105 active:scale-[0.98]"
             >
               Inizia gratis
             </Link>
@@ -243,18 +244,50 @@ export default function Landing() {
 
       {/* ── FOOTER ── */}
       <footer className="border-t border-white/10">
-        <div className="mx-auto flex max-w-[1240px] flex-col gap-5 px-6 py-9 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-muted-foreground">
-            <Link to="/privacy" className="transition-colors hover:text-foreground">Privacy</Link>
-            <Link to="/termini" className="transition-colors hover:text-foreground">Termini</Link>
-            <Link to="/cookie" className="transition-colors hover:text-foreground">Cookie</Link>
-            <button type="button" onClick={manageCookies} className="transition-colors hover:text-foreground">
-              Gestisci cookie
-            </button>
+        <div className="mx-auto max-w-[1240px] px-6 py-14">
+          <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
+            {/* brand */}
+            <div>
+              <div className="flex items-center gap-2.5">
+                <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">
+                  F
+                </span>
+                <span className="text-lg font-extrabold tracking-tight">FiguBook</span>
+              </div>
+              <p className="mt-4 max-w-[34ch] text-[14px] leading-relaxed text-ink-2">
+                La casa dei collezionisti sportivi: traccia l’album, scambia i doppioni, completa la raccolta. Gratis.
+              </p>
+            </div>
+            {/* legale */}
+            <div>
+              <h3 className="text-[13px] font-bold uppercase tracking-[0.12em] text-ink-2">Legale</h3>
+              <ul className="mt-4 space-y-2.5 text-[14px] text-ink-2">
+                <li><Link to="/termini" className="transition-colors hover:text-ink">Termini e condizioni</Link></li>
+                <li><Link to="/privacy" className="transition-colors hover:text-ink">Privacy policy</Link></li>
+                <li><Link to="/cookie" className="transition-colors hover:text-ink">Cookie policy</Link></li>
+                <li>
+                  <button type="button" onClick={manageCookies} className="transition-colors hover:text-ink">
+                    Gestisci cookie
+                  </button>
+                </li>
+              </ul>
+            </div>
+            {/* social */}
+            <div>
+              <h3 className="text-[13px] font-bold uppercase tracking-[0.12em] text-ink-2">Seguici</h3>
+              <ul className="mt-4 space-y-2.5 text-[14px] text-ink-2">
+                <li>
+                  <a href="https://instagram.com/figubook" target="_blank" rel="noreferrer" className="transition-colors hover:text-ink">
+                    Instagram
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
-          <p className="text-[12px] italic text-muted-foreground">
-            Non affiliato a Panini S.p.A. — strumento indipendente.
-          </p>
+          <div className="mt-12 flex flex-col gap-2 border-t border-white/8 pt-6 text-[12px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+            <p>© {new Date().getFullYear()} FiguBook — Tutti i diritti riservati.</p>
+            <p className="italic">Non affiliato a Panini S.p.A. — strumento indipendente.</p>
+          </div>
         </div>
       </footer>
     </div>

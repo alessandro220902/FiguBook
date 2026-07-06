@@ -7,6 +7,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 
 type ArcGalleryHeroProps = {
   images: string[]
+  badge?: ReactNode
   title: ReactNode
   subtitle?: ReactNode
   actions?: ReactNode
@@ -23,6 +24,7 @@ type ArcGalleryHeroProps = {
 
 export function ArcGalleryHero({
   images,
+  badge,
   title,
   subtitle,
   actions,
@@ -102,6 +104,11 @@ export function ArcGalleryHero({
           className="animate-arc-fade max-w-2xl text-center opacity-0"
           style={{ animationDelay: '760ms', animationFillMode: 'forwards' }}
         >
+          {badge && (
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-lime/30 bg-lime/[0.08] px-4 py-1.5 text-[13px] font-semibold text-lime">
+              {badge}
+            </div>
+          )}
           <h1 className="text-balance text-[clamp(2.4rem,6vw,4.2rem)] font-bold leading-[1.0] tracking-[-0.02em] text-ink">
             {title}
           </h1>
