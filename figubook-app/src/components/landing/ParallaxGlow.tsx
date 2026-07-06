@@ -31,21 +31,21 @@ export function ParallaxGlow() {
       <div
         className="absolute -left-24 top-[6%] h-[52vh] w-[52vh] rounded-full blur-3xl"
         style={{
-          background: 'radial-gradient(circle, rgba(200,169,110,0.42), transparent 70%)',
+          background: 'radial-gradient(circle, rgba(200,169,110,0.26), transparent 70%)',
           transform: 'translate3d(0, calc(var(--sy, 0) * 0.32px), 0)',
         }}
       />
       <div
         className="absolute right-[-12%] top-[40%] h-[60vh] w-[60vh] rounded-full blur-3xl"
         style={{
-          background: 'radial-gradient(circle, rgba(220,192,136,0.32), transparent 70%)',
+          background: 'radial-gradient(circle, rgba(220,192,136,0.2), transparent 70%)',
           transform: 'translate3d(0, calc(var(--sy, 0) * -0.2px), 0)',
         }}
       />
       <div
         className="absolute left-[28%] bottom-[4%] h-[46vh] w-[46vh] rounded-full blur-3xl"
         style={{
-          background: 'radial-gradient(circle, rgba(200,169,110,0.28), transparent 70%)',
+          background: 'radial-gradient(circle, rgba(200,169,110,0.17), transparent 70%)',
           transform: 'translate3d(0, calc(var(--sy, 0) * 0.5px), 0)',
         }}
       />
