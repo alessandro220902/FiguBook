@@ -39,7 +39,13 @@ export default function Home() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-[88rem]">
+    <div className="home-gold mx-auto w-full max-w-[88rem]">
+      {/* TEST tema Midnight Gold: copre il radiale verde di AppLayout solo su Home */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10"
+        style={{ background: 'radial-gradient(120% 90% at 50% -10%, #232016, transparent 60%), #1a1a1a' }}
+      />
       {/* glow tenue colore squadra in cima alla dashboard (casa tua) */}
       {team && (
         <div

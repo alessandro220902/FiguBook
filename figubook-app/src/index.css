@@ -89,6 +89,24 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Home — TEST tema "Midnight Gold" scoped. Rimappa i token brand (lime->oro,
+   fondi verdi->near-black) solo nello scope .home-gold. Reversibile: togli la
+   classe dal wrapper Home e tutto torna al brand lime. */
+.home-gold {
+  --color-lime: #b3945b;        /* accento oro (CTA, valori, link) */
+  --color-lime-2: #cbb074;      /* endpoint gradiente oro */
+  --color-lime-ink: #1a1a1a;    /* testo scuro su superfici oro */
+  --color-accent-2: #cbb074;
+  --color-bg: #1a1a1a;          /* midnight */
+  --color-bg-elev: #202020;     /* card */
+  --color-surface: #262626;     /* pannelli */
+  --color-ink: #ededed;
+  --color-ink-2: #a8a29a;       /* grigio caldo */
+  --color-muted: #8f887e;
+  --color-muted-foreground: #a8a29a;
+  --muted-foreground: #a8a29a;
+}
+
 /* Focus visibile globale (a11y/polish): anello lime su navigazione tastiera. */
 :focus-visible {
   outline: 2px solid var(--color-lime);
