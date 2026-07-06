@@ -3,6 +3,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom'
 import { Home, BookOpen, ArrowLeftRight, Users, Search } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useCollection } from '@/hooks/useCollection'
+import { useThemeMode } from '@/hooks/useThemeMode'
 import { touchStatsSnapshot } from '@/lib/db/statsHistory'
 import { TubelightNav, type NavItem } from '@/components/layout/TubelightNav'
 import { DesktopNavbar } from '@/components/layout/navbar/DesktopNavbar'
@@ -32,11 +33,14 @@ export function AppLayout() {
   }, [user, loading, error, albums.length, totals])
 
   // TEST Midnight Gold: scope oro esteso alla shell (nav inclusa) solo su Home.
+  // Light/dark cablato al ThemeToggle via useThemeMode.
   const { pathname } = useLocation()
   const onHome = pathname === '/home' || pathname === '/app/home'
+  const mode = useThemeMode()
+  const homeScope = onHome ? ` home-gold${mode === 'light' ? ' home-light' : ''}` : ''
 
   return (
-    <div className={`relative min-h-screen text-foreground${onHome ? ' home-gold' : ''}`}>
+    <div className={`relative min-h-screen text-foreground${homeScope}`}>
       {/* Sfondo unico app: radiale verde-rosso (21st reapollo background-radial-green-red),
           full-screen fisso. Verde in alto-sx, rosso in basso, base neutral-950. */}
       <div className="fixed inset-0 -z-10 bg-neutral-950">

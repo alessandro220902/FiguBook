@@ -108,6 +108,23 @@ body {
   --muted-foreground: #a3a3a3;
 }
 
+/* Tema chiaro (inverso): oro/crema prevalente, testo scuro. Accento oro più
+   scuro per contrasto su fondo chiaro. Attivo col ThemeToggle su Home. */
+.home-gold.home-light {
+  --color-lime: #9c7b3e;        /* oro scuro (contrasto su chiaro) */
+  --color-lime-2: #b89457;
+  --color-lime-ink: #fdf8ee;    /* testo chiaro su superfici oro */
+  --color-accent-2: #b89457;
+  --color-bg: #f4ecd8;          /* crema */
+  --color-bg-elev: #efe4cb;     /* card */
+  --color-surface: #ebddbe;     /* pannelli */
+  --color-ink: #1a1712;         /* testo scuro */
+  --color-ink-2: #6b5f47;       /* grigio caldo scuro */
+  --color-muted: #8a7c5f;
+  --color-muted-foreground: #6b5f47;
+  --muted-foreground: #6b5f47;
+}
+
 /* Focus visibile globale (a11y/polish): anello lime su navigazione tastiera. */
 :focus-visible {
   outline: 2px solid var(--color-lime);

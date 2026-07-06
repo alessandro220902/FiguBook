@@ -13,6 +13,7 @@ import { Typewriter } from '@/components/home/Typewriter'
 import { useTradesCount } from '@/hooks/useTradesCount'
 import { useStatsDeltas } from '@/hooks/useStatsDeltas'
 import { useInsertedSeries } from '@/hooks/useInsertedSeries'
+import { useThemeMode } from '@/hooks/useThemeMode'
 import { InsertedChart } from '@/components/home/InsertedChart'
 
 export default function Home() {
@@ -24,6 +25,7 @@ export default function Home() {
   const team = profile?.favTeam ? teamById[profile.favTeam] : undefined
   const deltas = useStatsDeltas(totals.have)
   const insertedSeries = useInsertedSeries(totals.have)
+  const mode = useThemeMode()
 
   if (loading) {
     return (
@@ -40,11 +42,17 @@ export default function Home() {
 
   return (
     <div className="home-gold mx-auto w-full max-w-[88rem]">
-      {/* TEST tema Midnight Gold: copre il radiale verde di AppLayout solo su Home */}
+      {/* TEST tema Midnight Gold: sfondo con sfumatura nero<->oro, copre il
+          radiale verde di AppLayout. Dark = nero prevalente sfuma in oro in basso;
+          light = oro/chiaro prevalente sfuma verso scuro. */}
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 -z-10"
-        style={{ background: 'radial-gradient(100% 55% at 50% -20%, rgba(200,169,110,0.07), transparent 55%), #111111' }}
+        style={{
+          background: mode === 'light'
+            ? 'linear-gradient(180deg, #f4ecd8 0%, #ead9b2 40%, #d8be8a 78%, #c8a96e 100%)'
+            : 'linear-gradient(180deg, #0f0f0f 0%, #141210 48%, #241d12 80%, #3d3018 100%)',
+        }}
       />
       {/* glow tenue colore squadra in cima alla dashboard (casa tua) */}
       {team && (

@@ -1,17 +1,17 @@
-import { useState } from 'react'
 import { Moon, Sun } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useThemeMode, toggleThemeMode } from '@/hooks/useThemeMode'
 
-// Adattato da ayushmxxn/theme-toggle (21st). Per ora SOLO UI: l'app è dark-only,
-// il tema chiaro è un lavoro a parte. Il toggle non cambia ancora il tema.
+// Adattato da ayushmxxn/theme-toggle (21st). Cablato al tema Midnight Gold
+// (dark/light) via useThemeMode: dark = nero prevalente, light = oro prevalente.
 export function ThemeToggle({ className }: { className?: string }) {
-  const [isDark, setIsDark] = useState(true)
+  const isDark = useThemeMode() === 'dark'
   return (
     <div
       role="button"
       tabIndex={0}
       aria-label="Cambia tema"
-      onClick={() => setIsDark((v) => !v)}
+      onClick={() => toggleThemeMode()}
       className={cn(
         'flex h-8 w-16 cursor-pointer rounded-full p-1 transition-all duration-300',
         isDark ? 'border border-zinc-800 bg-zinc-950' : 'border border-zinc-200 bg-white',
