@@ -6,7 +6,7 @@ import { AnimatedNumber } from './AnimatedNumber'
 import { HeroRing } from './HeroRing'
 
 const TILE =
-  'rounded-2xl border border-white/[0.08] bg-surface px-4 py-3.5 transition duration-200 hover:border-white/20 active:scale-[0.98]'
+  'rounded-2xl border border-[color:var(--card-hair)] bg-surface px-4 py-3.5 shadow-[var(--card-shadow)] transition duration-200 hover:border-[color:var(--card-hair-strong)] active:scale-[0.98]'
 const LABEL = 'flex items-center gap-1.5 text-xs text-ink md:text-sm'
 const NUM = 'type-stat mt-1.5 block text-3xl text-ink md:text-4xl'
 

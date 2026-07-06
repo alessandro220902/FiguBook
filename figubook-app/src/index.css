@@ -106,6 +106,12 @@ body {
   --color-muted: #8a8a8a;
   --color-muted-foreground: #a3a3a3;
   --muted-foreground: #a3a3a3;
+  /* hairline/ombra/linee-grafico neutre per le card (dark) */
+  --card-hair: rgba(255, 255, 255, 0.08);
+  --card-hair-strong: rgba(255, 255, 255, 0.18);
+  --card-shadow: none;
+  --grid-line: rgba(255, 255, 255, 0.055);
+  --cursor-line: rgba(255, 255, 255, 0.12);
 }
 
 /* Tema chiaro (inverso): oro/crema prevalente, testo scuro. Accento oro più
@@ -116,13 +122,28 @@ body {
   --color-lime-ink: #fdf8ee;    /* testo chiaro su superfici oro */
   --color-accent-2: #b89457;
   --color-bg: #f4ecd8;          /* crema */
-  --color-bg-elev: #efe4cb;     /* card */
-  --color-surface: #ebddbe;     /* pannelli */
+  --color-bg-elev: #f7efdd;     /* card (bianco caldo) */
+  --color-surface: #fbf6ec;     /* pannelli (bianco caldo, stacca dal fondo) */
   --color-ink: #1a1712;         /* testo scuro */
   --color-ink-2: #6b5f47;       /* grigio caldo scuro */
   --color-muted: #8a7c5f;
   --color-muted-foreground: #6b5f47;
   --muted-foreground: #6b5f47;
+  /* hairline oro + ombra soft per rilievo su fondo chiaro */
+  --card-hair: rgba(156, 123, 62, 0.2);
+  --card-hair-strong: rgba(156, 123, 62, 0.4);
+  --card-shadow: 0 1px 2px rgba(60, 45, 20, 0.06), 0 2px 6px rgba(60, 45, 20, 0.05);
+  --grid-line: rgba(60, 45, 20, 0.08);
+  --cursor-line: rgba(60, 45, 20, 0.18);
+  /* token shadcn -> chiaro: sistema che usa --foreground/--card/--border */
+  --background: #f4ecd8;
+  --foreground: #1a1712;
+  --card: #fbf6ec;
+  --card-foreground: #1a1712;
+  --popover: #fbf6ec;
+  --popover-foreground: #1a1712;
+  --border: rgba(156, 123, 62, 0.2);
+  --input: rgba(156, 123, 62, 0.25);
 }
 
 /* Focus visibile globale (a11y/polish): anello lime su navigazione tastiera. */

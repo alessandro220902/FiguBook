@@ -18,7 +18,7 @@ export function HeroRing({
   const off = circ * (1 - Math.max(0, Math.min(100, pct)) / 100)
   return (
     <div
-      className="col-span-2 flex items-center gap-4 rounded-2xl border px-4 py-3.5 sm:col-span-1"
+      className="col-span-2 flex items-center gap-4 rounded-2xl border px-4 py-3.5 shadow-[var(--card-shadow)] sm:col-span-1"
       style={{
         background: `color-mix(in srgb, ${color} 10%, var(--color-surface))`,
         borderColor: `color-mix(in srgb, ${color} 28%, transparent)`,

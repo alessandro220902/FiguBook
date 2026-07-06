@@ -66,7 +66,7 @@ export function InsertedChart({ series }: { series: InsertedPoint[] }) {
   const rows: Row[] = series.map((p) => ({ ...p, y: bucketScale(p.count) }))
 
   return (
-    <div className="flex h-full min-h-[240px] flex-col rounded-2xl border border-white/[0.08] bg-surface p-5 sm:p-6">
+    <div className="flex h-full min-h-[240px] flex-col rounded-2xl border border-[color:var(--card-hair)] bg-surface p-5 shadow-[var(--card-shadow)] sm:p-6">
       <h2 className="type-section">Figurine inserite</h2>
       <p className="text-xs text-muted-foreground">Ultimi 7 giorni</p>
 
@@ -85,7 +85,7 @@ export function InsertedChart({ series }: { series: InsertedPoint[] }) {
                   <stop offset="100%" stopColor={LIME} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid horizontal vertical={false} stroke="rgba(255,255,255,0.055)" />
+              <CartesianGrid horizontal vertical={false} stroke="var(--grid-line)" />
               <XAxis
                 dataKey="date"
                 tickLine={false}
@@ -104,7 +104,7 @@ export function InsertedChart({ series }: { series: InsertedPoint[] }) {
                 tick={{ fill: 'var(--color-ink-2)', fontSize: 13 }}
                 tickFormatter={(v: number) => BUCKET_LABELS[v] ?? ''}
               />
-              <Tooltip content={<ChartTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.12)' }} />
+              <Tooltip content={<ChartTooltip />} cursor={{ stroke: 'var(--cursor-line)' }} />
               <Area
                 type="monotone"
                 dataKey="y"

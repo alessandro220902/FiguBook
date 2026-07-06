@@ -47,7 +47,7 @@ export function DesktopNavbar() {
               key={item.name}
               to={item.url}
               className={cn(
-                'inline-flex h-10 items-center rounded-full border px-5 text-[15px] font-medium text-white transition-colors',
+                'inline-flex h-10 items-center rounded-full border px-5 text-[15px] font-medium text-foreground transition-colors',
                 active
                   ? 'border-lime/30 bg-[linear-gradient(165deg,color-mix(in_srgb,var(--color-lime)_26%,transparent),color-mix(in_srgb,var(--color-lime)_10%,transparent)_60%,transparent)]'
                   : 'border-transparent hover:bg-white/[0.06]',

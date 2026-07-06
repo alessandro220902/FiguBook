@@ -6,7 +6,7 @@ import { useMyGroups } from '@/hooks/useMyGroups'
 export function GroupsPanel() {
   const { groups, loading } = useMyGroups()
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-white/[0.08] bg-surface p-5 sm:p-6">
+    <div className="flex h-full flex-col rounded-2xl border border-[color:var(--card-hair)] bg-surface p-5 shadow-[var(--card-shadow)] sm:p-6">
       <div className="flex items-center justify-between">
         <h2 className="type-section">Gruppi a cui partecipi</h2>
         <Link to="/community" className="text-sm text-lime">
