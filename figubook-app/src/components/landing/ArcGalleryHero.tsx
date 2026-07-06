@@ -30,12 +30,12 @@ export function ArcGalleryHero({
   actions,
   startAngle = 20,
   endAngle = 160,
-  radiusLg = 480,
-  radiusMd = 360,
-  radiusSm = 240,
-  cardSizeLg = 116,
-  cardSizeMd = 96,
-  cardSizeSm = 72,
+  radiusLg = 360,
+  radiusMd = 290,
+  radiusSm = 190,
+  cardSizeLg = 100,
+  cardSizeMd = 84,
+  cardSizeSm = 64,
   className = '',
 }: ArcGalleryHeroProps) {
   const [dim, setDim] = useState({ radius: radiusLg, cardSize: cardSizeLg })
@@ -58,7 +58,7 @@ export function ArcGalleryHero({
   return (
     <section className={`relative overflow-hidden ${className}`}>
       {/* Contenitore arco: geometria del ventaglio */}
-      <div className="relative mx-auto" style={{ width: '100%', height: dim.radius * 1.2 }}>
+      <div className="relative mx-auto" style={{ width: '100%', height: dim.radius * 0.92 }}>
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
           {images.map((src, i) => {
             const angle = startAngle + step * i
@@ -99,7 +99,7 @@ export function ArcGalleryHero({
       </div>
 
       {/* Contenuto sotto l'arco */}
-      <div className="relative z-10 -mt-36 flex justify-center px-6 md:-mt-48 lg:-mt-56">
+      <div className="relative z-10 -mt-24 flex justify-center px-6 md:-mt-28 lg:-mt-32">
         <div
           className="animate-arc-fade max-w-2xl text-center opacity-0"
           style={{ animationDelay: '760ms', animationFillMode: 'forwards' }}
@@ -109,7 +109,7 @@ export function ArcGalleryHero({
               {badge}
             </div>
           )}
-          <h1 className="text-balance text-[clamp(2.4rem,6vw,4.2rem)] font-bold leading-[1.0] tracking-[-0.02em] text-ink">
+          <h1 className="text-balance text-[clamp(2.1rem,5vw,3.4rem)] font-bold leading-[1.0] tracking-[-0.02em] text-ink">
             {title}
           </h1>
           {subtitle && (

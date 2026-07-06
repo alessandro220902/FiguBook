@@ -137,7 +137,7 @@ export default function Landing() {
                 to="/login?r=1"
                 className="rounded-full bg-lime px-7 py-3 text-[15px] font-bold text-lime-ink shadow-[0_10px_30px_-10px_rgba(200,169,110,0.6)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:brightness-105 active:scale-[0.98]"
               >
-                Inizia gratis
+                Inizia Ora
               </Link>
               <a
                 href="#funziona"
@@ -244,7 +244,7 @@ export default function Landing() {
               to="/login?r=1"
               className="inline-block rounded-full bg-lime px-9 py-3.5 text-[15px] font-bold text-lime-ink shadow-[0_10px_30px_-10px_rgba(200,169,110,0.6)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:brightness-105 active:scale-[0.98]"
             >
-              Inizia gratis
+              Inizia Ora
             </Link>
           </div>
         </Reveal>
