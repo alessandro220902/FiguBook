@@ -94,7 +94,9 @@ const FEATURES = [
 
 export default function Landing() {
   return (
-    <div className="landing min-h-screen bg-[#080a08] text-[#f4efe6]">
+    <div className="landing relative min-h-screen text-[#f4efe6]">
+      {/* base nera fissa (dietro tutto), poi gli aloni parallax sopra di essa */}
+      <div aria-hidden className="fixed inset-0 -z-20 bg-[#080a08]" />
       <ParallaxGlow />
       {/* ── NAV ── */}
       <header className="sticky top-0 z-30 border-b border-white/5 bg-[#080a08]/80 backdrop-blur">
