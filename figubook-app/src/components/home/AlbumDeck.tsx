@@ -63,7 +63,7 @@ export function AlbumDeck({ albums }: { albums: PerAlbumStats[] }) {
   const leftW = Math.min(200, Math.max(110, Math.round(w * 0.32)))
   const rightW = Math.max(150, w - leftW)
   const cardWidth = Math.max(150, Math.min(Math.round(rightW * 0.86), 340))
-  const cardHeight = Math.round(cardWidth * 1.12)
+  const cardHeight = Math.round(cardWidth * (4 / 3)) // proporzione copertina album (3:4)
   const delta = Math.min(44, Math.round(rightW * 0.12))
   const panelH = Math.round(cardHeight * 1.12)
   const compact = cardWidth < 240
@@ -180,26 +180,25 @@ function CoverCard({
       className="relative block h-full w-full overflow-hidden rounded-[1.5rem] text-left shadow-[0_18px_40px_-20px_rgba(0,0,0,0.8)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
       style={{ background: `linear-gradient(150deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
     >
-      {entry.cover && <img src={entry.cover} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-contain" />}
+      {entry.cover && <img src={entry.cover} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />}
       <span
         aria-hidden
         className="pointer-events-none absolute inset-0"
-        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.06) 40%, transparent 58%, rgba(0,0,0,0.50) 100%)' }}
+        style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.72) 22%, rgba(0,0,0,0.35) 48%, transparent 80%)' }}
       />
-      <span className={`relative flex h-full flex-col justify-between ${compact ? 'p-3' : 'p-4'}`}>
-        <span className="flex items-start justify-end">
-          <span className={`type-stat font-display text-white ${compact ? 'text-2xl' : 'text-3xl'}`}>{a.pct}%</span>
-        </span>
-
+      <span className={`relative flex h-full flex-col justify-end ${compact ? 'p-3' : 'p-4'}`}>
         <span className="block">
           <span className={`mb-2 block truncate font-display font-bold leading-tight tracking-tight text-white ${compact ? 'text-base' : 'text-xl'}`}>
             {entry.title}
           </span>
-          <span className="block h-1.5 overflow-hidden rounded-full bg-black/30">
-            <span
-              className="block h-full rounded-full"
-              style={{ width: `${Math.max(2, a.pct)}%`, background: complete ? STAT_COLORS.gold : pctColor(a.pct) }}
-            />
+          <span className="flex items-center gap-2">
+            <span className="block h-1.5 flex-1 overflow-hidden rounded-full bg-black/30">
+              <span
+                className="block h-full rounded-full"
+                style={{ width: `${Math.max(2, a.pct)}%`, background: complete ? STAT_COLORS.gold : pctColor(a.pct) }}
+              />
+            </span>
+            <span className={`type-stat shrink-0 font-display leading-none text-white ${compact ? 'text-sm' : 'text-base'}`}>{a.pct}%</span>
           </span>
           <span className="mt-2 flex items-end gap-4 text-white">
             <span className="block">
