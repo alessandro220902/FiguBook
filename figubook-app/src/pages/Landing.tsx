@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { LayoutGrid, CheckSquare, ArrowLeftRight, Image as ImageIcon, Trophy } from 'lucide-react'
 import { ALBUM_CATALOG } from '@/data/albumCatalog'
 import { ArcGalleryHero } from '@/components/landing/ArcGalleryHero'
+import { ParallaxGlow } from '@/components/landing/ParallaxGlow'
 
 function manageCookies() {
   localStorage.removeItem('figubook.cookieConsent')
@@ -94,6 +95,7 @@ const FEATURES = [
 export default function Landing() {
   return (
     <div className="landing min-h-screen bg-[#080a08] text-[#f4efe6]">
+      <ParallaxGlow />
       {/* ── NAV ── */}
       <header className="sticky top-0 z-30 border-b border-white/5 bg-[#080a08]/80 backdrop-blur">
         <div className="mx-auto flex max-w-[1240px] items-center justify-between px-6 py-4">
