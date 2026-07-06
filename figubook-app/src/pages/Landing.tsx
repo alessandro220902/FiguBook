@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { LayoutGrid, CheckSquare, ArrowLeftRight, Image as ImageIcon } from 'lucide-react'
 import { ALBUM_CATALOG } from '@/data/albumCatalog'
 import albumTeamImg from '@/assets/landing/album-team.png'
 import albumStatsImg from '@/assets/landing/album-stats.png'
@@ -68,6 +69,24 @@ function AlbumPreview() {
     </div>
   )
 }
+
+const STEPS = [
+  {
+    icon: LayoutGrid,
+    t: 'Scegli l’album',
+    d: 'Oltre 100 raccolte pronte — Calciatori, Adrenalyn, Mondiali e altre. Aprine una in un tap, o creala tu.',
+  },
+  {
+    icon: CheckSquare,
+    t: 'Segna possedute e doppioni',
+    d: 'Inserimento rapido: tocca i numeri che hai attaccato e quelli in doppia. Mancanti e doppie si aggiornano da sole.',
+  },
+  {
+    icon: ArrowLeftRight,
+    t: 'Trova scambi e completa',
+    d: 'FiguBook ti abbina a chi ha ciò che ti manca e cerca ciò che hai in più. Proponi lo scambio e chiudi l’album.',
+  },
+]
 
 const FEATURES = [
   {
@@ -153,7 +172,57 @@ export default function Landing() {
       </section>
 
       {/* ── FEATURES (blocco editoriale, niente card uguali) ── */}
+      {/* ── COME FUNZIONA (3 passi) ── */}
       <section id="funziona" className="border-t border-white/8">
+        <div className="mx-auto max-w-[1240px] px-6 py-20 md:py-28">
+          <Reveal>
+            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-lime">Come funziona</p>
+            <h2 className="mt-3 max-w-[18ch] text-balance text-[clamp(1.9rem,4vw,3rem)] font-bold leading-[1.04] tracking-[-0.02em]">
+              Dall’album vuoto agli scambi, in tre passi.
+            </h2>
+          </Reveal>
+          <div className="mt-14 flex flex-col gap-16 md:gap-24">
+            {STEPS.map((s, i) => {
+              const Icon = s.icon
+              const flip = i % 2 === 1
+              return (
+                <Reveal key={s.t}>
+                  <div className={'grid items-center gap-x-12 gap-y-8 md:grid-cols-2'}>
+                    {/* testo */}
+                    <div className={flip ? 'md:order-2 md:pl-6' : 'md:pr-6'}>
+                      <div className="flex items-center gap-4">
+                        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-lime/40 font-display text-lg font-bold text-lime">
+                          {i + 1}
+                        </span>
+                        <Icon className="h-6 w-6 text-lime" strokeWidth={1.5} />
+                      </div>
+                      <h3 className="mt-5 text-[clamp(1.5rem,2.6vw,2rem)] font-bold tracking-tight">{s.t}</h3>
+                      <p className="mt-3 max-w-[44ch] text-[16px] leading-relaxed text-ink-2">{s.d}</p>
+                    </div>
+                    {/* placeholder immagine (screenshot in arrivo) */}
+                    <div className={flip ? 'md:order-1' : ''}>
+                      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-[color:var(--card-hair)] bg-[linear-gradient(160deg,#171717,#111)] shadow-[var(--card-shadow)]">
+                        <div className="absolute inset-0 grid place-items-center text-center">
+                          <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                            <ImageIcon className="h-8 w-8" strokeWidth={1.25} />
+                            <span className="text-xs font-medium tracking-wide">Anteprima in arrivo</span>
+                          </div>
+                        </div>
+                        <span className="pointer-events-none absolute left-4 top-4 rounded-full border border-lime/30 px-2.5 py-1 text-[11px] font-semibold text-lime">
+                          Passo {i + 1}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Reveal>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── VANTAGGI (perché) ── */}
+      <section className="border-t border-white/8">
         <div className="mx-auto max-w-[1240px] px-6 py-20 md:py-28">
           <Reveal>
             <h2 className="max-w-[16ch] text-balance text-[clamp(1.9rem,4vw,3rem)] font-bold leading-[1.04] tracking-[-0.02em]">
