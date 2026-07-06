@@ -2,7 +2,7 @@ import type { Key } from 'react'
 import { Area, AreaChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { BUCKET_LABELS, bucketScale, type InsertedPoint } from '@/lib/stats/dailyInserted'
 
-const LIME = '#c2f23d'
+const LIME = 'var(--color-lime)' // segue il tema scoped (oro su .home-gold)
 const WD3 = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab']
 const MESI = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic']
 

@@ -98,8 +98,8 @@ body {
   --color-lime-ink: #1a1a1a;    /* testo scuro su superfici oro */
   --color-accent-2: #cbb074;
   --color-bg: #1a1a1a;          /* midnight */
-  --color-bg-elev: #202020;     /* card */
-  --color-surface: #262626;     /* pannelli */
+  --color-bg-elev: #201e18;     /* card (tinta oro) */
+  --color-surface: #262319;     /* pannelli (tinta oro) */
   --color-ink: #ededed;
   --color-ink-2: #a8a29a;       /* grigio caldo */
   --color-muted: #8f887e;

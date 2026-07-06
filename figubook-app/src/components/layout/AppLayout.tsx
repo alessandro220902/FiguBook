@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Outlet, Link } from 'react-router-dom'
+import { Outlet, Link, useLocation } from 'react-router-dom'
 import { Home, BookOpen, ArrowLeftRight, Users, Search } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useCollection } from '@/hooks/useCollection'
@@ -31,8 +31,12 @@ export function AppLayout() {
     void touchStatsSnapshot(user.uid, totals)
   }, [user, loading, error, albums.length, totals])
 
+  // TEST Midnight Gold: scope oro esteso alla shell (nav inclusa) solo su Home.
+  const { pathname } = useLocation()
+  const onHome = pathname === '/home' || pathname === '/app/home'
+
   return (
-    <div className="relative min-h-screen text-foreground">
+    <div className={`relative min-h-screen text-foreground${onHome ? ' home-gold' : ''}`}>
       {/* Sfondo unico app: radiale verde-rosso (21st reapollo background-radial-green-red),
           full-screen fisso. Verde in alto-sx, rosso in basso, base neutral-950. */}
       <div className="fixed inset-0 -z-10 bg-neutral-950">

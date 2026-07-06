@@ -44,7 +44,7 @@ export default function Home() {
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 -z-10"
-        style={{ background: 'radial-gradient(120% 90% at 50% -10%, #232016, transparent 60%), #1a1a1a' }}
+        style={{ background: 'radial-gradient(90% 60% at 15% -5%, rgba(179,148,91,0.22), transparent 55%), radial-gradient(80% 70% at 95% 110%, rgba(179,148,91,0.14), transparent 60%), linear-gradient(180deg, #201d15 0%, #1a1a1a 45%, #141414 100%)' }}
       />
       {/* glow tenue colore squadra in cima alla dashboard (casa tua) */}
       {team && (
