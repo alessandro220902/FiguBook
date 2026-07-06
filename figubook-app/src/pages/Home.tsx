@@ -11,9 +11,7 @@ import { GroupsPanel } from '@/components/home/GroupsPanel'
 import { FadeIn } from '@/components/home/FadeIn'
 import { Typewriter } from '@/components/home/Typewriter'
 import { useTradesCount } from '@/hooks/useTradesCount'
-import { useEffect } from 'react'
 import { useStatsDeltas } from '@/hooks/useStatsDeltas'
-import { touchStatsSnapshot } from '@/lib/db/statsHistory'
 import { useInsertedSeries } from '@/hooks/useInsertedSeries'
 import { InsertedChart } from '@/components/home/InsertedChart'
 
@@ -26,10 +24,6 @@ export default function Home() {
   const team = profile?.favTeam ? teamById[profile.favTeam] : undefined
   const deltas = useStatsDeltas(totals.have)
   const insertedSeries = useInsertedSeries(totals.have)
-  useEffect(() => {
-    if (!user || loading || error || albums.length === 0) return
-    void touchStatsSnapshot(user.uid, totals)
-  }, [user, loading, error, albums.length, totals])
 
   if (loading) {
     return (

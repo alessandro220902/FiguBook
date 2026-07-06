@@ -12,12 +12,15 @@ export function todayIso(now = new Date()): string {
 
 type Totals = { have: number; doubles: number; missing: number; total: number }
 
-// Salva lo snapshot del giorno corrente, max 1×/giorno (throttle localStorage).
+// Upsert dello snapshot del giorno corrente: insegue `have` così le figurine
+// inserite oggi restano attribuite a oggi (non spinte al primo accesso di domani).
+// Guard: riscrive solo se `have` è cambiato rispetto all'ultima scrittura odierna.
 export async function touchStatsSnapshot(uid: string, totals: Totals): Promise<void> {
   const today = todayIso()
   const key = `figubook:statsDay:${uid}`
-  if (localStorage.getItem(key) === today) return
-  localStorage.setItem(key, today)
+  const marker = `${today}:${totals.have}`
+  if (localStorage.getItem(key) === marker) return
+  localStorage.setItem(key, marker)
   try {
     await setDoc(doc(db, 'users', uid, 'stats', today), {
       date: today,

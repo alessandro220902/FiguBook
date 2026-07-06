@@ -1,5 +1,9 @@
+import { useEffect } from 'react'
 import { Outlet, Link } from 'react-router-dom'
 import { Home, BookOpen, ArrowLeftRight, Users, Search } from 'lucide-react'
+import { useAuth } from '@/hooks/useAuth'
+import { useCollection } from '@/hooks/useCollection'
+import { touchStatsSnapshot } from '@/lib/db/statsHistory'
 import { TubelightNav, type NavItem } from '@/components/layout/TubelightNav'
 import { DesktopNavbar } from '@/components/layout/navbar/DesktopNavbar'
 import { NotificationsBell } from '@/components/layout/navbar/NotificationsBell'
@@ -17,6 +21,16 @@ const NAV: NavItem[] = [
 ]
 
 export function AppLayout() {
+  // Snapshot stats "che insegue": upsert del giorno corrente su ogni cambio di
+  // have/doubles, da qualsiasi sezione. Così le figurine restano attribuite al
+  // giorno reale d'inserimento (non spinte al primo accesso successivo).
+  const { user } = useAuth()
+  const { totals, albums, loading, error } = useCollection()
+  useEffect(() => {
+    if (!user || loading || error || albums.length === 0) return
+    void touchStatsSnapshot(user.uid, totals)
+  }, [user, loading, error, albums.length, totals])
+
   return (
     <div className="relative min-h-screen text-foreground">
       {/* Sfondo unico app: radiale verde-rosso (21st reapollo background-radial-green-red),
