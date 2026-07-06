@@ -107,16 +107,18 @@ export default function Home() {
             <StatTicker totals={totals} albumsCount={albums.length} trades={trades} deltas={deltas} />
           </FadeIn>
 
-          <FadeIn delay={0.12} className="mt-2 lg:grid lg:grid-cols-[minmax(0,52%)_1fr] lg:gap-4">
+          <FadeIn delay={0.12} className="mt-6 lg:grid lg:grid-cols-2 lg:gap-4">
             <h2 className="sr-only">I tuoi album</h2>
-            <AlbumDeck albums={albums} />
+            <div className="lg:pl-6">
+              <AlbumDeck albums={albums} />
+            </div>
             {/* Grafico figurine inserite/giorno: solo su lg, nello spazio a destra. */}
             <div className="hidden lg:block">
               <InsertedChart series={insertedSeries} />
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.2} className="mt-8 grid gap-4 lg:grid-cols-2">
+          <FadeIn delay={0.2} className="mt-6 grid gap-4 lg:grid-cols-2">
             <NewsPanel />
             <GroupsPanel />
           </FadeIn>
