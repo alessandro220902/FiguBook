@@ -6,9 +6,9 @@ export interface InsertedPoint {
 }
 
 // Confini dei bucket dell'asse Y (non-lineare). L'ultimo è il cap "200+".
-export const BUCKETS = [0, 5, 20, 50, 100, 200]
+export const BUCKETS = [0, 5, 10, 20, 50, 100]
 // Etichette dei tick (posizioni 0..5). 0 resta vuoto per non affollare la base.
-export const BUCKET_LABELS = ['', '5', '20', '50', '100', '200+']
+export const BUCKET_LABELS = ['', '5', '10', '20', '50', '100+']
 
 // Mappa un conteggio a una posizione 0..(BUCKETS.length-1) con spaziatura uniforme
 // tra i confini (piecewise-linear). Così i valori piccoli restano leggibili e i

@@ -43,19 +43,19 @@ describe('bucketScale', () => {
   it('confini mappano a posizioni intere', () => {
     expect(bucketScale(0)).toBe(0)
     expect(bucketScale(5)).toBe(1)
-    expect(bucketScale(20)).toBe(2)
-    expect(bucketScale(50)).toBe(3)
-    expect(bucketScale(100)).toBe(4)
-    expect(bucketScale(200)).toBe(5)
+    expect(bucketScale(10)).toBe(2)
+    expect(bucketScale(20)).toBe(3)
+    expect(bucketScale(50)).toBe(4)
+    expect(bucketScale(100)).toBe(5)
   })
 
-  it('cap 200+ alla posizione massima', () => {
+  it('cap 100+ alla posizione massima', () => {
     expect(bucketScale(999)).toBe(5)
   })
 
   it('interpola dentro un bucket', () => {
-    // 12 tra 5(pos1) e 20(pos2): 1 + (12-5)/(20-5) = 1.4666…
-    expect(bucketScale(12)).toBeCloseTo(1 + 7 / 15, 5)
+    // 12 tra 10(pos2) e 20(pos3): 2 + (12-10)/(20-10) = 2.2
+    expect(bucketScale(12)).toBeCloseTo(2.2, 5)
   })
 
   it('negativi trattati come 0', () => {

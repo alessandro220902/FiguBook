@@ -27,10 +27,10 @@ function XTick(props: { x?: number; y?: number; payload?: { value: string }; ind
   return (
     <g transform={`translate(${x},${y})`}>
       <text textAnchor="middle">
-        <tspan x={0} dy={14} fontSize={11} fontWeight={isToday ? 600 : 500} fill="var(--color-ink)">
+        <tspan x={0} dy={16} fontSize={13} fontWeight={isToday ? 700 : 600} fill="var(--color-ink)">
           {isToday ? 'Oggi' : p.wd3}
         </tspan>
-        <tspan x={0} dy={14} fontSize={10} fill="var(--color-ink-2)">{p.ddmm}</tspan>
+        <tspan x={0} dy={16} fontSize={12} fill="var(--color-ink-2)">{p.ddmm}</tspan>
       </text>
     </g>
   )
@@ -41,7 +41,7 @@ function CountLabel(props: { x?: number; y?: number; value?: number }) {
   const { x = 0, y = 0, value } = props
   if (!value) return null
   return (
-    <text x={x} y={y - 9} textAnchor="middle" fontSize={11} fontWeight={600} fill="var(--color-ink)">
+    <text x={x} y={y - 11} textAnchor="middle" fontSize={14} fontWeight={700} fill="var(--color-ink)">
       {value}
     </text>
   )
@@ -91,7 +91,7 @@ export function InsertedChart({ series }: { series: InsertedPoint[] }) {
                 tickLine={false}
                 axisLine={false}
                 interval={0}
-                height={40}
+                height={46}
                 tick={<XTick last={rows.length - 1} />}
               />
               <YAxis
@@ -100,8 +100,8 @@ export function InsertedChart({ series }: { series: InsertedPoint[] }) {
                 ticks={BUCKET_LABELS.map((_, i) => i)}
                 tickLine={false}
                 axisLine={false}
-                width={40}
-                tick={{ fill: 'var(--color-ink-2)', fontSize: 11 }}
+                width={46}
+                tick={{ fill: 'var(--color-ink-2)', fontSize: 13 }}
                 tickFormatter={(v: number) => BUCKET_LABELS[v] ?? ''}
               />
               <Tooltip content={<ChartTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.12)' }} />
