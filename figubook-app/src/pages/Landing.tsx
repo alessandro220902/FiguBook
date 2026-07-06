@@ -92,7 +92,6 @@ const FEATURES = [
 ]
 
 export default function Landing() {
-  const covers = ALBUM_CATALOG.slice(0, 6)
   return (
     <div className="min-h-screen bg-[#080a08] text-[#f4efe6]">
       {/* ── NAV ── */}
@@ -219,68 +218,6 @@ export default function Landing() {
                   {f.t}
                 </h3>
                 <p className="mt-3 max-w-[48ch] text-[15px] leading-relaxed text-ink-2">{f.d}</p>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── ALBUM (scaffale copertine) ── */}
-      <section className="border-y border-white/10 bg-[#0e130e]">
-        <div className="mx-auto max-w-[1240px] px-6 py-20 md:py-28">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="text-[clamp(1.9rem,4vw,3rem)] font-bold leading-[1.04] tracking-[-0.02em]">
-              Album che puoi tracciare oggi
-            </h2>
-            <p className="text-[15px] italic text-muted-foreground">e tanti altri in arrivo</p>
-          </div>
-
-          <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-5">
-            {covers.map((a, i) => (
-              <Reveal key={a.id} delay={(i % 3) * 80}>
-                <Link
-                  to="/login?r=1"
-                  aria-label={`Traccia ${a.title}`}
-                  className="group relative block aspect-[3/4] overflow-hidden rounded-xl border border-white/10 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1"
-                >
-                  {a.cover ? (
-                    <img
-                      src={a.cover}
-                      alt={a.title}
-                      loading="lazy"
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
-                    />
-                  ) : (
-                    <div
-                      className="absolute inset-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
-                      style={{ background: `linear-gradient(150deg, ${a.c1}, ${a.c2})` }}
-                    />
-                  )}
-                  {/* vignetta per leggibilità + ring interno per tattilità */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/30" />
-                  <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-white/10" />
-                  {/* contenuto copertina */}
-                  <div className="absolute inset-0 flex flex-col justify-between p-4">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/75">
-                      {a.editor}
-                    </span>
-                    <div>
-                      <h3 className="text-balance text-[19px] font-bold leading-[1.05] tracking-tight text-white drop-shadow">
-                        {a.title}
-                      </h3>
-                      <div className="mt-1.5 h-px w-8 bg-lime transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:w-16" />
-                      {/* delight: lo stato a riposo mostra il conteggio, l'hover invita all'azione */}
-                      <div className="mt-1.5 grid">
-                        <p className="col-start-1 row-start-1 text-[12px] italic text-white/70 transition-opacity duration-300 group-hover:opacity-0">
-                          {a.total} figurine
-                        </p>
-                        <p className="col-start-1 row-start-1 translate-y-1 text-[12px] font-semibold text-lime opacity-0 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0 group-hover:opacity-100">
-                          Traccia questo album →
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
               </Reveal>
             ))}
           </div>
