@@ -2,8 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { LayoutGrid, CheckSquare, ArrowLeftRight, Image as ImageIcon } from 'lucide-react'
 import { ALBUM_CATALOG } from '@/data/albumCatalog'
-import albumTeamImg from '@/assets/landing/album-team.png'
-import albumStatsImg from '@/assets/landing/album-stats.png'
+import { ArcGalleryHero } from '@/components/landing/ArcGalleryHero'
 
 function manageCookies() {
   localStorage.removeItem('figubook.cookieConsent')
@@ -45,30 +44,15 @@ function Reveal({ children, delay = 0, className }: { children: ReactNode; delay
   )
 }
 
-// Anteprima reale dell'app: screenshot della sezione album (squadra + statistiche),
-// dentro una cornice "finestra app" per dare contesto.
-function PreviewFrame({ src, alt, caption }: { src: string; alt: string; caption: string }) {
-  return (
-    <figure className="overflow-hidden rounded-xl border border-white/10 bg-[#0c100c] shadow-[0_30px_80px_-28px_rgba(0,0,0,0.9)]">
-      <div className="flex items-center gap-1.5 border-b border-white/8 px-3 py-2">
-        <span className="h-2 w-2 rounded-full bg-white/20" />
-        <span className="h-2 w-2 rounded-full bg-white/20" />
-        <span className="h-2 w-2 rounded-full bg-white/20" />
-        <figcaption className="ml-2 text-[11px] font-medium tracking-tight text-muted-foreground">{caption}</figcaption>
-      </div>
-      <img src={src} alt={alt} loading="lazy" className="block w-full" />
-    </figure>
-  )
-}
-
-function AlbumPreview() {
-  return (
-    <div className="flex flex-col gap-4">
-      <PreviewFrame src={albumTeamImg} alt="Sezione squadra: griglia figurine con doppie e mancanti" caption="Album · Sezione squadra" />
-      <PreviewFrame src={albumStatsImg} alt="Statistiche album: completamento, possedute, mancanti, doppie" caption="Album · Statistiche" />
-    </div>
-  )
-}
+// Copertine per l'arco hero: prende le cover disponibili dal catalogo e le ripete
+// per riempire il ventaglio (~13 card) mantenendo un ordine vario.
+const HERO_COVERS: string[] = (() => {
+  const covers = ALBUM_CATALOG.map((a) => a.cover).filter((c): c is string => Boolean(c))
+  if (covers.length === 0) return []
+  const out: string[] = []
+  for (let i = 0; out.length < 13; i++) out.push(covers[i % covers.length])
+  return out
+})()
 
 const STEPS = [
   {
@@ -137,19 +121,14 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* ── HERO ── */}
-      <section className="mx-auto max-w-[1240px] px-6 pb-20 pt-14 md:pb-28 md:pt-20">
-        <div className="grid items-center gap-x-12 gap-y-14 md:grid-cols-2">
-          <Reveal>
-            <h1 className="text-balance text-[clamp(2.6rem,6vw,4.4rem)] font-bold leading-[0.98] tracking-[-0.02em]">
-              Chiudi l’album.{' '}
-              <span className="italic text-lime">Una doppia alla volta.</span>
-            </h1>
-            <p className="mt-6 max-w-[46ch] text-[17px] leading-relaxed text-ink-2">
-              FiguBook tiene il conto della tua collezione, ti dice cosa ti manca e ti fa
-              scambiare i doppioni con altri collezionisti. Gratis, senza abbonamenti.
-            </p>
-            <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
+      {/* ── HERO (Arc Gallery: ventaglio di copertine album) ── */}
+      <section className="px-6 pt-6 pb-20 md:pb-28">
+        <ArcGalleryHero
+          images={HERO_COVERS}
+          title={<>Chiudi l’album. <span className="italic text-lime">Una doppia alla volta.</span></>}
+          subtitle="FiguBook tiene il conto della tua collezione, ti dice cosa ti manca e ti fa scambiare i doppioni con altri collezionisti. Gratis, senza abbonamenti."
+          actions={
+            <>
               <Link
                 to="/login?r=1"
                 className="rounded-full border border-lime/70 px-6 py-3 text-[15px] font-bold text-white transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-lime/10 active:scale-[0.98]"
@@ -162,13 +141,9 @@ export default function Landing() {
               >
                 Scopri come funziona
               </a>
-            </div>
-          </Reveal>
-
-          <Reveal delay={120} className="mx-auto w-full max-w-[460px] md:mx-0 md:ml-auto">
-            <AlbumPreview />
-          </Reveal>
-        </div>
+            </>
+          }
+        />
       </section>
 
       {/* ── FEATURES (blocco editoriale, niente card uguali) ── */}
