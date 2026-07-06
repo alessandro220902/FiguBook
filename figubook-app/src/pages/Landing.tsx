@@ -93,7 +93,7 @@ const FEATURES = [
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-[#080a08] text-[#f4efe6]">
+    <div className="landing min-h-screen bg-[#080a08] text-[#f4efe6]">
       {/* ── NAV ── */}
       <header className="sticky top-0 z-30 border-b border-white/5 bg-[#080a08]/80 backdrop-blur">
         <div className="mx-auto flex max-w-[1240px] items-center justify-between px-6 py-4">

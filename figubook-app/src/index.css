@@ -163,6 +163,13 @@ body {
   --input: rgba(156, 123, 62, 0.25);
 }
 
+/* Landing: sans moderno (Geist) SOLO qui; app resta Times. */
+.landing {
+  font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Geist', ui-sans-serif, system-ui, sans-serif;
+}
+
 /* Focus visibile globale (a11y/polish): anello lime su navigazione tastiera. */
 :focus-visible {
   outline: 2px solid var(--color-lime);
