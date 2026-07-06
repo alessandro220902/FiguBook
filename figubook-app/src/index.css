@@ -6,22 +6,32 @@
 
 /* Identità FiguBook — token brand (da figubook-tokens.css, tema scuro) */
 @theme {
-  --color-lime: #c2f23d;        /* lime brand (usa questo, 'accent' e' oscurato da shadcn) */
-  --color-lime-ink: #0c1410;
-  --color-lime-2: #94e000;      /* endpoint gradiente barre */
-  --color-accent-ink: #0c1410;
-  --color-accent-2: #94e000;
-  --color-pitch: #1f7a59;       /* verde campo */
-  --color-pitch-ink: #eafff3;
-  --color-gold: #e6b73c;
-  --color-stat-have: #3fb96b;    /* verde possedute */
-  --color-stat-missing: #ff5b5b; /* rosso mancanti */
-  --color-bg: #0a120e;
-  --color-bg-elev: #16241d;
-  --color-surface: #1b2c24;
-  --color-ink: #eef3ec;
-  --color-ink-2: #b9c4ba;
-  --color-muted: #9aa89d;
+  /* Midnight Gold globale: accento oro (10%), fondi neutri near-black. */
+  --color-lime: #c8a96e;        /* accento oro brand (ex lime) */
+  --color-lime-ink: #14110a;
+  --color-lime-2: #dcc088;      /* endpoint gradiente barre/linea */
+  --color-accent-ink: #14110a;
+  --color-accent-2: #dcc088;
+  --color-pitch: #a98a52;       /* ex verde campo -> oro spento */
+  --color-pitch-ink: #14110a;
+  --color-gold: #c8a96e;
+  --color-stat-have: #3fb96b;    /* verde possedute (semantico, resta) */
+  --color-stat-missing: #ff5b5b; /* rosso mancanti (semantico, resta) */
+  --color-bg: #111111;
+  --color-bg-elev: #171717;
+  --color-surface: #1c1c1c;
+  --color-ink: #ededed;
+  --color-ink-2: #a3a3a3;
+  --color-muted: #8a8a8a;
+  /* token card riusabili (dark default) — vedi .home-light per il chiaro */
+  --card-hair: rgba(255, 255, 255, 0.08);
+  --card-hair-strong: rgba(255, 255, 255, 0.18);
+  --card-shadow: none;
+  --grid-line: rgba(255, 255, 255, 0.055);
+  --cursor-line: rgba(255, 255, 255, 0.12);
+  --row-fill: rgba(255, 255, 255, 0.02);
+  --row-fill-hover: rgba(255, 255, 255, 0.04);
+  --chip-fill: rgba(255, 255, 255, 0.05);
 
   /* Times New Roman su tutta l'app (tutti i ruoli) — font di sistema */
   --font-sans: 'Times New Roman', Times, serif;
@@ -204,25 +214,25 @@ body {
 }
 
 .dark {
-  /* Tema scuro su identità FiguBook (pitch/lime) */
-  --background: #0c1410;
-  --foreground: #eef3ec;
-  --card: #13201a;
-  --card-foreground: #eef3ec;
-  --popover: #13201a;
-  --popover-foreground: #eef3ec;
-  --primary: #c2f23d;            /* lime = azione primaria */
-  --primary-foreground: #0c1410;
-  --secondary: #1f7a59;          /* pitch */
-  --secondary-foreground: #eafff3;
-  --muted: #1a2a22;
-  --muted-foreground: #9aa89d;
-  --accent: #1f7a59;
-  --accent-foreground: #eafff3;
+  /* Midnight Gold globale (dark): neutri near-black + accento oro */
+  --background: #111111;
+  --foreground: #ededed;
+  --card: #171717;
+  --card-foreground: #ededed;
+  --popover: #171717;
+  --popover-foreground: #ededed;
+  --primary: #c8a96e;            /* oro = azione primaria */
+  --primary-foreground: #14110a;
+  --secondary: #242424;          /* superficie neutra (ex pitch) */
+  --secondary-foreground: #ededed;
+  --muted: #1f1f1f;
+  --muted-foreground: #a3a3a3;
+  --accent: #242424;
+  --accent-foreground: #ededed;
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: #c2f23d;
+  --ring: #c8a96e;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);

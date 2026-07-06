@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Outlet, Link } from 'react-router-dom'
 import { Home, BookOpen, ArrowLeftRight, Users, Search } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useCollection } from '@/hooks/useCollection'
@@ -34,19 +34,22 @@ export function AppLayout() {
 
   // TEST Midnight Gold: scope oro esteso alla shell (nav inclusa) solo su Home.
   // Light/dark cablato al ThemeToggle via useThemeMode.
-  const { pathname } = useLocation()
-  const onHome = pathname === '/home' || pathname === '/app/home'
   const mode = useThemeMode()
-  const homeScope = onHome ? ` home-gold${mode === 'light' ? ' home-light' : ''}` : ''
+  // Midnight Gold su tutta la shell app; light/dark cablato al ThemeToggle.
+  const homeScope = ` home-gold${mode === 'light' ? ' home-light' : ''}`
 
   return (
     <div className={`relative min-h-screen text-foreground${homeScope}`}>
-      {/* Sfondo unico app: radiale verde-rosso (21st reapollo background-radial-green-red),
-          full-screen fisso. Verde in alto-sx, rosso in basso, base neutral-950. */}
-      <div className="fixed inset-0 -z-10 bg-neutral-950">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_40%_-10%,rgba(16,185,129,0.3),transparent)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_60%_120%,rgba(239,68,68,0.25),transparent)]" />
-      </div>
+      {/* Sfondo unico app Midnight Gold: nero prevalente sfuma in oro; in chiaro crema->oro. */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10"
+        style={{
+          background: mode === 'light'
+            ? 'linear-gradient(180deg, #f4ecd8 0%, #ead9b2 40%, #d8be8a 78%, #c8a96e 100%)'
+            : 'linear-gradient(180deg, #0f0f0f 0%, #141210 48%, #241d12 80%, #3d3018 100%)',
+        }}
+      />
 
       {/* Navbar Netflix-style: solo desktop+iPad (>=md) */}
       <DesktopNavbar />
