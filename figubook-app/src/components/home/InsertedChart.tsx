@@ -1,18 +1,50 @@
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import type { Key } from 'react'
+import { Area, AreaChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { BUCKET_LABELS, bucketScale, type InsertedPoint } from '@/lib/stats/dailyInserted'
 
 const LIME = '#c2f23d'
-const WD = ['D', 'L', 'M', 'M', 'G', 'V', 'S']
+const WD3 = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab']
 const MESI = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic']
 
-// 'YYYY-MM-DD' → {wd, day, full}
+// 'YYYY-MM-DD' → {wd3, ddmm, full}
 function parts(iso: string) {
   const d = new Date(iso + 'T00:00:00Z')
+  const dd = String(d.getUTCDate()).padStart(2, '0')
+  const mm = String(d.getUTCMonth() + 1).padStart(2, '0')
   return {
-    wd: WD[d.getUTCDay()],
-    day: d.getUTCDate(),
+    wd3: WD3[d.getUTCDay()],
+    ddmm: `${dd}.${mm}`,
     full: `${d.getUTCDate()} ${MESI[d.getUTCMonth()]} ${d.getUTCFullYear()}`,
   }
+}
+
+// Tick asse X su due righe: giorno (3 lettere, "Oggi" per l'ultimo) + data gg.mm.
+function XTick(props: { x?: number; y?: number; payload?: { value: string }; index?: number; last?: number }) {
+  const { x = 0, y = 0, payload, index = 0, last = 0 } = props
+  if (!payload) return null
+  const p = parts(payload.value)
+  const isToday = index === last
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text textAnchor="middle">
+        <tspan x={0} dy={14} fontSize={11} fontWeight={isToday ? 600 : 500} fill="var(--color-ink)">
+          {isToday ? 'Oggi' : p.wd3}
+        </tspan>
+        <tspan x={0} dy={14} fontSize={10} fill="var(--color-ink-2)">{p.ddmm}</tspan>
+      </text>
+    </g>
+  )
+}
+
+// Numero figurine sopra il punto (solo se > 0).
+function CountLabel(props: { x?: number; y?: number; value?: number }) {
+  const { x = 0, y = 0, value } = props
+  if (!value) return null
+  return (
+    <text x={x} y={y - 9} textAnchor="middle" fontSize={11} fontWeight={600} fill="var(--color-ink)">
+      {value}
+    </text>
+  )
 }
 
 type Row = InsertedPoint & { y: number }
@@ -46,20 +78,21 @@ export function InsertedChart({ series }: { series: InsertedPoint[] }) {
       ) : (
         <div className="mt-4 grow">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={rows} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+            <AreaChart data={rows} margin={{ top: 18, right: 12, left: 4, bottom: 8 }}>
               <defs>
                 <linearGradient id="insertedFill" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={LIME} stopOpacity={0.35} />
                   <stop offset="100%" stopColor={LIME} stopOpacity={0} />
                 </linearGradient>
               </defs>
+              <CartesianGrid horizontal vertical={false} stroke="rgba(255,255,255,0.055)" />
               <XAxis
                 dataKey="date"
                 tickLine={false}
                 axisLine={false}
-                tick={{ fill: 'var(--color-ink-2)', fontSize: 11 }}
-                tickFormatter={(iso: string) => { const p = parts(iso); return `${p.wd} ${p.day}` }}
                 interval={0}
+                height={40}
+                tick={<XTick last={rows.length - 1} />}
               />
               <YAxis
                 type="number"
@@ -67,7 +100,7 @@ export function InsertedChart({ series }: { series: InsertedPoint[] }) {
                 ticks={BUCKET_LABELS.map((_, i) => i)}
                 tickLine={false}
                 axisLine={false}
-                width={36}
+                width={40}
                 tick={{ fill: 'var(--color-ink-2)', fontSize: 11 }}
                 tickFormatter={(v: number) => BUCKET_LABELS[v] ?? ''}
               />
@@ -78,10 +111,16 @@ export function InsertedChart({ series }: { series: InsertedPoint[] }) {
                 stroke={LIME}
                 strokeWidth={2}
                 fill="url(#insertedFill)"
-                dot={{ r: 2.5, fill: LIME, strokeWidth: 0 }}
+                dot={(props: { cx?: number; cy?: number; payload?: Row; key?: Key | null }) =>
+                  props.payload && props.payload.count > 0
+                    ? <circle key={props.key} cx={props.cx} cy={props.cy} r={3} fill={LIME} />
+                    : <g key={props.key} />
+                }
                 activeDot={{ r: 4 }}
                 isAnimationActive={false}
-              />
+              >
+                <LabelList dataKey="count" content={<CountLabel />} />
+              </Area>
             </AreaChart>
           </ResponsiveContainer>
         </div>
