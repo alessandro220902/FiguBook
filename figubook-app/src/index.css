@@ -93,18 +93,19 @@ body {
    fondi verdi->near-black) solo nello scope .home-gold. Reversibile: togli la
    classe dal wrapper Home e tutto torna al brand lime. */
 .home-gold {
-  --color-lime: #b3945b;        /* accento oro (CTA, valori, link) */
-  --color-lime-2: #cbb074;      /* endpoint gradiente oro */
-  --color-lime-ink: #1a1a1a;    /* testo scuro su superfici oro */
-  --color-accent-2: #cbb074;
-  --color-bg: #1a1a1a;          /* midnight */
-  --color-bg-elev: #201e18;     /* card (tinta oro) */
-  --color-surface: #262319;     /* pannelli (tinta oro) */
+  /* 60-30-10: oro SOLO accento (10%). Fondi/superfici neutri near-black. */
+  --color-lime: #c8a96e;        /* accento oro — CTA, valori, anello, pill attiva */
+  --color-lime-2: #dcc088;      /* endpoint gradiente oro (barre/linea) */
+  --color-lime-ink: #14110a;    /* testo scuro su superfici oro */
+  --color-accent-2: #dcc088;
+  --color-bg: #111111;          /* Vault near-black (dominante) */
+  --color-bg-elev: #171717;     /* card neutra */
+  --color-surface: #1c1c1c;     /* pannelli neutri */
   --color-ink: #ededed;
-  --color-ink-2: #a8a29a;       /* grigio caldo */
-  --color-muted: #8f887e;
-  --color-muted-foreground: #a8a29a;
-  --muted-foreground: #a8a29a;
+  --color-ink-2: #a3a3a3;       /* grigio neutro */
+  --color-muted: #8a8a8a;
+  --color-muted-foreground: #a3a3a3;
+  --muted-foreground: #a3a3a3;
 }
 
 /* Focus visibile globale (a11y/polish): anello lime su navigazione tastiera. */
