@@ -244,47 +244,17 @@ export default function Landing() {
 
       {/* ── FOOTER ── */}
       <footer className="border-t border-white/10">
-        <div className="mx-auto max-w-[1240px] px-6 py-14">
-          <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
-            {/* brand */}
-            <div>
-              <div className="flex items-center gap-2.5">
-                <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">
-                  F
-                </span>
-                <span className="text-lg font-extrabold tracking-tight">FiguBook</span>
-              </div>
-              <p className="mt-4 max-w-[34ch] text-[14px] leading-relaxed text-ink-2">
-                La casa dei collezionisti sportivi: traccia l’album, scambia i doppioni, completa la raccolta. Gratis.
-              </p>
-            </div>
-            {/* legale */}
-            <div>
-              <h3 className="text-[13px] font-bold uppercase tracking-[0.12em] text-ink-2">Legale</h3>
-              <ul className="mt-4 space-y-2.5 text-[14px] text-ink-2">
-                <li><Link to="/termini" className="transition-colors hover:text-ink">Termini e condizioni</Link></li>
-                <li><Link to="/privacy" className="transition-colors hover:text-ink">Privacy policy</Link></li>
-                <li><Link to="/cookie" className="transition-colors hover:text-ink">Cookie policy</Link></li>
-                <li>
-                  <button type="button" onClick={manageCookies} className="transition-colors hover:text-ink">
-                    Gestisci cookie
-                  </button>
-                </li>
-              </ul>
-            </div>
-            {/* social */}
-            <div>
-              <h3 className="text-[13px] font-bold uppercase tracking-[0.12em] text-ink-2">Seguici</h3>
-              <ul className="mt-4 space-y-2.5 text-[14px] text-ink-2">
-                <li>
-                  <a href="https://instagram.com/figubook" target="_blank" rel="noreferrer" className="transition-colors hover:text-ink">
-                    Instagram
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-12 flex flex-col gap-2 border-t border-white/8 pt-6 text-[12px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto max-w-[1240px] px-6 py-12">
+          {/* Legale in orizzontale, a tutta larghezza */}
+          <nav className="flex flex-wrap items-center gap-x-8 gap-y-3 text-[14px] text-ink-2">
+            <Link to="/termini" className="transition-colors hover:text-ink">Termini e condizioni</Link>
+            <Link to="/privacy" className="transition-colors hover:text-ink">Privacy policy</Link>
+            <Link to="/cookie" className="transition-colors hover:text-ink">Cookie policy</Link>
+            <button type="button" onClick={manageCookies} className="transition-colors hover:text-ink">
+              Gestisci cookie
+            </button>
+          </nav>
+          <div className="mt-8 flex flex-col gap-2 border-t border-white/8 pt-6 text-[12px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <p>© {new Date().getFullYear()} FiguBook — Tutti i diritti riservati.</p>
             <p className="italic">Non affiliato a Panini S.p.A. — strumento indipendente.</p>
           </div>
