@@ -104,13 +104,13 @@ export default function Landing() {
           <div className="flex items-center gap-2.5">
             <Link
               to="/login"
-              className="rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-ink-2 transition-colors hover:bg-white/10 hover:text-ink active:bg-white active:text-neutral-900"
+              className="rounded-full border border-white/25 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/12 active:bg-white active:text-neutral-900"
             >
               Accedi
             </Link>
             <Link
               to="/login?r=1"
-              className="rounded-full border border-lime/70 px-4 py-2 text-sm font-bold text-lime transition-colors hover:bg-lime/10 active:scale-[0.98]"
+              className="rounded-full border border-lime/70 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-lime/10 active:scale-[0.98]"
             >
               Registrati
             </Link>
@@ -133,7 +133,7 @@ export default function Landing() {
             <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
               <Link
                 to="/login?r=1"
-                className="rounded-full border border-lime/70 px-6 py-3 text-[15px] font-bold text-lime transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-lime/10 active:scale-[0.98]"
+                className="rounded-full border border-lime/70 px-6 py-3 text-[15px] font-bold text-white transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-lime/10 active:scale-[0.98]"
               >
                 Inizia gratis
               </Link>
@@ -252,7 +252,7 @@ export default function Landing() {
           <div className="mt-10">
             <Link
               to="/login?r=1"
-              className="inline-block rounded-full border border-lime/70 px-8 py-3.5 text-[15px] font-bold text-lime transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-lime/10 active:scale-[0.98]"
+              className="inline-block rounded-full border border-lime/70 px-8 py-3.5 text-[15px] font-bold text-white transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-lime/10 active:scale-[0.98]"
             >
               Inizia gratis
             </Link>
