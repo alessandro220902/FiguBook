@@ -112,6 +112,10 @@ body {
   --card-shadow: none;
   --grid-line: rgba(255, 255, 255, 0.055);
   --cursor-line: rgba(255, 255, 255, 0.12);
+  /* righe/chip interni (liste gruppi, box vuoti) */
+  --row-fill: rgba(255, 255, 255, 0.02);
+  --row-fill-hover: rgba(255, 255, 255, 0.04);
+  --chip-fill: rgba(255, 255, 255, 0.05);
 }
 
 /* Tema chiaro (inverso): oro/crema prevalente, testo scuro. Accento oro più
@@ -135,6 +139,9 @@ body {
   --card-shadow: 0 1px 2px rgba(60, 45, 20, 0.06), 0 2px 6px rgba(60, 45, 20, 0.05);
   --grid-line: rgba(60, 45, 20, 0.08);
   --cursor-line: rgba(60, 45, 20, 0.18);
+  --row-fill: rgba(156, 123, 62, 0.06);
+  --row-fill-hover: rgba(156, 123, 62, 0.12);
+  --chip-fill: rgba(156, 123, 62, 0.1);
   /* token shadcn -> chiaro: sistema che usa --foreground/--card/--border */
   --background: #f4ecd8;
   --foreground: #1a1712;

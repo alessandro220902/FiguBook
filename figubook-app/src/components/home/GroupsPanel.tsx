@@ -17,11 +17,11 @@ export function GroupsPanel() {
       {loading ? (
         <div className="mt-4 space-y-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-12 animate-pulse rounded-xl bg-white/[0.04]" />
+            <div key={i} className="h-12 animate-pulse rounded-xl bg-[var(--row-fill-hover)]" />
           ))}
         </div>
       ) : groups.length === 0 ? (
-        <div className="mt-4 flex grow flex-col items-center justify-center rounded-xl border border-dashed border-white/10 px-4 py-8 text-center">
+        <div className="mt-4 flex grow flex-col items-center justify-center rounded-xl border border-dashed border-[color:var(--card-hair-strong)] px-4 py-8 text-center">
           <p className="text-sm text-ink-2">Non sei ancora in nessun gruppo.</p>
           <Link
             to="/community"
@@ -36,7 +36,7 @@ export function GroupsPanel() {
             <li key={g.id}>
               <Link
                 to="/community"
-                className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 transition-colors duration-200 hover:border-white/15 hover:bg-white/[0.04]"
+                className="flex items-center gap-3 rounded-xl border border-[color:var(--card-hair)] bg-[var(--row-fill)] px-4 py-3 transition-colors duration-200 hover:border-[color:var(--card-hair-strong)] hover:bg-[var(--row-fill-hover)]"
               >
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-lime/15 text-lime">
                   <Users className="h-4 w-4" />

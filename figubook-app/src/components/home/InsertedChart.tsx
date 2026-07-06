@@ -71,7 +71,7 @@ export function InsertedChart({ series }: { series: InsertedPoint[] }) {
       <p className="text-xs text-muted-foreground">Ultimi 7 giorni</p>
 
       {!hasData ? (
-        <div className="mt-4 flex grow flex-col items-center justify-center rounded-xl border border-dashed border-white/10 px-4 py-8 text-center">
+        <div className="mt-4 flex grow flex-col items-center justify-center rounded-xl border border-dashed border-[color:var(--card-hair-strong)] px-4 py-8 text-center">
           <p className="text-sm text-ink-2">Ancora nessun dato.</p>
           <p className="mt-1 text-xs text-muted-foreground">Il grafico crescerà nei prossimi giorni.</p>
         </div>
