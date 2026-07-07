@@ -164,6 +164,8 @@ export default function Login() {
     }
   }
 
+  const toggle = () => setMode((m) => (m === 'login' ? 'register' : 'login'))
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#080a08] text-[#f4efe6]">
       {/* sfondo dot-matrix full-page */}
@@ -180,222 +182,226 @@ export default function Login() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#080a08] via-transparent to-[#080a08]/40" />
       </div>
 
-      <div className="relative z-10 grid min-h-screen md:grid-cols-[1.05fr_0.95fr]">
-      {/* ════ LEFT — manifesto ════ */}
-      <section className="relative hidden flex-col overflow-hidden px-14 py-10 md:flex">
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-10 sm:px-6">
+        {/* ════ FLIP-CARD ════ */}
+        <div className="relative w-full max-w-[960px] overflow-hidden rounded-[28px] border border-white/10 bg-[#0c100c]/70 shadow-2xl backdrop-blur-xl md:h-[600px]">
 
-        <div className="relative z-10 flex items-center gap-3">
-          <span className="grid h-10 w-10 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-2xl font-extrabold text-lime-ink shadow-[0_6px_14px_-2px_rgba(194,242,61,.6)]">
-            F
-          </span>
-          <span className="font-display text-2xl font-extrabold tracking-tight">FiguBook</span>
-        </div>
-
-        <div className="relative z-10 mt-8 flex w-fit items-center gap-2.5 rounded-full border border-lime/35 bg-lime/10 px-3.5 py-2 font-mono text-[11.5px] font-semibold uppercase tracking-[0.1em] text-lime">
-          <span className="dot-pulse h-[7px] w-[7px] rounded-full bg-lime shadow-[0_0_0_4px_rgba(194,242,61,.25)]" />
-          La piattaforma sicura per famiglie e collezionisti di tutte le età
-        </div>
-
-        {/* slogan stage */}
-        <div className="relative z-10 flex flex-1 flex-col justify-center py-6">
-          <h1
-            key={slogIdx}
-            className="slogan-anim m-0 max-w-[14ch] font-display text-[clamp(38px,5.5vw,64px)] font-bold leading-[1.02] tracking-[-0.025em]"
+          {/* ── PANNELLO ORO (scivola) — solo desktop ── */}
+          <div
+            className="absolute inset-y-0 left-0 z-20 hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-[#d8bd85] via-[#c8a96e] to-[#8f7444] p-12 text-[#1a1508] transition-transform duration-[700ms] ease-[cubic-bezier(.65,0,.35,1)] motion-reduce:transition-none md:flex"
+            style={{ transform: mode === 'register' ? 'translateX(100%)' : 'translateX(0)' }}
           >
-            {SLOGANS[slogIdx][0]}{' '}
-            <em className="mt-1.5 block font-serif text-lime italic font-normal">
-              {SLOGANS[slogIdx][1]}
-            </em>
-          </h1>
-          <div className="mt-9 flex max-w-[540px] flex-wrap gap-1.5">
-            {SLOGANS.map((_, i) => (
+            <div className="flex items-center gap-3">
+              <span className="grid h-10 w-10 -rotate-6 place-items-center rounded-[10px] bg-[#1a1508] font-display text-2xl font-extrabold text-[#d8bd85]">F</span>
+              <span className="font-display text-2xl font-extrabold tracking-tight">FiguBook</span>
+            </div>
+
+            <h2
+              key={slogIdx}
+              className="slogan-anim m-0 max-w-[15ch] font-display text-[34px] font-bold leading-[1.06] tracking-[-0.02em]"
+            >
+              {SLOGANS[slogIdx][0]}{' '}
+              <em className="font-serif italic opacity-75">{SLOGANS[slogIdx][1]}</em>
+            </h2>
+
+            <div>
+              <p className="mb-3 text-sm font-medium opacity-75">
+                {mode === 'login' ? 'Non hai ancora un account?' : 'Hai già un account?'}
+              </p>
               <button
-                key={i}
-                onClick={() => setSlogIdx(i)}
-                aria-label={`Slogan ${i + 1}`}
-                className={
-                  'h-2 rounded-full transition-all ' +
-                  (i === slogIdx ? 'w-[22px] bg-lime' : 'w-2 bg-[#2a241c] hover:bg-[#8a8275]')
-                }
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="relative z-10 mt-8 border-t border-[#2a241c] pt-5 font-mono text-[10.5px] uppercase leading-relaxed tracking-[0.1em] text-[#8a8275]">
-          Sito non affiliato con Panini S.p.A.
-          <br />
-          Strumento di tracking della collezione e scambio fra utenti.
-        </div>
-      </section>
-
-      {/* ════ RIGHT — auth ════ */}
-      <section className="relative flex max-h-screen overflow-y-auto px-7 py-24 sm:px-14">
-        <div className="absolute right-7 top-12 font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground sm:right-14">
-          {mode === 'login' ? (
-            <>
-              Non hai un account?{' '}
-              <button onClick={() => setMode('register')} className="font-semibold text-foreground underline underline-offset-4">
-                Registrati
-              </button>
-            </>
-          ) : (
-            <>
-              Hai già un account?{' '}
-              <button onClick={() => setMode('login')} className="font-semibold text-foreground underline underline-offset-4">
-                Accedi
-              </button>
-            </>
-          )}
-        </div>
-
-        <div className="m-auto w-full max-w-[440px] rounded-3xl border border-white/10 bg-[#0c100c]/70 p-7 shadow-2xl backdrop-blur-xl sm:p-9">
-          {/* brand mobile */}
-          <div className="mb-6 flex items-center gap-3 md:hidden">
-            <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">F</span>
-            <span className="font-display text-xl font-extrabold tracking-tight">FiguBook</span>
-          </div>
-
-          <h1 className="m-0 bg-gradient-to-br from-white from-20% to-[#c8a96e] bg-clip-text font-display text-[42px] font-bold leading-none tracking-[-0.025em] text-transparent">
-            {mode === 'login' ? 'Bentornato' : 'Crea il tuo account'}
-          </h1>
-          <p className="mb-7 mt-1.5 text-sm text-muted-foreground">
-            {mode === 'login' ? 'Accedi al tuo album e ai tuoi scambi.' : 'Inizia a tracciare la tua collezione.'}
-          </p>
-
-          {/* tabs */}
-          <div className="relative mb-6 flex rounded-2xl border border-border bg-card p-1">
-            <span
-              className="absolute bottom-1 top-1 w-[calc(50%-4px)] rounded-xl bg-foreground transition-transform duration-300"
-              style={{ transform: mode === 'register' ? 'translateX(100%)' : 'translateX(0)' }}
-            />
-            {(['login', 'register'] as Mode[]).map((m) => (
-              <button
-                key={m}
-                onClick={() => setMode(m)}
-                className={
-                  'relative z-10 flex-1 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ' +
-                  (mode === m ? 'text-background' : 'text-muted-foreground')
-                }
+                type="button"
+                onClick={toggle}
+                className="group inline-flex items-center gap-2 rounded-full border border-[#1a1508]/40 px-5 py-2.5 text-sm font-bold transition-colors hover:bg-[#1a1508]/10"
               >
-                {m === 'login' ? 'Accedi' : 'Registrati'}
+                {mode === 'login' ? 'Crea un account' : 'Accedi'}
+                <ArrowRight className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5" />
               </button>
-            ))}
+            </div>
           </div>
 
-          {/* LOGIN */}
-          {mode === 'login' && (
-            <form onSubmit={handleLogin} className="flex flex-col gap-3.5">
-              <Field label="Email" icon={<Mail className="h-4 w-4" />}>
-                <input
-                  type="email"
-                  required
-                  autoComplete="email"
-                  placeholder="nome@esempio.com"
-                  value={loginEmail}
-                  onChange={(e) => setLoginEmail(e.target.value)}
-                  className={inputCls}
-                />
-              </Field>
-              <Field label="Password" icon={<Lock className="h-4 w-4" />}>
-                <input
-                  type={showLoginPass ? 'text' : 'password'}
-                  required
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  value={loginPass}
-                  onChange={(e) => setLoginPass(e.target.value)}
-                  className={inputCls + ' pr-11'}
-                />
-                <PassToggle on={showLoginPass} set={setShowLoginPass} />
-              </Field>
+          {/* ── FORM LOGIN (metà destra su desktop) ── */}
+          <div className={panelCls('right', mode === 'login')}>
+            <FormShell
+              title="Bentornato"
+              subtitle="Accedi al tuo album e ai tuoi scambi."
+              switchLabel="Non hai un account?"
+              switchCta="Registrati"
+              onSwitch={toggle}
+            >
+              <form onSubmit={handleLogin} className="flex flex-col gap-3.5">
+                <Field label="Email" icon={<Mail className="h-4 w-4" />}>
+                  <input
+                    type="email"
+                    required
+                    autoComplete="email"
+                    placeholder="nome@esempio.com"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    className={inputCls}
+                  />
+                </Field>
+                <Field label="Password" icon={<Lock className="h-4 w-4" />}>
+                  <input
+                    type={showLoginPass ? 'text' : 'password'}
+                    required
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    value={loginPass}
+                    onChange={(e) => setLoginPass(e.target.value)}
+                    className={inputCls + ' pr-11'}
+                  />
+                  <PassToggle on={showLoginPass} set={setShowLoginPass} />
+                </Field>
 
-              <div className="-mt-0.5 flex items-center justify-between text-[12px] text-muted-foreground">
-                <label className="flex cursor-pointer items-center gap-2 select-none">
+                <div className="-mt-0.5 flex items-center justify-between text-[12px] text-muted-foreground">
+                  <label className="flex cursor-pointer items-center gap-2 select-none">
+                    <input
+                      type="checkbox"
+                      checked={remember}
+                      onChange={(e) => setRemember(e.target.checked)}
+                      className="h-4 w-4 accent-lime"
+                    />
+                    Rimani connesso
+                  </label>
+                  <a href="#" className="font-semibold text-foreground underline underline-offset-4">
+                    Password dimenticata?
+                  </a>
+                </div>
+
+                {loginErr && <p className="mt-1 text-sm text-destructive">{loginErr}</p>}
+
+                <PrimaryButton label="Accedi" busy={busy} />
+                <Divider />
+                <GoogleButton onClick={() => handleGoogle(setLoginErr)} disabled={busy} />
+              </form>
+            </FormShell>
+          </div>
+
+          {/* ── FORM REGISTER (metà sinistra su desktop) ── */}
+          <div className={panelCls('left', mode === 'register')}>
+            <FormShell
+              title="Crea il tuo account"
+              subtitle="Inizia a tracciare la tua collezione."
+              switchLabel="Hai già un account?"
+              switchCta="Accedi"
+              onSwitch={toggle}
+            >
+              <form onSubmit={handleRegister} className="flex flex-col gap-3.5">
+                <Field label="Nome utente" icon={<User className="h-4 w-4" />}>
+                  <input
+                    type="text"
+                    required
+                    autoComplete="username"
+                    placeholder="es. luca94"
+                    value={regUser}
+                    onChange={(e) => setRegUser(e.target.value)}
+                    className={inputCls}
+                  />
+                </Field>
+                <Field label="Email" icon={<Mail className="h-4 w-4" />}>
+                  <input
+                    type="email"
+                    required
+                    autoComplete="email"
+                    placeholder="nome@esempio.com"
+                    value={regEmail}
+                    onChange={(e) => setRegEmail(e.target.value)}
+                    className={inputCls}
+                  />
+                </Field>
+                <Field label="Password" icon={<Lock className="h-4 w-4" />}>
+                  <input
+                    type={showRegPass ? 'text' : 'password'}
+                    required
+                    minLength={8}
+                    autoComplete="new-password"
+                    placeholder="Almeno 8 caratteri"
+                    value={regPass}
+                    onChange={(e) => setRegPass(e.target.value)}
+                    className={inputCls + ' pr-11'}
+                  />
+                  <PassToggle on={showRegPass} set={setShowRegPass} />
+                </Field>
+
+                <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-border bg-card px-3.5 py-3">
                   <input
                     type="checkbox"
-                    checked={remember}
-                    onChange={(e) => setRemember(e.target.checked)}
-                    className="h-4 w-4 accent-lime"
+                    checked={regTerms}
+                    onChange={(e) => setRegTerms(e.target.checked)}
+                    className="mt-0.5 h-5 w-5 accent-lime"
                   />
-                  Rimani connesso
+                  <span className="text-[13px] leading-snug text-card-foreground">
+                    Confermo di avere almeno <b>14 anni</b> e accetto i{' '}
+                    <Link to="/termini" className="font-semibold underline underline-offset-2">Termini di servizio</Link> e la{' '}
+                    <Link to="/privacy" className="font-semibold underline underline-offset-2">Privacy Policy</Link>.
+                  </span>
                 </label>
-                <a href="#" className="font-semibold text-foreground underline underline-offset-4">
-                  Password dimenticata?
-                </a>
-              </div>
 
-              {loginErr && <p className="mt-1 text-sm text-destructive">{loginErr}</p>}
+                {regErr && <p className="mt-1 text-sm text-destructive">{regErr}</p>}
 
-              <PrimaryButton label="Accedi" busy={busy} />
-              <Divider />
-              <GoogleButton onClick={() => handleGoogle(setLoginErr)} disabled={busy} />
-            </form>
-          )}
-
-          {/* REGISTER */}
-          {mode === 'register' && (
-            <form onSubmit={handleRegister} className="flex flex-col gap-3.5">
-              <Field label="Nome utente" icon={<User className="h-4 w-4" />}>
-                <input
-                  type="text"
-                  required
-                  autoComplete="username"
-                  placeholder="es. luca94"
-                  value={regUser}
-                  onChange={(e) => setRegUser(e.target.value)}
-                  className={inputCls}
-                />
-              </Field>
-              <Field label="Email" icon={<Mail className="h-4 w-4" />}>
-                <input
-                  type="email"
-                  required
-                  autoComplete="email"
-                  placeholder="nome@esempio.com"
-                  value={regEmail}
-                  onChange={(e) => setRegEmail(e.target.value)}
-                  className={inputCls}
-                />
-              </Field>
-              <Field label="Password" icon={<Lock className="h-4 w-4" />}>
-                <input
-                  type={showRegPass ? 'text' : 'password'}
-                  required
-                  minLength={8}
-                  autoComplete="new-password"
-                  placeholder="Almeno 8 caratteri"
-                  value={regPass}
-                  onChange={(e) => setRegPass(e.target.value)}
-                  className={inputCls + ' pr-11'}
-                />
-                <PassToggle on={showRegPass} set={setShowRegPass} />
-              </Field>
-
-              <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-border bg-card px-3.5 py-3">
-                <input
-                  type="checkbox"
-                  checked={regTerms}
-                  onChange={(e) => setRegTerms(e.target.checked)}
-                  className="mt-0.5 h-5 w-5 accent-lime"
-                />
-                <span className="text-[13px] leading-snug text-card-foreground">
-                  Confermo di avere almeno <b>14 anni</b> e accetto i{' '}
-                  <Link to="/termini" className="font-semibold underline underline-offset-2">Termini di servizio</Link> e la{' '}
-                  <Link to="/privacy" className="font-semibold underline underline-offset-2">Privacy Policy</Link>.
-                </span>
-              </label>
-
-              {regErr && <p className="mt-1 text-sm text-destructive">{regErr}</p>}
-
-              <PrimaryButton label="Crea account" busy={busy} disabled={!regTerms} />
-              <Divider />
-              <GoogleButton onClick={() => handleGoogle(setRegErr)} disabled={busy} />
-            </form>
-          )}
+                <PrimaryButton label="Crea account" busy={busy} disabled={!regTerms} />
+                <Divider />
+                <GoogleButton onClick={() => handleGoogle(setRegErr)} disabled={busy} />
+              </form>
+            </FormShell>
+          </div>
         </div>
-      </section>
       </div>
+    </div>
+  )
+}
+
+// Classi del pannello-form: su desktop occupa una metà in absolute e fa
+// crossfade+slide; su mobile è un blocco normale, l'inattivo è rimosso (hidden).
+function panelCls(side: 'left' | 'right', active: boolean) {
+  const base =
+    'flex w-full flex-col justify-center overflow-y-auto p-8 transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none md:absolute md:inset-y-0 md:w-1/2 md:p-12 ' +
+    (side === 'right' ? 'md:right-0 ' : 'md:left-0 ')
+  const state = active
+    ? 'opacity-100 md:visible md:pointer-events-auto md:opacity-100 md:translate-x-0'
+    : 'hidden md:block md:invisible md:pointer-events-none md:opacity-0 ' +
+      (side === 'right' ? 'md:translate-x-6' : 'md:-translate-x-6')
+  return base + state
+}
+
+// Guscio del form: header brand mobile + titolo gradient + switch link mobile.
+function FormShell({
+  title,
+  subtitle,
+  switchLabel,
+  switchCta,
+  onSwitch,
+  children,
+}: {
+  title: string
+  subtitle: string
+  switchLabel: string
+  switchCta: string
+  onSwitch: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <div className="m-auto w-full max-w-[420px]">
+      {/* brand mobile */}
+      <div className="mb-6 flex items-center gap-3 md:hidden">
+        <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-gradient-to-br from-[#d8bd85] to-[#8f7444] font-display text-xl font-extrabold text-[#1a1508]">F</span>
+        <span className="font-display text-xl font-extrabold tracking-tight">FiguBook</span>
+      </div>
+
+      <h1 className="m-0 bg-gradient-to-br from-white from-20% to-[#c8a96e] bg-clip-text font-display text-[38px] font-bold leading-none tracking-[-0.025em] text-transparent">
+        {title}
+      </h1>
+      <p className="mb-7 mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
+
+      {children}
+
+      {/* switch mobile */}
+      <p className="mt-6 text-center text-[13px] text-muted-foreground md:hidden">
+        {switchLabel}{' '}
+        <button onClick={onSwitch} className="font-semibold text-foreground underline underline-offset-4">
+          {switchCta}
+        </button>
+      </p>
     </div>
   )
 }
