@@ -203,7 +203,7 @@ export default function Login() {
   const toggle = () => setMode((m) => (m === 'login' ? 'register' : 'login'))
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#080a08] text-[#f4efe6]">
+    <div className="relative min-h-[100dvh] overflow-hidden bg-[#080a08] text-[#f4efe6]">
       {/* sfondo dot-matrix full-page */}
       <div className="pointer-events-none absolute inset-0">
         <Suspense fallback={null}>
@@ -218,7 +218,7 @@ export default function Login() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#080a08] via-transparent to-[#080a08]/40" />
       </div>
 
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-10 sm:px-6">
+      <div className="relative z-10 flex min-h-[100dvh] items-center justify-center px-4 py-10 sm:px-6">
         {/* ════ FLIP-CARD ════ */}
         <div className="relative w-full max-w-[960px] overflow-hidden rounded-[28px] border border-white/10 bg-[#0c100c]/70 shadow-2xl backdrop-blur-xl md:h-[600px]">
 
