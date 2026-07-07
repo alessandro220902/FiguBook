@@ -187,7 +187,7 @@ export default function Login() {
       <div className="pointer-events-none absolute inset-0">
         <Suspense fallback={null}>
           <CanvasRevealEffect
-            colors={[[194, 242, 61], [31, 122, 89]]}
+            colors={[[200, 169, 110], [143, 116, 68]]}
             dotSize={3}
             showGradient={false}
           />
