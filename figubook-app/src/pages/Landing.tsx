@@ -167,35 +167,49 @@ export default function Landing() {
           <div className="mt-14 flex flex-col gap-16 md:gap-24">
             {STEPS.map((s, i) => {
               const Icon = s.icon
-              const flip = i % 2 === 1
+              const isWide = i === STEPS.length - 1 // ultimo passo a tutta larghezza: rompe lo zigzag
+              const flip = !isWide && i % 2 === 1
+
+              const head = (
+                <>
+                  <div className={'flex items-center gap-4' + (isWide ? ' justify-center' : '')}>
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-lime/40 font-display text-lg font-bold text-lime">
+                      {i + 1}
+                    </span>
+                    <Icon className="h-6 w-6 text-lime" strokeWidth={1.5} />
+                  </div>
+                  <h3 className="mt-5 text-[clamp(1.5rem,2.6vw,2rem)] font-bold tracking-tight">{s.t}</h3>
+                  <p className={'mt-3 text-[16px] leading-relaxed text-ink-2' + (isWide ? ' mx-auto max-w-[52ch]' : ' max-w-[44ch]')}>{s.d}</p>
+                </>
+              )
+
+              const frame = (
+                <div className={'relative w-full overflow-hidden rounded-2xl border border-[color:var(--card-hair)] bg-[linear-gradient(160deg,#171717,#111)] shadow-[var(--card-shadow)] ' + (isWide ? 'aspect-[16/7]' : 'aspect-[16/10]')}>
+                  <div className="absolute inset-0 grid place-items-center text-center">
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      <ImageIcon className="h-8 w-8" strokeWidth={1.25} />
+                      <span className="text-xs font-medium tracking-wide">Anteprima in arrivo</span>
+                    </div>
+                  </div>
+                  <span className="pointer-events-none absolute left-4 top-4 rounded-full border border-lime/30 px-2.5 py-1 text-[11px] font-semibold text-lime">
+                    Passo {i + 1}
+                  </span>
+                </div>
+              )
+
+              if (isWide) {
+                return (
+                  <Reveal key={s.t} delay={i * 140}>
+                    <div className="text-center">{head}</div>
+                    <div className="mt-8">{frame}</div>
+                  </Reveal>
+                )
+              }
               return (
                 <Reveal key={s.t} delay={i * 140}>
-                  <div className={'grid items-center gap-x-12 gap-y-8 md:grid-cols-2'}>
-                    {/* testo */}
-                    <div className={flip ? 'md:order-2 md:pl-6' : 'md:pr-6'}>
-                      <div className="flex items-center gap-4">
-                        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-lime/40 font-display text-lg font-bold text-lime">
-                          {i + 1}
-                        </span>
-                        <Icon className="h-6 w-6 text-lime" strokeWidth={1.5} />
-                      </div>
-                      <h3 className="mt-5 text-[clamp(1.5rem,2.6vw,2rem)] font-bold tracking-tight">{s.t}</h3>
-                      <p className="mt-3 max-w-[44ch] text-[16px] leading-relaxed text-ink-2">{s.d}</p>
-                    </div>
-                    {/* placeholder immagine (screenshot in arrivo) */}
-                    <div className={flip ? 'md:order-1' : ''}>
-                      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-[color:var(--card-hair)] bg-[linear-gradient(160deg,#171717,#111)] shadow-[var(--card-shadow)]">
-                        <div className="absolute inset-0 grid place-items-center text-center">
-                          <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                            <ImageIcon className="h-8 w-8" strokeWidth={1.25} />
-                            <span className="text-xs font-medium tracking-wide">Anteprima in arrivo</span>
-                          </div>
-                        </div>
-                        <span className="pointer-events-none absolute left-4 top-4 rounded-full border border-lime/30 px-2.5 py-1 text-[11px] font-semibold text-lime">
-                          Passo {i + 1}
-                        </span>
-                      </div>
-                    </div>
+                  <div className="grid items-center gap-x-12 gap-y-8 md:grid-cols-2">
+                    <div className={flip ? 'md:order-2 md:pl-6' : 'md:pr-6'}>{head}</div>
+                    <div className={flip ? 'md:order-1' : ''}>{frame}</div>
                   </div>
                 </Reveal>
               )

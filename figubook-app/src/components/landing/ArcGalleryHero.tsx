@@ -87,7 +87,8 @@ export function ArcGalleryHero({
                   <img
                     src={src}
                     alt=""
-                    loading="lazy"
+                    loading={i < 7 ? 'eager' : 'lazy'}
+                    fetchPriority={i < 3 ? 'high' : 'auto'}
                     draggable={false}
                     className="block h-full w-full object-cover"
                   />
