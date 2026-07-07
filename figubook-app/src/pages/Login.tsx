@@ -256,7 +256,7 @@ export default function Login() {
             <span className="font-display text-xl font-extrabold tracking-tight">FiguBook</span>
           </div>
 
-          <h1 className="m-0 font-display text-[42px] font-bold leading-none tracking-[-0.025em]">
+          <h1 className="m-0 bg-gradient-to-br from-white from-20% to-[#c8a96e] bg-clip-text font-display text-[42px] font-bold leading-none tracking-[-0.025em] text-transparent">
             {mode === 'login' ? 'Bentornato' : 'Crea il tuo account'}
           </h1>
           <p className="mb-7 mt-1.5 text-sm text-muted-foreground">
@@ -456,7 +456,7 @@ function GoogleButton({ onClick, disabled }: { onClick: () => void; disabled: bo
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-border bg-white py-3 text-[14.5px] font-semibold text-zinc-900 transition-colors hover:bg-zinc-100 disabled:opacity-60"
+      className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-[#c8a96e]/20 bg-[#c8a96e]/[0.06] py-3 text-[14.5px] font-semibold text-white/70 transition-[color,background-color,border-color,transform] hover:border-[#c8a96e]/35 hover:bg-[#c8a96e]/[0.1] hover:text-white/90 active:scale-[0.98] disabled:opacity-60"
     >
       <GoogleIcon /> Continua con Google
     </button>
