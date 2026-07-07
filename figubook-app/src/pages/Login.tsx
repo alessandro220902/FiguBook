@@ -224,7 +224,7 @@ export default function Login() {
 
           {/* ── PANNELLO ORO (scivola) — solo desktop ── */}
           <div
-            className="absolute inset-y-0 left-0 z-20 hidden w-1/2 flex-col overflow-hidden bg-gradient-to-br from-[#d8bd85] via-[#c8a96e] to-[#8f7444] p-10 text-[#1a1508] transition-transform duration-[700ms] ease-[cubic-bezier(.65,0,.35,1)] motion-reduce:transition-none md:flex"
+            className="absolute inset-y-0 left-0 z-20 hidden w-1/2 flex-col overflow-hidden bg-gradient-to-br from-[#d8bd85] via-lime to-[#8f7444] p-10 text-[#1a1508] transition-transform duration-[700ms] ease-[cubic-bezier(.65,0,.35,1)] motion-reduce:transition-none md:flex"
             style={{ transform: mode === 'register' ? 'translateX(100%)' : 'translateX(0)' }}
           >
             {/* texture: sheen alto-sx + vignette basso per profondita' */}
@@ -318,7 +318,7 @@ export default function Login() {
                 </div>
 
                 {loginErr && <p className="mt-1 text-sm text-destructive">{loginErr}</p>}
-                {resetMsg && <p className="mt-1 text-sm text-[#c8a96e]">{resetMsg}</p>}
+                {resetMsg && <p className="mt-1 text-sm text-lime">{resetMsg}</p>}
 
                 <PrimaryButton label="Accedi" busy={busy} />
                 <Divider />
@@ -443,7 +443,7 @@ function FormShell({
         <span className="font-display text-xl font-extrabold tracking-tight">FiguBook</span>
       </div>
 
-      <h1 className="m-0 bg-gradient-to-br from-white from-20% to-[#c8a96e] bg-clip-text font-display text-[38px] font-bold leading-none tracking-[-0.025em] text-transparent">
+      <h1 className="m-0 bg-gradient-to-br from-white from-20% to-lime bg-clip-text font-display text-[38px] font-bold leading-none tracking-[-0.025em] text-transparent">
         {title}
       </h1>
       <p className="mb-5 mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
@@ -472,14 +472,14 @@ function Field({ label, icon, htmlFor, children }: { label: string; icon: React.
           <span
             key={i}
             style={{ transitionDelay: `${i * 28}ms` }}
-            className="inline-block transition-[transform,color] duration-200 ease-out group-focus-within:-translate-y-[3px] group-focus-within:text-[#c8a96e] motion-reduce:transition-none motion-reduce:group-focus-within:translate-y-0"
+            className="inline-block transition-[transform,color] duration-200 ease-out group-focus-within:-translate-y-[3px] group-focus-within:text-lime motion-reduce:transition-none motion-reduce:group-focus-within:translate-y-0"
           >
             {ch === ' ' ? ' ' : ch}
           </span>
         ))}
       </label>
       <div className="relative">
-        <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors duration-200 group-focus-within:text-[#c8a96e]">{icon}</span>
+        <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors duration-200 group-focus-within:text-lime">{icon}</span>
         {children}
       </div>
     </div>
@@ -499,7 +499,7 @@ function PwdChecklist({ pass }: { pass: string }) {
             key={r.key}
             className={
               'flex items-center gap-2 text-[12.5px] transition-colors duration-200 ' +
-              (ok ? 'text-[#c8a96e]' : 'text-muted-foreground')
+              (ok ? 'text-lime' : 'text-muted-foreground')
             }
           >
             {ok ? <Check className="h-3.5 w-3.5 shrink-0" /> : <X className="h-3.5 w-3.5 shrink-0 opacity-50" />}
@@ -529,7 +529,7 @@ function PrimaryButton({ label, busy, disabled }: { label: string; busy: boolean
     <button
       type="submit"
       disabled={busy || disabled}
-      className="group mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-br from-[#d8bd85] to-[#c8a96e] py-3 font-bold text-[#1a1508] shadow-[0_10px_28px_-10px_rgba(200,169,110,.55)] transition-[filter,transform] hover:brightness-105 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
+      className="group mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-br from-[#d8bd85] to-lime py-3 font-bold text-[#1a1508] shadow-[0_10px_28px_-10px_rgba(200,169,110,.55)] transition-[filter,transform] hover:brightness-105 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
     >
       {label} <ArrowRight className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5" />
     </button>
@@ -552,7 +552,7 @@ function GoogleButton({ onClick, disabled }: { onClick: () => void; disabled: bo
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-[#c8a96e]/20 bg-[#c8a96e]/[0.06] py-2.5 text-[14.5px] font-semibold text-white/70 transition-[color,background-color,border-color,transform] hover:border-[#c8a96e]/35 hover:bg-[#c8a96e]/[0.1] hover:text-white/90 active:scale-[0.98] disabled:opacity-60"
+      className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-lime/20 bg-lime/[0.06] py-2.5 text-[14.5px] font-semibold text-white/70 transition-[color,background-color,border-color,transform] hover:border-lime/35 hover:bg-lime/[0.1] hover:text-white/90 active:scale-[0.98] disabled:opacity-60"
     >
       <GoogleIcon /> Continua con Google
     </button>
