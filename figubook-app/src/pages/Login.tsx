@@ -9,7 +9,7 @@ import {
   browserSessionPersistence,
 } from 'firebase/auth'
 import { doc, setDoc } from 'firebase/firestore'
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Check, X } from 'lucide-react'
 
 import { auth, db, googleProvider } from '@/lib/firebase'
 import { mapFirebaseError } from '@/lib/authErrors'
@@ -56,6 +56,15 @@ function GoogleIcon() {
     </svg>
   )
 }
+
+// Requisiti password (validazione client; il submit resta bloccato finché
+// non sono tutti soddisfatti). Auth server impone comunque il minimo di base.
+const PWD_RULES: { key: string; label: string; test: (p: string) => boolean }[] = [
+  { key: 'len', label: 'Almeno 8 caratteri', test: (p) => p.length >= 8 },
+  { key: 'upper', label: 'Una lettera maiuscola', test: (p) => /[A-Z]/.test(p) },
+  { key: 'num', label: 'Un numero', test: (p) => /[0-9]/.test(p) },
+]
+const pwdValid = (p: string) => PWD_RULES.every((r) => r.test(p))
 
 type Mode = 'login' | 'register'
 
@@ -116,6 +125,11 @@ export default function Login() {
       const username = regUser.trim()
       if (!username) {
         setRegErr('Inserisci un nome utente.')
+        setBusy(false)
+        return
+      }
+      if (!pwdValid(regPass)) {
+        setRegErr('La password non rispetta i requisiti.')
         setBusy(false)
         return
       }
@@ -329,6 +343,8 @@ export default function Login() {
                   <PassToggle on={showRegPass} set={setShowRegPass} />
                 </Field>
 
+                <PwdChecklist pass={regPass} />
+
                 <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-border bg-card px-3.5 py-2.5">
                   <input
                     type="checkbox"
@@ -345,7 +361,7 @@ export default function Login() {
 
                 {regErr && <p className="mt-1 text-sm text-destructive">{regErr}</p>}
 
-                <PrimaryButton label="Crea account" busy={busy} disabled={!regTerms} />
+                <PrimaryButton label="Crea account" busy={busy} disabled={!regTerms || !pwdValid(regPass)} />
                 <Divider />
                 <GoogleButton onClick={() => handleGoogle(setRegErr)} disabled={busy} />
               </form>
@@ -434,6 +450,31 @@ function Field({ label, icon, children }: { label: string; icon: React.ReactNode
         {children}
       </div>
     </div>
+  )
+}
+
+// Checklist requisiti password: compare quando l'utente inizia a digitare,
+// ogni regola vira all'oro con la spunta appena soddisfatta.
+function PwdChecklist({ pass }: { pass: string }) {
+  if (!pass) return null
+  return (
+    <ul className="-mt-1 flex flex-col gap-1">
+      {PWD_RULES.map((r) => {
+        const ok = r.test(pass)
+        return (
+          <li
+            key={r.key}
+            className={
+              'flex items-center gap-2 text-[12.5px] transition-colors duration-200 ' +
+              (ok ? 'text-[#c8a96e]' : 'text-muted-foreground')
+            }
+          >
+            {ok ? <Check className="h-3.5 w-3.5 shrink-0" /> : <X className="h-3.5 w-3.5 shrink-0 opacity-50" />}
+            {r.label}
+          </li>
+        )
+      })}
+    </ul>
   )
 }
 
