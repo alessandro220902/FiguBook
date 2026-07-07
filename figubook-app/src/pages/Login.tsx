@@ -191,20 +191,23 @@ export default function Login() {
             className="absolute inset-y-0 left-0 z-20 hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-[#d8bd85] via-[#c8a96e] to-[#8f7444] p-12 text-[#1a1508] transition-transform duration-[700ms] ease-[cubic-bezier(.65,0,.35,1)] motion-reduce:transition-none md:flex"
             style={{ transform: mode === 'register' ? 'translateX(100%)' : 'translateX(0)' }}
           >
-            <div className="flex items-center gap-3">
+            {/* texture: sheen alto-sx + vignette basso per profondita' */}
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_22%_16%,rgba(255,255,255,.28),transparent_52%),radial-gradient(ellipse_at_50%_118%,rgba(26,21,8,.32),transparent_58%)]" />
+
+            <div className="relative z-10 flex items-center gap-3">
               <span className="grid h-10 w-10 -rotate-6 place-items-center rounded-[10px] bg-[#1a1508] font-display text-2xl font-extrabold text-[#d8bd85]">F</span>
               <span className="font-display text-2xl font-extrabold tracking-tight">FiguBook</span>
             </div>
 
             <h2
               key={slogIdx}
-              className="slogan-anim m-0 max-w-[15ch] font-display text-[34px] font-bold leading-[1.06] tracking-[-0.02em]"
+              className="slogan-anim relative z-10 m-0 max-w-[15ch] font-display text-[34px] font-bold leading-[1.06] tracking-[-0.02em]"
             >
               {SLOGANS[slogIdx][0]}{' '}
               <em className="font-serif italic opacity-75">{SLOGANS[slogIdx][1]}</em>
             </h2>
 
-            <div>
+            <div className="relative z-10">
               <p className="mb-3 text-sm font-medium opacity-75">
                 {mode === 'login' ? 'Non hai ancora un account?' : 'Hai già un account?'}
               </p>
@@ -449,7 +452,7 @@ function PrimaryButton({ label, busy, disabled }: { label: string; busy: boolean
     <button
       type="submit"
       disabled={busy || disabled}
-      className="group mt-1 flex w-full items-center justify-center gap-2 rounded-full border border-lime py-3.5 font-semibold text-lime transition-[filter,transform] hover:bg-lime/10 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
+      className="group mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-br from-[#d8bd85] to-[#c8a96e] py-3.5 font-bold text-[#1a1508] shadow-[0_10px_28px_-10px_rgba(200,169,110,.55)] transition-[filter,transform] hover:brightness-105 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
     >
       {label} <ArrowRight className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5" />
     </button>
