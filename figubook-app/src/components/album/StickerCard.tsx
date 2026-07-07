@@ -56,6 +56,18 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
               }
             />
           )}
+          {/* Doppie: velo lucido diagonale (foil) sopra il gradiente squadra,
+              così si riconoscono "carta speciale" oltre al badge ×N. */}
+          {owned && doubles > 0 && (
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-xl mix-blend-overlay"
+              style={{
+                backgroundImage:
+                  'linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0.12) 54%, transparent 70%)',
+              }}
+            />
+          )}
           <span className="relative z-10 font-display text-2xl font-bold tracking-wide drop-shadow md:text-3xl">{code}</span>
           {owned && name && (
             <span className="relative z-10 flex w-full flex-col items-center text-center leading-tight drop-shadow" title={name}>
