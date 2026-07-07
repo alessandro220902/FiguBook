@@ -109,7 +109,22 @@ export default function Album() {
     return <Centered>Dati album non disponibili.</Centered>
   }
   if (!data || !section) {
-    return <Centered>Caricamento album…</Centered>
+    return (
+      <main className="album-theme w-full px-0 pb-16 pt-6" aria-busy="true" aria-label="Caricamento album">
+        <div className="h-4 w-40 animate-pulse rounded bg-bg-elev" />
+        <div className="mt-6 h-40 animate-pulse rounded-2xl bg-bg-elev" />
+        <div className="mx-auto mt-8 h-10 w-64 animate-pulse rounded-full bg-bg-elev" />
+        <div className="mt-4 hidden gap-5 md:grid md:grid-cols-[15rem_1fr]">
+          <div className="h-[60vh] animate-pulse rounded-xl bg-bg-elev" />
+          <div className="h-[60vh] animate-pulse rounded-xl bg-bg-elev" />
+        </div>
+        <div className="mt-4 grid grid-cols-3 gap-2 md:hidden">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="aspect-[3/4] animate-pulse rounded-lg bg-bg-elev" />
+          ))}
+        </div>
+      </main>
+    )
   }
 
   const albumStats = computeStats(albumId, album.states, album.counts)
