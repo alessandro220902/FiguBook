@@ -250,8 +250,9 @@ export default function Login() {
               onSwitch={toggle}
             >
               <form onSubmit={handleLogin} className="flex flex-col gap-3">
-                <Field label="Email" icon={<Mail className="h-4 w-4" />}>
+                <Field label="Email" icon={<Mail className="h-4 w-4" />} htmlFor="login-email">
                   <input
+                    id="login-email"
                     type="email"
                     required
                     autoComplete="email"
@@ -261,15 +262,16 @@ export default function Login() {
                     className={inputCls}
                   />
                 </Field>
-                <Field label="Password" icon={<Lock className="h-4 w-4" />}>
+                <Field label="Password" icon={<Lock className="h-4 w-4" />} htmlFor="login-pass">
                   <input
+                    id="login-pass"
                     type={showLoginPass ? 'text' : 'password'}
                     required
                     autoComplete="current-password"
                     placeholder="••••••••"
                     value={loginPass}
                     onChange={(e) => setLoginPass(e.target.value)}
-                    className={inputCls + ' pr-11'}
+                    className={inputCls + ' pr-12'}
                   />
                   <PassToggle on={showLoginPass} set={setShowLoginPass} />
                 </Field>
@@ -308,8 +310,9 @@ export default function Login() {
               onSwitch={toggle}
             >
               <form onSubmit={handleRegister} className="flex flex-col gap-3">
-                <Field label="Nome utente" icon={<User className="h-4 w-4" />}>
+                <Field label="Nome utente" icon={<User className="h-4 w-4" />} htmlFor="reg-user">
                   <input
+                    id="reg-user"
                     type="text"
                     required
                     autoComplete="username"
@@ -319,8 +322,9 @@ export default function Login() {
                     className={inputCls}
                   />
                 </Field>
-                <Field label="Email" icon={<Mail className="h-4 w-4" />}>
+                <Field label="Email" icon={<Mail className="h-4 w-4" />} htmlFor="reg-email">
                   <input
+                    id="reg-email"
                     type="email"
                     required
                     autoComplete="email"
@@ -330,8 +334,9 @@ export default function Login() {
                     className={inputCls}
                   />
                 </Field>
-                <Field label="Password" icon={<Lock className="h-4 w-4" />}>
+                <Field label="Password" icon={<Lock className="h-4 w-4" />} htmlFor="reg-pass">
                   <input
+                    id="reg-pass"
                     type={showRegPass ? 'text' : 'password'}
                     required
                     minLength={8}
@@ -339,7 +344,7 @@ export default function Login() {
                     placeholder="Almeno 8 caratteri"
                     value={regPass}
                     onChange={(e) => setRegPass(e.target.value)}
-                    className={inputCls + ' pr-11'}
+                    className={inputCls + ' pr-12'}
                   />
                   <PassToggle on={showRegPass} set={setShowRegPass} />
                 </Field>
@@ -432,10 +437,10 @@ function FormShell({
 const inputCls =
   'w-full rounded-xl border border-border bg-card py-3 pl-11 pr-4 text-[15px] text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-lime'
 
-function Field({ label, icon, children }: { label: string; icon: React.ReactNode; children: React.ReactNode }) {
+function Field({ label, icon, htmlFor, children }: { label: string; icon: React.ReactNode; htmlFor: string; children: React.ReactNode }) {
   return (
     <div className="group flex flex-col gap-1.5">
-      <span className="flex font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+      <label htmlFor={htmlFor} className="flex font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
         {label.split('').map((ch, i) => (
           <span
             key={i}
@@ -445,7 +450,7 @@ function Field({ label, icon, children }: { label: string; icon: React.ReactNode
             {ch === ' ' ? ' ' : ch}
           </span>
         ))}
-      </span>
+      </label>
       <div className="relative">
         <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors duration-200 group-focus-within:text-[#c8a96e]">{icon}</span>
         {children}
@@ -485,7 +490,7 @@ function PassToggle({ on, set }: { on: boolean; set: (b: boolean) => void }) {
       type="button"
       onClick={() => set(!on)}
       aria-label={on ? 'Nascondi password' : 'Mostra password'}
-      className="absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-lg text-muted-foreground hover:text-foreground"
+      className="absolute right-1 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-lg text-muted-foreground hover:text-foreground"
     >
       {on ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
     </button>
