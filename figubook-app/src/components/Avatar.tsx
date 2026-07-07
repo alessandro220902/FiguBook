@@ -1,7 +1,7 @@
 import { useId } from 'react'
 import { avatarById, uniquifyIds } from '@/lib/avatars'
 
-// Avatar: preset oggetto-calcio (se id valido) oppure monogramma lime di fallback.
+// Avatar: preset oggetto-calcio (se id valido) oppure monogramma oro di fallback.
 export function Avatar({
   id,
   name,
@@ -21,7 +21,7 @@ export function Avatar({
     const initial = (name.trim().charAt(0) || '?').toUpperCase()
     return (
       <svg viewBox="0 0 100 100" className={cls} style={style} aria-hidden>
-        <circle cx="50" cy="50" r="50" fill="#c2f23d" />
+        <circle cx="50" cy="50" r="50" fill="#c8a96e" />
         <text
           x="50"
           y="50"

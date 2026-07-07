@@ -1,8 +1,9 @@
 import type { Team } from '@/lib/teams'
 
 // Helper visuali per la squadra del cuore (file separato: teams.ts è generato).
-// Base scura del sito (per miscelare gli sfondi e tenerli leggibili).
-const DARK = '#0a120e'
+// Base + percentuali di mix vengono dai token --team-mix-* (theme-aware):
+// scuri di default, chiari/pastello nello scope .home-light. Fallback scuri se
+// i token mancano (es. superfici fuori dallo scope app).
 
 function lum(hex: string): number {
   const c = hex.replace('#', '')
@@ -22,14 +23,18 @@ export function teamAccent(t: Team): string {
 // Sfondo pagina: c1 in alto -> trasparente in mezzo (resta il verde del sito)
 // -> c2 in basso. Colori miscelati verso lo scuro = tinti ma leggibili.
 export function teamPageBg(t: Team): string {
-  const top = `color-mix(in srgb, ${t.c1} 42%, ${DARK})`
-  const bot = `color-mix(in srgb, ${t.c2} 42%, ${DARK})`
+  const base = 'var(--team-mix-base, #0a120e)'
+  const p = 'var(--team-mix-page, 42%)'
+  const top = `color-mix(in srgb, ${t.c1} ${p}, ${base})`
+  const bot = `color-mix(in srgb, ${t.c2} ${p}, ${base})`
   return `linear-gradient(to bottom, ${top} 0%, transparent 34%, transparent 64%, ${bot} 100%)`
 }
 
-// Sfondo card identità: gradiente c1->c2 miscelato scuro (pieno colore squadra).
+// Sfondo card identità: gradiente c1->c2 miscelato con la base del tema (pieno
+// colore squadra su scuro; pastello leggibile su chiaro).
 export function teamCardBg(t: Team): string {
-  const a = `color-mix(in srgb, ${t.c1} 60%, ${DARK})`
-  const b = `color-mix(in srgb, ${t.c2} 48%, ${DARK})`
+  const base = 'var(--team-mix-base, #0a120e)'
+  const a = `color-mix(in srgb, ${t.c1} var(--team-mix-strong, 60%), ${base})`
+  const b = `color-mix(in srgb, ${t.c2} var(--team-mix-soft, 48%), ${base})`
   return `linear-gradient(160deg, ${a}, ${b})`
 }

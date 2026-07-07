@@ -126,6 +126,12 @@ body {
   --row-fill: rgba(255, 255, 255, 0.02);
   --row-fill-hover: rgba(255, 255, 255, 0.04);
   --chip-fill: rgba(255, 255, 255, 0.05);
+  /* sfondi "squadra del cuore" (card identita' / pagina profilo): base scura +
+     percentuali piene di default (immersione dark). Il light le rimappa sotto. */
+  --team-mix-base: #0a120e;
+  --team-mix-strong: 60%;
+  --team-mix-soft: 48%;
+  --team-mix-page: 42%;
 }
 
 /* Tema chiaro (inverso): oro/crema prevalente, testo scuro. Accento oro più
@@ -161,6 +167,12 @@ body {
   --popover-foreground: #1a1712;
   --border: rgba(156, 123, 62, 0.2);
   --input: rgba(156, 123, 62, 0.25);
+  /* squadra del cuore in light: base crema + percentuali basse => card pastello
+     leggibile (testo scuro), non un blocco scuro che stona sul fondo chiaro. */
+  --team-mix-base: #f4ecd8;
+  --team-mix-strong: 24%;
+  --team-mix-soft: 18%;
+  --team-mix-page: 15%;
 }
 
 /* Landing: sans moderno (Geist) SOLO qui; app resta Times. */
