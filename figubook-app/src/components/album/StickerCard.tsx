@@ -1,5 +1,5 @@
 import { Plus, Minus, Check } from 'lucide-react'
-import { sectionGradient } from '@/lib/album/color'
+import { sectionGradient, ownedInkIsDark } from '@/lib/album/color'
 
 // Nome su due righe: nome sopra, cognome a capo. Le carte a doppia squadra
 // ("Avellino / Bari") si spezzano su " / " (una squadra sopra, una sotto).
@@ -25,8 +25,11 @@ export interface StickerCardProps {
 export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemove, onInfo }: StickerCardProps) {
   const owned = count >= 1
   const doubles = Math.max(0, count - 1)
+  const darkInk = owned && ownedInkIsDark(c1, c2)
 
   const handleClick = () => (insertOn ? onAdd() : onInfo())
+
+  const dupText = doubles > 0 ? (doubles === 1 ? ', 1 doppia' : `, ${doubles} doppie`) : ''
 
   return (
     <div className="group flex flex-col">
@@ -35,17 +38,24 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
         <button
           type="button"
           onClick={handleClick}
-          aria-label={`${code}${name ? ' ' + name : ''}${owned ? ', posseduta' : ', mancante'}`}
+          aria-label={`${code}${name ? ' ' + name : ''}${owned ? ', posseduta' : ', mancante'}${dupText}`}
           className={[
             'absolute inset-0 flex flex-col items-center justify-center gap-0.5 rounded-xl border px-1.5 transition',
             'focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime',
             owned
-              ? 'border-white/15 text-white shadow-sm hover:-translate-y-0.5 hover:shadow-lg'
+              ? 'border-white/15 shadow-sm hover:-translate-y-0.5 hover:shadow-lg ' + (darkInk ? 'text-[#14110a]' : 'text-white')
               : 'border-dashed border-white/10 bg-surface text-muted-foreground hover:-translate-y-0.5',
           ].join(' ')}
           style={owned ? { backgroundImage: sectionGradient(c1, c2) } : undefined}
         >
-          {owned && <span className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent" />}
+          {owned && (
+            <span
+              className={
+                'pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br to-transparent ' +
+                (darkInk ? 'from-black/10' : 'from-white/20')
+              }
+            />
+          )}
           <span className="relative z-10 font-display text-2xl font-bold tracking-wide drop-shadow md:text-3xl">{code}</span>
           {owned && name && (
             <span className="relative z-10 flex w-full flex-col items-center text-center leading-tight drop-shadow" title={name}>
@@ -60,7 +70,7 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
           <span data-testid="owned-badge" aria-hidden className="pointer-events-none absolute left-1.5 top-1.5 z-20 flex h-[18px] w-[18px] items-center justify-center rounded-md bg-stat-have text-lime-ink"><Check size={12} strokeWidth={3} /></span>
         )}
         {doubles > 0 && (
-          <span data-testid="dup-badge" className="pointer-events-none absolute right-1.5 top-1.5 z-20 rounded-md bg-gold px-1.5 text-[10px] font-bold text-[#1a1205]">×{doubles}</span>
+          <span data-testid="dup-badge" aria-hidden className="pointer-events-none absolute right-1.5 top-1.5 z-20 rounded-md bg-gold px-1.5 text-[10px] font-bold text-lime-ink">×{doubles}</span>
         )}
       </div>
 
@@ -72,12 +82,12 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
             type="button"
             onClick={(e) => { e.stopPropagation(); onRemove() }}
             aria-label={`Rimuovi una copia di ${code}`}
-            className="mt-1 flex h-8 w-full items-center justify-center rounded-md bg-stat-missing text-white transition hover:brightness-110"
+            className="mt-1 flex h-11 w-full items-center justify-center rounded-md bg-stat-missing text-white transition hover:brightness-110"
           >
             <Minus size={16} />
           </button>
         ) : (
-          <div className="mt-1 h-8" aria-hidden />
+          <div className="mt-1 h-11" aria-hidden />
         )
       ) : (
         // Modalità lettura: stepper − N +
@@ -87,7 +97,7 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
             onClick={(e) => { e.stopPropagation(); onRemove() }}
             disabled={count === 0}
             aria-label={`Rimuovi una copia di ${code}`}
-            className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-surface text-ink transition hover:border-stat-missing/50 hover:text-stat-missing disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-white/10 disabled:hover:text-ink"
+            className="flex h-11 flex-1 items-center justify-center rounded-md border border-white/10 bg-surface text-ink transition hover:border-stat-missing/50 hover:text-stat-missing disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-white/10 disabled:hover:text-ink"
           >
             <Minus size={16} />
           </button>
@@ -96,7 +106,7 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
             type="button"
             onClick={(e) => { e.stopPropagation(); onAdd() }}
             aria-label={`Aggiungi ${code}`}
-            className="flex h-8 w-8 items-center justify-center rounded-md bg-stat-have text-lime-ink transition hover:brightness-110"
+            className="flex h-11 flex-1 items-center justify-center rounded-md bg-stat-have text-lime-ink transition hover:brightness-110"
           >
             <Plus size={16} />
           </button>
