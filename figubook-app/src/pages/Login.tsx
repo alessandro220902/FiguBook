@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithPopup,
   getAdditionalUserInfo,
   setPersistence,
@@ -80,6 +81,7 @@ export default function Login() {
   const [loginEmail, setLoginEmail] = useState('')
   const [loginPass, setLoginPass] = useState('')
   const [loginErr, setLoginErr] = useState('')
+  const [resetMsg, setResetMsg] = useState('')
   const [remember, setRemember] = useState(true)
 
   const [regUser, setRegUser] = useState('')
@@ -111,6 +113,25 @@ export default function Login() {
       await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence)
       await signInWithEmailAndPassword(auth, loginEmail.trim(), loginPass)
       navigate('/home', { replace: true })
+    } catch (err) {
+      setLoginErr(mapFirebaseError((err as { code?: string }).code))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleReset() {
+    setLoginErr('')
+    setResetMsg('')
+    const email = loginEmail.trim()
+    if (!email) {
+      setLoginErr('Inserisci la tua email qui sopra, poi premi di nuovo "Password dimenticata?".')
+      return
+    }
+    setBusy(true)
+    try {
+      await sendPasswordResetEmail(auth, email)
+      setResetMsg('Ti abbiamo inviato un’email per reimpostare la password. Controlla anche lo spam.')
     } catch (err) {
       setLoginErr(mapFirebaseError((err as { code?: string }).code))
     } finally {
@@ -286,12 +307,18 @@ export default function Login() {
                     />
                     Rimani connesso
                   </label>
-                  <a href="#" className="font-semibold text-foreground underline underline-offset-4">
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    disabled={busy}
+                    className="font-semibold text-foreground underline underline-offset-4 disabled:opacity-60"
+                  >
                     Password dimenticata?
-                  </a>
+                  </button>
                 </div>
 
                 {loginErr && <p className="mt-1 text-sm text-destructive">{loginErr}</p>}
+                {resetMsg && <p className="mt-1 text-sm text-[#c8a96e]">{resetMsg}</p>}
 
                 <PrimaryButton label="Accedi" busy={busy} />
                 <Divider />
