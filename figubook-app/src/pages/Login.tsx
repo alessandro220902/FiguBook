@@ -405,10 +405,20 @@ const inputCls =
 
 function Field({ label, icon, children }: { label: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{label}</span>
+    <div className="group flex flex-col gap-1.5">
+      <span className="flex font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+        {label.split('').map((ch, i) => (
+          <span
+            key={i}
+            style={{ transitionDelay: `${i * 28}ms` }}
+            className="inline-block transition-[transform,color] duration-200 ease-out group-focus-within:-translate-y-[3px] group-focus-within:text-[#c8a96e] motion-reduce:transition-none motion-reduce:group-focus-within:translate-y-0"
+          >
+            {ch === ' ' ? ' ' : ch}
+          </span>
+        ))}
+      </span>
       <div className="relative">
-        <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">{icon}</span>
+        <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors duration-200 group-focus-within:text-[#c8a96e]">{icon}</span>
         {children}
       </div>
     </div>
