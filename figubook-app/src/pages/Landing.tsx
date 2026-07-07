@@ -59,7 +59,7 @@ const STEPS = [
   {
     icon: LayoutGrid,
     t: 'Scegli l’album',
-    d: 'Oltre 100 raccolte pronte — Calciatori, Adrenalyn, Mondiali e altre. Aprine una in un tap, o creala tu.',
+    d: 'Oltre 100 raccolte pronte: Calciatori, Adrenalyn, Mondiali e altre. Aprine una in un tap, o creala tu.',
   },
   {
     icon: CheckSquare,
@@ -130,7 +130,7 @@ export default function Landing() {
           images={HERO_COVERS}
           badge={<><Trophy className="h-4 w-4" strokeWidth={2} /> La casa del collezionismo sportivo</>}
           title={<>Chiudi l’album. <span className="italic text-lime">Una doppia alla volta.</span></>}
-          subtitle="FiguBook tiene il conto della tua collezione, ti dice cosa ti manca e ti fa scambiare i doppioni con altri collezionisti. Gratis, senza abbonamenti."
+          subtitle="Tiene il conto della collezione, ti dice cosa ti manca e fa scambiare i doppioni. Gratis, senza abbonamenti."
           actions={
             <>
               <Link
@@ -277,8 +277,8 @@ export default function Landing() {
             </button>
           </nav>
           <div className="mt-8 flex flex-col gap-2 border-t border-white/8 pt-6 text-[12px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-            <p>© {new Date().getFullYear()} FiguBook — Tutti i diritti riservati.</p>
-            <p className="italic">Non affiliato a Panini S.p.A. — strumento indipendente.</p>
+            <p>© {new Date().getFullYear()} FiguBook. Tutti i diritti riservati.</p>
+            <p className="italic">Non affiliato a Panini S.p.A. Strumento indipendente.</p>
           </div>
         </div>
       </footer>
