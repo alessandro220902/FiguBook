@@ -97,6 +97,19 @@ function VetrinaInner({ username }: { username: string }) {
   const accent = team ? teamAccent(team) : undefined
   const name = profile.username
 
+  // Stat sintetiche per l'header (solo quelle con dati reali, niente riempitivi).
+  const albumCount = albums.length
+  const avgPct = albumCount ? Math.round(albums.reduce((s, a) => s + a.pct, 0) / albumCount) : 0
+  const avgRating = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0
+  const stats: { label: string; value: string }[] = []
+  if (!isBlocked && albumCount) {
+    stats.push({ label: 'Album', value: String(albumCount) })
+    stats.push({ label: 'Completamento', value: `${avgPct}%` })
+  }
+  if (!isBlocked && reviews.length) {
+    stats.push({ label: 'Valutazione', value: avgRating.toFixed(1) })
+  }
+
   return (
     <div className="mx-auto w-full max-w-3xl">
       {team && (
@@ -167,6 +180,23 @@ function VetrinaInner({ username }: { username: string }) {
               </div>
             </div>
           </div>
+
+          {stats.length > 0 && (
+            <div className="mt-6 flex items-stretch border-t border-[color:var(--card-hair)] pt-5">
+              {stats.map((s, i) => (
+                <div
+                  key={s.label}
+                  className={
+                    'flex-1 px-2 text-center sm:text-left ' +
+                    (i > 0 ? 'border-l border-[color:var(--card-hair)]' : '')
+                  }
+                >
+                  <p className="type-stat font-display text-2xl text-ink">{s.value}</p>
+                  <p className="type-caption mt-0.5 text-ink-2">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </FadeIn>
 
