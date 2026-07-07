@@ -63,6 +63,7 @@ const PWD_RULES: { key: string; label: string; test: (p: string) => boolean }[] 
   { key: 'len', label: 'Almeno 8 caratteri', test: (p) => p.length >= 8 },
   { key: 'upper', label: 'Una lettera maiuscola', test: (p) => /[A-Z]/.test(p) },
   { key: 'num', label: 'Un numero', test: (p) => /[0-9]/.test(p) },
+  { key: 'spec', label: 'Un carattere speciale', test: (p) => /[^A-Za-z0-9]/.test(p) },
 ]
 const pwdValid = (p: string) => PWD_RULES.every((r) => r.test(p))
 
