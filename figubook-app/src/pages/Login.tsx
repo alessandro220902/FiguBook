@@ -188,7 +188,7 @@ export default function Login() {
 
           {/* ── PANNELLO ORO (scivola) — solo desktop ── */}
           <div
-            className="absolute inset-y-0 left-0 z-20 hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-[#d8bd85] via-[#c8a96e] to-[#8f7444] p-12 text-[#1a1508] transition-transform duration-[700ms] ease-[cubic-bezier(.65,0,.35,1)] motion-reduce:transition-none md:flex"
+            className="absolute inset-y-0 left-0 z-20 hidden w-1/2 flex-col overflow-hidden bg-gradient-to-br from-[#d8bd85] via-[#c8a96e] to-[#8f7444] p-10 text-[#1a1508] transition-transform duration-[700ms] ease-[cubic-bezier(.65,0,.35,1)] motion-reduce:transition-none md:flex"
             style={{ transform: mode === 'register' ? 'translateX(100%)' : 'translateX(0)' }}
           >
             {/* texture: sheen alto-sx + vignette basso per profondita' */}
@@ -199,26 +199,29 @@ export default function Login() {
               <span className="font-display text-2xl font-extrabold tracking-tight">FiguBook</span>
             </div>
 
-            <h2
-              key={slogIdx}
-              className="slogan-anim relative z-10 m-0 max-w-[15ch] font-display text-[34px] font-bold leading-[1.06] tracking-[-0.02em]"
-            >
-              {SLOGANS[slogIdx][0]}{' '}
-              <em className="font-serif italic opacity-75">{SLOGANS[slogIdx][1]}</em>
-            </h2>
-
-            <div className="relative z-10">
-              <p className="mb-3 text-sm font-medium opacity-75">
-                {mode === 'login' ? 'Non hai ancora un account?' : 'Hai già un account?'}
-              </p>
-              <button
-                type="button"
-                onClick={toggle}
-                className="group inline-flex items-center gap-2 rounded-full border border-[#1a1508]/40 px-5 py-2.5 text-sm font-bold transition-colors hover:bg-[#1a1508]/10"
+            {/* slogan + switch, raggruppati e centrati verticalmente */}
+            <div className="relative z-10 flex flex-1 flex-col justify-center gap-7">
+              <h2
+                key={slogIdx}
+                className="slogan-anim m-0 max-w-[15ch] font-display text-[34px] font-bold leading-[1.06] tracking-[-0.02em]"
               >
-                {mode === 'login' ? 'Crea un account' : 'Accedi'}
-                <ArrowRight className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5" />
-              </button>
+                {SLOGANS[slogIdx][0]}{' '}
+                <em className="font-serif italic opacity-75">{SLOGANS[slogIdx][1]}</em>
+              </h2>
+
+              <div>
+                <p className="mb-3 text-sm font-semibold opacity-80">
+                  {mode === 'login' ? 'Non hai ancora un account?' : 'Hai già un account?'}
+                </p>
+                <button
+                  type="button"
+                  onClick={toggle}
+                  className="group inline-flex items-center gap-2 rounded-full bg-[#1a1508] px-5 py-2.5 text-sm font-bold text-[#d8bd85] transition-[filter,transform] hover:brightness-110 active:translate-y-px"
+                >
+                  {mode === 'login' ? 'Crea un account' : 'Accedi'}
+                  <ArrowRight className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5" />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -231,7 +234,7 @@ export default function Login() {
               switchCta="Registrati"
               onSwitch={toggle}
             >
-              <form onSubmit={handleLogin} className="flex flex-col gap-3.5">
+              <form onSubmit={handleLogin} className="flex flex-col gap-3">
                 <Field label="Email" icon={<Mail className="h-4 w-4" />}>
                   <input
                     type="email"
@@ -289,7 +292,7 @@ export default function Login() {
               switchCta="Accedi"
               onSwitch={toggle}
             >
-              <form onSubmit={handleRegister} className="flex flex-col gap-3.5">
+              <form onSubmit={handleRegister} className="flex flex-col gap-3">
                 <Field label="Nome utente" icon={<User className="h-4 w-4" />}>
                   <input
                     type="text"
@@ -326,7 +329,7 @@ export default function Login() {
                   <PassToggle on={showRegPass} set={setShowRegPass} />
                 </Field>
 
-                <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-border bg-card px-3.5 py-3">
+                <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-border bg-card px-3.5 py-2.5">
                   <input
                     type="checkbox"
                     checked={regTerms}
@@ -358,7 +361,7 @@ export default function Login() {
 // crossfade+slide; su mobile è un blocco normale, l'inattivo è rimosso (hidden).
 function panelCls(side: 'left' | 'right', active: boolean) {
   const base =
-    'flex w-full flex-col justify-center overflow-y-auto p-8 transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none md:absolute md:inset-y-0 md:w-1/2 md:p-12 ' +
+    'flex w-full flex-col justify-center overflow-y-auto p-8 transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none md:absolute md:inset-y-0 md:w-1/2 md:p-10 ' +
     (side === 'right' ? 'md:right-0 ' : 'md:left-0 ')
   const state = active
     ? 'opacity-100 md:visible md:pointer-events-auto md:opacity-100 md:translate-x-0'
@@ -394,7 +397,7 @@ function FormShell({
       <h1 className="m-0 bg-gradient-to-br from-white from-20% to-[#c8a96e] bg-clip-text font-display text-[38px] font-bold leading-none tracking-[-0.025em] text-transparent">
         {title}
       </h1>
-      <p className="mb-7 mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
+      <p className="mb-5 mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
 
       {children}
 
@@ -410,7 +413,7 @@ function FormShell({
 }
 
 const inputCls =
-  'w-full rounded-xl border border-border bg-card py-3.5 pl-11 pr-4 text-[15px] text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-lime'
+  'w-full rounded-xl border border-border bg-card py-3 pl-11 pr-4 text-[15px] text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-lime'
 
 function Field({ label, icon, children }: { label: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -452,7 +455,7 @@ function PrimaryButton({ label, busy, disabled }: { label: string; busy: boolean
     <button
       type="submit"
       disabled={busy || disabled}
-      className="group mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-br from-[#d8bd85] to-[#c8a96e] py-3.5 font-bold text-[#1a1508] shadow-[0_10px_28px_-10px_rgba(200,169,110,.55)] transition-[filter,transform] hover:brightness-105 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
+      className="group mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-br from-[#d8bd85] to-[#c8a96e] py-3 font-bold text-[#1a1508] shadow-[0_10px_28px_-10px_rgba(200,169,110,.55)] transition-[filter,transform] hover:brightness-105 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
     >
       {label} <ArrowRight className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5" />
     </button>
@@ -461,7 +464,7 @@ function PrimaryButton({ label, busy, disabled }: { label: string; busy: boolean
 
 function Divider() {
   return (
-    <div className="my-2 flex items-center gap-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+    <div className="my-1.5 flex items-center gap-3 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
       <span className="h-px flex-1 bg-border" />
       oppure
       <span className="h-px flex-1 bg-border" />
@@ -475,7 +478,7 @@ function GoogleButton({ onClick, disabled }: { onClick: () => void; disabled: bo
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-[#c8a96e]/20 bg-[#c8a96e]/[0.06] py-3 text-[14.5px] font-semibold text-white/70 transition-[color,background-color,border-color,transform] hover:border-[#c8a96e]/35 hover:bg-[#c8a96e]/[0.1] hover:text-white/90 active:scale-[0.98] disabled:opacity-60"
+      className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-[#c8a96e]/20 bg-[#c8a96e]/[0.06] py-2.5 text-[14.5px] font-semibold text-white/70 transition-[color,background-color,border-color,transform] hover:border-[#c8a96e]/35 hover:bg-[#c8a96e]/[0.1] hover:text-white/90 active:scale-[0.98] disabled:opacity-60"
     >
       <GoogleIcon /> Continua con Google
     </button>
