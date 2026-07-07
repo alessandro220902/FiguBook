@@ -118,7 +118,7 @@ export default function Landing() {
               to="/login?r=1"
               className="rounded-full bg-lime px-4 py-2 text-sm font-bold text-lime-ink transition-all hover:-translate-y-0.5 hover:brightness-105 active:scale-[0.98]"
             >
-              Registrati
+              Inizia Ora
             </Link>
           </div>
         </div>
@@ -236,10 +236,7 @@ export default function Landing() {
                   (i % 2 === 0 ? 'sm:border-r sm:pr-10' : 'sm:pl-10')
                 }
               >
-                <h3 className="flex items-baseline gap-3 text-[22px] font-bold tracking-tight">
-                  <span className="mt-1 h-1.5 w-1.5 shrink-0 self-start rounded-full bg-lime" />
-                  {f.t}
-                </h3>
+                <h3 className="text-[22px] font-bold tracking-tight">{f.t}</h3>
                 <p className="mt-3 max-w-[48ch] text-[15px] leading-relaxed text-ink-2">{f.d}</p>
               </Reveal>
             ))}
