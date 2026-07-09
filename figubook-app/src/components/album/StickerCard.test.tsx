@@ -2,8 +2,10 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { StickerCard } from './StickerCard'
+import type { TeamKit } from '@/lib/album/teamKits'
 
-const base = { code: 'QAT1', name: 'Foto squadra', c1: '#8a1538', c2: '#5a0d24' }
+const kit: TeamKit = { c1: '#8a1538', c2: '#5a0d24', pattern: 'solid' }
+const base = { code: 'QAT1', name: 'Foto squadra', kit }
 
 describe('StickerCard', () => {
   it('mancante: mostra codice, niente badge possesso', () => {
@@ -34,5 +36,10 @@ describe('StickerCard', () => {
     await userEvent.click(screen.getByRole('button', { name: /^QAT1/ }))
     expect(onInfo).toHaveBeenCalledOnce()
     expect(onAdd).not.toHaveBeenCalled()
+  })
+  it('mostra il layer pattern quando il kit non è solid', () => {
+    const striped: TeamKit = { c1: '#111', c2: '#eee', pattern: 'stripes' }
+    const { container } = render(<StickerCard {...base} kit={striped} count={1} insertOn={false} onAdd={()=>{}} onRemove={()=>{}} onInfo={()=>{}} />)
+    expect(container.querySelector('[data-testid="kit-pattern"]')).not.toBeNull()
   })
 })

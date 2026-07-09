@@ -1,5 +1,6 @@
 import { Plus, Minus, Check } from 'lucide-react'
-import { sectionGradient, ownedInkIsDark } from '@/lib/album/color'
+import { kitGradient, kitPattern, ownedInkIsDark } from '@/lib/album/color'
+import type { TeamKit } from '@/lib/album/teamKits'
 
 // Nome su due righe: nome sopra, cognome a capo. Le carte a doppia squadra
 // ("Avellino / Bari") si spezzano su " / " (una squadra sopra, una sotto).
@@ -13,8 +14,7 @@ function nameLines(name: string): string[] {
 export interface StickerCardProps {
   code: string
   name?: string
-  c1: string
-  c2: string
+  kit: TeamKit
   count: number
   insertOn: boolean
   onAdd: () => void
@@ -22,10 +22,11 @@ export interface StickerCardProps {
   onInfo: () => void
 }
 
-export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemove, onInfo }: StickerCardProps) {
+export function StickerCard({ code, name, kit, count, insertOn, onAdd, onRemove, onInfo }: StickerCardProps) {
   const owned = count >= 1
   const doubles = Math.max(0, count - 1)
-  const darkInk = owned && ownedInkIsDark(c1, c2)
+  const darkInk = owned && ownedInkIsDark(kit)
+  const pattern = kitPattern(kit)
 
   const handleClick = () => (insertOn ? onAdd() : onInfo())
 
@@ -46,7 +47,7 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
               ? 'border-white/15 shadow-sm hover:-translate-y-0.5 hover:shadow-lg ' + (darkInk ? 'text-[#14110a]' : 'text-white')
               : 'border-dashed border-white/10 bg-surface text-muted-foreground hover:-translate-y-0.5',
           ].join(' ')}
-          style={owned ? { backgroundImage: sectionGradient(c1, c2) } : undefined}
+          style={owned ? { backgroundImage: kitGradient(kit) } : undefined}
         >
           {owned && (
             <span
@@ -54,6 +55,14 @@ export function StickerCard({ code, name, c1, c2, count, insertOn, onAdd, onRemo
                 'pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br to-transparent ' +
                 (darkInk ? 'from-black/10' : 'from-white/20')
               }
+            />
+          )}
+          {owned && pattern && (
+            <span
+              data-testid="kit-pattern"
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-xl mix-blend-overlay"
+              style={{ backgroundImage: pattern }}
             />
           )}
           {/* Doppie: velo lucido diagonale (foil) sopra il gradiente squadra,
