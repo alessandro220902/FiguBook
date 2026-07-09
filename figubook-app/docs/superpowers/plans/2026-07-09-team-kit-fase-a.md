@@ -535,70 +535,144 @@ git push origin main
 
 ---
 
-## Task 7: Popolare i kit — colori fedeli Serie A + pattern iconici
+## Task 7: Popolare i kit — colori fedeli TUTTE le squadre (tutti gli album) + pattern iconici
 
 **Files:**
 - Modify: `src/lib/album/teamKits.ts`
 - Test: `src/lib/album/teamKits.test.ts` (già copre validità/contrasto)
 
-**Design:** questo è il task grafico. Invocare `design-taste-frontend` per validare i colori
-(fedeltà colori sociali) e `impeccable` a fine task. Colori dai kit ufficiali; pattern solo
-dove la maglia è inequivocabile.
+**Scope:** tutte le **107** sezioni squadra uniche di tutti gli album — Serie A/B/C
+(Calciatori 22/23–25/26, Adrenalyn, CALB), club europei (Match Attax UCL), nazionali
+(Mondiali 2022/2026). Non solo Serie A.
 
-- [ ] **Step 1: Popola `KITS` con le squadre Serie A 24/25 e 25/26**
+**Design:** task grafico. Invocare `design-taste-frontend` per validare i colori sociali e
+`impeccable` a fine task. Colori dai kit ufficiali; `pattern` solo dove la maglia è
+inequivocabile, altrimenti `solid` (colori comunque corretti).
 
-Sostituisci il `KITS` provvisorio con la mappa completa (id = `section.id`). Colori fedeli;
-`pattern` solo dove iconico, altrimenti `solid`. Valori di partenza (rifinire con design skill):
+- [ ] **Step 0: Rigenera la lista di verità (id + colori attuali)**
 
+Run:
+```bash
+node -e '
+const fs=require("fs");const dir="src/data/albums";const seen={};
+for(const f of fs.readdirSync(dir)){if(!f.endsWith(".ts")||f.includes("test")||f==="types.ts"||f==="index.ts")continue;
+const t=fs.readFileSync(dir+"/"+f,"utf8");
+const re=/"id":"([a-z0-9-]+)","name":"([^"]+)","short":"[^"]*","group":"[^"]*","kind":"team","codes":\[[^\]]*\],"c1":"(#[0-9a-fA-F]{6})","c2":"(#[0-9a-fA-F]{6})"/g;
+let m;while(m=re.exec(t)){if(!seen[m[1]])seen[m[1]]={name:m[2]};}}
+const k=Object.keys(seen).sort();console.log(k.length);for(const x of k)console.log(x+" | "+seen[x].name);'
+```
+Expected: `107` seguito dall'elenco `id | Nome`. Ogni `id` DEVE finire in `KITS` (con colori
+fedeli) oppure risolversi via `ALIAS` a un `id` presente in `KITS`.
+
+- [ ] **Step 1: Popola `KITS` — un kit fedele per OGNI squadra**
+
+Sostituisci il `KITS` provvisorio. Regole:
+- `c1`/`c2` = veri colori sociali (correggere i duplicati generici: oggi Bologna=Cagliari,
+  Genoa simili, ecc.).
+- `pattern` iconico SOLO per le squadre con maglia inequivocabile (lista sotto); tutte le
+  altre `solid`.
+- `accent` dove serve un terzo colore (banda/dettaglio) — es. Venezia arancio, Parma blu.
+
+**Pattern iconici da assegnare (il resto = `solid`):**
+- `stripes` (verticali): juventus, udinese (bianconere) · inter · milan · atalanta ·
+  barcelona · atletico · frankfurt(? no→solid) · newcastle · qarabag · brugge → valuta caso
+  per caso; assegna `stripes` solo se la maglia è a strisce verticali marcate
+  (juventus, udinese, inter, milan, atalanta, barcelona, atletico, newcastle).
+- `halves` (due metà): bologna, cagliari, genoa (rossoblù), lecce (giallorosso), sporting(? →
+  solid), blackburn n/a. Assegna `halves` solo a rossoblù/giallorossi a metà nette
+  (bologna, cagliari, genoa, lecce, catanzaro).
+- `sash` (banda diagonale): venezia, parma(crociato→sash), river n/a, peru n/a, boca n/a.
+  Assegna `sash` a: venezia, parma.
+- Tutto il resto (nazionali, club a tinta unita, Real, Napoli, Roma, Lazio, ecc.) = `solid`.
+
+Struttura (esempio parziale — completare per tutti i 107 id dello Step 0):
 ```ts
 export const KITS: Record<string, TeamKit> = {
-  atalanta:      { c1: '#1e71b8', c2: '#0d0d0d', pattern: 'stripes', accent: '#0d0d0d' },
-  bologna:       { c1: '#a2132e', c2: '#12284b', pattern: 'halves' },
-  cagliari:      { c1: '#9c1b2e', c2: '#0d2a5c', pattern: 'halves' },
-  como:          { c1: '#0d3c8c', c2: '#e9edf2', pattern: 'solid' },
-  empoli:        { c1: '#0a5aa5', c2: '#0d2f5c', pattern: 'solid' },
-  fiorentina:    { c1: '#6a2ca0', c2: '#3a1866', pattern: 'solid' },
-  genoa:         { c1: '#a2132e', c2: '#12284b', pattern: 'halves' },
-  'hellas-verona': { c1: '#12284b', c2: '#f2c200', pattern: 'solid', accent: '#f2c200' },
-  inter:         { c1: '#0a1a8c', c2: '#0d0d0d', pattern: 'stripes' },
-  juventus:      { c1: '#0d0d0d', c2: '#f4f4f4', pattern: 'stripes' },
-  lazio:         { c1: '#8ecae6', c2: '#0d3c6e', pattern: 'solid', accent: '#0d3c6e' },
-  lecce:         { c1: '#f2c200', c2: '#a2132e', pattern: 'halves' },
-  milan:         { c1: '#a2132e', c2: '#0d0d0d', pattern: 'stripes' },
-  monza:         { c1: '#a2132e', c2: '#f4f4f4', pattern: 'solid' },
-  napoli:        { c1: '#12a5e0', c2: '#0d5c9c', pattern: 'solid' },
-  parma:         { c1: '#f4c400', c2: '#0a3a8b', pattern: 'sash', accent: '#0a3a8b' },
-  roma:          { c1: '#9c1b2e', c2: '#f2b100', pattern: 'solid', accent: '#f2b100' },
-  torino:        { c1: '#7a1212', c2: '#4a0a0a', pattern: 'solid' },
-  udinese:       { c1: '#0d0d0d', c2: '#f4f4f4', pattern: 'stripes' },
-  venezia:       { c1: '#0d5c3a', c2: '#f2c200', pattern: 'sash', accent: '#e26a1f' },
-  // Nuove promosse 25/26 — aggiungi qui se presenti nel relativo album:
-  // sassuolo, pisa, cremonese ... (id da src/data/albums/calciatori-25-26.ts)
+  // Serie A
+  atalanta:  { c1: '#1e71b8', c2: '#0d0d0d', pattern: 'stripes', accent: '#0d0d0d' },
+  bologna:   { c1: '#a2132e', c2: '#12284b', pattern: 'halves' },
+  cagliari:  { c1: '#9c1b2e', c2: '#0d2a5c', pattern: 'halves' },
+  genoa:     { c1: '#a2132e', c2: '#12284b', pattern: 'halves' },
+  inter:     { c1: '#0a1a8c', c2: '#0d0d0d', pattern: 'stripes' },
+  juventus:  { c1: '#0d0d0d', c2: '#f4f4f4', pattern: 'stripes' },
+  milan:     { c1: '#a2132e', c2: '#0d0d0d', pattern: 'stripes' },
+  udinese:   { c1: '#0d0d0d', c2: '#f4f4f4', pattern: 'stripes' },
+  lecce:     { c1: '#f2c200', c2: '#a2132e', pattern: 'halves' },
+  napoli:    { c1: '#12a5e0', c2: '#0d5c9c', pattern: 'solid' },
+  roma:      { c1: '#9c1b2e', c2: '#f2b100', pattern: 'solid', accent: '#f2b100' },
+  lazio:     { c1: '#8ecae6', c2: '#0d3c6e', pattern: 'solid', accent: '#0d3c6e' },
+  parma:     { c1: '#f4c400', c2: '#0a3a8b', pattern: 'sash', accent: '#0a3a8b' },
+  venezia:   { c1: '#0d5c3a', c2: '#f2c200', pattern: 'sash', accent: '#e26a1f' },
+  torino:    { c1: '#7a1212', c2: '#4a0a0a', pattern: 'solid' },
+  fiorentina:{ c1: '#6a2ca0', c2: '#3a1866', pattern: 'solid' },
+  // Club UCL (Match Attax) — es.
+  barcelona:   { c1: '#a50044', c2: '#004d98', pattern: 'stripes' },
+  atletico:    { c1: '#ce3024', c2: '#f4f4f4', pattern: 'stripes', accent: '#003087' },
+  newcastle:   { c1: '#0d0d0d', c2: '#f4f4f4', pattern: 'stripes' },
+  'real-madrid': { c1: '#f4f4f4', c2: '#febe10', pattern: 'solid', accent: '#00529f' },
+  bayern:      { c1: '#dc052d', c2: '#0066b2', pattern: 'solid' },
+  liverpool:   { c1: '#c8102e', c2: '#00b2a9', pattern: 'solid' },
+  dortmund:    { c1: '#fde100', c2: '#14110d', pattern: 'solid' },
+  // Nazionali (Mondiali) — sempre solid, colori bandiera corretti
+  arg: { c1: '#75aadb', c2: '#0a4a8b', pattern: 'solid' },
+  bra: { c1: '#f7d417', c2: '#1f8a4c', pattern: 'solid', accent: '#0a3a8b' },
+  fra: { c1: '#0a3a8b', c2: '#c8102e', pattern: 'solid' },
+  // ... COMPLETARE tutti gli id restanti dello Step 0 ...
 }
 ```
 
-- [ ] **Step 2: Aggiungi alias per id divergenti tra album (se presenti)**
+- [ ] **Step 2: Alias per id sinonimi (stessa squadra, id diverso)**
 
-Cerca gli id squadra negli altri album e mappa quelli diversi al kit canonico:
-Run: `grep -rho '"id":"[a-z-]*"' src/data/albums/*.ts | sort -u | head -80`
-Per ogni id sinonimo (es. `inter-fc` → `inter`) aggiungi a `ALIAS`. Se non ce ne sono, lascia `ALIAS = {}`.
+Compila `ALIAS` per gli id doppioni visti nello Step 0. Almeno:
+```ts
+const ALIAS: Record<string, string> = {
+  hellas: 'hellas-verona',
+  verona: 'hellas-verona',
+}
+```
+Verifica con lo Step 0 se ce ne sono altri (nomi identici, id diversi) e aggiungili. Nota:
+`hellas-verona` deve esistere in `KITS` (gialloblù: `{ c1:'#12284b', c2:'#f2c200', pattern:'solid', accent:'#f2c200' }`).
 
-- [ ] **Step 3: Run test + build**
+- [ ] **Step 3: Test copertura — nessun id squadra senza kit/alias**
+
+Estendi `teamKits.test.ts` con un test che carica tutti gli album e verifica che ogni sezione
+`kind:'team'` risolva a un kit *curato* (non fallback):
+```ts
+import { ALBUMS } from '@/data/albums'   // adatta all'export reale
+it('ogni squadra di ogni album ha un kit curato', () => {
+  const uncovered: string[] = []
+  for (const album of ALBUMS) {
+    for (const s of album.sections) {
+      if (s.kind !== 'team') continue
+      const key = (KITS[s.id] ? s.id : undefined) ?? undefined
+      const aliased = key ?? (ALIASofSection(s.id))
+      if (!aliased) uncovered.push(s.id)
+    }
+  }
+  expect(uncovered, `senza kit: ${uncovered.join(', ')}`).toHaveLength(0)
+})
+```
+> Adatta all'API reale: esporta da `teamKits.ts` un helper `hasCuratedKit(id: string): boolean`
+> (`return !!(KITS[id] ?? (ALIAS[id] && KITS[ALIAS[id]]))`) e usalo nel test invece di
+> `ALIASofSection`. Verifica prima l'export effettivo degli album in `src/data/albums/index.ts`.
+
+- [ ] **Step 4: Run test + build**
 
 Run: `npx vitest run src/lib/album/teamKits.test.ts && npx tsc -b --noEmit`
-Expected: PASS + exit 0 (il test valida hex e contrasto di ogni kit).
+Expected: PASS (incluso il test copertura: zero id scoperti) + exit 0.
 
-- [ ] **Step 4: Audit design**
+- [ ] **Step 5: Audit design**
 
-Invoca `design-taste-frontend` e `impeccable` sul risultato (screenshot sezioni chiave:
-Juve/Inter/Milan strisce, Bologna/Genoa metà, Hellas/Parma chiare). Verifica contrasto AA,
-sottigliezza pattern, nessun slop. Correggi hex/pattern se serve.
+Invoca `design-taste-frontend` e `impeccable`. Screenshot sezioni chiave per famiglia:
+strisce (Juve/Inter/Milan/Barça), metà (Bologna/Genoa/Lecce), sash (Venezia/Parma), chiare
+(Hellas/Real/Napoli), nazionali (Argentina/Brasile). Verifica contrasto AA, sottigliezza
+pattern, nessun slop. Correggi hex/pattern.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add src/lib/album/teamKits.ts
-git commit -m "feat(album): kit colori fedeli Serie A + pattern-maglia iconici
+git add src/lib/album/teamKits.ts src/lib/album/teamKits.test.ts
+git commit -m "feat(album): kit colori fedeli TUTTE le squadre (tutti gli album) + pattern iconici
 
 Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 git push origin main
