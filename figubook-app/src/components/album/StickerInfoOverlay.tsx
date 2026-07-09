@@ -1,21 +1,21 @@
 import { useEffect, useRef } from 'react'
 import { Plus, Minus, X } from 'lucide-react'
-import { sectionGradient } from '@/lib/album/color'
+import { kitGradient } from '@/lib/album/color'
+import type { TeamKit } from '@/lib/album/teamKits'
 
 export interface StickerInfoOverlayProps {
   open: boolean
   code: string
   name?: string
   sectionName: string
-  c1: string
-  c2: string
+  kit: TeamKit
   count: number
   onAdd: () => void
   onRemove: () => void
   onClose: () => void
 }
 
-export function StickerInfoOverlay({ open, code, name, sectionName, c1, c2, count, onAdd, onRemove, onClose }: StickerInfoOverlayProps) {
+export function StickerInfoOverlay({ open, code, name, sectionName, kit, count, onAdd, onRemove, onClose }: StickerInfoOverlayProps) {
   const ref = useRef<HTMLDialogElement>(null)
   useEffect(() => {
     const d = ref.current
@@ -30,7 +30,7 @@ export function StickerInfoOverlay({ open, code, name, sectionName, c1, c2, coun
   return (
     <dialog ref={ref} onClose={onClose} onClick={(e) => { if (e.target === ref.current) onClose() }}
       className="m-auto w-[min(92vw,360px)] rounded-lg border border-white/10 bg-bg-elev p-0 text-ink backdrop:bg-black/60">
-      <div className="relative h-40 w-full" style={{ backgroundImage: sectionGradient(c1, c2) }}>
+      <div className="relative h-40 w-full" style={{ backgroundImage: kitGradient(kit) }}>
         <button type="button" onClick={onClose} aria-label="Chiudi" className="absolute right-3 top-3 rounded-full bg-black/30 p-1.5 text-white">
           <X size={16} />
         </button>

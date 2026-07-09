@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Check } from 'lucide-react'
 import type { AlbumData, Section } from '@/data/albums/types'
-import { sectionGradient, sectionVars } from '@/lib/album/color'
+import { kitGradient, sectionVars } from '@/lib/album/color'
+import { kitForSection } from '@/lib/album/teamKits'
 import { sectionStats } from '@/lib/album/stats'
 
 export interface SectionSidebarProps {
@@ -52,12 +53,13 @@ export function SectionSidebar({ data, states, counts, activeId, onSelect }: Sec
               {visible.map((s) => {
                 const st = sectionStats(states, counts, s.codes)
                 const active = s.id === activeId
+                const k = kitForSection(s)
                 return (
                   <button
                     key={s.id}
                     type="button"
                     onClick={() => onSelect(s.id)}
-                    style={active ? sectionVars(s.c1, s.c2) : undefined}
+                    style={active ? sectionVars(k.c1, k.c2) : undefined}
                     className={[
                       'flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition-transform duration-150 ease-out active:scale-[0.99]',
                       active
@@ -65,7 +67,7 @@ export function SectionSidebar({ data, states, counts, activeId, onSelect }: Sec
                         : 'hover:bg-surface',
                     ].join(' ')}
                   >
-                    <span className="h-6 w-6 shrink-0 rounded-md border border-white/15" style={{ backgroundImage: sectionGradient(s.c1, s.c2) }} />
+                    <span className="h-6 w-6 shrink-0 rounded-md border border-white/15" style={{ backgroundImage: kitGradient(k) }} />
                     <span className="text-sm">{s.name}</span>
                     {active && <Check size={14} className="shrink-0 text-lime" strokeWidth={3} />}
                     <span className="ml-auto text-right text-[10px] leading-tight text-muted-foreground">{st.have}/{st.total}<br />{st.pct}%</span>

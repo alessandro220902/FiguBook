@@ -8,6 +8,7 @@ import { useAlbum } from '@/hooks/useAlbum'
 import { sectionStats } from '@/lib/album/stats'
 import { computeStats } from '@/lib/db/albums'
 import { sectionVars } from '@/lib/album/color'
+import { kitForSection } from '@/lib/album/teamKits'
 import { AlbumLanding } from '@/components/album/AlbumLanding'
 import { Breadcrumb } from '@/components/Breadcrumb'
 import { SectionSidebar } from '@/components/album/SectionSidebar'
@@ -218,8 +219,7 @@ export default function Album() {
         code={infoCode ?? ''}
         name={infoCode ? data.names[infoCode] : undefined}
         sectionName={infoSection.name}
-        c1={infoSection.c1}
-        c2={infoSection.c2}
+        kit={kitForSection(infoSection)}
         count={infoCode ? album.countOf(infoCode) : 0}
         onAdd={() => infoCode && album.increment(infoCode)}
         onRemove={() => infoCode && album.decrement(infoCode)}
