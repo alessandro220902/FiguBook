@@ -1,5 +1,5 @@
 import { Plus, Minus, Check } from 'lucide-react'
-import { kitGradient, kitPattern, ownedInkIsDark } from '@/lib/album/color'
+import { kitGradient, kitPattern, inkForKit } from '@/lib/album/color'
 import type { TeamKit } from '@/lib/album/teamKits'
 
 // Nome su due righe: nome sopra, cognome a capo. Le carte a doppia squadra
@@ -25,7 +25,9 @@ export interface StickerCardProps {
 export function StickerCard({ code, name, kit, count, insertOn, onAdd, onRemove, onInfo }: StickerCardProps) {
   const owned = count >= 1
   const doubles = Math.max(0, count - 1)
-  const darkInk = owned && ownedInkIsDark(kit)
+  const ink = owned ? inkForKit(kit) : null
+  const darkInk = ink?.isDark ?? false
+  const needsPlate = ink?.needsPlate ?? false
   const pattern = kitPattern(kit)
 
   const handleClick = () => (insertOn ? onAdd() : onInfo())
@@ -81,6 +83,19 @@ export function StickerCard({ code, name, kit, count, insertOn, onAdd, onRemove,
               style={{
                 backgroundImage:
                   'linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0.12) 54%, transparent 70%)',
+              }}
+            />
+          )}
+          {/* Lastra: solo sulle carte che il contrasto WCAG segnala sotto 4.5:1.
+              Radiale morbida al centro dietro il testo -> leggibilità garantita. */}
+          {owned && needsPlate && (
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-xl"
+              style={{
+                background: darkInk
+                  ? 'radial-gradient(ellipse 70% 60% at center, rgba(255,255,255,0.5) 0%, transparent 72%)'
+                  : 'radial-gradient(ellipse 70% 60% at center, rgba(0,0,0,0.5) 0%, transparent 72%)',
               }}
             />
           )}

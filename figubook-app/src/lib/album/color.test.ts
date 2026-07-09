@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { kitGradient, kitPattern, ownedInkIsDark } from './color'
+import { kitGradient, kitPattern, ownedInkIsDark, contrastRatio, inkForKit } from './color'
 import type { TeamKit } from './teamKits'
 
 const solid: TeamKit = { c1: '#0a3a8b', c2: '#1a1a1a', pattern: 'solid' }
@@ -33,5 +33,13 @@ describe('color engine da kit', () => {
   it('ownedInkIsDark true su kit chiaro, false su kit scuro', () => {
     expect(ownedInkIsDark(light)).toBe(true)
     expect(ownedInkIsDark(solid)).toBe(false)
+  })
+  it('contrastRatio: nero/bianco = 21, uguali = 1', () => {
+    expect(contrastRatio('#000000', '#ffffff')).toBeCloseTo(21, 0)
+    expect(contrastRatio('#123456', '#123456')).toBeCloseTo(1, 5)
+  })
+  it('inkForKit sceglie chiaro sul kit scuro e scuro sul kit chiaro', () => {
+    expect(inkForKit(solid).isDark).toBe(false)
+    expect(inkForKit(light).isDark).toBe(true)
   })
 })

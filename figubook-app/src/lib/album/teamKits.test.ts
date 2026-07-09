@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { KITS, kitFromColors, kitForSection, PATTERNS, hasCuratedKit } from './teamKits'
+import { inkForKit, contrastRatio, kitInkSamples, DARK_INK, LIGHT_INK } from './color'
 import type { Section, AlbumData } from '@/data/albums/types'
 import calciatori2526 from '@/data/albums/calciatori-25-26'
 import calciatori2223 from '@/data/albums/calciatori-22-23'
@@ -53,5 +54,15 @@ describe('teamKits', () => {
       for (const s of a.sections)
         if (s.kind === 'team' && !hasCuratedKit(s.id)) uncovered.push(s.id)
     expect(uncovered, `senza kit: ${[...new Set(uncovered)].join(', ')}`).toHaveLength(0)
+  })
+  it('ogni kit: inchiostro scelto passa AA (4.5:1) oppure è marcata la lastra', () => {
+    for (const [id, kit] of Object.entries(KITS)) {
+      const { isDark, needsPlate } = inkForKit(kit)
+      if (needsPlate) continue // la lastra garantisce la leggibilità
+      const ink = isDark ? DARK_INK : LIGHT_INK
+      const worst = Math.min(...kitInkSamples(kit).map((s) => contrastRatio(ink, s)))
+      // niente lastra -> l'inchiostro deve raggiungere AA large (3:1) sui colori reali
+      expect(worst, `${id} inchiostro debole`).toBeGreaterThanOrEqual(3)
+    }
   })
 })
