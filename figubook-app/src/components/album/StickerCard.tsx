@@ -47,13 +47,9 @@ export function StickerCard({ code, name, kit, count, insertOn, onAdd, onRemove,
             'focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime',
             owned
               ? [
-                  'shadow-sm hover:-translate-y-0.5 hover:shadow-lg',
-                  // Doppione: doppio anello (oro brillante + anello scuro esterno)
-                  // -> stacca su QUALSIASI colore squadra, anche gialle/chiare. Più
-                  // marcato, con alone.
-                  doubles > 0
-                    ? 'border-transparent shadow-[0_0_0_2px_#f5c542,0_0_0_3.5px_rgba(0,0,0,0.7),0_6px_20px_-4px_rgba(245,197,66,0.7)]'
-                    : 'border-white/15',
+                  'shadow-sm hover:-translate-y-0.5 hover:shadow-lg border-white/15',
+                  // Doppione: alone oro esterno (pop) + cornice interna disegnata sotto.
+                  doubles > 0 ? 'shadow-[0_4px_18px_-4px_rgba(245,197,66,0.6)]' : '',
                   darkInk ? 'text-[#14110a]' : 'text-white',
                 ].join(' ')
               : 'border-dashed border-white/10 bg-surface text-muted-foreground hover:-translate-y-0.5',
@@ -74,6 +70,16 @@ export function StickerCard({ code, name, kit, count, insertOn, onAdd, onRemove,
               aria-hidden
               className="pointer-events-none absolute inset-0 rounded-xl mix-blend-overlay"
               style={{ backgroundImage: pattern }}
+            />
+          )}
+          {/* Doppione: cornice interna oro + linea scura -> visibile su OGNI colore
+              squadra (anche gialle/chiare), mai tagliata dal bordo carta. */}
+          {owned && doubles > 0 && (
+            <span
+              data-testid="dup-frame"
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-xl"
+              style={{ boxShadow: 'inset 0 0 0 2px #f5c542, inset 0 0 0 4.5px rgba(0,0,0,0.55)' }}
             />
           )}
           {/* Doppie: velo lucido diagonale (foil) sopra il gradiente squadra,
