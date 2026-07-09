@@ -4,6 +4,7 @@ import { passes, type Filter } from '@/lib/album/filter'
 import { StickerCard } from './StickerCard'
 import { Pagination } from '@/components/ui/pagination'
 import { ctrlFilter, CTRL_BADGE_ON, CTRL_BADGE_OFF } from '@/lib/album/controlStyles'
+import { kitForSection } from '@/lib/album/teamKits'
 
 const PAGE_SIZE = 60
 
@@ -85,8 +86,7 @@ export function AlbumFlatView({ data, countOf, onAdd, onRemove, onInfo, stats }:
                 key={code}
                 code={code}
                 name={data.names[code]}
-                c1={sec?.c1 ?? '#444'}
-                c2={sec?.c2 ?? '#222'}
+                kit={sec ? kitForSection(sec) : { c1: '#444', c2: '#444', pattern: 'solid' }}
                 count={countOf(code)}
                 insertOn={insertOn}
                 onAdd={() => onAdd(code)}

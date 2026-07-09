@@ -1,6 +1,7 @@
 import { StickerCard } from './StickerCard'
 import type { Section } from '@/data/albums/types'
 import { passes, type Filter } from '@/lib/album/filter'
+import { kitForSection } from '@/lib/album/teamKits'
 
 export type { Filter }
 
@@ -17,6 +18,7 @@ export interface StickerGridProps {
 
 export function StickerGrid({ section, names, countOf, insertOn, filter, onAdd, onRemove, onInfo }: StickerGridProps) {
   const codes = section.codes.filter((c) => passes(filter, countOf(c)))
+  const kit = kitForSection(section)
   // Serie C: nessun nome sulle carte (solo numero).
   const showNames = section.id !== 'serie-c'
   if (codes.length === 0) {
@@ -29,8 +31,7 @@ export function StickerGrid({ section, names, countOf, insertOn, filter, onAdd, 
           key={code}
           code={code}
           name={showNames ? names[code] : undefined}
-          c1={section.c1}
-          c2={section.c2}
+          kit={kit}
           count={countOf(code)}
           insertOn={insertOn}
           onAdd={() => onAdd(code)}
