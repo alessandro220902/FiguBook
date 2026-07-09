@@ -1,6 +1,7 @@
 // figubook-app/src/components/album/SectionHero.tsx
 import type { Section } from '@/data/albums/types'
-import { sectionGradient } from '@/lib/album/color'
+import { kitGradient, kitPattern } from '@/lib/album/color'
+import { kitForSection } from '@/lib/album/teamKits'
 import type { SectionStats } from '@/lib/album/stats'
 import type { Filter } from './StickerGrid'
 import { ctrlFilter } from '@/lib/album/controlStyles'
@@ -56,8 +57,13 @@ function FilterButton({ active, onClick, children }: { active: boolean; onClick:
 }
 
 export function SectionHero({ section, stats, filter, onFilter, insertOn, onToggleInsert }: SectionHeroProps) {
+  const kit = kitForSection(section)
+  const pattern = kitPattern(kit)
   return (
-    <header className="relative overflow-hidden rounded-2xl border border-white/10 p-4 sm:p-6" style={{ backgroundImage: sectionGradient(section.c1, section.c2) }}>
+    <header className="relative overflow-hidden rounded-2xl border border-white/10 p-4 sm:p-6" style={{ backgroundImage: kitGradient(kit) }}>
+      {pattern && (
+        <div aria-hidden className="pointer-events-none absolute inset-0 mix-blend-overlay opacity-70" style={{ backgroundImage: pattern }} />
+      )}
       {/* Scrim scuro: contrasto del testo bianco anche su sezioni chiare (gold, azzurro). */}
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.62)_0%,rgba(0,0,0,0.42)_55%,rgba(0,0,0,0.30)_100%)]" />
       <div className="relative z-10">
