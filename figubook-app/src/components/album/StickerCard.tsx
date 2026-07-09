@@ -44,7 +44,14 @@ export function StickerCard({ code, name, kit, count, insertOn, onAdd, onRemove,
             'absolute inset-0 flex flex-col items-center justify-center gap-0.5 rounded-xl border px-1.5 transition',
             'focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime',
             owned
-              ? 'border-white/15 shadow-sm hover:-translate-y-0.5 hover:shadow-lg ' + (darkInk ? 'text-[#14110a]' : 'text-white')
+              ? [
+                  'shadow-sm hover:-translate-y-0.5 hover:shadow-lg',
+                  // Doppione: bordo oro + alone -> segnale netto nella griglia.
+                  doubles > 0
+                    ? 'border-gold shadow-[0_0_0_1px_rgba(200,162,74,0.55),0_5px_16px_-5px_rgba(200,162,74,0.5)]'
+                    : 'border-white/15',
+                  darkInk ? 'text-[#14110a]' : 'text-white',
+                ].join(' ')
               : 'border-dashed border-white/10 bg-surface text-muted-foreground hover:-translate-y-0.5',
           ].join(' ')}
           style={owned ? { backgroundImage: kitGradient(kit) } : undefined}
@@ -91,7 +98,7 @@ export function StickerCard({ code, name, kit, count, insertOn, onAdd, onRemove,
           <span data-testid="owned-badge" aria-hidden className="pointer-events-none absolute left-1.5 top-1.5 z-20 flex h-[18px] w-[18px] items-center justify-center rounded-md bg-stat-have text-lime-ink"><Check size={12} strokeWidth={3} /></span>
         )}
         {doubles > 0 && (
-          <span data-testid="dup-badge" aria-hidden className="pointer-events-none absolute right-1.5 top-1.5 z-20 rounded-md bg-gold px-1.5 text-[10px] font-bold text-lime-ink">×{doubles}</span>
+          <span data-testid="dup-badge" aria-hidden className="pointer-events-none absolute right-1.5 top-1.5 z-20 flex h-[20px] min-w-[20px] items-center justify-center rounded-md bg-lime-ink/90 px-1.5 text-[11px] font-bold text-gold ring-1 ring-gold/60 shadow-sm">×{doubles}</span>
         )}
       </div>
 
