@@ -48,9 +48,11 @@ export function StickerCard({ code, name, kit, count, insertOn, onAdd, onRemove,
             owned
               ? [
                   'shadow-sm hover:-translate-y-0.5 hover:shadow-lg',
-                  // Doppione: bordo oro + alone -> segnale netto nella griglia.
+                  // Doppione: doppio anello (oro brillante + anello scuro esterno)
+                  // -> stacca su QUALSIASI colore squadra, anche gialle/chiare. Più
+                  // marcato, con alone.
                   doubles > 0
-                    ? 'border-gold shadow-[0_0_0_1px_rgba(200,162,74,0.55),0_5px_16px_-5px_rgba(200,162,74,0.5)]'
+                    ? 'border-transparent shadow-[0_0_0_2px_#f5c542,0_0_0_3.5px_rgba(0,0,0,0.7),0_6px_20px_-4px_rgba(245,197,66,0.7)]'
                     : 'border-white/15',
                   darkInk ? 'text-[#14110a]' : 'text-white',
                 ].join(' ')
