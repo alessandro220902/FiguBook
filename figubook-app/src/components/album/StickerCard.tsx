@@ -53,7 +53,7 @@ export function StickerCard({ code, name, kit, count, insertOn, onAdd, onRemove,
             <span
               className={
                 'pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br to-transparent ' +
-                (darkInk ? 'from-black/10' : 'from-white/20')
+                (darkInk ? 'from-black/10' : 'from-white/10')
               }
             />
           )}

@@ -65,7 +65,7 @@ export function SectionHero({ section, stats, filter, onFilter, insertOn, onTogg
         <div aria-hidden className="pointer-events-none absolute inset-0 mix-blend-overlay opacity-70" style={{ backgroundImage: pattern }} />
       )}
       {/* Scrim scuro: contrasto del testo bianco anche su sezioni chiare (gold, azzurro). */}
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.62)_0%,rgba(0,0,0,0.42)_55%,rgba(0,0,0,0.30)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.52)_0%,rgba(0,0,0,0.34)_55%,rgba(0,0,0,0.22)_100%)]" />
       <div className="relative z-10">
         {/* Titolo + anello percentuale */}
         <div className="flex items-start justify-between gap-3">
