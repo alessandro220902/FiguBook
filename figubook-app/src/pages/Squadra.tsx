@@ -5,6 +5,7 @@ import { factsForTeam } from '@/data/teamFacts'
 import { kitFromColors } from '@/lib/album/teamKits'
 import { kitGradient, kitPattern } from '@/lib/album/color'
 import { TeamCrest } from '@/components/TeamCrest'
+import { TeamHeroRing } from '@/components/album/TeamHeroRing'
 import { useTeamProgress } from '@/hooks/useTeamProgress'
 import { pctColor } from '@/lib/stats/pctColor'
 
@@ -35,15 +36,20 @@ export default function Squadra() {
       <header className="relative overflow-hidden rounded-2xl border border-white/10 p-6 sm:p-8" style={{ backgroundImage: kitGradient(kit) }}>
         {pattern && <div aria-hidden className="pointer-events-none absolute inset-0 mix-blend-overlay opacity-70" style={{ backgroundImage: pattern }} />}
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.52)_0%,rgba(0,0,0,0.34)_55%,rgba(0,0,0,0.22)_100%)]" />
-        <div className="relative z-10 flex items-center gap-4">
-          <TeamCrest
-            c1={kit.c1}
-            c2={kit.c2}
-            accent={kit.accent}
-            pattern={kit.pattern}
-            className="h-16 w-16 drop-shadow-md sm:h-20 sm:w-20"
-          />
-          <h1 className="font-display text-3xl font-bold tracking-tight text-white drop-shadow-sm sm:text-4xl">{teamDisplayName(id)}</h1>
+        <div className="relative z-10 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <TeamCrest
+              c1={kit.c1}
+              c2={kit.c2}
+              accent={kit.accent}
+              pattern={kit.pattern}
+              className="h-16 w-16 drop-shadow-md sm:h-20 sm:w-20"
+            />
+            <h1 className="font-display text-3xl font-bold tracking-tight text-white drop-shadow-sm sm:text-4xl">{teamDisplayName(id)}</h1>
+          </div>
+          {!progress.loading && progress.total > 0 && (
+            <TeamHeroRing pct={progress.pct} have={progress.have} total={progress.total} />
+          )}
         </div>
       </header>
 
@@ -71,11 +77,19 @@ export default function Squadra() {
               <span className="type-stat shrink-0 font-display text-2xl text-ink">{progress.pct}<span className="text-base text-ink-2">%</span></span>
             </div>
             <p className="mt-2 font-mono text-[11px] uppercase tracking-wide text-ink-2">{progress.have} / {progress.total} figurine</p>
-            <ul className="mt-4 space-y-1">
-              {progress.appearsIn.map((x) => (
-                <li key={`${x.albumId}-${x.sectionName}`} className="flex items-center justify-between type-body text-ink-2">
-                  <span className="truncate">{x.albumTitle}</span>
-                  <span className="shrink-0 font-mono text-xs">{x.pct}%</span>
+            <ul className="mt-4 space-y-0.5">
+              {[...progress.appearsIn].sort((a, b) => b.pct - a.pct).map((x) => (
+                <li key={`${x.albumId}-${x.sectionName}`}>
+                  <Link
+                    to={`/album/${x.albumId}`}
+                    className="flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-white/[0.03]"
+                  >
+                    <span className="type-body min-w-0 flex-shrink truncate text-ink-2">{x.albumTitle}</span>
+                    <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-black/30">
+                      <span className="block h-full rounded-full" style={{ width: `${Math.max(2, x.pct)}%`, background: pctColor(x.pct) }} />
+                    </span>
+                    <span className="shrink-0 font-mono text-xs text-ink-2">{x.pct}%</span>
+                  </Link>
                 </li>
               ))}
             </ul>
