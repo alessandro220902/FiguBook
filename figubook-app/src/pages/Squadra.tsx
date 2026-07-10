@@ -84,7 +84,8 @@ export default function Squadra() {
                     <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-black/30">
                       <span className="block h-full rounded-full" style={{ width: `${Math.max(2, x.pct)}%`, background: pctColor(x.pct) }} />
                     </span>
-                    <span className="shrink-0 font-mono text-xs text-ink-2">{x.pct}%</span>
+                    <span className="shrink-0 font-mono text-[11px] tabular-nums text-ink-2/80">{x.have}/{x.total}</span>
+                    <span className="w-10 shrink-0 text-right font-mono text-xs text-ink-2">{x.pct}%</span>
                   </Link>
                 </li>
               ))}
