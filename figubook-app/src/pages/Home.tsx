@@ -70,7 +70,7 @@ export default function Home() {
         </h1>
         {team && (
           <p className="mt-2 inline-flex items-center gap-2 text-sm text-ink-2">
-            <TeamCrest c1={team.c1} c2={team.c2} className="h-5 w-[16px]" />
+            <TeamCrest teamId={team.id} c1={team.c1} c2={team.c2} className="h-5 w-[16px]" />
             {team.name}
           </p>
         )}

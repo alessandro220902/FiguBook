@@ -140,7 +140,7 @@ function VetrinaInner({ username }: { username: string }) {
               <div className="mt-2.5 flex flex-wrap items-center justify-center gap-3 sm:justify-start">
                 {team && (
                   <span className="inline-flex items-center gap-1.5 text-sm font-medium text-ink">
-                    <TeamCrest c1={team.c1} c2={team.c2} className="h-5 w-[16px]" /> {team.name}
+                    <TeamCrest teamId={team.id} c1={team.c1} c2={team.c2} className="h-5 w-[16px]" /> {team.name}
                   </span>
                 )}
                 {profile.citta && (

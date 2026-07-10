@@ -1,4 +1,5 @@
 import type { Section } from '@/data/albums/types'
+import { TEAM_KIT_INDEX } from './teamKitIndex'
 
 export const PATTERNS = ['solid', 'stripes', 'halves', 'sash', 'hoops'] as const
 export type KitPattern = (typeof PATTERNS)[number]
@@ -153,6 +154,14 @@ export const KITS: Record<string, TeamKit> = {
 
 export function kitFromColors(c1: string, c2: string): TeamKit {
   return { c1, c2, pattern: 'solid' }
+}
+
+// Kit per id canonico squadra (vedi teamIdentity). Fonte unica per il crest coerente
+// su TUTTE le superfici (chip, sezione, scheda). Fallback ai colori passati.
+export function kitForTeamId(teamId: string, c1?: string, c2?: string): TeamKit {
+  const t = TEAM_KIT_INDEX[teamId]
+  if (t) return { c1: t.c1, c2: t.c2, accent: t.accent, pattern: t.pattern }
+  return kitFromColors(c1 ?? '#8a8a8a', c2 ?? '#2a2a2a')
 }
 
 // Alias per lo stesso team con id diversi tra album (Fase A: pochi, estendibile).

@@ -53,7 +53,7 @@ export default function Community() {
                   <p className="truncate text-[15px] font-medium text-ink">{u.username}</p>
                   {u.nome && <p className="truncate text-sm text-ink-2">{u.nome}</p>}
                 </div>
-                {team && <TeamCrest c1={team.c1} c2={team.c2} className="h-6 w-[18px] shrink-0" />}
+                {team && <TeamCrest teamId={team.id} c1={team.c1} c2={team.c2} className="h-6 w-[18px] shrink-0" />}
               </Link>
             )
           })}

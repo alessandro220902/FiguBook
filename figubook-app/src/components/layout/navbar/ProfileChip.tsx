@@ -35,7 +35,7 @@ export function ProfileChip() {
         style={{ boxShadow: `0 0 0 2px ${ring}` }}
       />
       <span className="max-w-[140px] truncate text-[15px] font-medium text-foreground">{name}</span>
-      {team && <TeamCrest c1={team.c1} c2={team.c2} className="h-5 w-[16px] shrink-0" />}
+      {team && <TeamCrest teamId={team.id} c1={team.c1} c2={team.c2} className="h-5 w-[16px] shrink-0" />}
     </Link>
   )
 }

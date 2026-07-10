@@ -114,7 +114,7 @@ function TeamPicker({ value, onChange }: { value: string; onChange: (id: string)
           onClick={() => setOpen((v) => !v)}
           className="flex w-full items-center gap-2.5 rounded-xl border border-white/[0.1] bg-surface px-3.5 py-2.5 text-left transition-colors hover:border-white/20"
         >
-          <TeamCrest c1={sel.c1} c2={sel.c2} className="h-6 w-[22px] shrink-0" />
+          <TeamCrest teamId={sel.id} c1={sel.c1} c2={sel.c2} className="h-6 w-[22px] shrink-0" />
           <span className="flex-1 text-[16px] text-ink">{sel.name}</span>
           <span
             role="button"
@@ -157,7 +157,7 @@ function TeamPicker({ value, onChange }: { value: string; onChange: (id: string)
               }}
               className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-white/10"
             >
-              <TeamCrest c1={t.c1} c2={t.c2} className="h-5 w-[18px] shrink-0" />
+              <TeamCrest teamId={t.id} c1={t.c1} c2={t.c2} className="h-5 w-[18px] shrink-0" />
               <span className="text-[15px] text-ink">{t.name}</span>
             </button>
           ))}
@@ -483,7 +483,7 @@ export default function Profilo() {
             </h2>
             {team && (
               <p className="mt-1.5 inline-flex items-center gap-1.5 text-sm font-medium text-ink">
-                <TeamCrest c1={team.c1} c2={team.c2} className="h-5 w-[18px]" />
+                <TeamCrest teamId={team.id} c1={team.c1} c2={team.c2} className="h-5 w-[18px]" />
                 {team.name}
               </p>
             )}

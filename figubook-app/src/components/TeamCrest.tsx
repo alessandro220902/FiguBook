@@ -1,12 +1,16 @@
 import { useId } from 'react'
 import type { KitPattern } from '@/lib/album/teamKits'
+import { kitForTeamId } from '@/lib/album/teamKits'
 import { inkForKit, DARK_INK, LIGHT_INK } from '@/lib/album/color'
 
 const SHIELD = 'M12 1 L23 4 V14 C23 21 18 25 12 27 C6 25 1 21 1 14 V4 Z'
 
 // Stemma astratto a 2 colori (colori sociali). NIENTE logo ufficiale (copyright club):
 // scudo con pattern maglia + monogramma opzionale a 1 lettera.
+// Con `teamId` risolve il kit CURATO (fonte unica) -> crest identico ovunque; i
+// props c1/c2/accent/pattern sono il fallback quando teamId non è dato/mappato.
 export function TeamCrest({
+  teamId,
   c1,
   c2,
   accent,
@@ -14,6 +18,7 @@ export function TeamCrest({
   monogram,
   className,
 }: {
+  teamId?: string
   c1: string
   c2: string
   accent?: string
@@ -23,7 +28,8 @@ export function TeamCrest({
 }) {
   const uid = useId().replace(/:/g, '')
   const clip = `url(#sh-${uid})`
-  const ink = inkForKit({ c1, c2, accent, pattern }).isDark ? DARK_INK : LIGHT_INK
+  const kit = teamId ? kitForTeamId(teamId, c1, c2) : { c1, c2, accent, pattern }
+  const ink = inkForKit(kit).isDark ? DARK_INK : LIGHT_INK
 
   return (
     <svg viewBox="0 0 24 28" className={className} aria-hidden>
@@ -33,7 +39,7 @@ export function TeamCrest({
         </clipPath>
       </defs>
       <g clipPath={clip}>
-        <PatternFill pattern={pattern} c1={c1} c2={c2} accent={accent} />
+        <PatternFill pattern={kit.pattern} c1={kit.c1} c2={kit.c2} accent={kit.accent} />
       </g>
       <path d={SHIELD} fill="none" stroke="rgba(255,255,255,.25)" strokeWidth="1" />
       {monogram && (

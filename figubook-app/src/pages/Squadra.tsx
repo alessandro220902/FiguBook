@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom'
 import { TEAMS } from '@/lib/teams'
 import { TEAM_ALIAS, hasTeamPage, teamDisplayName } from '@/lib/album/teamIdentity'
 import { factsForTeam } from '@/data/teamFacts'
-import { kitFromColors } from '@/lib/album/teamKits'
+import { kitForTeamId } from '@/lib/album/teamKits'
 import { kitGradient, kitPattern } from '@/lib/album/color'
 import { TeamCrest } from '@/components/TeamCrest'
 import { TeamHeroRing } from '@/components/album/TeamHeroRing'
@@ -26,7 +26,7 @@ export default function Squadra() {
     )
   }
 
-  const kit = progress.kit ?? kitFromColors(team.c1, team.c2)
+  const kit = kitForTeamId(id, team.c1, team.c2)
   const pattern = kitPattern(kit)
   const facts = factsForTeam(id)
   const hasFacts = facts.city || facts.founded || facts.stadium || facts.nickname
@@ -39,6 +39,7 @@ export default function Squadra() {
         <div className="relative z-10 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <TeamCrest
+              teamId={id}
               c1={kit.c1}
               c2={kit.c2}
               accent={kit.accent}

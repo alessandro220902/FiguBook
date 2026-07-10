@@ -81,7 +81,7 @@ export function SectionHero({ section, stats, filter, onFilter, insertOn, onTogg
                 className="inline-flex items-center gap-2.5 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
                 aria-label={`Scheda squadra ${section.name}`}
               >
-                <TeamCrest c1={section.c1} c2={section.c2} className="h-8 w-8 shrink-0 drop-shadow-sm sm:h-9 sm:w-9" />
+                <TeamCrest teamId={teamId} c1={section.c1} c2={section.c2} className="h-8 w-8 shrink-0 drop-shadow-sm sm:h-9 sm:w-9" />
                 <h1 className="font-display text-3xl font-bold tracking-tight text-white drop-shadow-sm underline-offset-4 hover:underline sm:text-4xl">{section.name}</h1>
               </Link>
             ) : (
