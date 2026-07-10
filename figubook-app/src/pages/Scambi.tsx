@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Inbox, Check } from 'lucide-react'
+import { Breadcrumb } from '@/components/Breadcrumb'
 import { ActionSwapButton } from '@/components/ui/ActionSwapButton'
 import { requireUid } from '@/lib/firebase'
 import { fetchIndexUsers, type TradeIndexEntry } from '@/lib/db/tradeIndex'
@@ -250,6 +251,7 @@ export default function Scambi() {
   if (!albumId) {
     return (
       <div className="mx-auto w-full max-w-[88rem]">
+        <Breadcrumb items={[{ label: 'Scambi' }]} />
         <h1 className="type-h1 text-ink">I miei scambi</h1>
         <p className="type-body mt-1.5 text-ink-2">Scegli un album per proporre scambi, o gestisci le tue proposte qui sotto.</p>
 

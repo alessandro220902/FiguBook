@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { ArrowLeft, ShieldCheck, Mail } from 'lucide-react'
+import { ShieldCheck, Mail } from 'lucide-react'
+import { Breadcrumb } from '@/components/Breadcrumb'
 import { FadeIn } from '@/components/home/FadeIn'
 import { useAuth } from '@/hooks/useAuth'
 import { hasPasswordProvider, changePassword, sendReset } from '@/lib/auth/password'
@@ -88,11 +88,8 @@ export default function ProfiloImpostazioni() {
 
   return (
     <div className="mx-auto w-full max-w-3xl">
+      <Breadcrumb items={[{ label: 'Profilo', to: '/profilo' }, { label: 'Impostazioni' }]} />
       <FadeIn>
-        <Link to="/profilo"
-          className="inline-flex items-center gap-1.5 text-sm text-ink-2 transition-colors hover:text-ink">
-          <ArrowLeft className="h-4 w-4" /> Profilo
-        </Link>
         <h1 className="type-h1 mt-3 text-ink">
           Impostazioni
         </h1>

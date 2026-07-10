@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Bell } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Bell } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useNotifications } from '@/hooks/useNotifications'
 import { markAllRead, resolveHref, timeAgo } from '@/lib/db/notifications'
 import { notifMeta, NOTIF_TABS, type Tab } from '@/lib/db/notifMeta'
 import { IncomingRequests } from '@/components/IncomingRequests'
+import { Breadcrumb } from '@/components/Breadcrumb'
 
 // Pagina notifiche dedicata (mobile): stessa logica/render del pannello desktop
-// (useNotifications + filtri). Back -> pagina precedente.
+// (useNotifications + filtri).
 export default function Notifiche() {
-  const navigate = useNavigate()
   const { user } = useAuth()
   const { items, unread } = useNotifications()
   const [tab, setTab] = useState<Tab>('all')
@@ -20,28 +20,12 @@ export default function Notifiche() {
     if (user && unread > 0) void markAllRead(user.uid)
   }, [user, unread])
 
-  function goBack() {
-    if (window.history.length > 1) navigate(-1)
-    else navigate('/home')
-  }
-
   const counts = { all: items.length, unread, read: items.length - unread }
   const list = tab === 'all' ? items : items.filter((n) => (tab === 'unread' ? !n.read : n.read))
 
   return (
     <div className="mx-auto w-full max-w-xl">
-      <div className="flex items-center gap-3">
-        {/* Go-back (originui/go-back-button, 21st): torna alla pagina precedente */}
-        <button
-          type="button"
-          onClick={goBack}
-          aria-label="Torna indietro"
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/12 bg-white/[0.06] text-foreground transition-colors hover:bg-white/10 active:scale-95"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <h1 className="font-display text-xl font-bold tracking-tight text-foreground">Notifiche</h1>
-      </div>
+      <Breadcrumb items={[{ label: 'Notifiche' }]} />
 
       {/* Sezione Amicizia: richieste ricevute con Accetta/Rifiuta */}
       <IncomingRequests />

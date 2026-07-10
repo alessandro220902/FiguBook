@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
-import { MapPin, Lock, Pencil, Ban, ArrowLeft } from 'lucide-react'
+import { Link, useParams } from 'react-router-dom'
+import { MapPin, Lock, Pencil, Ban } from 'lucide-react'
+import { Breadcrumb } from '@/components/Breadcrumb'
 import { useAuth } from '@/hooks/useAuth'
 import { Avatar } from '@/components/Avatar'
 import { TeamCrest } from '@/components/TeamCrest'
@@ -25,7 +26,6 @@ export default function ProfiloPubblico() {
 }
 
 function VetrinaInner({ username }: { username: string }) {
-  const navigate = useNavigate()
   const { user } = useAuth()
   const { profile: myProfile } = useProfile()
   const [profile, setProfile] = useState<PublicProfile | null>(null)
@@ -117,15 +117,7 @@ function VetrinaInner({ username }: { username: string }) {
         <div aria-hidden className="fixed inset-0 -z-10" style={{ background: teamPageBg(team) }} />
       )}
 
-      {/* Go-back: torna alla pagina precedente (Community/Cerca/altro) */}
-      <button
-        type="button"
-        onClick={() => navigate(-1)}
-        aria-label="Torna indietro"
-        className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3.5 py-2 text-sm text-foreground transition-colors hover:bg-white/10 active:scale-95"
-      >
-        <ArrowLeft className="h-4 w-4" /> Indietro
-      </button>
+      <Breadcrumb items={[{ label: 'Community', to: '/community' }, { label: username }]} />
 
       {/* Card identità */}
       <FadeIn>

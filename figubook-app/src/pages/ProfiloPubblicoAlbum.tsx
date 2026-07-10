@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { Breadcrumb } from '@/components/Breadcrumb'
 import { getPublicByUsername } from '@/lib/db/publicProfiles'
 import { getOtherAlbum } from '@/lib/db/otherAlbums'
 import { loadAlbumData } from '@/data/albums'
@@ -70,12 +70,7 @@ function Inner({ username, albumId }: { username: string; albumId: string }) {
 
   return (
     <div className="mx-auto w-full max-w-3xl">
-      <Link
-        to={`/u/${username}`}
-        className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-ink-2 hover:text-ink"
-      >
-        <ArrowLeft className="h-4 w-4" /> {profile.username}
-      </Link>
+      <Breadcrumb items={[{ label: 'Community', to: '/community' }, { label: profile.username, to: `/u/${username}` }, { label: entry.title }]} />
 
       <FadeIn>
         <div className="rounded-2xl border border-white/[0.1] bg-surface/40 p-6 sm:p-7">

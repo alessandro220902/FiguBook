@@ -15,6 +15,7 @@ import { useStatsDeltas } from '@/hooks/useStatsDeltas'
 import { useInsertedSeries } from '@/hooks/useInsertedSeries'
 import { useThemeMode } from '@/hooks/useThemeMode'
 import { InsertedChart } from '@/components/home/InsertedChart'
+import { Breadcrumb } from '@/components/Breadcrumb'
 
 export default function Home() {
   const { user } = useAuth()
@@ -42,6 +43,7 @@ export default function Home() {
 
   return (
     <div className={`home-gold${mode === 'light' ? ' home-light' : ''} mx-auto w-full max-w-[88rem]`}>
+      <Breadcrumb items={[{ label: 'Home' }]} />
       {/* TEST tema Midnight Gold: sfondo con sfumatura nero<->oro, copre il
           radiale verde di AppLayout. Dark = nero prevalente sfuma in oro in basso;
           light = oro/chiaro prevalente sfuma verso scuro. */}

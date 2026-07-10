@@ -16,6 +16,7 @@ import { AlbumBadge } from '@/components/album/ui/AlbumBadge'
 import {
   inBucket, LIBRARY_FILTERS, DEFAULT_FILTER, type LibraryFilter,
 } from '@/lib/album/libraryFilters'
+import { Breadcrumb } from '@/components/Breadcrumb'
 
 export default function AlbumList() {
   const { albums, archived, opened, loading, error, retry } = useCollection()
@@ -58,6 +59,7 @@ export default function AlbumList() {
 
   return (
     <div className="album-theme mx-auto w-full max-w-[88rem]">
+      <Breadcrumb items={[{ label: 'Album' }]} />
       <h1 className="type-h1 text-ink">I tuoi album</h1>
 
       {error ? (

@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Search, BookOpen, Hash } from 'lucide-react'
+import { Search, BookOpen, Hash } from 'lucide-react'
 import { ALBUM_CATALOG } from '@/data/albumCatalog'
 import { buildCardIndex, searchCatalog, type SearchCard } from '@/lib/album/search'
+import { Breadcrumb } from '@/components/Breadcrumb'
 
 // Pagina ricerca dedicata (mobile): stessa logica del SearchDock desktop
-// (searchCatalog + indice carte cross-album). Back -> pagina precedente.
+// (searchCatalog + indice carte cross-album).
 export default function Cerca() {
   const navigate = useNavigate()
   const [q, setQ] = useState('')
@@ -20,41 +21,23 @@ export default function Cerca() {
   const results = useMemo(() => searchCatalog(ALBUM_CATALOG, cards, q), [cards, q])
   const hasResults = results.albums.length > 0 || results.cards.length > 0
 
-  // Torna alla pagina da cui ho aperto la ricerca (sezione album ecc.).
-  // Fallback alla home se non c'è cronologia (apertura diretta del link).
-  function goBack() {
-    if (window.history.length > 1) navigate(-1)
-    else navigate('/home')
-  }
   function go(to: string) {
     navigate(to)
   }
 
   return (
     <div className="mx-auto w-full max-w-xl">
-      <div className="flex items-center gap-2">
-        {/* Go-back (originui/go-back-button, 21st): torna alla pagina precedente */}
-        <button
-          type="button"
-          onClick={goBack}
-          aria-label="Torna indietro"
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/12 bg-white/[0.06] text-foreground transition-colors hover:bg-white/10 active:scale-95"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-
-        <div className="flex h-11 flex-1 items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 backdrop-blur-md">
-          <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <input
-            autoFocus
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            onKeyDown={(e) => e.key === 'Escape' && goBack()}
-            placeholder="Cerca album o carte…"
-            style={{ outline: 'none' }}
-            className="h-full min-w-0 flex-1 bg-transparent text-sm text-foreground caret-foreground placeholder:text-muted-foreground"
-          />
-        </div>
+      <Breadcrumb items={[{ label: 'Cerca' }]} />
+      <div className="flex h-11 items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 backdrop-blur-md">
+        <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+        <input
+          autoFocus
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Cerca album o carte…"
+          style={{ outline: 'none' }}
+          className="h-full min-w-0 flex-1 bg-transparent text-sm text-foreground caret-foreground placeholder:text-muted-foreground"
+        />
       </div>
 
       {q.trim() && (
