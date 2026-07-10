@@ -11,7 +11,12 @@ export function slugTeam(name: string): string {
 }
 
 export const TEAM_ALIAS: Record<string, string> = {
+  // stesso club, nome ufficiale (album UCL) -> id breve (album Serie A)
   'fc-internazionale-milano': 'inter',
+  'ssc-napoli': 'napoli',
+  'atalanta-bc': 'atalanta',
+  // stessa nazionale, denominazione diversa tra Mondiali 2022 e 2026
+  olanda: 'paesi-bassi',
 }
 
 const TEAM_IDS = new Set(TEAMS.map((t) => t.id))
