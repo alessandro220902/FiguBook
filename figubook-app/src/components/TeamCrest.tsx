@@ -69,8 +69,8 @@ function PatternFill({
   switch (pattern) {
     case 'stripes': {
       const bars = []
-      for (let x = 0; x < 24; x += 3) {
-        bars.push(<rect key={x} x={x} y="0" width="3" height="28" fill={(x / 3) % 2 === 0 ? c1 : c2} />)
+      for (let x = 0; x < 24; x += 4) {
+        bars.push(<rect key={x} x={x} y="0" width="4" height="28" fill={(x / 4) % 2 === 0 ? c1 : c2} />)
       }
       return <>{bars}</>
     }

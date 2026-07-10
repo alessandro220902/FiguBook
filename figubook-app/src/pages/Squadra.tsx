@@ -48,7 +48,9 @@ export default function Squadra() {
             <h1 className="font-display text-3xl font-bold tracking-tight text-white drop-shadow-sm sm:text-4xl">{teamDisplayName(id)}</h1>
           </div>
           {!progress.loading && progress.total > 0 && (
-            <TeamHeroRing pct={progress.pct} have={progress.have} total={progress.total} />
+            <div className="pr-1 sm:pr-3">
+              <TeamHeroRing pct={progress.pct} have={progress.have} total={progress.total} />
+            </div>
           )}
         </div>
       </header>
@@ -70,13 +72,7 @@ export default function Squadra() {
           <p className="mt-2 type-body text-ink-2">Non è in nessuno dei tuoi album.</p>
         ) : (
           <>
-            <div className="mt-4 flex items-center gap-3">
-              <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/30">
-                <div className="h-full rounded-full" style={{ width: `${Math.max(2, progress.pct)}%`, background: pctColor(progress.pct) }} />
-              </div>
-              <span className="type-stat shrink-0 font-display text-2xl text-ink">{progress.pct}<span className="text-base text-ink-2">%</span></span>
-            </div>
-            <p className="mt-2 font-mono text-[11px] uppercase tracking-wide text-ink-2">{progress.have} / {progress.total} figurine</p>
+            <p className="mt-1 font-mono text-[11px] uppercase tracking-wide text-ink-2">{progress.have} / {progress.total} figurine</p>
             <ul className="mt-4 space-y-0.5">
               {[...progress.appearsIn].sort((a, b) => b.pct - a.pct).map((x) => (
                 <li key={`${x.albumId}-${x.sectionName}`}>
