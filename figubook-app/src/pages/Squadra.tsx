@@ -25,7 +25,7 @@ export default function Squadra() {
     )
   }
 
-  const kit = kitFromColors(team.c1, team.c2)
+  const kit = progress.kit ?? kitFromColors(team.c1, team.c2)
   const pattern = kitPattern(kit)
   const facts = factsForTeam(id)
   const hasFacts = facts.city || facts.founded || facts.stadium || facts.nickname
@@ -36,7 +36,14 @@ export default function Squadra() {
         {pattern && <div aria-hidden className="pointer-events-none absolute inset-0 mix-blend-overlay opacity-70" style={{ backgroundImage: pattern }} />}
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.52)_0%,rgba(0,0,0,0.34)_55%,rgba(0,0,0,0.22)_100%)]" />
         <div className="relative z-10 flex items-center gap-4">
-          <TeamCrest c1={team.c1} c2={team.c2} className="h-16 w-16 drop-shadow-md sm:h-20 sm:w-20" />
+          <TeamCrest
+            c1={kit.c1}
+            c2={kit.c2}
+            accent={kit.accent}
+            pattern={kit.pattern}
+            monogram={teamDisplayName(id).charAt(0).toUpperCase()}
+            className="h-16 w-16 drop-shadow-md sm:h-20 sm:w-20"
+          />
           <h1 className="font-display text-3xl font-bold tracking-tight text-white drop-shadow-sm sm:text-4xl">{teamDisplayName(id)}</h1>
         </div>
       </header>
