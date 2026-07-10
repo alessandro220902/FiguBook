@@ -73,19 +73,23 @@ export default function Squadra() {
         ) : (
           <>
             <p className="mt-1 font-mono text-[11px] uppercase tracking-wide text-ink-2">{progress.have} / {progress.total} figurine</p>
-            <ul className="mt-4 space-y-0.5">
+            <ul className="mt-4 space-y-2.5">
               {[...progress.appearsIn].sort((a, b) => b.pct - a.pct).map((x) => (
                 <li key={`${x.albumId}-${x.sectionName}`}>
                   <Link
                     to={`/album/${x.albumId}`}
-                    className="flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-white/[0.03]"
+                    className="block rounded-lg px-2 py-2 transition-colors hover:bg-white/[0.03]"
                   >
-                    <span className="type-body min-w-0 flex-shrink truncate text-ink-2">{x.albumTitle}</span>
-                    <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-black/30">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="type-body min-w-0 truncate text-ink">{x.albumTitle}</span>
+                      <span className="flex shrink-0 items-baseline gap-2 font-mono">
+                        <span className="text-[11px] tabular-nums text-ink-2/80">{x.have}/{x.total}</span>
+                        <span className="text-xs text-ink-2">{x.pct}%</span>
+                      </span>
+                    </div>
+                    <span className="mt-1.5 block h-1.5 overflow-hidden rounded-full bg-black/30">
                       <span className="block h-full rounded-full" style={{ width: `${Math.max(2, x.pct)}%`, background: pctColor(x.pct) }} />
                     </span>
-                    <span className="shrink-0 font-mono text-[11px] tabular-nums text-ink-2/80">{x.have}/{x.total}</span>
-                    <span className="w-10 shrink-0 text-right font-mono text-xs text-ink-2">{x.pct}%</span>
                   </Link>
                 </li>
               ))}
