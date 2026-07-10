@@ -6,6 +6,9 @@ import type { SectionStats } from '@/lib/album/stats'
 import type { Filter } from './StickerGrid'
 import { ctrlFilter } from '@/lib/album/controlStyles'
 import { pctColor } from '@/lib/stats/pctColor'
+import { Link } from 'react-router-dom'
+import { canonicalTeamId, hasTeamPage } from '@/lib/album/teamIdentity'
+import { TeamCrest } from '@/components/TeamCrest'
 
 // Tre filtri principali in riga; "Possedute" va sotto accanto al toggle inserimento.
 const TABS: { key: Filter; label: string; n: (s: SectionStats) => number }[] = [
@@ -58,6 +61,8 @@ function FilterButton({ active, onClick, children }: { active: boolean; onClick:
 
 export function SectionHero({ section, stats, filter, onFilter, insertOn, onToggleInsert }: SectionHeroProps) {
   const kit = kitForSection(section)
+  const teamId = section.kind === 'team' ? canonicalTeamId(section) : ''
+  const linkTeam = teamId && hasTeamPage(teamId)
   const pattern = kitPattern(kit)
   return (
     <header className="relative overflow-hidden rounded-2xl border border-white/10 p-4 sm:p-6" style={{ backgroundImage: kitGradient(kit) }}>
@@ -70,7 +75,18 @@ export function SectionHero({ section, stats, filter, onFilter, insertOn, onTogg
         {/* Titolo + anello percentuale */}
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h1 className="font-display text-3xl font-bold tracking-tight text-white drop-shadow-sm sm:text-4xl">{section.name}</h1>
+            {linkTeam ? (
+              <Link
+                to={`/squadra/${teamId}`}
+                className="inline-flex items-center gap-2.5 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
+                aria-label={`Scheda squadra ${section.name}`}
+              >
+                <TeamCrest c1={section.c1} c2={section.c2} className="h-8 w-8 shrink-0 drop-shadow-sm sm:h-9 sm:w-9" />
+                <h1 className="font-display text-3xl font-bold tracking-tight text-white drop-shadow-sm underline-offset-4 hover:underline sm:text-4xl">{section.name}</h1>
+              </Link>
+            ) : (
+              <h1 className="font-display text-3xl font-bold tracking-tight text-white drop-shadow-sm sm:text-4xl">{section.name}</h1>
+            )}
             <p className="mt-1 text-sm text-white/85">{section.codes[0]} – {section.codes[section.codes.length - 1]} · {section.codes.length} figurine</p>
           </div>
           <ProgressRing pct={stats.pct} />
