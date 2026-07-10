@@ -2,8 +2,9 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Building2, Calendar, Check, ChevronDown, Plus, Search, X } from 'lucide-react'
-import { ALBUM_CATALOG } from '@/data/albumCatalog'
+import { ALBUM_CATALOG, isNewRelease } from '@/data/albumCatalog'
 import { ctrlPrimary } from '@/lib/album/controlStyles'
+import { AlbumBadge } from '@/components/album/ui/AlbumBadge'
 
 export interface CreateAlbumMenuProps {
   ownedIds: string[]
@@ -94,6 +95,7 @@ export function CreateAlbumMenu({ ownedIds, onAdd, className }: CreateAlbumMenuP
   const layoutId = useId()
   const filtersRef = useRef<HTMLDivElement>(null)
 
+  const now = useMemo(() => new Date(), [])
   const owned = useMemo(() => new Set(ownedIds), [ownedIds])
   const available = useMemo(() => ALBUM_CATALOG.filter((a) => !owned.has(a.id)), [owned])
 
@@ -251,11 +253,18 @@ export function CreateAlbumMenu({ ownedIds, onAdd, className }: CreateAlbumMenuP
                                 transition={{ delay: reduce ? 0 : 0.12 + i * 0.03, type: 'spring', stiffness: 460, damping: 30 }}
                                 className="group flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] text-left transition-transform duration-150 ease-out hover:-translate-y-0.5 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
                               >
-                                <span
-                                  aria-hidden
-                                  className="aspect-[4/3] w-full bg-cover bg-center"
-                                  style={a.cover ? { backgroundImage: `url(${a.cover})` } : { background: `linear-gradient(145deg, ${a.c1}, ${a.c2})` }}
-                                />
+                                <span className="relative block">
+                                  <span
+                                    aria-hidden
+                                    className="block aspect-[4/3] w-full bg-cover bg-center"
+                                    style={a.cover ? { backgroundImage: `url(${a.cover})` } : { background: `linear-gradient(145deg, ${a.c1}, ${a.c2})` }}
+                                  />
+                                  {isNewRelease(a, now) && (
+                                    <span className="absolute left-2 top-2">
+                                      <AlbumBadge variant="new-release" />
+                                    </span>
+                                  )}
+                                </span>
                                 <span className="min-w-0 px-3 py-2.5">
                                   <span className="block truncate type-body font-semibold text-ink">{a.title}</span>
                                   <span className="mt-0.5 block truncate font-mono text-[10px] uppercase tracking-wide text-ink-2">
