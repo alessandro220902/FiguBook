@@ -25,6 +25,8 @@ export interface SectionHeroProps {
   onFilter: (f: Filter) => void
   insertOn: boolean
   onToggleInsert: () => void
+  albumId?: string
+  albumTitle?: string
 }
 
 // Anello percentuale: track scuro + arco lime, numero al centro.
@@ -59,7 +61,8 @@ function FilterButton({ active, onClick, children }: { active: boolean; onClick:
   )
 }
 
-export function SectionHero({ section, stats, filter, onFilter, insertOn, onToggleInsert }: SectionHeroProps) {
+export function SectionHero({ section, stats, filter, onFilter, insertOn, onToggleInsert, albumId, albumTitle }: SectionHeroProps) {
+  const teamCrumbs = albumId && albumTitle ? [{ label: albumTitle, to: `/album/${albumId}` }] : undefined
   const kit = kitForSection(section)
   const teamId = section.kind === 'team' ? canonicalTeamId(section) : ''
   const linkTeam = teamId && hasTeamPage(teamId)
@@ -78,6 +81,7 @@ export function SectionHero({ section, stats, filter, onFilter, insertOn, onTogg
             {linkTeam ? (
               <Link
                 to={`/squadra/${teamId}`}
+                state={teamCrumbs ? { crumbs: teamCrumbs } : undefined}
                 className="inline-flex items-center gap-2.5 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime"
                 aria-label={`Scheda squadra ${section.name}`}
               >

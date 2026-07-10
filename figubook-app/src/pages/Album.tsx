@@ -1,6 +1,7 @@
 // figubook-app/src/pages/Album.tsx
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useParams, useSearchParams, Link } from 'react-router-dom'
+import { useParams, useSearchParams, useLocation, Link } from 'react-router-dom'
+import type { Crumb } from '@/components/Breadcrumb'
 import { albumById } from '@/data/albumCatalog'
 import { loadAlbumData } from '@/data/albums'
 import type { AlbumData } from '@/data/albums/types'
@@ -22,6 +23,10 @@ import { AlbumFlatView } from '@/components/album/AlbumFlatView'
 
 export default function Album() {
   const { albumId = '' } = useParams()
+  const location = useLocation()
+  // Crumb intermedi passati da chi ci ha portato qui (es. scheda squadra),
+  // per una breadcrumb-cronologia: Album › Atalanta › <album>.
+  const stateCrumbs = (location.state as { crumbs?: Crumb[] } | null)?.crumbs ?? []
   const [searchParams, setSearchParams] = useSearchParams()
   const entry = albumById[albumId]
   // Carico tipato per albumId: i derivati sono validi solo se loadState.id === albumId,
@@ -150,7 +155,7 @@ export default function Album() {
 
   return (
     <main className="album-theme w-full px-0 pb-16 pt-6">
-      <Breadcrumb items={[{ label: 'Album', to: '/album' }, { label: entry.title }]} />
+      <Breadcrumb items={[{ label: 'Album', to: '/album' }, ...stateCrumbs, { label: entry.title }]} />
       <AlbumLanding entry={entry} stats={albumStats} missingCodes={missingCodes} doubleCodes={doubleCodes} />
 
       <div className="mt-8 flex items-center justify-center">
@@ -169,7 +174,7 @@ export default function Album() {
       ) : (
         (() => {
           const hero = (
-            <SectionHero section={section} index={sectionIndex} stats={secStats} filter={filter} onFilter={setFilter} insertOn={insertOn} onToggleInsert={() => setInsertOn((v) => !v)} />
+            <SectionHero section={section} index={sectionIndex} stats={secStats} filter={filter} onFilter={setFilter} insertOn={insertOn} onToggleInsert={() => setInsertOn((v) => !v)} albumId={albumId} albumTitle={entry.title} />
           )
           const grid = (
             <StickerGrid

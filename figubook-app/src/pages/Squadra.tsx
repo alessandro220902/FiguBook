@@ -1,4 +1,5 @@
-import { useParams, Link } from 'react-router-dom'
+import { useParams, useLocation, Link } from 'react-router-dom'
+import type { Crumb } from '@/components/Breadcrumb'
 import { TEAMS } from '@/lib/teams'
 import { TEAM_ALIAS, hasTeamPage, teamDisplayName } from '@/lib/album/teamIdentity'
 import { factsForTeam } from '@/data/teamFacts'
@@ -11,9 +12,14 @@ import { pctColor } from '@/lib/stats/pctColor'
 
 export default function Squadra() {
   const { teamId = '' } = useParams()
+  const location = useLocation()
   const id = TEAM_ALIAS[teamId] ?? teamId
   const team = TEAMS.find((t) => t.id === id)
   const progress = useTeamProgress(id)
+  // Crumb ricevuti (es. album di provenienza) + questa squadra: cronologia da
+  // passare agli album cliccati -> Album › <album> › Atalanta › <album cliccato>.
+  const incomingCrumbs = (location.state as { crumbs?: Crumb[] } | null)?.crumbs ?? []
+  const rowCrumbs: Crumb[] = [...incomingCrumbs, { label: teamDisplayName(id), to: `/squadra/${id}` }]
 
   if (!hasTeamPage(id) || !team) {
     return (
@@ -79,6 +85,7 @@ export default function Squadra() {
                 <li key={`${x.albumId}-${x.sectionName}`}>
                   <Link
                     to={`/album/${x.albumId}`}
+                    state={{ crumbs: rowCrumbs }}
                     className="block rounded-lg px-2 py-2 transition-colors hover:bg-white/[0.03]"
                   >
                     <div className="flex items-baseline justify-between gap-3">

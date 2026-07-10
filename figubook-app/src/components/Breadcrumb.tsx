@@ -11,7 +11,7 @@ export interface Crumb {
 export function Breadcrumb({ items }: { items: Crumb[] }) {
   return (
     <nav aria-label="breadcrumb" className="mb-4">
-      <ol className="flex flex-wrap items-center gap-1.5 text-sm">
+      <ol className="flex flex-wrap items-center gap-1.5 text-base">
         {items.map((it, i) => {
           const last = i === items.length - 1
           return (
@@ -25,7 +25,7 @@ export function Breadcrumb({ items }: { items: Crumb[] }) {
                   {it.label}
                 </span>
               )}
-              {!last && <ChevronRight size={14} className="text-muted-foreground/60" aria-hidden />}
+              {!last && <ChevronRight size={16} className="text-muted-foreground/60" aria-hidden />}
             </li>
           )
         })}
