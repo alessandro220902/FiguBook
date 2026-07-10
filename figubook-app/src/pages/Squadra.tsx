@@ -41,7 +41,6 @@ export default function Squadra() {
             c2={kit.c2}
             accent={kit.accent}
             pattern={kit.pattern}
-            monogram={teamDisplayName(id).charAt(0).toUpperCase()}
             className="h-16 w-16 drop-shadow-md sm:h-20 sm:w-20"
           />
           <h1 className="font-display text-3xl font-bold tracking-tight text-white drop-shadow-sm sm:text-4xl">{teamDisplayName(id)}</h1>
