@@ -1,5 +1,5 @@
 import { useParams, useLocation, Link } from 'react-router-dom'
-import type { Crumb } from '@/components/Breadcrumb'
+import { Breadcrumb, type Crumb } from '@/components/Breadcrumb'
 import { TEAMS } from '@/lib/teams'
 import { TEAM_ALIAS, hasTeamPage, teamDisplayName } from '@/lib/album/teamIdentity'
 import { factsForTeam } from '@/data/teamFacts'
@@ -39,6 +39,7 @@ export default function Squadra() {
 
   return (
     <div className="album-theme mx-auto w-full max-w-[64rem]">
+      <Breadcrumb items={[{ label: 'Album', to: '/album' }, ...incomingCrumbs, { label: teamDisplayName(id) }]} />
       <header className="relative overflow-hidden rounded-2xl border border-white/10 p-6 sm:p-8" style={{ backgroundImage: kitGradient(kit) }}>
         {pattern && <div aria-hidden className="pointer-events-none absolute inset-0 mix-blend-overlay opacity-70" style={{ backgroundImage: pattern }} />}
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.52)_0%,rgba(0,0,0,0.34)_55%,rgba(0,0,0,0.22)_100%)]" />
