@@ -14,7 +14,7 @@ vi.mock('firebase/firestore', () => ({
 }))
 vi.mock('@/lib/firebase', () => ({ db: {} }))
 
-import { addAlbum, removeAlbum, archiveAlbum, unarchiveAlbum } from './albums'
+import { addAlbum, removeAlbum, archiveAlbum, unarchiveAlbum, markAlbumOpened } from './albums'
 
 beforeEach(() => { vi.clearAllMocks() })
 
@@ -39,6 +39,16 @@ describe('archiveAlbum / unarchiveAlbum', () => {
     await unarchiveAlbum('u1', 'x')
     expect(setDoc).toHaveBeenCalledWith(
       expect.anything(), { archived: { __remove: ['x'] } }, { merge: true },
+    )
+  })
+})
+
+describe('markAlbumOpened', () => {
+  it('arrayUnion id su opened (merge)', async () => {
+    await markAlbumOpened('u1', 'calciatori-25-26')
+    expect(arrayUnion).toHaveBeenCalledWith('calciatori-25-26')
+    expect(setDoc).toHaveBeenCalledWith(
+      expect.anything(), { opened: { __union: ['calciatori-25-26'] } }, { merge: true },
     )
   })
 })

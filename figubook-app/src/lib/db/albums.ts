@@ -53,6 +53,12 @@ export function aggregate(list: AlbumStats[]): AlbumStats {
 export interface MyAlbums {
   ids: string[]
   archived: string[]
+  opened: string[]
+}
+
+// "Nuovo nella tua lista": in collezione ma non ancora aperto.
+export function isNewInList(my: MyAlbums, id: string): boolean {
+  return my.ids.includes(id) && !my.opened.includes(id)
 }
 
 // onSnapshot live su users/{uid}/albums/_my-albums -> { ids, archived }.
@@ -69,12 +75,13 @@ export function subscribeMyAlbumIds(
       cb({
         ids: (d.ids as string[]) ?? [],
         archived: (d.archived as string[]) ?? [],
+        opened: (d.opened as string[]) ?? [],
       })
     },
     (err) => {
       console.error('album ids', err)
       if (onError) onError(err)
-      else cb({ ids: [], archived: [] })
+      else cb({ ids: [], archived: [], opened: [] })
     },
   )
 }
@@ -138,6 +145,11 @@ const myAlbumsRef = (uid: string) => doc(db, 'users', uid, 'albums', '_my-albums
 // Aggiunge un album alla collezione (idempotente via arrayUnion).
 export async function addAlbum(uid: string, id: string): Promise<void> {
   await setDoc(myAlbumsRef(uid), { ids: arrayUnion(id) }, { merge: true })
+}
+
+// Segna un album come "aperto almeno una volta" (idempotente via arrayUnion).
+export async function markAlbumOpened(uid: string, id: string): Promise<void> {
+  await setDoc(myAlbumsRef(uid), { opened: arrayUnion(id) }, { merge: true })
 }
 
 // Archivia: l'album resta in ids, entra in archived (escluso dai filtri non-archivio).
