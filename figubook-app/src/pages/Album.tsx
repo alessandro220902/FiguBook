@@ -5,8 +5,9 @@ import { albumById } from '@/data/albumCatalog'
 import { loadAlbumData } from '@/data/albums'
 import type { AlbumData } from '@/data/albums/types'
 import { useAlbum } from '@/hooks/useAlbum'
+import { useAuth } from '@/hooks/useAuth'
 import { sectionStats } from '@/lib/album/stats'
-import { computeStats } from '@/lib/db/albums'
+import { computeStats, markAlbumOpened } from '@/lib/db/albums'
 import { sectionVars } from '@/lib/album/color'
 import { kitForSection } from '@/lib/album/teamKits'
 import { AlbumLanding } from '@/components/album/AlbumLanding'
@@ -35,6 +36,16 @@ export default function Album() {
   const [openId, setOpenId] = useState<string | null>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const gridScrollRef = useRef<HTMLDivElement>(null)
+  const { user } = useAuth()
+
+  // Marca album come aperto (spegne badge Nuovo) una sola volta per mount.
+  const openedMarkedRef = useRef<string>('')
+  useEffect(() => {
+    if (!user || !albumId || !entry) return
+    if (openedMarkedRef.current === albumId) return
+    openedMarkedRef.current = albumId
+    void markAlbumOpened(user.uid, albumId)
+  }, [user, albumId, entry])
 
   // Cambio sezione: porto il pannello in cima (sotto la navbar) e resetto lo scroll
   // interno della griglia in alto. rAF: dopo che React ha renderizzato la sezione.
