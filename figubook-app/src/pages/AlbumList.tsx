@@ -149,12 +149,6 @@ function AlbumTile({ a, archived, isNew, uid, isDesktop, onOpen, onArchive, onUn
     >
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.05) 40%, transparent 60%, rgba(0,0,0,0.45) 100%)' }} />
 
-      {isNew && (
-        <div className="absolute left-3 top-3 z-30">
-          <AlbumBadge variant="new" />
-        </div>
-      )}
-
       {/* Mobile/iPad: Link overlay (tap = apri). Su PC niente Link: apre il bottone. */}
       {!isDesktop && (
         <Link
@@ -182,6 +176,7 @@ function AlbumTile({ a, archived, isNew, uid, isDesktop, onOpen, onArchive, onUn
           pr lascia spazio alla copertina sull'angolo destro. */}
       <div className="pointer-events-none relative pr-[32%]">
         <div className="pr-2">
+          {isNew && <AlbumBadge variant="new" className="mb-1.5" />}
           <div className="font-mono text-[11px] uppercase tracking-wide text-white/85">{entry.editor} · {entry.season}</div>
           <h2 className="mt-1 truncate text-2xl font-bold tracking-tight text-white">{entry.title}</h2>
         </div>
