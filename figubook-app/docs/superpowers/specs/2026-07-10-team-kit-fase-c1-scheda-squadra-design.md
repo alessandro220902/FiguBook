@@ -38,22 +38,29 @@ un'unificazione esplicita e più ampia.
 
 ### `src/lib/album/teamIdentity.ts` (nuovo) — punto di verità dell'identità
 
+**Fatto chiave (verificato sul catalogo):** l'id canonico di `src/lib/teams.ts` è
+`slug(section.name)` (es. "Hellas Verona"→`hellas-verona`, "Messico"→`messico`,
+"Inter"→`inter`). `section.id` NON è stabile tra album (Hellas: `verona`/`hellas`/
+`hellas-verona`), mentre il nome lo è; viceversa Inter ha `section.id` stabile (`inter`)
+ma nome variabile ("Inter" vs "FC Internazionale Milano"). Perciò il canonico si deriva dal
+**nome** (`slug(name)`), poi si unificano le varianti-nome via ALIAS.
+
 ```ts
 import type { Section } from '@/data/albums/types'
 
-// id canonico = quello usato in src/lib/teams.ts (es. 'inter', 'juventus', 'italy').
-// Alias: id-sezione noti che indicano la stessa squadra ma con chiave diversa.
+// slug come genteams: lowercase, spazi/punteggiatura -> trattini, no accenti.
+// Invariante testata: per ogni TEAMS, slugTeam(team.name) === team.id.
+export function slugTeam(name: string): string
+
+// Varianti-nome che indicano la stessa squadra ma producono slug diversi.
+// chiave = slug variante, valore = slug canonico.
 export const TEAM_ALIAS: Record<string, string> = {
   'fc-internazionale-milano': 'inter',
-  'internazionale': 'inter',
-  'verona': 'hellas-verona',
-  'hellas': 'hellas-verona',
-  // …popolato durante l'implementazione per tutti i doppioni reali del catalogo
+  // …popolato durante l'implementazione enumerando i kind:'team' del catalogo
 }
 
-// Risolve un id-sezione all'id canonico: alias espliciti, poi il formato
-// Mondiali 'girone-<lettera>-<cod3>' -> nazionale 'cod3', altrimenti l'id stesso.
-export function canonicalTeamId(sectionId: string): string
+// Risolve una sezione all'id canonico: slug(name) poi ALIAS.
+export function canonicalTeamId(section: Section): string
 
 // true se l'id canonico corrisponde a una squadra reale (in TEAMS) — abilita il link.
 export function hasTeamPage(canonicalId: string): boolean
@@ -63,9 +70,9 @@ export function teamDisplayName(canonicalId: string): string
 ```
 
 Note:
-- `canonicalTeamId` accetta l'id-sezione (string) per essere testabile senza un intero
-  `Section`. Il chiamante passa `section.id`.
-- `hasTeamPage` guarda `TEAMS` di `src/lib/teams.ts` (già dedotto per squadra).
+- `canonicalTeamId(section)` usa `section.name` (id-sezione inaffidabile). I chiamanti
+  (SectionHero, useTeamProgress) hanno sempre il `Section`.
+- `hasTeamPage`/`teamDisplayName` guardano `TEAMS` di `src/lib/teams.ts` (id = slug(name)).
 - L'alias di Fase A (`teamKits.ts` `resolveKey`) resta invariato per il kit; NON viene
   toccato. `teamIdentity.ts` è il resolver di identità, separato per responsabilità.
 
@@ -128,8 +135,9 @@ Riuso delle primitive esistenti — nessuna nuova logica di conteggio.
 
 - Route in `src/App.tsx`, dentro il gruppo protetto (come `/album/:albumId`):
   `<Route path="/squadra/:teamId" element={<Squadra />} />`.
-- `teamId` param → normalizzato con `canonicalTeamId` (robusto se qualcuno arriva con un
-  alias). Se `!hasTeamPage(canonical)` ⇒ stato "Squadra non trovata" con link indietro.
+- `teamId` param è già un id canonico (i link lo generano con `canonicalTeamId`). Applicare
+  `TEAM_ALIAS[teamId] ?? teamId` per robustezza. Se `!hasTeamPage(id)` ⇒ stato "Squadra non
+  trovata" con link indietro.
 - Layout (tema Midnight Gold, minimalista, `.album-theme`):
   1. **Header identità** — `TeamCrest` grande (c1/c2 da `TEAMS`) su sfondo
      `kitGradient(kit)` + `kitPattern(kit)` (motore Fase A; il kit si ottiene da un
@@ -155,10 +163,12 @@ Riuso delle primitive esistenti — nessuna nuova logica di conteggio.
 ## Testing
 
 - `teamIdentity.test.ts` (nuovo):
-  - `canonicalTeamId('fc-internazionale-milano') === 'inter'`, `'verona' === 'hellas-verona'`,
-    `'girone-a-ita' === 'ita'`-style (secondo formato reale), id sconosciuto → sé stesso.
-  - `hasTeamPage` true per squadra reale, false per id non-squadra.
-  - `teamDisplayName` da TEAMS, fallback all'id.
+  - **Invariante**: per ogni `TEAMS`, `slugTeam(team.name) === team.id` (blocca regressioni
+    di slug rispetto a genteams).
+  - `canonicalTeamId({name:'FC Internazionale Milano',…}) === 'inter'` (via ALIAS);
+    `canonicalTeamId({name:'Inter',…}) === 'inter'`; `canonicalTeamId({name:'Messico',…}) === 'messico'`.
+  - `hasTeamPage('inter')` true, `hasTeamPage('intro')` false.
+  - `teamDisplayName('inter')` da TEAMS, id sconosciuto → l'id stesso.
 - `teamFacts.test.ts` (nuovo): `factsForTeam` ritorna `{}` per id assente; forma dei campi
   (types) per un paio di team popolati (es. inter → city 'Milano', founded 1908).
 - `useTeamProgress` — test unitario della funzione di aggregazione pura estratta (vedi
