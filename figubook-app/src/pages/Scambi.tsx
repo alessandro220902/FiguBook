@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Inbox, Check } from 'lucide-react'
+import { Inbox, Check } from 'lucide-react'
 import { Breadcrumb } from '@/components/Breadcrumb'
 import { ActionSwapButton } from '@/components/ui/ActionSwapButton'
 import { requireUid } from '@/lib/firebase'
@@ -414,17 +414,8 @@ export default function Scambi() {
   // Stato 2: griglia dei match per l'album scelto (+ modale componi scambio).
   return (
     <div className="mx-auto w-full max-w-[88rem]">
-      <div className="mb-4 flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => setAlbumId(null)}
-          aria-label="Torna agli album"
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/12 bg-white/[0.06] text-foreground transition-colors hover:bg-white/10 active:scale-95"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </button>
-        <h1 className="min-w-0 truncate font-display text-2xl font-bold tracking-tight text-ink">{albumById[albumId]?.title}</h1>
-      </div>
+      <Breadcrumb items={[{ label: 'Scambi', onClick: () => setAlbumId(null) }, { label: albumById[albumId]?.title ?? 'Album' }]} />
+      <h1 className="mb-4 min-w-0 truncate font-display text-2xl font-bold tracking-tight text-ink">{albumById[albumId]?.title}</h1>
       <div className="mb-5"><FilterChips filters={filters} onChange={setFilters} /></div>
       {notice && (
         <div

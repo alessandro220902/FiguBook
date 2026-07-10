@@ -4,6 +4,7 @@ import { ChevronRight } from 'lucide-react'
 export interface Crumb {
   label: string
   to?: string
+  onClick?: () => void
 }
 
 // Breadcrumb minimale (stile 21st): voci linkate separate da chevron, ultima
@@ -16,7 +17,11 @@ export function Breadcrumb({ items }: { items: Crumb[] }) {
           const last = i === items.length - 1
           return (
             <li key={i} className="flex items-center gap-1.5">
-              {it.to && !last ? (
+              {it.onClick && !last ? (
+                <button type="button" onClick={it.onClick} className="text-muted-foreground transition-colors hover:text-ink">
+                  {it.label}
+                </button>
+              ) : it.to && !last ? (
                 <Link to={it.to} className="text-muted-foreground transition-colors hover:text-ink">
                   {it.label}
                 </Link>
