@@ -176,8 +176,10 @@ function AlbumTile({ a, archived, isNew, uid, isDesktop, onOpen, onArchive, onUn
           pr lascia spazio alla copertina sull'angolo destro. */}
       <div className="pointer-events-none relative pr-[32%]">
         <div className="pr-2">
-          {isNew && <AlbumBadge variant="new" className="mb-1.5" />}
-          <div className="font-mono text-[11px] uppercase tracking-wide text-white/85">{entry.editor} · {entry.season}</div>
+          <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wide text-white/85">
+            <span>{entry.editor} · {entry.season}</span>
+            {isNew && <AlbumBadge variant="new" />}
+          </div>
           <h2 className="mt-1 truncate text-2xl font-bold tracking-tight text-white">{entry.title}</h2>
         </div>
 
