@@ -15,6 +15,7 @@ export interface TeamProgressResult {
   total: number
   pct: number
   appearsIn: { albumId: string; albumTitle: string; sectionName: string; pct: number }[]
+  matchedSection?: Section
 }
 
 /**
@@ -25,10 +26,12 @@ export function aggregateTeamProgress(albums: AlbumForTeam[], canonicalId: strin
   let have = 0
   let total = 0
   const appearsIn: TeamProgressResult['appearsIn'] = []
+  let matchedSection: Section | undefined
 
   for (const a of albums) {
     for (const s of a.sections) {
       if (s.kind !== 'team' || canonicalTeamId(s) !== canonicalId) continue
+      if (!matchedSection) matchedSection = s
       const st = sectionStats(a.states, a.counts, s.codes)
       have += st.have
       total += st.total
@@ -37,5 +40,5 @@ export function aggregateTeamProgress(albums: AlbumForTeam[], canonicalId: strin
   }
 
   const pct = total > 0 ? Math.min(100, Math.round((have / total) * 100)) : 0
-  return { have, total, pct, appearsIn }
+  return { have, total, pct, appearsIn, matchedSection }
 }

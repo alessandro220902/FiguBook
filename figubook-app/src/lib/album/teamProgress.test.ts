@@ -22,4 +22,18 @@ describe('aggregateTeamProgress', () => {
     const p = aggregateTeamProgress([], 'inter')
     expect(p).toEqual({ have: 0, total: 0, pct: 0, appearsIn: [] })
   })
+
+  it('espone la prima sezione che matcha come matchedSection', () => {
+    const albums: AlbumForTeam[] = [
+      { albumId: 'a1', albumTitle: 'Cal 25/26', sections: [interSec(['I1','I2']), otherSec],
+        states: {}, counts: {} },
+    ]
+    const p = aggregateTeamProgress(albums, 'inter')
+    expect(p.matchedSection?.id).toBe('inter')
+  })
+
+  it('matchedSection undefined se il team non compare', () => {
+    const p = aggregateTeamProgress([], 'inter')
+    expect(p.matchedSection).toBeUndefined()
+  })
 })
