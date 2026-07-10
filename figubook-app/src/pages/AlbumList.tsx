@@ -12,12 +12,13 @@ import { pctColor } from '@/lib/stats/pctColor'
 import { AlbumButton } from '@/components/album/ui/Button'
 import { LibraryFilters } from '@/components/album/LibraryFilters'
 import { AlbumMenu } from '@/components/album/AlbumMenu'
+import { AlbumBadge } from '@/components/album/ui/AlbumBadge'
 import {
   inBucket, LIBRARY_FILTERS, DEFAULT_FILTER, type LibraryFilter,
 } from '@/lib/album/libraryFilters'
 
 export default function AlbumList() {
-  const { albums, archived, loading, error, retry } = useCollection()
+  const { albums, archived, opened, loading, error, retry } = useCollection()
   const { user } = useAuth()
   const navigate = useNavigate()
   const isDesktop = useIsDesktop()
@@ -86,6 +87,7 @@ export default function AlbumList() {
                   key={a.id}
                   a={a}
                   archived={archived}
+                  isNew={!opened.includes(a.id)}
                   uid={user?.uid ?? null}
                   isDesktop={isDesktop}
                   onOpen={() => navigate(`/album/${a.id}`)}
@@ -105,6 +107,7 @@ export default function AlbumList() {
 interface TileProps {
   a: PerAlbumStats
   archived: boolean
+  isNew: boolean
   uid: string | null
   isDesktop: boolean
   onOpen: () => void
@@ -118,7 +121,7 @@ interface TileProps {
 // PC (isDesktop): niente Link; all'hover sale un pannello nero con Condividi
 // doppie/mancanti + Apri. Il menu (3 punti) sta sopra al pannello (z più alto),
 // così cliccarlo non innesca l'apertura.
-function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive, onDelete }: TileProps) {
+function AlbumTile({ a, archived, isNew, uid, isDesktop, onOpen, onArchive, onUnarchive, onDelete }: TileProps) {
   const { entry } = a
   const [toast, setToast] = useState<string | null>(null)
   const [busy, setBusy] = useState<ShareKind | null>(null)
@@ -145,6 +148,12 @@ function AlbumTile({ a, archived, uid, isDesktop, onOpen, onArchive, onUnarchive
       style={{ background: `linear-gradient(145deg, ${entry.c1} 0%, ${entry.c2} 100%)` }}
     >
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.05) 40%, transparent 60%, rgba(0,0,0,0.45) 100%)' }} />
+
+      {isNew && (
+        <div className="absolute left-3 top-3 z-30">
+          <AlbumBadge variant="new" />
+        </div>
+      )}
 
       {/* Mobile/iPad: Link overlay (tap = apri). Su PC niente Link: apre il bottone. */}
       {!isDesktop && (
