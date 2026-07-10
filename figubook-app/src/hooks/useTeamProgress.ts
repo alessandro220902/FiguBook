@@ -5,9 +5,11 @@ import { loadAlbumData } from '@/data/albums'
 import type { Section } from '@/data/albums/types'
 import { subscribeMyAlbumIds, subscribeAlbum } from '@/lib/db/albums'
 import { aggregateTeamProgress, type AlbumForTeam, type TeamProgressResult } from '@/lib/album/teamProgress'
+import { kitForSection, type TeamKit } from '@/lib/album/teamKits'
 
 export interface TeamProgress extends TeamProgressResult {
   loading: boolean
+  kit?: TeamKit
 }
 
 export function useTeamProgress(canonicalId: string): TeamProgress {
@@ -75,5 +77,6 @@ export function useTeamProgress(canonicalId: string): TeamProgress {
 
   const result = aggregateTeamProgress(albums, canonicalId)
   const loading = !!user && (!idsLoaded || ids.some((id) => albumById[id] && (!sectionsMap[id] || !dataMap[id])))
-  return { ...result, loading }
+  const kit = result.matchedSection ? kitForSection(result.matchedSection) : undefined
+  return { ...result, loading, kit }
 }
