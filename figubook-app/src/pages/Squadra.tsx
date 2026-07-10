@@ -73,7 +73,7 @@ export default function Squadra() {
           <p className="mt-2 type-body text-ink-2">Non è in nessuno dei tuoi album.</p>
         ) : (
           <>
-            <p className="mt-1 font-mono text-[11px] uppercase tracking-wide text-ink-2">{progress.have} / {progress.total} figurine</p>
+            <p className="mt-1 font-mono text-xs uppercase tracking-wide text-ink-2">{progress.have} / {progress.total} figurine</p>
             <ul className="mt-4 space-y-2.5">
               {[...progress.appearsIn].sort((a, b) => b.pct - a.pct).map((x) => (
                 <li key={`${x.albumId}-${x.sectionName}`}>
@@ -83,9 +83,9 @@ export default function Squadra() {
                   >
                     <div className="flex items-baseline justify-between gap-3">
                       <span className="type-body min-w-0 truncate text-ink">{x.albumTitle}</span>
-                      <span className="flex shrink-0 items-baseline gap-2 font-mono">
-                        <span className="text-[11px] tabular-nums text-ink-2/80">{x.have}/{x.total}</span>
-                        <span className="text-xs text-ink-2">{x.pct}%</span>
+                      <span className="flex shrink-0 items-baseline gap-2.5 font-mono">
+                        <span className="text-xs tabular-nums text-ink-2">{x.have}/{x.total}</span>
+                        <span className="text-sm font-semibold text-ink">{x.pct}%</span>
                       </span>
                     </div>
                     <span className="mt-1.5 block h-1.5 overflow-hidden rounded-full bg-black/30">
