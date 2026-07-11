@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfile } from '@/hooks/useProfile'
 import { CittaPicker } from '@/components/profile/CittaPicker'
+import { CapPicker } from '@/components/profile/CapPicker'
 import { TeamPicker } from '@/components/profile/TeamPicker'
 import { AvatarModal } from '@/components/profile/AvatarModal'
 import { Avatar } from '@/components/Avatar'
@@ -67,14 +68,7 @@ export default function Onboarding() {
 
         <div>
           <label className="text-sm font-semibold text-ink">CAP</label>
-          <input
-            value={cap}
-            onChange={(e) => setCap(e.target.value.replace(/\D/g, '').slice(0, 5))}
-            inputMode="numeric"
-            placeholder="es. 00184"
-            style={{ outline: 'none', boxShadow: 'none' }}
-            className="mt-1.5 w-full rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-[15px] text-ink focus:border-lime/60"
-          />
+          <div className="mt-1.5"><CapPicker value={cap} onChange={setCap} /></div>
           <p className={HINT}>
             Aggiungi il CAP: gli scambi che ti consigliamo diventano molto più precisi, trovi
             collezionisti proprio vicino a te. Resta privato.
