@@ -1,8 +1,8 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import type { DayDoublesPoint } from '@/lib/stats/dailyDoubles'
 
-const GREEN = 'var(--color-lime)' // "nuove" — segue il tema scoped (oro su .home-gold)
-const RED = 'var(--color-stat-missing)' // "doppie"
+const GREEN = '#22c55e' // "nuove" — verde esplicito (NON --color-lime, che su Home è oro)
+const RED = '#ef4444' // "doppie" — rosso esplicito
 const WD3 = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab']
 
 function wd3(iso: string): string {
@@ -15,8 +15,8 @@ function DoublesTooltip({ active, payload }: { active?: boolean; payload?: { pay
   return (
     <div className="rounded-lg border border-white/10 bg-bg-elev px-3 py-2 text-sm shadow-xl">
       <p className="font-semibold text-ink">{new Date(d.date + 'T00:00:00Z').toLocaleDateString('it-IT')}</p>
-      <p className="text-ink-2"><span className="text-lime">●</span> {d.nuove} nuove</p>
-      <p className="text-ink-2"><span className="text-stat-missing">●</span> {d.doppie} doppie</p>
+      <p className="text-ink-2"><span style={{ color: GREEN }}>●</span> {d.nuove} nuove</p>
+      <p className="text-ink-2"><span style={{ color: RED }}>●</span> {d.doppie} doppie</p>
       <p className="mt-1 text-xs text-ink-2">Clicca per il dettaglio per album</p>
     </div>
   )
