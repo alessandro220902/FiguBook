@@ -3,6 +3,12 @@ import { updateProfile } from 'firebase/auth'
 import { auth, db } from '@/lib/firebase'
 import { isValidComune } from '@/lib/geo/searchComuni'
 
+// CAP valido = esattamente 5 cifre, oppure vuoto (è opzionale).
+export function isValidCap(cap: string): boolean {
+  const c = cap.trim()
+  return c === '' || /^\d{5}$/.test(c)
+}
+
 // Doc profilo privato: users/{uid}/meta/profile.
 // Campi base (displayName, username, ts) scritti alla registrazione (register.ts);
 // qui si aggiungono i campi editabili dall'utente.
@@ -15,6 +21,10 @@ export interface ProfileDoc {
   bio?: string
   avatarId?: string
   favTeam?: string
+  // CAP privato (mai in publicProfiles). 5 cifre o assente.
+  cap?: string
+  // true = l'utente ha già visto l'onboarding (anche se l'ha saltato).
+  onboarded?: boolean
   // Visibilità: unico interruttore. true = chiunque vede tutto; false = solo amici.
   isPublic?: boolean
   // Pianificati (scambi) — non ancora in UI
@@ -183,6 +193,23 @@ export async function touchLastSeen(uid: string): Promise<void> {
   try {
     await setDoc(publicRef(uid), { lastSeen: now }, { merge: true })
   } catch (e) { console.error('lastSeen', e) }
+}
+
+// Salva campi privati dell'onboarding (cap/onboarded) senza toccare publicProfiles.
+// Il CAP viene validato: se non valido, non viene scritto.
+export async function saveProfilePrivate(
+  uid: string,
+  patch: { cap?: string; onboarded?: boolean },
+): Promise<void> {
+  const data: Partial<ProfileDoc> = {}
+  if (patch.cap !== undefined) data.cap = isValidCap(patch.cap) ? patch.cap.trim() : ''
+  if (patch.onboarded !== undefined) data.onboarded = patch.onboarded
+  await setDoc(profileRef(uid), data, { merge: true })
+}
+
+// Segna l'onboarding come visto (per "Configura più tardi").
+export async function markOnboarded(uid: string): Promise<void> {
+  await saveProfilePrivate(uid, { onboarded: true })
 }
 
 // Disponibilità username (per check live nel form). true = libero o già mio.
