@@ -78,7 +78,7 @@ function OnboardingForm({ user, profile }: { user: User; profile: ProfileDoc | n
         </p>
       </FadeIn>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+      <div className="mt-6 grid gap-6 lg:grid-cols-2 lg:items-start">
       <FadeIn delay={0.12} className="rounded-2xl border border-white/[0.12] bg-surface/60 p-6 shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] sm:p-8">
         <div className="grid gap-6">
           <div>
@@ -153,7 +153,7 @@ function OnboardingForm({ user, profile }: { user: User; profile: ProfileDoc | n
         </div>
       </FadeIn>
 
-      <FadeIn delay={0.2} className="rounded-2xl border border-white/[0.12] bg-surface/60 p-6 shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] sm:p-8">
+      <FadeIn delay={0.2} className="flex flex-col rounded-2xl border border-white/[0.12] bg-surface/60 p-6 shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] sm:p-8 lg:max-h-[calc(100vh-13rem)] lg:overflow-hidden">
         <AlbumBrowser uid={user.uid} />
       </FadeIn>
       </div>
