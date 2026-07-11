@@ -11,7 +11,19 @@ export function needsOnboarding(profile: ProfileDoc | null): boolean {
   return !hasComune(profile) && !(profile?.onboarded ?? false)
 }
 
-// Il banner ricorda finché manca il comune, anche dopo aver saltato l'onboarding.
+// Completamento profilo in % sui 4 campi dell'onboarding (25% ciascuno).
+export function profileCompletion(profile: ProfileDoc | null): number {
+  if (!profile) return 0
+  const checks = [
+    hasComune(profile),
+    /^\d{5}$/.test((profile.cap ?? '').trim()),
+    !!profile.favTeam,
+    !!profile.avatarId,
+  ]
+  return Math.round((checks.filter(Boolean).length / checks.length) * 100)
+}
+
+// Il banner nudge resta finché il profilo non è completo al 100%.
 export function showCompleteBanner(profile: ProfileDoc | null): boolean {
-  return !hasComune(profile)
+  return profileCompletion(profile) < 100
 }

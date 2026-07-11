@@ -63,7 +63,7 @@ export default function Onboarding() {
       <FadeIn>
         <h1 className="type-h1 text-ink">Benvenuto! Completa il tuo profilo</h1>
         <p className="mt-2 text-lg text-ink-2">
-          Bastano pochi dati per trovare collezionisti come te. Puoi anche farlo più tardi.
+          Bastano pochi dati per trovare collezionisti come te e farti riconoscere.
         </p>
       </FadeIn>
 
