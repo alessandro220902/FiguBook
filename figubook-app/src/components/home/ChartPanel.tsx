@@ -20,7 +20,7 @@ export function ChartPanel({ refreshKey }: { refreshKey?: unknown }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="mb-3 inline-flex shrink-0 rounded-full border border-white/10 bg-surface/60 p-0.5">
+      <div className="mb-3 inline-flex w-fit shrink-0 self-start rounded-full border border-white/10 bg-surface/60 p-0.5">
         {TABS.map((t) => (
           <button
             key={t.key}
