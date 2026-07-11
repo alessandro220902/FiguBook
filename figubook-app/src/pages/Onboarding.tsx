@@ -9,6 +9,7 @@ import { CapPicker } from '@/components/profile/CapPicker'
 import { TeamPicker } from '@/components/profile/TeamPicker'
 import { AvatarModal } from '@/components/profile/AvatarModal'
 import { Avatar } from '@/components/Avatar'
+import { AlbumBrowser } from '@/components/onboarding/AlbumBrowser'
 import { FadeIn } from '@/components/home/FadeIn'
 import { saveProfileAccount, saveProfilePrivate, markOnboarded, isValidCap, type ProfileDoc } from '@/lib/db/profile'
 
@@ -69,7 +70,7 @@ function OnboardingForm({ user, profile }: { user: User; profile: ProfileDoc | n
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-5 py-10">
+    <div className="mx-auto w-full max-w-6xl px-5 py-10">
       <FadeIn>
         <h1 className="type-h1 text-ink">Benvenuto! Completa il tuo profilo</h1>
         <p className="mt-2 text-lg text-ink-2">
@@ -77,8 +78,9 @@ function OnboardingForm({ user, profile }: { user: User; profile: ProfileDoc | n
         </p>
       </FadeIn>
 
-      <FadeIn delay={0.12} className="mt-8 rounded-2xl border border-white/[0.12] bg-surface/60 p-6 shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] sm:p-8">
-        <div className="grid gap-x-6 gap-y-6 sm:grid-cols-2">
+      <div className="mt-8 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+      <FadeIn delay={0.12} className="rounded-2xl border border-white/[0.12] bg-surface/60 p-6 shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] sm:p-8">
+        <div className="grid gap-6">
           <div>
             <label className="text-base font-semibold text-ink">Comune <span className="text-lime">*</span></label>
             <div className="mt-1.5"><CittaPicker value={citta} onChange={setCitta} /></div>
@@ -150,6 +152,11 @@ function OnboardingForm({ user, profile }: { user: User; profile: ProfileDoc | n
           </button>
         </div>
       </FadeIn>
+
+      <FadeIn delay={0.2} className="rounded-2xl border border-white/[0.12] bg-surface/60 p-6 shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] sm:p-8">
+        <AlbumBrowser uid={user.uid} />
+      </FadeIn>
+      </div>
 
       {avatarOpen && user && (
         <AvatarModal
