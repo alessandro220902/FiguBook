@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ArrowRight, Check } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfile } from '@/hooks/useProfile'
 import { CittaPicker } from '@/components/profile/CittaPicker'
@@ -7,6 +8,7 @@ import { CapPicker } from '@/components/profile/CapPicker'
 import { TeamPicker } from '@/components/profile/TeamPicker'
 import { AvatarModal } from '@/components/profile/AvatarModal'
 import { Avatar } from '@/components/Avatar'
+import { FadeIn } from '@/components/home/FadeIn'
 import { saveProfileAccount, saveProfilePrivate, markOnboarded, isValidCap } from '@/lib/db/profile'
 
 const HINT = 'text-sm text-ink-2 mt-2'
@@ -21,6 +23,7 @@ export default function Onboarding() {
   const [favTeam, setFavTeam] = useState(profile?.favTeam ?? '')
   const [avatarOpen, setAvatarOpen] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
 
   const dirty =
     citta !== (profile?.citta ?? '') ||
@@ -40,8 +43,11 @@ export default function Onboarding() {
         favTeam,
       })
       await saveProfilePrivate(user.uid, { cap, onboarded: true })
-      navigate('/home', { replace: true })
-    } finally {
+      // Feedback "Salvato" prima di entrare nell'app.
+      setSaving(false)
+      setSaved(true)
+      setTimeout(() => navigate('/home', { replace: true }), 800)
+    } catch {
       setSaving(false)
     }
   }
@@ -54,12 +60,14 @@ export default function Onboarding() {
 
   return (
     <div className="mx-auto w-full max-w-3xl px-5 py-10">
-      <h1 className="type-h1 text-ink">Benvenuto! Completa il tuo profilo</h1>
-      <p className="mt-2 text-lg text-ink-2">
-        Bastano pochi dati per trovare collezionisti come te. Puoi anche farlo più tardi.
-      </p>
+      <FadeIn>
+        <h1 className="type-h1 text-ink">Benvenuto! Completa il tuo profilo</h1>
+        <p className="mt-2 text-lg text-ink-2">
+          Bastano pochi dati per trovare collezionisti come te. Puoi anche farlo più tardi.
+        </p>
+      </FadeIn>
 
-      <div className="mt-8 rounded-2xl border border-white/[0.08] bg-surface/40 p-6 sm:p-8">
+      <FadeIn delay={0.12} className="mt-8 rounded-2xl border border-white/[0.08] bg-surface/40 p-6 sm:p-8">
         <div className="grid gap-x-6 gap-y-6 sm:grid-cols-2">
           <div>
             <label className="text-base font-semibold text-ink">Comune <span className="text-lime">*</span></label>
@@ -108,20 +116,31 @@ export default function Onboarding() {
           <button
             type="button"
             onClick={save}
-            disabled={!dirty || !capOk || saving}
-            className="rounded-full bg-lime px-6 py-2.5 text-[15px] font-semibold text-lime-ink transition-opacity disabled:opacity-40"
+            disabled={!dirty || !capOk || saving || saved}
+            className="group inline-flex cursor-pointer items-center gap-2 rounded-full bg-lime px-6 py-2.5 text-[15px] font-semibold text-lime-ink transition-transform duration-150 hover:-translate-y-px active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
           >
-            {saving ? 'Salvataggio…' : 'Salva'}
+            {saved ? (
+              <>
+                <Check className="h-4 w-4" /> Salvato
+              </>
+            ) : saving ? (
+              'Salvataggio…'
+            ) : (
+              <>
+                Salva
+                <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-0.5" />
+              </>
+            )}
           </button>
           <button
             type="button"
             onClick={later}
-            className="rounded-full px-5 py-2.5 text-[15px] font-medium text-ink-2 transition-colors hover:text-ink"
+            className="cursor-pointer rounded-full px-5 py-2.5 text-[15px] font-medium text-ink-2 transition-colors hover:text-ink"
           >
             Configura più tardi
           </button>
         </div>
-      </div>
+      </FadeIn>
 
       {avatarOpen && user && (
         <AvatarModal
