@@ -52,7 +52,8 @@ export function DangerZone({ username }: { username: string }) {
               value={typed}
               onChange={(e) => setTyped(e.target.value)}
               placeholder="Il tuo username"
-              className="mt-4 w-full rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-[15px] text-ink outline-none focus:border-red-500"
+              style={{ outline: 'none', boxShadow: 'none' }}
+              className="mt-4 w-full rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-[15px] text-ink focus:border-red-400/60"
             />
             {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
             <div className="mt-5 flex justify-end gap-2">
@@ -66,7 +67,7 @@ export function DangerZone({ username }: { username: string }) {
               <button
                 onClick={confirm}
                 disabled={!canConfirm}
-                className="rounded-full bg-red-500 px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+                className="rounded-full bg-red-500/80 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-500 disabled:opacity-40"
               >
                 {busy ? 'Eliminazione…' : 'Elimina definitivamente'}
               </button>
