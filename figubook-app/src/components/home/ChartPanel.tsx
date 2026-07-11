@@ -28,7 +28,7 @@ export function ChartPanel({ refreshKey }: { refreshKey?: unknown }) {
             onClick={() => setView(t.key)}
             className={
               'cursor-pointer rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ' +
-              (view === t.key ? 'bg-lime text-lime-ink' : 'text-ink-2 hover:text-ink')
+              (view === t.key ? 'bg-lime text-lime-ink' : 'text-ink hover:text-ink')
             }
           >
             {t.label}
