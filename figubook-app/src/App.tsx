@@ -15,6 +15,7 @@ import PrivacyPolicy from '@/pages/legal/PrivacyPolicy'
 import Termini from '@/pages/legal/Termini'
 import CookiePolicy from '@/pages/legal/CookiePolicy'
 import Home from '@/pages/Home'
+import Onboarding from '@/pages/Onboarding'
 import Album from '@/pages/Album'
 import AlbumList from '@/pages/AlbumList'
 import Scambi from '@/pages/Scambi'
@@ -68,6 +69,7 @@ export default function App() {
         }
       >
         <Route path="/home" element={<Home />} />
+        <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/album" element={<AlbumList />} />
         <Route path="/album/:albumId" element={<Album />} />
         <Route path="/scambi" element={<Scambi />} />
