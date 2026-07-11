@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Outlet, Link } from 'react-router-dom'
+import { Outlet, Link, useLocation } from 'react-router-dom'
 import { Home, BookOpen, ArrowLeftRight, Users, Search } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useCollection } from '@/hooks/useCollection'
@@ -10,6 +10,7 @@ import { DesktopNavbar } from '@/components/layout/navbar/DesktopNavbar'
 import { NotificationsBell } from '@/components/layout/navbar/NotificationsBell'
 import { FluidMenu } from '@/components/layout/navbar/FluidMenu'
 import { ProfileChip } from '@/components/layout/navbar/ProfileChip'
+import { ThemeToggle } from '@/components/layout/navbar/ThemeToggle'
 
 // Shell condivisa: nav unica scritta una volta, riusata sulle 4 sezioni private.
 // Home (dashboard) usa l'icona casetta su mobile. Label "Home" come su desktop.
@@ -38,6 +39,10 @@ export function AppLayout() {
   // Midnight Gold su tutta la shell app; light/dark cablato al ThemeToggle.
   const homeScope = ` home-gold${mode === 'light' ? ' home-light' : ''}`
 
+  // Onboarding: pagina di primo accesso. Chrome minimale (solo logo + tema),
+  // niente nav verso le sezioni (l'utente deve prima completare/saltare).
+  const minimal = useLocation().pathname === '/onboarding'
+
   return (
     <div className={`relative min-h-screen text-foreground${homeScope}`}>
       {/* Sfondo unico app Midnight Gold: nero prevalente sfuma in oro; in chiaro crema->oro. */}
@@ -51,29 +56,44 @@ export function AppLayout() {
         }}
       />
 
-      {/* Navbar Netflix-style: solo desktop+iPad (>=md) */}
-      <DesktopNavbar />
-
-      {/* Cluster mobile (telefono, <md): logo + bottom-nav + menu destro */}
-      <div className="md:hidden">
-        <div className="fixed left-4 top-4 z-50 flex items-center gap-1.5 sm:left-6 sm:top-6">
-          <Link to="/home" className="flex items-center">
+      {minimal ? (
+        /* Header minimale onboarding: logo a sinistra, toggle tema a destra. */
+        <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-5 py-4 sm:px-10 sm:py-5">
+          <span className="flex items-center gap-2.5">
             <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">
               F
             </span>
-          </Link>
-          <ProfileChip />
-        </div>
-        <TubelightNav items={NAV} />
-        {/* Top-right mobile: notifiche live + FluidMenu (stesso menu del desktop) */}
-        <div className="fixed right-4 top-4 z-50 flex items-center gap-2 sm:right-6 sm:top-6">
-          <NotificationsBell asLink />
-          <FluidMenu />
-        </div>
-      </div>
+            <span className="font-display text-xl font-bold text-ink">FiguBook</span>
+          </span>
+          <ThemeToggle />
+        </header>
+      ) : (
+        <>
+          {/* Navbar Netflix-style: solo desktop+iPad (>=md) */}
+          <DesktopNavbar />
+
+          {/* Cluster mobile (telefono, <md): logo + bottom-nav + menu destro */}
+          <div className="md:hidden">
+            <div className="fixed left-4 top-4 z-50 flex items-center gap-1.5 sm:left-6 sm:top-6">
+              <Link to="/home" className="flex items-center">
+                <span className="grid h-9 w-9 -rotate-6 place-items-center rounded-[10px] bg-lime font-display text-xl font-extrabold text-lime-ink">
+                  F
+                </span>
+              </Link>
+              <ProfileChip />
+            </div>
+            <TubelightNav items={NAV} />
+            {/* Top-right mobile: notifiche live + FluidMenu (stesso menu del desktop) */}
+            <div className="fixed right-4 top-4 z-50 flex items-center gap-2 sm:right-6 sm:top-6">
+              <NotificationsBell asLink />
+              <FluidMenu />
+            </div>
+          </div>
+        </>
+      )}
 
       {/* pt: cluster (mobile) / navbar h-16 (desktop). pb: bottom-bar mobile */}
-      <main className="px-5 pb-28 pt-16 sm:px-10 md:pb-12 md:pt-24">
+      <main className={minimal ? 'px-5 pb-16 pt-24 sm:px-10' : 'px-5 pb-28 pt-16 sm:px-10 md:pb-12 md:pt-24'}>
         <Outlet />
       </main>
     </div>

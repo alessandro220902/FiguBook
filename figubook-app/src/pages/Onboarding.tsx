@@ -9,7 +9,7 @@ import { AvatarModal } from '@/components/profile/AvatarModal'
 import { Avatar } from '@/components/Avatar'
 import { saveProfileAccount, saveProfilePrivate, markOnboarded, isValidCap } from '@/lib/db/profile'
 
-const HINT = 'text-xs text-ink-2 mt-1.5'
+const HINT = 'text-sm text-ink-2 mt-2'
 
 export default function Onboarding() {
   const navigate = useNavigate()
@@ -55,20 +55,20 @@ export default function Onboarding() {
   return (
     <div className="mx-auto w-full max-w-3xl px-5 py-10">
       <h1 className="type-h1 text-ink">Benvenuto! Completa il tuo profilo</h1>
-      <p className="mt-1.5 text-base text-ink-2">
+      <p className="mt-2 text-lg text-ink-2">
         Bastano pochi dati per trovare collezionisti come te. Puoi anche farlo più tardi.
       </p>
 
       <div className="mt-8 rounded-2xl border border-white/[0.08] bg-surface/40 p-6 sm:p-8">
         <div className="grid gap-x-6 gap-y-6 sm:grid-cols-2">
           <div>
-            <label className="text-sm font-semibold text-ink">Comune <span className="text-lime">*</span></label>
+            <label className="text-base font-semibold text-ink">Comune <span className="text-lime">*</span></label>
             <div className="mt-1.5"><CittaPicker value={citta} onChange={setCitta} /></div>
             <p className={HINT}>Da dove collezioni — ci serve per la scoperta locale.</p>
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-ink">CAP</label>
+            <label className="text-base font-semibold text-ink">CAP</label>
             <div className="mt-1.5"><CapPicker value={cap} onChange={setCap} /></div>
             <p className={HINT}>
               Aggiungi il CAP: gli scambi che ti consigliamo diventano molto più precisi, trovi
@@ -77,7 +77,7 @@ export default function Onboarding() {
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-ink">Squadra del cuore</label>
+            <label className="text-base font-semibold text-ink">Squadra del cuore</label>
             <div className="mt-1.5"><TeamPicker value={favTeam} onChange={setFavTeam} /></div>
             <p className={HINT}>
               Scegli la tua squadra: colora il tuo profilo e ti fa sentire parte della tua tifoseria.
@@ -85,7 +85,7 @@ export default function Onboarding() {
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-ink">Immagine profilo</label>
+            <label className="text-base font-semibold text-ink">Immagine profilo</label>
             <div className="mt-1.5 flex items-center gap-3">
               <Avatar
                 id={profile?.avatarId}
