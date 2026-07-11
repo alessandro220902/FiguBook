@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react'
-import { Pencil, MapPin, X, Check } from 'lucide-react'
+import { Pencil, MapPin, Check } from 'lucide-react'
 import { sendEmailVerification } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfile } from '@/hooks/useProfile'
 import { Avatar } from '@/components/Avatar'
 import { TeamCrest } from '@/components/TeamCrest'
-import { AVATARS } from '@/lib/avatars'
 import { teamById } from '@/lib/teams'
 import { teamAccent, teamPageBg, teamCardBg } from '@/lib/teamStyle'
-import { saveProfileAccount, saveAvatar, savePrivacy, UsernameTakenError, type ProfileDoc, type PublicProfile } from '@/lib/db/profile'
+import { saveProfileAccount, savePrivacy, UsernameTakenError, type ProfileDoc, type PublicProfile } from '@/lib/db/profile'
 import { getPublicByUid } from '@/lib/db/publicProfiles'
 import { unblockUser } from '@/lib/db/blocks'
 import { FadeIn } from '@/components/home/FadeIn'
+import { AvatarModal } from '@/components/profile/AvatarModal'
 import { CittaPicker } from '@/components/profile/CittaPicker'
 import { TeamPicker } from '@/components/profile/TeamPicker'
 import { DangerZone } from '@/components/profile/DangerZone'
@@ -29,75 +29,6 @@ function memberSince(creationTime?: string): string | null {
   return d.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })
 }
 
-// Modal scelta avatar: griglia preset + monogramma. Selezione = salva subito.
-function AvatarModal({
-  uid,
-  current,
-  name,
-  onClose,
-}: {
-  uid: string
-  current?: string | null
-  name: string
-  onClose: () => void
-}) {
-  async function pick(id: string) {
-    await saveAvatar(uid, id)
-    onClose()
-  }
-  return (
-    <div
-      className="fixed inset-0 z-[100] grid place-items-center bg-black/60 p-4 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-md rounded-3xl border border-white/10 bg-card p-6 shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="font-display text-xl font-semibold text-ink">Scegli avatar</h3>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Chiudi"
-            className="grid h-8 w-8 place-items-center rounded-full text-ink-2 hover:bg-white/10 hover:text-ink"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-        <div className="grid grid-cols-4 gap-3 sm:grid-cols-5">
-          <button
-            type="button"
-            onClick={() => pick('')}
-            aria-pressed={!current}
-            title="Monogramma"
-            className={
-              'overflow-hidden rounded-full border-2 transition-colors ' +
-              (!current ? 'border-lime' : 'border-transparent hover:border-white/20')
-            }
-          >
-            <Avatar id="" name={name} className="h-full w-full" />
-          </button>
-          {AVATARS.map((a) => (
-            <button
-              key={a.id}
-              type="button"
-              onClick={() => pick(a.id)}
-              aria-pressed={current === a.id}
-              title={a.label}
-              className={
-                'overflow-hidden rounded-full border-2 transition-colors ' +
-                (current === a.id ? 'border-lime' : 'border-transparent hover:border-white/20')
-              }
-            >
-              <Avatar id={a.id} name={name} className="h-full w-full" />
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 // Form info personali: sempre editabile (no toggle). Barra Salva/Annulla appare
 // solo quando ci sono modifiche. Seminato via initial; il genitore lo rimonta
