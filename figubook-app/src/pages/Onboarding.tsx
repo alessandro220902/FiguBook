@@ -53,72 +53,74 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-lg px-5 py-10">
+    <div className="mx-auto w-full max-w-3xl px-5 py-10">
       <h1 className="type-h1 text-ink">Benvenuto! Completa il tuo profilo</h1>
       <p className="mt-1.5 text-base text-ink-2">
         Bastano pochi dati per trovare collezionisti come te. Puoi anche farlo più tardi.
       </p>
 
-      <div className="mt-8 space-y-6">
-        <div>
-          <label className="text-sm font-semibold text-ink">Comune <span className="text-lime">*</span></label>
-          <div className="mt-1.5"><CittaPicker value={citta} onChange={setCitta} /></div>
-          <p className={HINT}>Da dove collezioni — ci serve per la scoperta locale.</p>
-        </div>
-
-        <div>
-          <label className="text-sm font-semibold text-ink">CAP</label>
-          <div className="mt-1.5"><CapPicker value={cap} onChange={setCap} /></div>
-          <p className={HINT}>
-            Aggiungi il CAP: gli scambi che ti consigliamo diventano molto più precisi, trovi
-            collezionisti proprio vicino a te. Resta privato.
-          </p>
-        </div>
-
-        <div>
-          <label className="text-sm font-semibold text-ink">Squadra del cuore</label>
-          <div className="mt-1.5"><TeamPicker value={favTeam} onChange={setFavTeam} /></div>
-          <p className={HINT}>
-            Scegli la tua squadra: colora il tuo profilo e ti fa sentire parte della tua tifoseria.
-          </p>
-        </div>
-
-        <div>
-          <label className="text-sm font-semibold text-ink">Immagine profilo</label>
-          <div className="mt-1.5 flex items-center gap-3">
-            <Avatar
-              id={profile?.avatarId}
-              name={profile?.username ?? ''}
-              className="h-14 w-14 overflow-hidden rounded-full"
-            />
-            <button
-              type="button"
-              onClick={() => setAvatarOpen(true)}
-              className="rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-ink-2 transition-colors hover:text-ink"
-            >
-              Scegli avatar
-            </button>
+      <div className="mt-8 rounded-2xl border border-white/[0.08] bg-surface/40 p-6 sm:p-8">
+        <div className="grid gap-x-6 gap-y-6 sm:grid-cols-2">
+          <div>
+            <label className="text-sm font-semibold text-ink">Comune <span className="text-lime">*</span></label>
+            <div className="mt-1.5"><CittaPicker value={citta} onChange={setCitta} /></div>
+            <p className={HINT}>Da dove collezioni — ci serve per la scoperta locale.</p>
           </div>
-          <p className={HINT}>Metti un avatar: ti rendi riconoscibile agli altri collezionisti.</p>
-        </div>
-      </div>
 
-      <div className="mt-9 flex items-center gap-3">
-        <button
-          type="button"
-          onClick={save}
-          disabled={!dirty || !capOk || saving}
-          className="rounded-full bg-lime px-6 py-2.5 text-[15px] font-semibold text-lime-ink transition-opacity disabled:opacity-40"
-        >
-          {saving ? 'Salvataggio…' : 'Salva'}
-        </button>
-        <button
-          type="button"
-          onClick={later}
-          className="rounded-full px-5 py-2.5 text-[15px] font-medium text-ink-2 transition-colors hover:text-ink"
-        >
-          Configura più tardi
-        </button>
+          <div>
+            <label className="text-sm font-semibold text-ink">CAP</label>
+            <div className="mt-1.5"><CapPicker value={cap} onChange={setCap} /></div>
+            <p className={HINT}>
+              Aggiungi il CAP: gli scambi che ti consigliamo diventano molto più precisi, trovi
+              collezionisti proprio vicino a te. Resta privato.
+            </p>
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold text-ink">Squadra del cuore</label>
+            <div className="mt-1.5"><TeamPicker value={favTeam} onChange={setFavTeam} /></div>
+            <p className={HINT}>
+              Scegli la tua squadra: colora il tuo profilo e ti fa sentire parte della tua tifoseria.
+            </p>
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold text-ink">Immagine profilo</label>
+            <div className="mt-1.5 flex items-center gap-3">
+              <Avatar
+                id={profile?.avatarId}
+                name={profile?.username ?? ''}
+                className="h-14 w-14 shrink-0 overflow-hidden rounded-full"
+              />
+              <button
+                type="button"
+                onClick={() => setAvatarOpen(true)}
+                className="rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-ink-2 transition-colors hover:text-ink"
+              >
+                Scegli avatar
+              </button>
+            </div>
+            <p className={HINT}>Metti un avatar: ti rendi riconoscibile agli altri collezionisti.</p>
+          </div>
+        </div>
+
+        <div className="mt-8 flex items-center gap-3 border-t border-white/[0.06] pt-6">
+          <button
+            type="button"
+            onClick={save}
+            disabled={!dirty || !capOk || saving}
+            className="rounded-full bg-lime px-6 py-2.5 text-[15px] font-semibold text-lime-ink transition-opacity disabled:opacity-40"
+          >
+            {saving ? 'Salvataggio…' : 'Salva'}
+          </button>
+          <button
+            type="button"
+            onClick={later}
+            className="rounded-full px-5 py-2.5 text-[15px] font-medium text-ink-2 transition-colors hover:text-ink"
+          >
+            Configura più tardi
+          </button>
+        </div>
       </div>
 
       {avatarOpen && user && (
