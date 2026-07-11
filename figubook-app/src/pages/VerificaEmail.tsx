@@ -75,7 +75,12 @@ export default function VerificaEmail() {
         <h1 className="type-h1 m-0">Verifica la tua email</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Abbiamo inviato un link di conferma a{' '}
-          <b className="text-foreground">{user?.email}</b>. Aprilo per attivare l'account.
+          <b className="text-foreground">{user?.email}</b>. Devi aprirlo per accedere all'account.
+        </p>
+
+        <p className="mt-4 rounded-xl border border-lime/25 bg-lime/[0.06] px-4 py-3 text-sm text-muted-foreground">
+          Non trovi la mail? Controlla la cartella <b className="text-foreground">spam</b> o
+          posta indesiderata — a volte finisce lì.
         </p>
 
         {msg && <p className="mt-4 text-sm text-lime">{msg}</p>}
