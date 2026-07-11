@@ -56,7 +56,9 @@ default "Aggiunte". Stato locale nel componente della sezione grafico.
 **Grafico ②** (`recharts` BarChart, stile coerente con InsertedChart — stessi assi/tick/tema):
 - Due `<Bar>` per giorno: `doppie` fill rosso (`var(--color-stat-missing)` o rosso dedicato),
   `nuove` fill verde (`var(--color-lime)` segue il tema oro/lime scoped).
-- `onClick` su una barra → apre il modal torta per quel giorno (solo se il giorno ha `perAlbum`).
+- `onClick` su una barra (indifferente doppie o nuove) → apre la **stessa** torta del giorno
+  (solo se il giorno ha `perAlbum`).
+- Il grafico ① NON cambia: resta le sole nuove (Δhave). La barra verde di ② = valore di ①.
 
 **Torta drill-down** (`recharts` PieChart in un overlay/modal centrato, chiudibile con X/backdrop):
 - Fette = album, dimensione = **totale aggiunte di quel giorno per album** (`nuove + doppie`).
