@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Search } from 'lucide-react'
 import { TEAMS, teamById } from '@/lib/teams'
 import { TeamCrest } from '@/components/TeamCrest'
@@ -10,13 +10,23 @@ const inputCls =
 export function TeamPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
   const [q, setQ] = useState('')
   const [open, setOpen] = useState(false)
+  const boxRef = useRef<HTMLDivElement>(null)
   const sel = teamById[value]
+
+  // Chiudi la tendina al click fuori (es. focus su un altro campo).
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onDoc)
+    return () => document.removeEventListener('mousedown', onDoc)
+  }, [])
   const filtered = q.trim()
     ? TEAMS.filter((t) => t.name.toLowerCase().includes(q.trim().toLowerCase())).slice(0, 40)
     : TEAMS.slice(0, 40)
 
   return (
-    <div className="relative">
+    <div ref={boxRef} className="relative">
       {sel ? (
         <button
           type="button"
