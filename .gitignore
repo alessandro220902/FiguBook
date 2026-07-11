@@ -16,3 +16,5 @@ skills-lock.json
 
 # macOS
 .DS_Store
+
+functions/lib/
