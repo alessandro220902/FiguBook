@@ -28,6 +28,15 @@ describe('dailyDoublesSeries', () => {
     expect(empty.doppie).toBe(0)
     expect(empty.perAlbum).toEqual({})
   })
+  it('senza baseline per-album nel giorno prima, perAlbum resta vuoto', () => {
+    const snaps: StatSnapshot[] = [
+      snap('2025-12-19', 10, 2), // niente albums (giorno pre-logging)
+      snap('2025-12-20', 27, 5, { 'calciatori-25-26': { have: 25, doubles: 4 } }),
+    ]
+    const day = dailyDoublesSeries(snaps, '2025-12-20').at(-1)!
+    expect(day.nuove).toBe(17)
+    expect(day.perAlbum).toEqual({})
+  })
   it('delta negativi (rimozioni) clampati a 0', () => {
     const snaps = [snap('2025-12-19', 30, 9), snap('2025-12-20', 20, 4)]
     const day = dailyDoublesSeries(snaps, '2025-12-20').at(-1)!
