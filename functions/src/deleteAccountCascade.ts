@@ -32,15 +32,6 @@ export async function deleteAccountCascade(
   authAdmin: AuthAdminLike,
   uid: string,
 ): Promise<void> {
-  // 1. usernameLower (da publicProfiles, fallback meta/profile).
-  let lower = ''
-  const pub = await db.doc(`publicProfiles/${uid}`).get()
-  if (pub.exists) lower = (pub.data()?.usernameLower as string) ?? ''
-  if (!lower) {
-    const prof = await db.doc(`users/${uid}/meta/profile`).get()
-    lower = (prof.data()?.usernameLower as string) ?? ''
-  }
-
   // 2. Cross-reference dove altri referenziano uid.
   await deleteQuery(db, db.collection('friendRequests').where('fromUid', '==', uid))
   await deleteQuery(db, db.collection('friendRequests').where('toUid', '==', uid))
@@ -66,11 +57,15 @@ export async function deleteAccountCascade(
     await batch.commit()
   }
 
-  // 4. Albero utente ricorsivo + globali con chiave uid.
+  // 4. Username: cancella per QUERY su uid (non ricavando lower da publicProfiles).
+  // Robusto anche se publicProfiles/meta sono già stati cancellati da un run
+  // precedente: niente prenotazione username orfana.
+  await deleteQuery(db, db.collection('usernames').where('uid', '==', uid))
+
+  // 5. Albero utente ricorsivo + doc pubblico.
   await db.recursiveDelete(db.doc(`users/${uid}`))
   await del(db, `publicProfiles/${uid}`)
-  if (lower) await del(db, `usernames/${lower}`)
 
-  // 5. Auth per ultimo.
+  // 6. Auth per ultimo.
   await authAdmin.deleteUser(uid)
 }
