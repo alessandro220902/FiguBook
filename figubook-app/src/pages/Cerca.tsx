@@ -27,7 +27,7 @@ export default function Cerca() {
 
   return (
     <div className="mx-auto w-full max-w-xl">
-      <Breadcrumb items={[{ label: 'Cerca' }]} />
+      <Breadcrumb items={[{ label: 'Home', to: '/home' }, { label: 'Cerca' }]} />
       <div className="flex h-11 items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3 backdrop-blur-md">
         <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
         <input

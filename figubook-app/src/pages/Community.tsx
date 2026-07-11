@@ -6,7 +6,6 @@ import { Avatar } from '@/components/Avatar'
 import { TeamCrest } from '@/components/TeamCrest'
 import { teamById } from '@/lib/teams'
 import { FadeIn } from '@/components/home/FadeIn'
-import { Breadcrumb } from '@/components/Breadcrumb'
 
 export default function Community() {
   const [q, setQ] = useState('')
@@ -15,7 +14,6 @@ export default function Community() {
 
   return (
     <div className="mx-auto w-full max-w-3xl">
-      <Breadcrumb items={[{ label: 'Community' }]} />
       <FadeIn>
         <h1 className="type-h1 text-ink">
           Community

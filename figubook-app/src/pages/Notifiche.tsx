@@ -25,7 +25,7 @@ export default function Notifiche() {
 
   return (
     <div className="mx-auto w-full max-w-xl">
-      <Breadcrumb items={[{ label: 'Notifiche' }]} />
+      <Breadcrumb items={[{ label: 'Home', to: '/home' }, { label: 'Notifiche' }]} />
 
       {/* Sezione Amicizia: richieste ricevute con Accetta/Rifiuta */}
       <IncomingRequests />

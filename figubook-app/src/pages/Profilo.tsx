@@ -13,7 +13,6 @@ import { saveProfileAccount, saveAvatar, savePrivacy, UsernameTakenError, type P
 import { getPublicByUid } from '@/lib/db/publicProfiles'
 import { unblockUser } from '@/lib/db/blocks'
 import { FadeIn } from '@/components/home/FadeIn'
-import { Breadcrumb } from '@/components/Breadcrumb'
 import { CittaPicker } from '@/components/profile/CittaPicker'
 import { syncAllIndexesCitta } from '@/lib/db/trade'
 
@@ -437,7 +436,6 @@ export default function Profilo() {
 
   return (
     <div className="mx-auto w-full max-w-6xl">
-      <Breadcrumb items={[{ label: 'Profilo' }]} />
       {/* Sfondo pagina tinto squadra (solo /profilo): c1 sopra, verde sito in mezzo, c2 sotto */}
       {team && (
         <div
