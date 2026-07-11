@@ -70,7 +70,7 @@ function OnboardingForm({ user, profile }: { user: User; profile: ProfileDoc | n
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-5 py-10">
+    <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6">
       <FadeIn>
         <h1 className="type-h1 text-ink">Benvenuto! Completa il tuo profilo</h1>
         <p className="mt-2 text-lg text-ink-2">
@@ -78,7 +78,7 @@ function OnboardingForm({ user, profile }: { user: User; profile: ProfileDoc | n
         </p>
       </FadeIn>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
       <FadeIn delay={0.12} className="rounded-2xl border border-white/[0.12] bg-surface/60 p-6 shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] sm:p-8">
         <div className="grid gap-6">
           <div>
