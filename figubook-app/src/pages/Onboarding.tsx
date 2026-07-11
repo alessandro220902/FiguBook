@@ -67,7 +67,7 @@ export default function Onboarding() {
         </p>
       </FadeIn>
 
-      <FadeIn delay={0.12} className="mt-8 rounded-2xl border border-white/[0.08] bg-surface/40 p-6 sm:p-8">
+      <FadeIn delay={0.12} className="mt-8 rounded-2xl border border-white/[0.12] bg-surface/60 p-6 shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] sm:p-8">
         <div className="grid gap-x-6 gap-y-6 sm:grid-cols-2">
           <div>
             <label className="text-base font-semibold text-ink">Comune <span className="text-lime">*</span></label>
@@ -79,8 +79,7 @@ export default function Onboarding() {
             <label className="text-base font-semibold text-ink">CAP</label>
             <div className="mt-1.5"><CapPicker value={cap} onChange={setCap} /></div>
             <p className={HINT}>
-              Aggiungi il CAP: gli scambi che ti consigliamo diventano molto più precisi, trovi
-              collezionisti proprio vicino a te. Resta privato.
+              Aggiungi il CAP: scambi consigliati più precisi, gente vicino a te. Resta privato.
             </p>
           </div>
 
@@ -135,7 +134,7 @@ export default function Onboarding() {
           <button
             type="button"
             onClick={later}
-            className="cursor-pointer rounded-full px-5 py-2.5 text-[15px] font-medium text-ink-2 transition-colors hover:text-ink"
+            className="cursor-pointer rounded-full border border-white/15 px-5 py-2.5 text-[15px] font-medium text-ink-2 transition-colors hover:border-white/30 hover:text-ink"
           >
             Configura più tardi
           </button>
