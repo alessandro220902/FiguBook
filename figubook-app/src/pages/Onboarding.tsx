@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import type { User } from 'firebase/auth'
 import { ArrowRight, Check } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfile } from '@/hooks/useProfile'
@@ -9,14 +10,23 @@ import { TeamPicker } from '@/components/profile/TeamPicker'
 import { AvatarModal } from '@/components/profile/AvatarModal'
 import { Avatar } from '@/components/Avatar'
 import { FadeIn } from '@/components/home/FadeIn'
-import { saveProfileAccount, saveProfilePrivate, markOnboarded, isValidCap } from '@/lib/db/profile'
+import { saveProfileAccount, saveProfilePrivate, markOnboarded, isValidCap, type ProfileDoc } from '@/lib/db/profile'
 
 const HINT = 'text-sm text-ink-2 mt-2'
 
+// Gate: monta il form SOLO a profilo caricato, così gli stati iniziali leggono
+// i dati già salvati (altrimenti partirebbero vuoti e sembrerebbero persi).
 export default function Onboarding() {
-  const navigate = useNavigate()
   const { user } = useAuth()
-  const { profile } = useProfile()
+  const { profile, loading } = useProfile()
+  if (loading || !user) {
+    return <div className="grid min-h-[60vh] place-items-center text-ink-2">Caricamento…</div>
+  }
+  return <OnboardingForm key={user.uid} user={user} profile={profile} />
+}
+
+function OnboardingForm({ user, profile }: { user: User; profile: ProfileDoc | null }) {
+  const navigate = useNavigate()
 
   const [citta, setCitta] = useState(profile?.citta ?? '')
   const [cap, setCap] = useState(profile?.cap ?? '')
