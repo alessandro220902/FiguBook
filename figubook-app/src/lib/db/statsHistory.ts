@@ -12,13 +12,15 @@ export function todayIso(now = new Date()): string {
 
 type Totals = { have: number; doubles: number; missing: number; total: number }
 
-// Upsert dello snapshot del giorno corrente: insegue `have` così le figurine
-// inserite oggi restano attribuite a oggi (non spinte al primo accesso di domani).
-// Guard: riscrive solo se `have` è cambiato rispetto all'ultima scrittura odierna.
-export async function touchStatsSnapshot(uid: string, totals: Totals): Promise<void> {
+export async function touchStatsSnapshot(
+  uid: string,
+  totals: Totals,
+  perAlbum: Record<string, { have: number; doubles: number }> = {},
+): Promise<void> {
   const today = todayIso()
   const key = `figubook:statsDay:${uid}`
-  const marker = `${today}:${totals.have}`
+  // Guard su have E doubles: registra anche i giorni di sole doppie (have invariato).
+  const marker = `${today}:${totals.have}:${totals.doubles}`
   if (localStorage.getItem(key) === marker) return
   localStorage.setItem(key, marker)
   try {
@@ -28,10 +30,11 @@ export async function touchStatsSnapshot(uid: string, totals: Totals): Promise<v
       doubles: totals.doubles,
       missing: totals.missing,
       total: totals.total,
+      albums: perAlbum,
     })
   } catch (e) {
     console.error('statsSnapshot', e)
-    localStorage.removeItem(key) // riprova al prossimo giro se fallisce
+    localStorage.removeItem(key)
   }
 }
 

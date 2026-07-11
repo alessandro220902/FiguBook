@@ -30,8 +30,9 @@ export function AppLayout() {
   const { totals, albums, loading, error } = useCollection()
   useEffect(() => {
     if (!user || loading || error || albums.length === 0) return
-    void touchStatsSnapshot(user.uid, totals)
-  }, [user, loading, error, albums.length, totals])
+    const perAlbum = Object.fromEntries(albums.map((a) => [a.id, { have: a.have, doubles: a.doubles }]))
+    void touchStatsSnapshot(user.uid, totals, perAlbum)
+  }, [user, loading, error, albums, totals])
 
   // TEST Midnight Gold: scope oro esteso alla shell (nav inclusa) solo su Home.
   // Light/dark cablato al ThemeToggle via useThemeMode.

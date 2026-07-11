@@ -4,6 +4,8 @@ export interface StatSnapshot {
   doubles: number
   missing: number
   total: number
+  // Breakdown per album del giorno (presente solo dai giorni dopo l'attivazione).
+  albums?: Record<string, { have: number; doubles: number }>
 }
 
 export interface StatDeltas {
