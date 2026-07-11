@@ -46,7 +46,16 @@ export async function deleteAccountCascade(
   await deleteQuery(db, db.collection('friendRequests').where('toUid', '==', uid))
   await deleteQuery(db, db.collection('friendships').where('users', 'array-contains', uid))
   await deleteQuery(db, db.collection('proposals').where('participants', 'array-contains', uid))
-  await deleteQuery(db, db.collectionGroup('notifications').where('fromUid', '==', uid))
+
+  // Pulizia notifiche altrui: BEST-EFFORT. Richiede un indice collection-group
+  // su notifications.fromUid (firestore.indexes.json); se non è ancora costruito
+  // la query fallisce (FAILED_PRECONDITION). È il cleanup meno critico (orfani
+  // cosmetici) e NON deve bloccare la cancellazione vera dell'account.
+  try {
+    await deleteQuery(db, db.collectionGroup('notifications').where('fromUid', '==', uid))
+  } catch (err) {
+    console.warn('deleteAccountCascade: pulizia notifiche saltata', err)
+  }
 
   // 3. tradeIndex/{albumId}/users/{uid}: filtro per path esatto (vedi isTradeIndexUserDoc).
   const tradeUsers = await db.collectionGroup('users').get()
