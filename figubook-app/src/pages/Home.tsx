@@ -13,9 +13,8 @@ import { CompleteProfileBanner } from '@/components/home/CompleteProfileBanner'
 import { Typewriter } from '@/components/home/Typewriter'
 import { useTradesCount } from '@/hooks/useTradesCount'
 import { useStatsDeltas } from '@/hooks/useStatsDeltas'
-import { useInsertedSeries } from '@/hooks/useInsertedSeries'
+import { ChartPanel } from '@/components/home/ChartPanel'
 import { useThemeMode } from '@/hooks/useThemeMode'
-import { InsertedChart } from '@/components/home/InsertedChart'
 
 export default function Home() {
   const { user } = useAuth()
@@ -25,7 +24,6 @@ export default function Home() {
   const name = profile?.username || user?.displayName?.trim() || user?.email?.split('@')[0] || 'collezionista'
   const team = profile?.favTeam ? teamById[profile.favTeam] : undefined
   const deltas = useStatsDeltas(totals.have)
-  const insertedSeries = useInsertedSeries(totals.have)
   const mode = useThemeMode()
 
   if (loading) {
@@ -122,9 +120,9 @@ export default function Home() {
             <div className="lg:pl-6">
               <AlbumDeck albums={albums} />
             </div>
-            {/* Grafico figurine inserite/giorno: solo su lg, nello spazio a destra. */}
+            {/* Sezione grafico (toggle aggiunte/doppie): solo su lg, spazio a destra. */}
             <div className="hidden lg:block">
-              <InsertedChart series={insertedSeries} />
+              <ChartPanel refreshKey={`${totals.have}:${totals.doubles}`} />
             </div>
           </FadeIn>
 
