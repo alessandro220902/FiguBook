@@ -6,7 +6,8 @@ const CANONICAL = new Set(COMUNI.map(([n, p]) => comuneLabel(n, p)))
 
 export function searchComuni(query: string, max: number): ComuneHit[] {
   const q = query.trim().toLowerCase()
-  if (!q) return []
+  // Query vuota (focus senza digitare): mostra i primi comuni come lista iniziale.
+  if (!q) return COMUNI.slice(0, max).map(([nome, prov]) => ({ nome, prov, label: comuneLabel(nome, prov) }))
   const prefix: ComuneHit[] = []
   const contains: ComuneHit[] = []
   for (const [nome, prov] of COMUNI) {

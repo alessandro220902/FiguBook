@@ -14,9 +14,9 @@ describe('searchCaps', () => {
     expect(hits.length).toBeLessThanOrEqual(5)
     expect(hits.every((h) => h.cap.startsWith('00'))).toBe(true)
   })
-  it('query vuota = nessun risultato', () => {
-    expect(searchCaps('', 5)).toEqual([])
-    expect(searchCaps('   ', 5)).toEqual([])
+  it('query vuota = lista iniziale (primi max)', () => {
+    expect(searchCaps('', 5)).toHaveLength(5)
+    expect(searchCaps('   ', 5)).toHaveLength(5)
   })
 })
 

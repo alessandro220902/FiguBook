@@ -13,8 +13,8 @@ describe('searchComuni', () => {
   it('rispetta il cap max', () => {
     expect(searchComuni('a', 5).length).toBeLessThanOrEqual(5)
   })
-  it('query vuota => nessun risultato', () => {
-    expect(searchComuni('  ', 8)).toEqual([])
+  it('query vuota => lista iniziale (primi max)', () => {
+    expect(searchComuni('  ', 8)).toHaveLength(8)
   })
 })
 

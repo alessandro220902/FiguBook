@@ -11,7 +11,8 @@ export interface CapHit {
 // Ricerca per prefisso di CAP. CAPS è ordinato per cap: i match sono contigui.
 export function searchCaps(query: string, max: number): CapHit[] {
   const q = query.trim()
-  if (!q) return []
+  // Query vuota (focus senza digitare): mostra i primi CAP come lista iniziale.
+  if (!q) return CAPS.slice(0, max).map(([cap, nome, prov]) => ({ cap, nome, prov, comune: comuneLabel(nome, prov) }))
   const hits: CapHit[] = []
   for (const [cap, nome, prov] of CAPS) {
     if (cap.startsWith(q)) {
