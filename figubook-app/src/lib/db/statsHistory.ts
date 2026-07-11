@@ -23,6 +23,22 @@ export async function touchStatsSnapshot(
   const marker = `${today}:${totals.have}:${totals.doubles}`
   if (localStorage.getItem(key) === marker) return
   localStorage.setItem(key, marker)
+
+  // Baseline per-album di INIZIO giornata: catturata al primo snapshot del giorno
+  // (tipicamente all'apertura app, prima di aggiungere). Preservata nei write
+  // successivi dello stesso giorno → la torta di oggi si costruisce live.
+  const bKey = `figubook:albumsStart:${uid}`
+  let baseline: { date: string; albums: Record<string, { have: number; doubles: number }> } | null = null
+  try {
+    baseline = JSON.parse(localStorage.getItem(bKey) || 'null')
+  } catch {
+    baseline = null
+  }
+  if (!baseline || baseline.date !== today) {
+    baseline = { date: today, albums: perAlbum }
+    localStorage.setItem(bKey, JSON.stringify(baseline))
+  }
+
   try {
     await setDoc(doc(db, 'users', uid, 'stats', today), {
       date: today,
@@ -31,6 +47,7 @@ export async function touchStatsSnapshot(
       missing: totals.missing,
       total: totals.total,
       albums: perAlbum,
+      albumsStart: baseline.albums,
     })
   } catch (e) {
     console.error('statsSnapshot', e)

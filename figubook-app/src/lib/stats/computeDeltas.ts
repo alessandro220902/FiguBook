@@ -4,8 +4,11 @@ export interface StatSnapshot {
   doubles: number
   missing: number
   total: number
-  // Breakdown per album del giorno (presente solo dai giorni dopo l'attivazione).
+  // Breakdown per album: stato CORRENTE (cumulativo) del giorno.
   albums?: Record<string, { have: number; doubles: number }>
+  // Stato per album a INIZIO giornata (baseline). Le aggiunte di oggi per album
+  // = albums - albumsStart → la torta si costruisce live durante la giornata.
+  albumsStart?: Record<string, { have: number; doubles: number }>
 }
 
 export interface StatDeltas {

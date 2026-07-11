@@ -33,16 +33,15 @@ export function dailyDoublesSeries(snapshots: StatSnapshot[], todayIso: string):
     }
     const nuove = Math.max(0, prev ? snap.have - prev.have : 0)
     const doppie = Math.max(0, prev ? snap.doubles - prev.doubles : 0)
-    // Il dettaglio per album è affidabile SOLO se anche il giorno precedente aveva
-    // il breakdown (baseline). Senza baseline (primo giorno di logging per-album)
-    // il delta sarebbe l'intera collezione → lo lasciamo vuoto (niente torta).
+    // Aggiunte per album del giorno = stato corrente - stato a inizio giornata
+    // (albumsStart). Si costruisce live durante la giornata, senza dipendere da ieri.
     const perAlbum: Record<string, { nuove: number; doppie: number }> = {}
     const cur = snap.albums
-    const before = prev?.albums
-    if (cur && before) {
+    const start = snap.albumsStart
+    if (cur && start) {
       for (const id of Object.keys(cur)) {
         const c = cur[id]
-        const b = before[id] ?? { have: 0, doubles: 0 }
+        const b = start[id] ?? { have: 0, doubles: 0 }
         const n = Math.max(0, c.have - b.have)
         const d = Math.max(0, c.doubles - b.doubles)
         if (n > 0 || d > 0) perAlbum[id] = { nuove: n, doppie: d }
