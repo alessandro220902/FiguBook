@@ -9,6 +9,7 @@ import { AlbumDeck } from '@/components/home/AlbumDeck'
 import { NewsPanel } from '@/components/home/NewsPanel'
 import { GroupsPanel } from '@/components/home/GroupsPanel'
 import { FadeIn } from '@/components/home/FadeIn'
+import { CompleteProfileBanner } from '@/components/home/CompleteProfileBanner'
 import { Typewriter } from '@/components/home/Typewriter'
 import { useTradesCount } from '@/hooks/useTradesCount'
 import { useStatsDeltas } from '@/hooks/useStatsDeltas'
@@ -64,6 +65,7 @@ export default function Home() {
           }}
         />
       )}
+      <CompleteProfileBanner />
       <FadeIn>
         <h1 className="type-h1 text-pretty text-ink">
           Ciao, <Typewriter text={name} className="text-lime" />
