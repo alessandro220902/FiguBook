@@ -14,6 +14,7 @@ import { getPublicByUid } from '@/lib/db/publicProfiles'
 import { unblockUser } from '@/lib/db/blocks'
 import { FadeIn } from '@/components/home/FadeIn'
 import { CittaPicker } from '@/components/profile/CittaPicker'
+import { DangerZone } from '@/components/profile/DangerZone'
 import { syncAllIndexesCitta } from '@/lib/db/trade'
 
 const inputCls =
@@ -541,6 +542,12 @@ export default function Profilo() {
           <div className="mt-6">
             <BlockedUsers uid={user.uid} blocked={profile?.blocked ?? []} />
           </div>
+        </FadeIn>
+      )}
+
+      {user && (
+        <FadeIn>
+          <DangerZone username={profile?.username ?? name} />
         </FadeIn>
       )}
 
