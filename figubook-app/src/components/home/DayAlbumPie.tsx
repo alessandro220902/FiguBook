@@ -45,10 +45,7 @@ export function DayAlbumPie({ day, onClose }: { day: DayDoublesPoint; onClose: (
           </button>
         </div>
         {slices.length === 0 ? (
-          <p className="py-8 text-center text-sm text-ink-2">
-            Il dettaglio per album parte dal giorno dopo la prima registrazione. Torna domani per
-            vedere come hai riempito i tuoi album oggi.
-          </p>
+          <p className="py-8 text-center text-sm text-ink-2">Nessuna figurina aggiunta in questo giorno.</p>
         ) : (
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
