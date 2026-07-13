@@ -94,6 +94,23 @@ export function subscribeIncomingRequests(
   )
 }
 
+// Elenco uid degli amici accettati, live.
+export function subscribeMyFriends(me: string, cb: (uids: string[]) => void): () => void {
+  const q = query(collection(db, 'friendships'), where('users', 'array-contains', me))
+  return onSnapshot(
+    q,
+    (snap) => {
+      const uids: string[] = []
+      snap.docs.forEach((d) => {
+        const users: string[] = (d.data() as { users: string[] }).users ?? []
+        users.forEach((u) => { if (u !== me) uids.push(u) })
+      })
+      cb(uids)
+    },
+    () => cb([]),
+  )
+}
+
 export async function unfriend(a: string, b: string) {
   await deleteDoc(pairRef(a, b))
 }
