@@ -3,6 +3,7 @@ import { getFirestore } from 'firebase-admin/firestore'
 import { getAuth } from 'firebase-admin/auth'
 import { onCall, HttpsError } from 'firebase-functions/v2/https'
 import { deleteAccountCascade } from './deleteAccountCascade.js'
+export { nearbyCollectors } from './nearbyCollectors.js'
 
 initializeApp()
 
