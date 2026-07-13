@@ -116,15 +116,38 @@ export default function Community() {
         <h2 className="type-h2 mt-8 text-ink">I miei amici</h2>
         {friends.length > 0 ? (
           <div className="mt-3 space-y-2">{friends.map((u) => <PersonRow key={u.uid} u={u} />)}</div>
-        ) : (
+        ) : nearby.length > 0 ? (
           <div className="mt-3">
-            <p className="text-sm text-ink-2">Non hai ancora amici.</p>
-            {nearby.length > 0 && (
-              <>
-                <p className="mt-5 text-sm font-medium text-ink">Collezionisti vicini a te</p>
-                <div className="mt-3 space-y-2">{nearby.map((u) => <PersonRow key={u.uid} u={u} />)}</div>
-              </>
-            )}
+            <p className="text-sm text-ink-2">Non hai ancora amici — inizia da chi ti è vicino.</p>
+            <p className="mt-5 text-sm font-medium text-ink">Collezionisti vicini a te</p>
+            <div className="mt-3 space-y-2">{nearby.map((u) => <PersonRow key={u.uid} u={u} />)}</div>
+          </div>
+        ) : (
+          <div className="mt-3 rounded-2xl border border-white/[0.08] bg-surface/40 p-5 sm:p-6">
+            <p className="type-body text-ink">La tua cerchia è ancora vuota.</p>
+            <p className="mt-1 text-sm text-ink-2">Bastano pochi passi per popolarla.</p>
+            <ol className="mt-5 space-y-4">
+              {[
+                ['1', 'Invita i tuoi amici', 'Manda il tuo link: chi si iscrive entra nella tua cerchia.'],
+                ['2', 'Trova collezionisti vicini', 'Appari qui quando altri della tua zona o squadra si iscrivono.'],
+                ['3', 'Sblocca ricompense', 'Presto: più inviti e attività, più vantaggi in FiguBook.'],
+              ].map(([n, title, desc]) => (
+                <li key={n} className="flex gap-3">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-xs font-semibold text-ink-2">{n}</span>
+                  <div className="min-w-0">
+                    <p className="text-[15px] font-medium text-ink">{title}</p>
+                    <p className="text-sm text-ink-2">{desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <button
+              onClick={shareInvite}
+              className="group mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-lime px-5 py-2.5 font-semibold text-lime-ink transition-opacity hover:opacity-90"
+            >
+              {copied ? 'Link copiato!' : 'Invita un amico'}
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </button>
           </div>
         )}
       </FadeIn>
