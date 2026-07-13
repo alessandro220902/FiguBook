@@ -24,7 +24,7 @@ export default function InvitaLanding() {
       </p>
       <button
         onClick={() => navigate('/login?r=1')}
-        className="group mt-8 inline-flex items-center gap-2 rounded-full bg-lime px-6 py-3 font-medium text-black"
+        className="group mt-8 inline-flex items-center gap-2 rounded-full bg-lime px-6 py-3 font-semibold text-lime-ink transition-opacity hover:opacity-90"
       >
         Registrati
         <span className="transition-transform group-hover:translate-x-1">→</span>

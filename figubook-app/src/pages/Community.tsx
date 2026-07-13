@@ -64,7 +64,7 @@ export default function Community() {
         </p>
         <button
           onClick={shareInvite}
-          className="group mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-lime px-5 py-2.5 font-medium text-black"
+          className="group mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-lime px-5 py-2.5 font-semibold text-lime-ink transition-opacity hover:opacity-90"
         >
           {copied ? 'Link copiato!' : 'Invita un amico'}
           <span className="transition-transform group-hover:translate-x-1">→</span>
@@ -81,11 +81,11 @@ export default function Community() {
                 <p className="min-w-0 flex-1 truncate text-[15px] font-medium text-ink">{u.username}</p>
                 <button
                   onClick={() => acceptFriendRequest(u.uid, myUid, profile!.username)}
-                  className="rounded-full bg-lime px-4 py-1.5 text-sm font-medium text-black"
+                  className="rounded-full bg-lime px-4 py-1.5 text-sm font-semibold text-lime-ink transition-opacity hover:opacity-90"
                 >Accetta</button>
                 <button
                   onClick={() => rejectFriendRequest(u.uid, myUid, profile!.username)}
-                  className="rounded-full border border-white/15 px-4 py-1.5 text-sm text-ink-2"
+                  className="rounded-full border border-white/15 px-4 py-1.5 text-sm text-ink-2 transition-colors hover:border-white/30 hover:text-ink"
                 >Rifiuta</button>
               </div>
             ))}
