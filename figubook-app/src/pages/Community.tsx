@@ -71,7 +71,7 @@ export default function Community() {
         </button>
       </FadeIn>
 
-      {requests.length > 0 && myUid && (
+      {requests.length > 0 && myUid && profile && (
         <FadeIn>
           <h2 className="type-h2 mt-8 text-ink">Richieste di amicizia</h2>
           <div className="mt-3 space-y-2">
@@ -80,11 +80,11 @@ export default function Community() {
                 <Avatar id={u.avatarId} name={u.username} className="h-11 w-11 shrink-0 overflow-hidden rounded-full" />
                 <p className="min-w-0 flex-1 truncate text-[15px] font-medium text-ink">{u.username}</p>
                 <button
-                  onClick={() => acceptFriendRequest(u.uid, myUid, profile!.username)}
+                  onClick={() => acceptFriendRequest(u.uid, myUid, profile.username)}
                   className="rounded-full bg-lime px-4 py-1.5 text-sm font-semibold text-lime-ink transition-opacity hover:opacity-90"
                 >Accetta</button>
                 <button
-                  onClick={() => rejectFriendRequest(u.uid, myUid, profile!.username)}
+                  onClick={() => rejectFriendRequest(u.uid, myUid, profile.username)}
                   className="rounded-full border border-white/15 px-4 py-1.5 text-sm text-ink-2 transition-colors hover:border-white/30 hover:text-ink"
                 >Rifiuta</button>
               </div>
