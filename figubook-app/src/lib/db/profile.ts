@@ -2,6 +2,7 @@ import { doc, onSnapshot, setDoc, runTransaction, getDoc } from 'firebase/firest
 import { updateProfile } from 'firebase/auth'
 import { auth, db } from '@/lib/firebase'
 import { isValidComune } from '@/lib/geo/searchComuni'
+import { provinciaOf } from '@/lib/geo/provincia'
 
 // CAP valido = esattamente 5 cifre, oppure vuoto (è opzionale).
 export function isValidCap(cap: string): boolean {
@@ -23,6 +24,8 @@ export interface ProfileDoc {
   favTeam?: string
   // CAP privato (mai in publicProfiles). 5 cifre o assente.
   cap?: string
+  // Sigla provincia derivata dal comune (privata, mai in publicProfiles).
+  provincia?: string
   // true = l'utente ha già visto l'onboarding (anche se l'ha saltato).
   onboarded?: boolean
   // Visibilità: unico interruttore. true = chiunque vede tutto; false = solo amici.
@@ -120,7 +123,8 @@ export async function saveProfileAccount(uid: string, patch: ProfileAccountPatch
       }
     }
 
-    tx.set(profileRef(uid), clean, { merge: true })
+    const cleanWithProv = { ...clean, provincia: provinciaOf(clean.citta) }
+    tx.set(profileRef(uid), cleanWithProv, { merge: true })
 
     const pubDoc: PublicProfile = {
       uid,
