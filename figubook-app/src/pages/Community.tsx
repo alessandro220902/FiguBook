@@ -56,9 +56,10 @@ export default function Community() {
   const myUid = user?.uid
 
   return (
-    <div className="mx-auto w-full max-w-3xl">
+    <div className="mx-auto w-full max-w-[88rem]">
+      <div className="max-w-2xl">
       <FadeIn>
-        <h1 className="type-h1 text-ink">Community</h1>
+        <h1 className="type-h1 text-ink">Il mondo di FiguBook</h1>
         <p className="type-body mt-1.5 text-ink-2">
           {inviteCount > 0 ? `Hai invitato ${inviteCount} ${inviteCount === 1 ? 'amico' : 'amici'}.` : 'Invita i tuoi amici e trova collezionisti vicini.'}
         </p>
@@ -127,6 +128,7 @@ export default function Community() {
           </div>
         )}
       </FadeIn>
+      </div>
     </div>
   )
 }
