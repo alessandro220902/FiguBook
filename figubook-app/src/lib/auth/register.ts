@@ -9,6 +9,9 @@ import {
 import { doc, runTransaction } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase'
 import { UsernameTakenError } from '@/lib/db/profile'
+import { consumeReferrer } from '@/lib/invite/referrer'
+import { getPublicByUsername } from '@/lib/db/publicProfiles'
+import { writeInviteEdge } from '@/lib/db/invites'
 
 export interface RegisterInput {
   username: string
@@ -63,6 +66,19 @@ export async function registerWithEmail({ username, email, password, remember }:
     // auth orfano senza profilo. Elimina l'utente appena creato e rilancia.
     await cred.user.delete().catch(() => {})
     throw err
+  }
+
+  // Attribuzione invito (best-effort: mai bloccare la registrazione).
+  try {
+    const ref = consumeReferrer()
+    if (ref) {
+      const inviter = await getPublicByUsername(ref)
+      if (inviter && inviter.uid !== uid) {
+        await writeInviteEdge(uid, inviter.uid)
+      }
+    }
+  } catch {
+    // ignora: l'attribuzione non è critica
   }
 
   await sendEmailVerification(cred.user)
