@@ -50,7 +50,7 @@
 - Create: `figubook-app/src/lib/geo/provincia.ts`
 - Test: `figubook-app/src/lib/geo/provincia.test.ts`
 
-Il dataset `src/data/comuni-it.ts` esporta `COMUNI: [nome, siglaProvincia][]`. Costruiamo una mappa `nomeLower → sigla` una sola volta.
+`citta` è sempre nel formato canonico `"Nome (PROV)"` (o `''`): `saveProfileAccount` la scrive solo se `isValidComune`, e `isValidComune` accetta solo le etichette `comuneLabel(nome, prov) = "Nome (PROV)"`. Quindi la sigla provincia è già dentro la stringa tra parentesi → si estrae con regex, esatto al 100%, senza lookup.
 
 - [ ] **Step 1: Test che fallisce**
 
@@ -60,13 +60,13 @@ import { describe, it, expect } from 'vitest'
 import { provinciaOf } from './provincia'
 
 describe('provinciaOf', () => {
-  it('ritorna la sigla per un comune noto (case-insensitive)', () => {
-    // Milano esiste nel dataset con sigla MI
-    expect(provinciaOf('Milano')).toBe('MI')
-    expect(provinciaOf('  milano ')).toBe('MI')
+  it('estrae la sigla dall etichetta canonica "Nome (PROV)"', () => {
+    expect(provinciaOf('Milano (MI)')).toBe('MI')
+    expect(provinciaOf('Reggio nell Emilia (RE)')).toBe('RE')
+    expect(provinciaOf('  Roma (RM) ')).toBe('RM')
   })
-  it('ritorna stringa vuota per comune sconosciuto o vuoto', () => {
-    expect(provinciaOf('Zzzznon-esiste')).toBe('')
+  it('ritorna stringa vuota se manca la parentesi o è vuoto', () => {
+    expect(provinciaOf('Milano')).toBe('')
     expect(provinciaOf('')).toBe('')
   })
 })
@@ -81,25 +81,13 @@ Expected: FAIL — "Cannot find module './provincia'".
 
 ```ts
 // figubook-app/src/lib/geo/provincia.ts
-import { COMUNI } from '@/data/comuni-it'
-
-// Mappa nome-comune (lower) → sigla provincia. Primo match vince per omonimie.
-const MAP: Map<string, string> = (() => {
-  const m = new Map<string, string>()
-  for (const [nome, prov] of COMUNI) {
-    const k = nome.toLowerCase()
-    if (!m.has(k)) m.set(k, prov)
-  }
-  return m
-})()
-
-// Ricava la sigla provincia dal nome comune. '' se sconosciuto/vuoto.
-export function provinciaOf(comune: string): string {
-  return MAP.get(comune.trim().toLowerCase()) ?? ''
+// Estrae la sigla provincia dall'etichetta comune canonica "Nome (PROV)".
+// '' se il formato non è canonico o l'input è vuoto.
+export function provinciaOf(citta: string): string {
+  const m = citta.trim().match(/\(([A-Za-z]{2})\)\s*$/)
+  return m ? m[1].toUpperCase() : ''
 }
 ```
-
-Se `COMUNI` non è l'export corretto, aprire `src/data/comuni-it.ts` e usare il nome reale dell'array (tuple `[nome, prov]`).
 
 - [ ] **Step 4: Verifica pass**
 
@@ -123,9 +111,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Modify: `figubook-app/src/lib/db/profile.ts`
 - Test: `figubook-app/src/lib/db/profile.test.ts`
 
-`provincia` è privata → va sul doc `users/{uid}/meta/profile` (NON su `publicProfiles`). Va scritta quando cambia `citta`. `citta` viene salvata in `saveAccount` (parte pubblica). Aggiungiamo la scrittura di `provincia` sul doc privato dentro lo stesso flusso.
-
-Prima leggere `src/lib/db/profile.ts` per individuare `saveAccount` (scrive `citta` in `publicProfiles` + `users/{uid}/meta/profile`) e il tipo `ProfileDoc`.
+`provincia` è privata → va sul doc `users/{uid}/meta/profile` (NON su `publicProfiles`). La funzione è `saveProfileAccount(uid, patch)` (`src/lib/db/profile.ts:95`): costruisce l'oggetto `clean` che viene scritto SOLO nel doc privato (`tx.set(profileRef(uid), clean, {merge:true})`, riga 123); il `pubDoc` pubblico è costruito separatamente (righe 125-140). Quindi: aggiungere `provincia` dentro `clean` — finisce automaticamente solo nel privato, mai in `pubDoc`.
 
 - [ ] **Step 1: Aggiungere il campo al tipo**
 
@@ -159,16 +145,23 @@ Expected: FAIL — `provincia` non presente nel patch.
 
 - [ ] **Step 4: Implementazione**
 
-In `saveAccount` (o dove viene persistito `citta` sul doc privato `users/{uid}/meta/profile`), aggiungere:
+In `saveProfileAccount`, in cima aggiungere l'import; poi aggiungere `provincia` all'oggetto `clean` (riga ~98-105):
 
 ```ts
 import { provinciaOf } from '@/lib/geo/provincia'
 // ...
-const provincia = provinciaOf(citta ?? '')
-// nel setDoc verso users/{uid}/meta/profile aggiungere: provincia
+  const clean = {
+    username,
+    nome: patch.nome?.trim() || '',
+    citta: isValidComune((patch.citta ?? '').trim()) ? patch.citta!.trim() : '',
+    bio: patch.bio?.trim() || '',
+    favTeam: patch.favTeam || '',
+  }
+  // Sigla provincia estratta dall'etichetta canonica "Nome (PROV)". Solo nel privato.
+  const cleanWithProv = { ...clean, provincia: provinciaOf(clean.citta) }
 ```
 
-Assicurarsi che il campo finisca SOLO nel doc privato, mai in `publicProfiles`.
+Poi sostituire la scrittura privata (riga 123) `tx.set(profileRef(uid), clean, { merge: true })` con `tx.set(profileRef(uid), cleanWithProv, { merge: true })`. Il `pubDoc` resta invariato (NON include `provincia`). `clean.citta` è già canonico, quindi `provinciaOf` estrae direttamente la sigla.
 
 - [ ] **Step 5: Verifica pass**
 
@@ -950,6 +943,7 @@ import { Link } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import { useUserSearch } from '@/hooks/useUserSearch'
 import { useProfile } from '@/hooks/useProfile'
+import { useAuth } from '@/hooks/useAuth'
 import { useInviteCount } from '@/hooks/useInviteCount'
 import { useMyFriends } from '@/hooks/useMyFriends'
 import { useIncomingRequestProfiles } from '@/hooks/useIncomingRequestProfiles'
@@ -980,6 +974,7 @@ function PersonRow({ u }: { u: PublicProfile }) {
 
 export default function Community() {
   const { profile } = useProfile()
+  const { user } = useAuth()
   const [q, setQ] = useState('')
   const { results, loading } = useUserSearch(q)
   const term = q.trim()
@@ -998,7 +993,7 @@ export default function Community() {
     try { await navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 1500) } catch {}
   }
 
-  const myUid = profile ? (profile as { uid?: string }).uid : undefined
+  const myUid = user?.uid
 
   return (
     <div className="mx-auto w-full max-w-3xl">
@@ -1146,8 +1141,9 @@ git push
 - Coerenza visiva + azioni freccia animata → Task 11,12,13. ✓
 - Nota sicurezza al contatto = fuori scope (Fase 3): non implementata qui, come da spec. ✓
 
-Rischi noti / da verificare in esecuzione:
-- Nome reale dell'hook auth (`useAuth` vs altro) e campi `profile.uid`/`profile.username`.
-- Export `app` da `@/lib/firebase` per `getFunctions`.
-- Struttura di `firestore.indexes.json` (`fieldOverrides`).
-- `saveAccount` esatto in `profile.ts` dove iniettare `provincia`.
+Fatti confermati sul codice (nessun rischio residuo):
+- Hook auth = `useAuth` (`@/hooks/useAuth`), oggetto `user` con `user.uid`. `useProfile` espone `{ profile }` (`profile.username`).
+- `app` esportato da `@/lib/firebase:17`.
+- `firestore.indexes.json` ha già `fieldOverrides` (array) → append.
+- Funzione profilo = `saveProfileAccount` (`profile.ts:95`); `clean` va solo nel doc privato → `provincia` in `clean`, mai in `pubDoc`.
+- `citta` è sempre canonico `"Nome (PROV)"` → `provinciaOf` estrae la sigla con regex.
