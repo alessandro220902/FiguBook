@@ -27,6 +27,7 @@ import ProfiloImpostazioni from '@/pages/ProfiloImpostazioni'
 import ProfiloPubblico from '@/pages/ProfiloPubblico'
 import ProfiloPubblicoAlbum from '@/pages/ProfiloPubblicoAlbum'
 import Squadra from '@/pages/Squadra'
+import InvitaLanding from '@/pages/InvitaLanding'
 
 export default function App() {
   const { user } = useAuth()
@@ -61,6 +62,7 @@ export default function App() {
       <Route path="/privacy" element={<PrivacyPolicy />} />
       <Route path="/termini" element={<Termini />} />
       <Route path="/cookie" element={<CookiePolicy />} />
+      <Route path="/invita/:username" element={<InvitaLanding />} />
       <Route
         element={
           <ProtectedRoute>
