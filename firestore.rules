@@ -114,6 +114,22 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    // ── Attribuzione inviti: invites/{invitedUid} = { inviterUid, at } ─────
+    match /invites/{invitedUid} {
+      // Legge: l'invitato (proprio doc) o l'invitante (per contare i propri).
+      allow read: if signedIn()
+        && (request.auth.uid == invitedUid
+            || request.auth.uid == resource.data.inviterUid);
+      // Crea solo il nuovo utente, per sé, con inviterUid != sé, immutabile.
+      allow create: if signedIn()
+        && request.auth.uid == invitedUid
+        && request.resource.data.inviterUid is string
+        && request.resource.data.inviterUid.size() > 0
+        && request.resource.data.inviterUid != invitedUid
+        && request.resource.data.keys().hasOnly(['inviterUid', 'at']);
+      allow update, delete: if false;
+    }
+
     // ── Indice username univoci: usernames/{lower} -> { uid } ──────────────
     // Lettura: per check disponibilita + lookup uid da /u/:username.
     match /usernames/{name} {
