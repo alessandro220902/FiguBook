@@ -12,7 +12,7 @@ describe('rankCandidates', () => {
       { uid: 'prov', favTeam: 'milan', provincia: 'MI', cap: '20200', isPublic: true },
       { uid: 'cap', favTeam: 'milan', provincia: 'MI', cap: '20100', isPublic: true },
     ]
-    const r = rankCandidates(me, cands, ['friendUid'], ['blockedUid'], 6)
+    const r = rankCandidates(me, cands, ['friendUid'], ['blockedUid'], [], 6)
     expect(r).toEqual(['cap', 'prov', 'team'])
   })
   it('esclude me, amici, bloccati e privati', () => {
@@ -23,17 +23,34 @@ describe('rankCandidates', () => {
       { uid: 'priv', cap: '20100', isPublic: false },
       { uid: 'ok', cap: '20100', isPublic: true },
     ]
-    const r = rankCandidates(me, cands, ['friendUid'], ['blockedUid'], 6)
+    const r = rankCandidates(me, cands, ['friendUid'], ['blockedUid'], [], 6)
     expect(r).toEqual(['ok'])
   })
   it('rispetta il limite', () => {
     const cands: C[] = Array.from({ length: 10 }, (_, i) => ({
       uid: 'u' + i, favTeam: 'inter', isPublic: true,
     }))
-    expect(rankCandidates(me, cands, [], [], 6)).toHaveLength(6)
+    expect(rankCandidates(me, cands, [], [], [], 6)).toHaveLength(6)
   })
   it('nessun tier disponibile → vuoto', () => {
     const cands: C[] = [{ uid: 'x', favTeam: 'juve', provincia: 'TO', cap: '10100', isPublic: true }]
-    expect(rankCandidates(me, cands, [], [], 6)).toEqual([])
+    expect(rankCandidates(me, cands, [], [], [], 6)).toEqual([])
+  })
+  it('exclude rimuove gli uid già mostrati', () => {
+    const cands: C[] = [
+      { uid: 'cap', cap: '20100', isPublic: true },
+      { uid: 'prov', provincia: 'MI', isPublic: true },
+    ]
+    const r = rankCandidates(me, cands, [], [], ['cap'], 6)
+    expect(r).toEqual(['prov'])
+  })
+  it('exclude si somma ad amici e bloccati', () => {
+    const cands: C[] = [
+      { uid: 'a', cap: '20100', isPublic: true },
+      { uid: 'b', cap: '20100', isPublic: true },
+      { uid: 'c', cap: '20100', isPublic: true },
+    ]
+    const r = rankCandidates(me, cands, ['a'], ['b'], ['c'], 6)
+    expect(r).toEqual([])
   })
 })

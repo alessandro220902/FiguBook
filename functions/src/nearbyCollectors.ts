@@ -16,9 +16,10 @@ function tier(me: Me, c: Cand): number {
 
 // Logica pura: filtra + ordina per tier, ritorna solo gli uid (max limit).
 export function rankCandidates(
-  me: Me, cands: Cand[], friends: string[], blocked: string[], limit: number,
+  me: Me, cands: Cand[], friends: string[], blocked: string[],
+  exclude: string[], limit: number,
 ): string[] {
-  const excl = new Set<string>([me.uid, ...friends, ...blocked])
+  const excl = new Set<string>([me.uid, ...friends, ...blocked, ...exclude])
   return cands
     .filter((c) => c.isPublic && !excl.has(c.uid))
     .map((c) => ({ uid: c.uid, t: tier(me, c) }))
