@@ -1,28 +1,55 @@
 // figubook-app/src/hooks/useNearbyCollectors.ts
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { fetchNearbyUids } from '@/lib/functions/nearby'
 import { getPublicByUid } from '@/lib/db/publicProfiles'
 import type { PublicProfile } from '@/lib/db/profile'
 
-// Carica il teaser di prossimità (una tantum). enabled=false → non chiama.
-export function useNearbyCollectors(enabled: boolean) {
+const PAGE = 6
+
+// Suggeriti di prossimità paginati: primo batch al mount, loadMore per i successivi.
+export function useNearbyCollectors(): {
+  people: PublicProfile[]
+  hasMore: boolean
+  loading: boolean
+  loadMore: () => void
+} {
   const [people, setPeople] = useState<PublicProfile[]>([])
+  const [hasMore, setHasMore] = useState(true)
   const [loading, setLoading] = useState(false)
+  const seen = useRef<string[]>([])
+  const seenSet = useRef<Set<string>>(new Set())
+  const inFlight = useRef(false)
 
-  useEffect(() => {
-    if (!enabled) return
-    let active = true
+  const load = useCallback(async () => {
+    if (inFlight.current) return
+    inFlight.current = true
     setLoading(true)
-    fetchNearbyUids()
-      .then(async (uids) => {
-        const profs = await Promise.all(uids.map((u) => getPublicByUid(u)))
-        return profs.filter((p): p is PublicProfile => !!p)
+    try {
+      const { uids, hasMore: more } = await fetchNearbyUids([...seen.current], PAGE)
+      for (const u of uids) {
+        if (!seenSet.current.has(u)) { seenSet.current.add(u); seen.current.push(u) }
+      }
+      const profs = await Promise.all(uids.map((u) => getPublicByUid(u)))
+      const fresh = profs.filter((p): p is PublicProfile => !!p)
+      setPeople((prev) => {
+        const have = new Set(prev.map((p) => p.uid))
+        return [...prev, ...fresh.filter((p) => !have.has(p.uid))]
       })
-      .then((p) => active && setPeople(p))
-      .catch(() => active && setPeople([]))
-      .finally(() => active && setLoading(false))
-    return () => { active = false }
-  }, [enabled])
+      setHasMore(more)
+    } catch {
+      setHasMore(false)
+    } finally {
+      inFlight.current = false
+      setLoading(false)
+    }
+  }, [])
 
-  return { people, loading }
+  useEffect(() => { load() }, [load])
+
+  const loadMore = useCallback(() => {
+    if (!hasMore || inFlight.current) return
+    load()
+  }, [hasMore, load])
+
+  return { people, hasMore, loading, loadMore }
 }
