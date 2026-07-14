@@ -15,10 +15,11 @@ export function useNearbyCollectors(): {
 } {
   const [people, setPeople] = useState<PublicProfile[]>([])
   const [hasMore, setHasMore] = useState(true)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true) // il primo batch parte al mount
   const seen = useRef<string[]>([])
   const seenSet = useRef<Set<string>>(new Set())
   const inFlight = useRef(false)
+  const mounted = useRef(true)
 
   const load = useCallback(async () => {
     if (inFlight.current) return
@@ -31,20 +32,25 @@ export function useNearbyCollectors(): {
       }
       const profs = await Promise.all(uids.map((u) => getPublicByUid(u)))
       const fresh = profs.filter((p): p is PublicProfile => !!p)
+      if (!mounted.current) return
       setPeople((prev) => {
         const have = new Set(prev.map((p) => p.uid))
         return [...prev, ...fresh.filter((p) => !have.has(p.uid))]
       })
       setHasMore(more)
     } catch {
-      setHasMore(false)
+      if (mounted.current) setHasMore(false)
     } finally {
       inFlight.current = false
-      setLoading(false)
+      if (mounted.current) setLoading(false)
     }
   }, [])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    mounted.current = true
+    load()
+    return () => { mounted.current = false }
+  }, [load])
 
   const loadMore = useCallback(() => {
     if (!hasMore || inFlight.current) return
