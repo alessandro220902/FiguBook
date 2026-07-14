@@ -17,6 +17,9 @@ import type { PublicProfile } from '@/lib/db/profile'
 
 function PersonRow({ u }: { u: PublicProfile }) {
   const team = u.favTeam ? teamById[u.favTeam] : undefined
+  // Comune senza la sigla provincia tra parentesi: "Roma (RM)" -> "Roma".
+  const city = u.citta ? u.citta.replace(/\s*\(.*\)$/, '') : ''
+  const sub = [u.nome, city].filter(Boolean).join(' · ')
   return (
     <Link
       to={`/u/${u.username}`}
@@ -25,7 +28,7 @@ function PersonRow({ u }: { u: PublicProfile }) {
       <Avatar id={u.avatarId} name={u.username} className="h-11 w-11 shrink-0 overflow-hidden rounded-full" />
       <div className="min-w-0 flex-1">
         <p className="truncate text-[15px] font-medium text-ink">{u.username}</p>
-        {u.nome && <p className="truncate text-sm text-ink-2">{u.nome}</p>}
+        {sub && <p className="truncate text-sm text-ink-2">{sub}</p>}
       </div>
       {team && <TeamCrest teamId={team.id} c1={team.c1} c2={team.c2} className="h-6 w-[18px] shrink-0" />}
     </Link>
@@ -43,6 +46,8 @@ export default function Community() {
   const { friends } = useMyFriends()
   const requests = useIncomingRequestProfiles()
   const { people: nearby, hasMore, loading: nearbyLoading, loadMore } = useNearbyCollectors()
+  // Senza comune né CAP la function non ha criteri di prossimità: invitiamo a completare il profilo.
+  const profileIncomplete = !profile?.citta && !profile?.cap
 
   const [copied, setCopied] = useState(false)
   const shareInvite = async () => {
@@ -145,7 +150,7 @@ export default function Community() {
       ) : (
         <div className="mt-8 grid gap-8 lg:grid-cols-2">
           <FadeIn>
-            <h2 className="type-h2 text-ink">I miei amici</h2>
+            <h2 className="type-h2 text-ink">I miei amici{friends.length > 0 ? ` (${friends.length})` : ''}</h2>
             {friends.length > 0 ? (
               <div className="mt-3 space-y-2">{friends.map((u) => <PersonRow key={u.uid} u={u} />)}</div>
             ) : (
@@ -164,9 +169,15 @@ export default function Community() {
           </FadeIn>
 
           <FadeIn>
-            <h2 className="type-h2 text-ink">Collezionisti per te</h2>
+            <h2 className="type-h2 text-ink">Collezionisti per te{nearby.length > 0 ? ` (${nearby.length})` : ''}</h2>
             <p className="mt-1 text-sm text-ink-2">Vicini a te per comune o CAP.</p>
-            {nearby.length > 0 ? (
+            {nearbyLoading && nearby.length === 0 ? (
+              <div className="mt-3 space-y-2">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="h-[68px] animate-pulse rounded-2xl border border-white/[0.06] bg-surface/40" />
+                ))}
+              </div>
+            ) : nearby.length > 0 ? (
               <>
                 <div className="mt-3 space-y-2">{nearby.map((u) => <PersonRow key={u.uid} u={u} />)}</div>
                 {hasMore && (
@@ -180,8 +191,20 @@ export default function Community() {
                   </button>
                 )}
               </>
+            ) : profileIncomplete ? (
+              <Link
+                to="/profilo"
+                className="group mt-3 block rounded-2xl border border-white/[0.08] bg-surface/40 p-5 transition-colors hover:border-white/20"
+              >
+                <p className="type-body text-ink">Completa il tuo profilo</p>
+                <p className="mt-1 text-sm text-ink-2">Aggiungi comune e CAP per trovare collezionisti della tua zona.</p>
+                <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-lime">
+                  Vai al profilo
+                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                </span>
+              </Link>
             ) : (
-              <p className="mt-3 text-sm text-ink-2">Nessuno vicino per ora. Compila comune e CAP nel profilo per trovare collezionisti della tua zona.</p>
+              <p className="mt-3 text-sm text-ink-2">Nessuno vicino per ora. Appena si iscrive qualcuno del tuo comune o CAP, comparirà qui.</p>
             )}
           </FadeIn>
         </div>
