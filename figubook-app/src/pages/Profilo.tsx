@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Pencil, MapPin, Check } from 'lucide-react'
+import { Pencil, MapPin, Check, Lock, ChevronRight } from 'lucide-react'
 import { sendEmailVerification } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
 import { useAuth } from '@/hooks/useAuth'
@@ -50,7 +50,7 @@ function InfoForm({
   const [favTeam, setFavTeam] = useState(initial.favTeam)
   const [cap, setCap] = useState(initial.cap)
   const [isPublic, setIsPublic] = useState(initial.isPublic)
-  const [confirmPrivate, setConfirmPrivate] = useState(false)
+  const [privacyOpen, setPrivacyOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -78,10 +78,6 @@ function InfoForm({
   function applyPrivacy(next: boolean) {
     setIsPublic(next)
     savePrivacy(uid, next).catch(() => setIsPublic(!next))
-  }
-  function togglePrivacy() {
-    if (isPublic) setConfirmPrivate(true) // sto per diventare privato: conferma
-    else applyPrivacy(true) // torno pubblico: immediato
   }
 
   async function save() {
@@ -182,65 +178,60 @@ function InfoForm({
         />
       </label>
 
-      {/* Visibilità: salva subito (lime/on = pubblico). No "Salva modifiche". */}
-      <div className="mt-5 flex items-center justify-between gap-4 rounded-xl border border-white/[0.1] bg-surface px-4 py-3.5">
-        <div className="min-w-0">
-          <p className="text-[15px] font-medium text-ink">
-            {isPublic ? 'Profilo pubblico' : 'Profilo privato'}
-          </p>
-          <p className="mt-0.5 text-sm text-ink-2">
-            {isPublic
-              ? 'Chiunque può vedere città, album e attività.'
-              : 'Solo gli amici accettati vedono città, album e attività.'}
-          </p>
-        </div>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={isPublic}
-          aria-label="Profilo pubblico"
-          onClick={togglePrivacy}
-          className={
-            'relative h-7 w-12 shrink-0 rounded-full transition-colors ' +
-            (isPublic ? 'bg-lime' : 'bg-white/15')
-          }
-        >
-          <span
-            className={
-              'absolute top-1 h-5 w-5 rounded-full bg-white transition-all ' +
-              (isPublic ? 'left-6' : 'left-1')
-            }
-          />
-        </button>
-      </div>
+      {/* Visibilità: riga che apre la finestrella dedicata (stile impostazioni). */}
+      <button
+        type="button"
+        onClick={() => setPrivacyOpen(true)}
+        className="mt-5 flex w-full items-center gap-3 rounded-xl border border-white/[0.1] bg-surface px-4 py-3.5 text-left transition-colors hover:border-white/20"
+      >
+        <Lock className="h-5 w-5 shrink-0 text-ink-2" />
+        <span className="min-w-0 flex-1 text-[15px] font-medium text-ink">Privacy dell'account</span>
+        <span className="text-sm text-ink-2">{isPublic ? 'Pubblico' : 'Privato'}</span>
+        <ChevronRight className="h-5 w-5 shrink-0 text-ink-2" />
+      </button>
 
-      <Modal open={confirmPrivate} onOpenChange={(o) => setConfirmPrivate(o)}>
-        <h3 className="text-lg font-semibold text-ink">Rendere il profilo privato?</h3>
-        <ul className="mt-4 space-y-2.5 text-sm">
-          <li className="flex gap-2.5">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-lime" />
-            <span className="text-ink-2">Solo gli amici accettati vedranno città, album e attività.</span>
-          </li>
-          <li className="flex gap-2.5">
-            <span className="mt-0.5 shrink-0 text-stat-missing">✕</span>
-            <span className="text-ink-2">Non apparirai tra i «collezionisti vicini»: gli altri non ti scopriranno da soli.</span>
-          </li>
-          <li className="flex gap-2.5">
-            <span className="mt-0.5 shrink-0 text-stat-missing">✕</span>
-            <span className="text-ink-2">Resti comunque trovabile da chi cerca il tuo username.</span>
-          </li>
-        </ul>
-        <div className="mt-6 flex justify-end gap-2.5">
+      <Modal open={privacyOpen} onOpenChange={(o) => setPrivacyOpen(o)}>
+        <h3 className="text-lg font-semibold text-ink">Privacy dell'account</h3>
+
+        <div className="mt-5 flex items-center justify-between gap-4">
+          <span className="text-[15px] font-medium text-ink">Account privato</span>
           <button
             type="button"
-            onClick={() => setConfirmPrivate(false)}
-            className="rounded-full border border-white/15 px-4 py-2 text-sm text-ink-2 transition-colors hover:border-white/30 hover:text-ink"
-          >Annulla</button>
+            role="switch"
+            aria-checked={!isPublic}
+            aria-label="Account privato"
+            onClick={() => applyPrivacy(!isPublic)}
+            className={
+              'relative h-7 w-12 shrink-0 rounded-full transition-colors ' +
+              (!isPublic ? 'bg-lime' : 'bg-white/15')
+            }
+          >
+            <span
+              className={
+                'absolute top-1 h-5 w-5 rounded-full bg-white transition-all ' +
+                (!isPublic ? 'left-6' : 'left-1')
+              }
+            />
+          </button>
+        </div>
+
+        <p className="mt-4 text-sm leading-relaxed text-ink-2">
+          <span className="font-medium text-ink">Pubblico:</span> appari tra i «collezionisti
+          vicini» per zona o squadra — gli altri ti scoprono da soli. Chiunque può vedere
+          città, album e attività.
+        </p>
+        <p className="mt-3 text-sm leading-relaxed text-ink-2">
+          <span className="font-medium text-ink">Privato:</span> non appari nella scoperta e
+          solo gli amici accettati vedono città, album e attività. Resti comunque trovabile da
+          chi cerca il tuo username esatto.
+        </p>
+
+        <div className="mt-6 flex justify-end">
           <button
             type="button"
-            onClick={() => { applyPrivacy(false); setConfirmPrivate(false) }}
-            className="rounded-full bg-lime px-4 py-2 text-sm font-semibold text-lime-ink transition-opacity hover:opacity-90"
-          >Rendi privato</button>
+            onClick={() => setPrivacyOpen(false)}
+            className="rounded-full bg-lime px-5 py-2 text-sm font-semibold text-lime-ink transition-opacity hover:opacity-90"
+          >Fatto</button>
         </div>
       </Modal>
 
