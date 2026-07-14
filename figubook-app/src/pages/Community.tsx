@@ -42,8 +42,7 @@ export default function Community() {
   const inviteCount = useInviteCount()
   const { friends } = useMyFriends()
   const requests = useIncomingRequestProfiles()
-  const noFriends = friends.length === 0
-  const { people: nearby } = useNearbyCollectors(noFriends)
+  const { people: nearby, hasMore, loading: nearbyLoading, loadMore } = useNearbyCollectors()
 
   const [copied, setCopied] = useState(false)
   const shareInvite = async () => {
@@ -112,18 +111,34 @@ export default function Community() {
         </div>
       </FadeIn>
 
-      <FadeIn>
-        <h2 className="type-h2 mt-8 text-ink">I miei amici</h2>
-        {friends.length > 0 ? (
+      {friends.length > 0 && (
+        <FadeIn>
+          <h2 className="type-h2 mt-8 text-ink">I miei amici</h2>
           <div className="mt-3 space-y-2">{friends.map((u) => <PersonRow key={u.uid} u={u} />)}</div>
-        ) : nearby.length > 0 ? (
-          <div className="mt-3">
-            <p className="text-sm text-ink-2">Non hai ancora amici — inizia da chi ti è vicino.</p>
-            <p className="mt-5 text-sm font-medium text-ink">Collezionisti vicini a te</p>
-            <div className="mt-3 space-y-2">{nearby.map((u) => <PersonRow key={u.uid} u={u} />)}</div>
-          </div>
-        ) : (
-          <div className="mt-3 rounded-2xl border border-white/[0.08] bg-surface/40 p-5 sm:p-6">
+        </FadeIn>
+      )}
+
+      {nearby.length > 0 && (
+        <FadeIn>
+          <h2 className="type-h2 mt-8 text-ink">Collezionisti per te</h2>
+          <p className="mt-1 text-sm text-ink-2">Vicini a te per zona o squadra del cuore.</p>
+          <div className="mt-3 space-y-2">{nearby.map((u) => <PersonRow key={u.uid} u={u} />)}</div>
+          {hasMore && (
+            <button
+              onClick={loadMore}
+              disabled={nearbyLoading}
+              className="group mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-white/30 disabled:opacity-50"
+            >
+              {nearbyLoading ? 'Carico…' : 'Mostra altri'}
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </button>
+          )}
+        </FadeIn>
+      )}
+
+      {friends.length === 0 && nearby.length === 0 && !nearbyLoading && (
+        <FadeIn>
+          <div className="mt-8 rounded-2xl border border-white/[0.08] bg-surface/40 p-5 sm:p-6">
             <p className="type-body text-ink">La tua cerchia è ancora vuota.</p>
             <p className="mt-1 text-sm text-ink-2">Bastano pochi passi per popolarla.</p>
             <ol className="mt-5 space-y-4">
@@ -149,8 +164,8 @@ export default function Community() {
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </button>
           </div>
-        )}
-      </FadeIn>
+        </FadeIn>
+      )}
       </div>
     </div>
   )
