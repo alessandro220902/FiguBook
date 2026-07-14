@@ -42,11 +42,13 @@ export async function registerWithEmail({ username, email, password, remember }:
       }
       tx.set(
         doc(db, 'users', uid, 'meta', 'profile'),
-        { displayName: username, username, ts: Date.now(), isPublic: false },
+        { displayName: username, username, ts: Date.now(), isPublic: true },
         { merge: true },
       )
       // Doc pubblico (cercabile) così il nuovo utente è subito trovabile nella
-      // Community. nome/città/bio restano vuoti finché non rende pubblico.
+      // Community. Default PUBBLICO: appare nella scoperta "vicini a te" appena
+      // completa il profilo; può rendersi privato dal toggle in Profilo.
+      // nome/città/bio restano vuoti finché non compila il profilo.
       tx.set(doc(db, 'publicProfiles', uid), {
         uid,
         username,
@@ -54,7 +56,7 @@ export async function registerWithEmail({ username, email, password, remember }:
         nome: '',
         avatarId: '',
         favTeam: '',
-        isPublic: false,
+        isPublic: true,
         citta: '',
         bio: '',
         updatedAt: Date.now(),

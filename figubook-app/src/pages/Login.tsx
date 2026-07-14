@@ -392,6 +392,9 @@ export default function Login() {
                 {regErr && <p className="mt-1 text-sm text-destructive">{regErr}</p>}
 
                 <PrimaryButton label="Crea account" busy={busy} disabled={!regTerms || !pwdValid(regPass)} />
+                <p className="text-[12px] leading-snug text-muted-foreground">
+                  Il tuo profilo sarà visibile agli altri collezionisti. Puoi renderlo privato quando vuoi dalle impostazioni.
+                </p>
                 <Divider />
                 <GoogleButton onClick={() => handleGoogle(setRegErr)} disabled={busy} />
               </form>

@@ -17,6 +17,7 @@ import { CittaPicker } from '@/components/profile/CittaPicker'
 import { TeamPicker } from '@/components/profile/TeamPicker'
 import { DangerZone } from '@/components/profile/DangerZone'
 import { syncAllIndexesCitta } from '@/lib/db/trade'
+import { Modal } from '@/components/ui/dialog'
 
 const inputCls =
   'w-full rounded-xl border border-white/[0.1] bg-surface px-3.5 py-3 text-[16px] text-ink outline-none transition-colors placeholder:text-ink-2 focus:border-lime'
@@ -48,6 +49,7 @@ function InfoForm({
   const [bio, setBio] = useState(initial.bio)
   const [favTeam, setFavTeam] = useState(initial.favTeam)
   const [isPublic, setIsPublic] = useState(initial.isPublic)
+  const [confirmPrivate, setConfirmPrivate] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -67,11 +69,16 @@ function InfoForm({
     setError(null)
   }
 
-  // Visibilità: salvataggio immediato col toggle (no Salva modifiche). Ottimistico.
-  function togglePrivacy() {
-    const next = !isPublic
+  // Visibilità: salvataggio immediato, ottimistico. Verso PUBBLICO è diretto;
+  // verso PRIVATO prima si conferma (avviso pro/contro) — è la scelta che riduce
+  // la scopribilità, quindi non deve avvenire per tap accidentale.
+  function applyPrivacy(next: boolean) {
     setIsPublic(next)
     savePrivacy(uid, next).catch(() => setIsPublic(!next))
+  }
+  function togglePrivacy() {
+    if (isPublic) setConfirmPrivate(true) // sto per diventare privato: conferma
+    else applyPrivacy(true) // torno pubblico: immediato
   }
 
   async function save() {
@@ -184,6 +191,36 @@ function InfoForm({
           />
         </button>
       </div>
+
+      <Modal open={confirmPrivate} onOpenChange={(o) => setConfirmPrivate(o)}>
+        <h3 className="text-lg font-semibold text-ink">Rendere il profilo privato?</h3>
+        <ul className="mt-4 space-y-2.5 text-sm">
+          <li className="flex gap-2.5">
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-lime" />
+            <span className="text-ink-2">Solo gli amici accettati vedranno città, album e attività.</span>
+          </li>
+          <li className="flex gap-2.5">
+            <span className="mt-0.5 shrink-0 text-stat-missing">✕</span>
+            <span className="text-ink-2">Non apparirai tra i «collezionisti vicini»: gli altri non ti scopriranno da soli.</span>
+          </li>
+          <li className="flex gap-2.5">
+            <span className="mt-0.5 shrink-0 text-stat-missing">✕</span>
+            <span className="text-ink-2">Resti comunque trovabile da chi cerca il tuo username.</span>
+          </li>
+        </ul>
+        <div className="mt-6 flex justify-end gap-2.5">
+          <button
+            type="button"
+            onClick={() => setConfirmPrivate(false)}
+            className="rounded-full border border-white/15 px-4 py-2 text-sm text-ink-2 transition-colors hover:border-white/30 hover:text-ink"
+          >Annulla</button>
+          <button
+            type="button"
+            onClick={() => { applyPrivacy(false); setConfirmPrivate(false) }}
+            className="rounded-full bg-lime px-4 py-2 text-sm font-semibold text-lime-ink transition-opacity hover:opacity-90"
+          >Rendi privato</button>
+        </div>
+      </Modal>
 
       {error && <p className="mt-3 text-sm text-stat-missing">{error}</p>}
 
