@@ -58,6 +58,13 @@ export const nearbyCollectors = onCall({ region: 'europe-west1' }, async (req) =
   if (!uid) throw new HttpsError('unauthenticated', 'Login richiesto')
   const db = admin.firestore()
 
+  const data = (req.data as { exclude?: unknown; limit?: unknown }) ?? {}
+  const exclude: string[] = Array.isArray(data.exclude)
+    ? data.exclude.filter((x): x is string => typeof x === 'string')
+    : []
+  const rawLimit = typeof data.limit === 'number' ? data.limit : 6
+  const limit = Math.min(12, Math.max(1, Math.floor(rawLimit)))
+
   const meSnap = await db.doc(`users/${uid}/meta/profile`).get()
   const mp = (meSnap.data() as any) ?? {}
   const me: Me = { uid, cap: mp.cap, provincia: mp.provincia, favTeam: mp.favTeam }
@@ -71,5 +78,6 @@ export const nearbyCollectors = onCall({ region: 'europe-west1' }, async (req) =
   }
 
   const cands = await fetchCandidates(db, me)
-  return { uids: rankCandidates(me, cands, friends, blocked, 6) }
+  const uids = rankCandidates(me, cands, friends, blocked, exclude, limit)
+  return { uids, hasMore: uids.length === limit }
 })
