@@ -149,7 +149,17 @@ export default function Community() {
             {friends.length > 0 ? (
               <div className="mt-3 space-y-2">{friends.map((u) => <PersonRow key={u.uid} u={u} />)}</div>
             ) : (
-              <p className="mt-3 text-sm text-ink-2">Non hai ancora amici. Invita qualcuno con il tuo link.</p>
+              <div className="mt-3 rounded-2xl border border-white/[0.08] bg-surface/40 p-5 sm:p-6">
+                <p className="type-body text-ink">Non hai ancora amici.</p>
+                <p className="mt-1 text-sm text-ink-2">Invita chi colleziona con te: chi si iscrive con il tuo link entra nella tua cerchia. Da qui gestirai richieste e amicizie.</p>
+                <button
+                  onClick={shareInvite}
+                  className="group mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-lime px-5 py-2.5 font-semibold text-lime-ink transition-opacity hover:opacity-90"
+                >
+                  {copied ? 'Link copiato!' : 'Invita un amico'}
+                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                </button>
+              </div>
             )}
           </FadeIn>
 
