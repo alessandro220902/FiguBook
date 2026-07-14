@@ -111,40 +111,17 @@ export default function Community() {
         </div>
       </FadeIn>
 
-      {friends.length > 0 && (
-        <FadeIn>
-          <h2 className="type-h2 mt-8 text-ink">I miei amici</h2>
-          <div className="mt-3 space-y-2">{friends.map((u) => <PersonRow key={u.uid} u={u} />)}</div>
-        </FadeIn>
-      )}
+      </div>
 
-      {nearby.length > 0 && (
+      {friends.length === 0 && nearby.length === 0 && !nearbyLoading ? (
         <FadeIn>
-          <h2 className="type-h2 mt-8 text-ink">Collezionisti per te</h2>
-          <p className="mt-1 text-sm text-ink-2">Vicini a te per zona o squadra del cuore.</p>
-          <div className="mt-3 space-y-2">{nearby.map((u) => <PersonRow key={u.uid} u={u} />)}</div>
-          {hasMore && (
-            <button
-              onClick={loadMore}
-              disabled={nearbyLoading}
-              className="group mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-white/30 disabled:opacity-50"
-            >
-              {nearbyLoading ? 'Carico…' : 'Mostra altri'}
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </button>
-          )}
-        </FadeIn>
-      )}
-
-      {friends.length === 0 && nearby.length === 0 && !nearbyLoading && (
-        <FadeIn>
-          <div className="mt-8 rounded-2xl border border-white/[0.08] bg-surface/40 p-5 sm:p-6">
+          <div className="mt-8 max-w-2xl rounded-2xl border border-white/[0.08] bg-surface/40 p-5 sm:p-6">
             <p className="type-body text-ink">La tua cerchia è ancora vuota.</p>
             <p className="mt-1 text-sm text-ink-2">Bastano pochi passi per popolarla.</p>
             <ol className="mt-5 space-y-4">
               {[
                 ['1', 'Invita i tuoi amici', 'Manda il tuo link: chi si iscrive entra nella tua cerchia.'],
-                ['2', 'Trova collezionisti vicini', 'Appari qui quando altri della tua zona o squadra si iscrivono.'],
+                ['2', 'Trova collezionisti vicini', 'Appari qui quando altri del tuo comune o CAP si iscrivono.'],
                 ['3', 'Sblocca ricompense', 'Presto: più inviti e attività, più vantaggi in FiguBook.'],
               ].map(([n, title, desc]) => (
                 <li key={n} className="flex gap-3">
@@ -165,8 +142,40 @@ export default function Community() {
             </button>
           </div>
         </FadeIn>
+      ) : (
+        <div className="mt-8 grid gap-8 lg:grid-cols-2">
+          <FadeIn>
+            <h2 className="type-h2 text-ink">I miei amici</h2>
+            {friends.length > 0 ? (
+              <div className="mt-3 space-y-2">{friends.map((u) => <PersonRow key={u.uid} u={u} />)}</div>
+            ) : (
+              <p className="mt-3 text-sm text-ink-2">Non hai ancora amici. Invita qualcuno con il tuo link.</p>
+            )}
+          </FadeIn>
+
+          <FadeIn>
+            <h2 className="type-h2 text-ink">Collezionisti per te</h2>
+            <p className="mt-1 text-sm text-ink-2">Vicini a te per comune o CAP.</p>
+            {nearby.length > 0 ? (
+              <>
+                <div className="mt-3 space-y-2">{nearby.map((u) => <PersonRow key={u.uid} u={u} />)}</div>
+                {hasMore && (
+                  <button
+                    onClick={loadMore}
+                    disabled={nearbyLoading}
+                    className="group mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-white/30 disabled:opacity-50"
+                  >
+                    {nearbyLoading ? 'Carico…' : 'Mostra altri'}
+                    <span className="transition-transform group-hover:translate-x-1">→</span>
+                  </button>
+                )}
+              </>
+            ) : (
+              <p className="mt-3 text-sm text-ink-2">Nessuno vicino per ora. Compila comune e CAP nel profilo per trovare collezionisti della tua zona.</p>
+            )}
+          </FadeIn>
+        </div>
       )}
-      </div>
     </div>
   )
 }

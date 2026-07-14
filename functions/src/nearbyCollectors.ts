@@ -6,11 +6,11 @@ export interface Cand {
   uid: string; cap?: string; provincia?: string; favTeam?: string; isPublic: boolean
 }
 
-// Tier: 0 = CAP, 1 = provincia, 2 = squadra, -1 = nessun match. Più basso = più vicino.
+// Tier: 0 = CAP, 1 = provincia, -1 = nessun match. Più basso = più vicino.
+// La squadra NON è più criterio di prossimità: "vicino" = stessa zona geografica.
 function tier(me: Me, c: Cand): number {
   if (me.cap && c.cap && c.cap === me.cap) return 0
   if (me.provincia && c.provincia && c.provincia === me.provincia) return 1
-  if (me.favTeam && c.favTeam && c.favTeam === me.favTeam) return 2
   return -1
 }
 
@@ -35,7 +35,6 @@ async function fetchCandidates(db: Firestore, me: Me): Promise<Cand[]> {
   const queries: Promise<QuerySnapshot>[] = []
   if (me.cap) queries.push(cg.where('cap', '==', me.cap).limit(50).get())
   if (me.provincia) queries.push(cg.where('provincia', '==', me.provincia).limit(50).get())
-  if (me.favTeam) queries.push(cg.where('favTeam', '==', me.favTeam).limit(50).get())
   const snaps = await Promise.all(queries)
   const byUid = new Map<string, Cand>()
   for (const snap of snaps) {

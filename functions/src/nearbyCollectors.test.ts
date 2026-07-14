@@ -6,14 +6,15 @@ type C = { uid: string; cap?: string; provincia?: string; favTeam?: string; isPu
 const me = { uid: 'me', cap: '20100', provincia: 'MI', favTeam: 'inter' }
 
 describe('rankCandidates', () => {
-  it('ordina CAP prima di provincia prima di squadra', () => {
+  it('ordina CAP prima di provincia (la squadra non è più criterio)', () => {
     const cands: C[] = [
       { uid: 'team', favTeam: 'inter', provincia: 'RM', cap: '00100', isPublic: true },
       { uid: 'prov', favTeam: 'milan', provincia: 'MI', cap: '20200', isPublic: true },
       { uid: 'cap', favTeam: 'milan', provincia: 'MI', cap: '20100', isPublic: true },
     ]
     const r = rankCandidates(me, cands, ['friendUid'], ['blockedUid'], [], 6)
-    expect(r).toEqual(['cap', 'prov', 'team'])
+    // 'team' condivide solo la squadra → escluso; restano CAP poi provincia.
+    expect(r).toEqual(['cap', 'prov'])
   })
   it('esclude me, amici, bloccati e privati', () => {
     const cands: C[] = [
@@ -28,12 +29,12 @@ describe('rankCandidates', () => {
   })
   it('rispetta il limite', () => {
     const cands: C[] = Array.from({ length: 10 }, (_, i) => ({
-      uid: 'u' + i, favTeam: 'inter', isPublic: true,
+      uid: 'u' + i, cap: '20100', isPublic: true,
     }))
     expect(rankCandidates(me, cands, [], [], [], 6)).toHaveLength(6)
   })
-  it('nessun tier disponibile → vuoto', () => {
-    const cands: C[] = [{ uid: 'x', favTeam: 'juve', provincia: 'TO', cap: '10100', isPublic: true }]
+  it('la sola squadra in comune non basta → vuoto', () => {
+    const cands: C[] = [{ uid: 'x', favTeam: 'inter', provincia: 'TO', cap: '10100', isPublic: true }]
     expect(rankCandidates(me, cands, [], [], [], 6)).toEqual([])
   })
   it('exclude rimuove gli uid già mostrati', () => {
