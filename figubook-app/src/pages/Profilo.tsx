@@ -8,7 +8,7 @@ import { Avatar } from '@/components/Avatar'
 import { TeamCrest } from '@/components/TeamCrest'
 import { teamById } from '@/lib/teams'
 import { teamAccent, teamPageBg, teamCardBg } from '@/lib/teamStyle'
-import { saveProfileAccount, savePrivacy, UsernameTakenError, type ProfileDoc, type PublicProfile } from '@/lib/db/profile'
+import { saveProfileAccount, savePrivacy, saveProfilePrivate, isValidCap, UsernameTakenError, type ProfileDoc, type PublicProfile } from '@/lib/db/profile'
 import { getPublicByUid } from '@/lib/db/publicProfiles'
 import { unblockUser } from '@/lib/db/blocks'
 import { FadeIn } from '@/components/home/FadeIn'
@@ -41,13 +41,14 @@ function InfoForm({
 }: {
   uid: string
   email?: string | null
-  initial: { nome: string; username: string; citta: string; bio: string; favTeam: string; isPublic: boolean }
+  initial: { nome: string; username: string; citta: string; bio: string; favTeam: string; cap: string; isPublic: boolean }
 }) {
   const [nome, setNome] = useState(initial.nome)
   const [username, setUsername] = useState(initial.username)
   const [citta, setCitta] = useState(initial.citta)
   const [bio, setBio] = useState(initial.bio)
   const [favTeam, setFavTeam] = useState(initial.favTeam)
+  const [cap, setCap] = useState(initial.cap)
   const [isPublic, setIsPublic] = useState(initial.isPublic)
   const [confirmPrivate, setConfirmPrivate] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -58,7 +59,8 @@ function InfoForm({
     initial.username !== username.trim() ||
     initial.citta !== citta.trim() ||
     initial.bio !== bio.trim() ||
-    initial.favTeam !== favTeam
+    initial.favTeam !== favTeam ||
+    initial.cap !== cap.trim()
 
   function reset() {
     setNome(initial.nome)
@@ -66,6 +68,7 @@ function InfoForm({
     setCitta(initial.citta)
     setBio(initial.bio)
     setFavTeam(initial.favTeam)
+    setCap(initial.cap)
     setError(null)
   }
 
@@ -87,10 +90,16 @@ function InfoForm({
       setError('Lo username non può essere vuoto.')
       return
     }
+    if (!isValidCap(cap)) {
+      setError('Il CAP deve avere 5 cifre (oppure lascialo vuoto).')
+      return
+    }
     setSaving(true)
     setError(null)
     try {
       await saveProfileAccount(uid, { nome, username, citta, bio, favTeam })
+      // CAP è privato (mai in publicProfiles): salvato a parte.
+      await saveProfilePrivate(uid, { cap })
       // Propaga la città aggiornata al tradeIndex (usato da "Vicino a me" negli
       // Scambi, indipendente da profilo pubblico/privato). Non blocca il salvataggio.
       syncAllIndexesCitta(uid, citta).catch((e) => console.error('sync città indici', e))
@@ -150,6 +159,19 @@ function InfoForm({
       </div>
 
       <label className="mt-5 flex flex-col gap-1.5">
+        <span className={FIELD_LBL}>CAP</span>
+        <input
+          className={inputCls}
+          value={cap}
+          onChange={(e) => setCap(e.target.value.replace(/\D/g, '').slice(0, 5))}
+          inputMode="numeric"
+          placeholder="Es. 00100"
+          maxLength={5}
+        />
+        <span className="text-xs text-ink-2">Privato: usato solo per trovare collezionisti vicini, mai mostrato agli altri.</span>
+      </label>
+
+      <label className="mt-5 flex flex-col gap-1.5">
         <span className={FIELD_LBL}>Bio</span>
         <textarea
           className={inputCls + ' min-h-[110px] resize-y leading-relaxed'}
@@ -160,7 +182,7 @@ function InfoForm({
         />
       </label>
 
-      {/* Visibilità: salva subito (giallo/on = privato). No "Salva modifiche". */}
+      {/* Visibilità: salva subito (lime/on = pubblico). No "Salva modifiche". */}
       <div className="mt-5 flex items-center justify-between gap-4 rounded-xl border border-white/[0.1] bg-surface px-4 py-3.5">
         <div className="min-w-0">
           <p className="text-[15px] font-medium text-ink">
@@ -175,18 +197,18 @@ function InfoForm({
         <button
           type="button"
           role="switch"
-          aria-checked={!isPublic}
-          aria-label="Profilo privato"
+          aria-checked={isPublic}
+          aria-label="Profilo pubblico"
           onClick={togglePrivacy}
           className={
             'relative h-7 w-12 shrink-0 rounded-full transition-colors ' +
-            (!isPublic ? 'bg-lime' : 'bg-white/15')
+            (isPublic ? 'bg-lime' : 'bg-white/15')
           }
         >
           <span
             className={
               'absolute top-1 h-5 w-5 rounded-full bg-white transition-all ' +
-              (!isPublic ? 'left-6' : 'left-1')
+              (isPublic ? 'left-6' : 'left-1')
             }
           />
         </button>
@@ -258,6 +280,7 @@ function initialFrom(
     citta: profile?.citta ?? '',
     bio: profile?.bio ?? '',
     favTeam: profile?.favTeam ?? '',
+    cap: profile?.cap ?? '',
     isPublic: profile?.isPublic ?? false,
   }
 }
