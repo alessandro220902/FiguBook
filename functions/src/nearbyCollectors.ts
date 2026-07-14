@@ -1,5 +1,5 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https'
-import * as admin from 'firebase-admin'
+import { getFirestore, type Firestore, type QuerySnapshot } from 'firebase-admin/firestore'
 
 export interface Me { uid: string; cap?: string; provincia?: string; favTeam?: string }
 export interface Cand {
@@ -30,9 +30,9 @@ export function rankCandidates(
 }
 
 // Legge i candidati dei tier presenti via collectionGroup('meta') sui profili.
-async function fetchCandidates(db: admin.firestore.Firestore, me: Me): Promise<Cand[]> {
+async function fetchCandidates(db: Firestore, me: Me): Promise<Cand[]> {
   const cg = db.collectionGroup('meta')
-  const queries: Promise<admin.firestore.QuerySnapshot>[] = []
+  const queries: Promise<QuerySnapshot>[] = []
   if (me.cap) queries.push(cg.where('cap', '==', me.cap).limit(50).get())
   if (me.provincia) queries.push(cg.where('provincia', '==', me.provincia).limit(50).get())
   if (me.favTeam) queries.push(cg.where('favTeam', '==', me.favTeam).limit(50).get())
@@ -56,7 +56,7 @@ async function fetchCandidates(db: admin.firestore.Firestore, me: Me): Promise<C
 export const nearbyCollectors = onCall({ region: 'europe-west1' }, async (req) => {
   const uid = req.auth?.uid
   if (!uid) throw new HttpsError('unauthenticated', 'Login richiesto')
-  const db = admin.firestore()
+  const db = getFirestore()
 
   const data = (req.data as { exclude?: unknown; limit?: unknown }) ?? {}
   const exclude: string[] = Array.isArray(data.exclude)
