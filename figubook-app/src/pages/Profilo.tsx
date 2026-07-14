@@ -14,6 +14,7 @@ import { unblockUser } from '@/lib/db/blocks'
 import { FadeIn } from '@/components/home/FadeIn'
 import { AvatarModal } from '@/components/profile/AvatarModal'
 import { CittaPicker } from '@/components/profile/CittaPicker'
+import { CapPicker } from '@/components/profile/CapPicker'
 import { TeamPicker } from '@/components/profile/TeamPicker'
 import { DangerZone } from '@/components/profile/DangerZone'
 import { syncAllIndexesCitta } from '@/lib/db/trade'
@@ -133,7 +134,7 @@ function InfoForm({
             maxLength={24}
           />
         </label>
-        <label className="flex flex-col gap-1.5">
+        <label className="flex flex-col gap-1.5 sm:col-span-2">
           <span className={FIELD_LBL}>Nome</span>
           <input
             className={inputCls}
@@ -147,25 +148,17 @@ function InfoForm({
           <span className={FIELD_LBL}>Città</span>
           <CittaPicker value={citta} onChange={setCitta} />
         </label>
+        <div className="flex flex-col gap-1.5">
+          <span className={FIELD_LBL}>CAP</span>
+          <CapPicker value={cap} onChange={setCap} />
+          <span className="text-xs text-ink-2">Privato: usato solo per trovare collezionisti vicini, mai mostrato agli altri.</span>
+        </div>
       </div>
 
       <div className="mt-5 flex flex-col gap-1.5">
         <span className={FIELD_LBL}>Squadra del cuore</span>
         <TeamPicker value={favTeam} onChange={setFavTeam} />
       </div>
-
-      <label className="mt-5 flex flex-col gap-1.5">
-        <span className={FIELD_LBL}>CAP</span>
-        <input
-          className={inputCls}
-          value={cap}
-          onChange={(e) => setCap(e.target.value.replace(/\D/g, '').slice(0, 5))}
-          inputMode="numeric"
-          placeholder="Es. 00100"
-          maxLength={5}
-        />
-        <span className="text-xs text-ink-2">Privato: usato solo per trovare collezionisti vicini, mai mostrato agli altri.</span>
-      </label>
 
       <label className="mt-5 flex flex-col gap-1.5">
         <span className={FIELD_LBL}>Bio</span>
