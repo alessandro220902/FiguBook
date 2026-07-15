@@ -113,7 +113,7 @@ git commit -m "feat(albo): point values + album totals map"
 - Test: `functions/src/albo/scoring.test.ts`
 
 Modello input (derivato dallo stato, già-calcolato dal caller):
-- `albums: { albumId, have, total, teamHave }[]` — `teamHave` = figurine possedute in sezioni della squadra del cuore.
+- `albums: { albumId, have, total, teamHave, baselineHave }[]` — `teamHave` = figurine in sezioni squadra del cuore; `baselineHave` = figurine possedute all'INIZIO del mese corrente (per il reset stagionale del Collezionista). All-time ignora `baselineHave`; stagionale usa il delta `have - baselineHave`.
 - `trades: { partner, at }[]` — scambi completati (uno per proposta completata).
 - `invites: { at }[]`, `friendshipsAt: number[]`, `activeDays: string[]`, `profileComplete: boolean`.
 - `sinceMs?: number` — se presente, filtra gli eventi al mese corrente (stagionale). Gli album passano già i valori corretti (all-time o delta-mese) a monte.
@@ -123,7 +123,7 @@ Modello input (derivato dallo stato, già-calcolato dal caller):
 ```ts
 // functions/src/albo/scoring.test.ts
 import { describe, it, expect } from 'vitest'
-import { scoreCollezionista, scoreScambista, computeAxes } from './scoring.js'
+import { scoreCollezionista, scoreCollezionistaSeasonal, scoreScambista, computeAxes } from './scoring.js'
 
 describe('scoreCollezionista', () => {
   it('album al 100% => 50 + 3 soglie(15) + started(2) + 0.1*total', () => {
@@ -143,6 +143,23 @@ describe('scoreCollezionista', () => {
     const s = scoreCollezionista([{ albumId: 'a', have: 50, total: 100, teamHave: 20 }])
     // started2 + m25(5)+m50(5)=10 => 12 ; +0.1*50=5 =>17 ; derby +0.5*0.1*20=1 =>18
     expect(s).toBe(18)
+  })
+})
+
+describe('scoreCollezionistaSeasonal (delta dal baseline mese)', () => {
+  it('nessun progresso nel mese => 0', () => {
+    const s = scoreCollezionistaSeasonal([{ albumId: 'a', have: 50, total: 100, teamHave: 0, baselineHave: 50 }])
+    expect(s).toBe(0)
+  })
+  it('album iniziato nel mese (baseline 0) => started + soglie superate nel mese + 0.1*delta', () => {
+    const s = scoreCollezionistaSeasonal([{ albumId: 'a', have: 30, total: 100, teamHave: 0, baselineHave: 0 }])
+    // started2 + m25(5) + 0.1*30(3) = 10
+    expect(s).toBe(10)
+  })
+  it('completato nel mese (baseline 60) => complete50 + soglia75 + 0.1*40', () => {
+    const s = scoreCollezionistaSeasonal([{ albumId: 'a', have: 100, total: 100, teamHave: 0, baselineHave: 60 }])
+    // baseline pct 60 => 75%(5) e 100%(complete 50) crossate ; +0.1*(100-60)=4 => 59
+    expect(s).toBe(59)
   })
 })
 
@@ -202,7 +219,7 @@ Expected: FAIL ("Cannot find module './scoring.js'").
 // functions/src/albo/scoring.ts
 import { PT } from './pointValues.js'
 
-export interface AlbumInput { albumId: string; have: number; total: number; teamHave: number }
+export interface AlbumInput { albumId: string; have: number; total: number; teamHave: number; baselineHave?: number }
 export interface TradeInput { partner: string; at: number }
 export interface ScambistaInput {
   trades: TradeInput[]
@@ -232,6 +249,29 @@ export function scoreCollezionista(albums: AlbumInput[]): number {
   return round1(pts)
 }
 
+const pctOf = (have: number, total: number): number => (total > 0 ? Math.min(100, (have / total) * 100) : 0)
+
+// Punti Collezionista guadagnati NEL MESE: delta figurine + soglie/completamento CROSSATE nel mese.
+export function scoreCollezionistaSeasonal(albums: AlbumInput[]): number {
+  let pts = 0
+  for (const a of albums) {
+    const base = a.baselineHave ?? 0
+    if (a.total <= 0) continue
+    const delta = Math.max(0, a.have - base)
+    if (delta === 0 && !(base === 0 && a.have === 0)) {
+      // nessun progresso: salta (ma se anche il baseline era >0 e nulla è cambiato, 0)
+    }
+    if (base === 0 && a.have > 0) pts += PT.albumStarted
+    const basePct = pctOf(base, a.total)
+    const curPct = pctOf(a.have, a.total)
+    for (const thr of [25, 50, 75]) if (basePct < thr && curPct >= thr) pts += PT.milestone
+    if (base < a.total && a.have >= a.total) pts += PT.albumComplete
+    pts += PT.perSticker * delta
+    pts += PT.derbyBonusFactor * PT.perSticker * a.teamHave // derby v1 disattivato (teamHave=0)
+  }
+  return round1(pts)
+}
+
 export function scoreScambista(i: ScambistaInput): number {
   const distinctPartners = new Set(i.trades.map((t) => t.partner)).size
   let pts = 0
@@ -251,7 +291,7 @@ export function computeAxes(input: ScoringInput, sinceMs?: number): Axes {
   const invites = sinceMs === undefined ? input.invites : input.invites.filter((x) => x.at >= sinceMs)
   const friendshipsAt = sinceMs === undefined ? input.friendshipsAt : input.friendshipsAt.filter((a) => a >= sinceMs)
   const activeDays = sinceIso === undefined ? input.activeDays : input.activeDays.filter((d) => d >= sinceIso)
-  const collezionista = scoreCollezionista(input.albums)
+  const collezionista = sinceMs === undefined ? scoreCollezionista(input.albums) : scoreCollezionistaSeasonal(input.albums)
   const scambista = scoreScambista({ trades, invites, friendshipsAt, activeDays, profileComplete: input.profileComplete })
   return { collezionista, scambista, totale: round1(collezionista + scambista) }
 }
@@ -374,7 +414,7 @@ Legge i dati grezzi di un uid da Firestore e li trasforma in `ScoringInput`. Iso
 ```ts
 // functions/src/albo/collect.test.ts
 import { describe, it, expect } from 'vitest'
-import { tradesFromProposals, albumsFromDocs } from './collect.js'
+import { tradesFromProposals, albumsFromDocs, baselineHaveOf } from './collect.js'
 
 describe('tradesFromProposals', () => {
   it('tiene solo completed dove uid è participant, mappa partner+at', () => {
@@ -394,6 +434,20 @@ describe('albumsFromDocs', () => {
     const a = albumsFromDocs(docs as any, () => 440, () => 0)
     expect(a[0].have).toBe(3)
     expect(a[0].total).toBe(440)
+  })
+})
+
+describe('baselineHaveOf', () => {
+  it('prende gli have dallo snapshot più vecchio del mese', () => {
+    const docs = [
+      { id: '2026-06-30', albums: { a: { have: 5 } } },
+      { id: '2026-07-03', albums: { a: { have: 20 }, b: { have: 4 } } },
+      { id: '2026-07-10', albums: { a: { have: 40 } } },
+    ]
+    expect(baselineHaveOf(docs as any, '2026-07-01')).toEqual({ a: 20, b: 4 })
+  })
+  it('nessuno snapshot nel mese => mappa vuota', () => {
+    expect(baselineHaveOf([{ id: '2026-06-30', albums: { a: { have: 5 } } }] as any, '2026-07-01')).toEqual({})
   })
 })
 ```
@@ -438,10 +492,24 @@ export function albumsFromDocs(
 
 // Legge tutti i dati grezzi di un utente e costruisce ScoringInput.
 // profileComplete e favTeam arrivano dal profilo; activeDays dagli snapshot stats.
+// Estrae la mappa baselineHave (albumId -> have) dallo snapshot stats più vecchio del mese corrente.
+// Lo snapshot ha campo `albums: { [albumId]: { have, doubles } }`. Se nessuno snapshot nel mese, mappa vuota.
+export function baselineHaveOf(
+  statsDocs: { id: string; albums?: Record<string, { have: number }> }[],
+  monthStartIso: string,
+): Record<string, number> {
+  const inMonth = statsDocs.filter((d) => d.id >= monthStartIso).sort((a, b) => a.id.localeCompare(b.id))
+  const first = inMonth[0]
+  if (!first?.albums) return {}
+  const out: Record<string, number> = {}
+  for (const [id, v] of Object.entries(first.albums)) out[id] = v.have ?? 0
+  return out
+}
+
 export async function collectScoringInput(
   db: Firestore,
   uid: string,
-  opts: { favTeam?: string; profileComplete: boolean },
+  opts: { favTeam?: string; profileComplete: boolean; monthStartIso: string },
 ): Promise<ScoringInput> {
   const [albumsSnap, propsSnap, invitesSnap, friendsSnap, statsSnap] = await Promise.all([
     db.collection('users').doc(uid).collection('albums').get(),
@@ -451,17 +519,21 @@ export async function collectScoringInput(
     db.collection('users').doc(uid).collection('stats').get(),
   ])
 
+  const statsDocs = statsSnap.docs.map((d) => ({ id: d.id, albums: d.data().albums as Record<string, { have: number }> | undefined }))
+  const baseline = baselineHaveOf(statsDocs, opts.monthStartIso)
+
   const albumDocs: AlbumDocRaw[] = albumsSnap.docs
     .filter((d) => d.id !== '_my-albums')
     .map((d) => ({ id: d.id, states: d.data().states || {}, counts: d.data().counts || {} }))
-  const albums = albumsFromDocs(albumDocs, totalOf, () => 0) // teamHave v1: 0 finché non c'è la mappa sezioni-squadra (vedi Task 4b)
+  const albums = albumsFromDocs(albumDocs, totalOf, () => 0) // teamHave v1: 0 (derby follow-up, Task 4b)
+    .map((a) => ({ ...a, baselineHave: baseline[a.albumId] ?? 0 }))
 
   const trades = tradesFromProposals(
     propsSnap.docs.map((d) => d.data() as ProposalDoc), uid,
   )
   const invites = invitesSnap.docs.map((d) => ({ at: (d.data().at as number) ?? 0 }))
   const friendshipsAt = friendsSnap.docs.map((d) => (d.data().createdAt as number) ?? 0)
-  const activeDays = statsSnap.docs.map((d) => d.id) // doc id = ISO giorno
+  const activeDays = statsDocs.map((d) => d.id) // doc id = ISO giorno
 
   return { albums, trades, invites, friendshipsAt, activeDays, profileComplete: opts.profileComplete }
 }
@@ -573,8 +645,10 @@ async function profileOf(db: Firestore, uid: string): Promise<{ favTeam?: string
 // Ricalcola e persiste scores/{uid}; ritorna la ScoreRow (stagione corrente).
 export async function recomputeAndStore(db: Firestore, uid: string, now: number): Promise<ScoreRow> {
   const [meta, prof] = await Promise.all([publicMetaOf(db, uid), profileOf(db, uid)])
-  const input = await collectScoringInput(db, uid, { favTeam: prof.favTeam, profileComplete: prof.profileComplete })
-  const season = computeAxes(input, monthStartMs(now))
+  const startMs = monthStartMs(now)
+  const monthStartIso = new Date(startMs).toISOString().slice(0, 10)
+  const input = await collectScoringInput(db, uid, { favTeam: prof.favTeam, profileComplete: prof.profileComplete, monthStartIso })
+  const season = computeAxes(input, startMs)
   const allTime = computeAxes(input)
   const row: ScoreRow = {
     uid, username: meta.username, avatarId: meta.avatarId, favTeam: meta.favTeam, citta: meta.citta,
@@ -1236,7 +1310,7 @@ git push
 - Sub-navbar Amici·Gruppi·Albo d'Oro → Task 9. ✓
 - Punteggio due assi + Totale + valori → Task 1-2. ✓
 - Derby ×1.5 → Task 2 (formula) + Task 4b (attivazione teamHave = follow-up; v1 disattivato). ⚠ Documentato come follow-up.
-- Stagioni mensili → Task 2 (`computeAxes` con `sinceMs`) + Task 5 (`monthStartMs`). ✓ (album seasonal via baseline snapshot: v1 usa completamento corrente per l'asse Collezionista sia all-time sia stagione — vedi nota sotto).
+- Stagioni mensili con RESET PIENO (opzione B) → Task 2 (`scoreCollezionistaSeasonal` su delta baseline) + Task 4 (`baselineHaveOf` da snapshot stats inizio mese) + Task 5 (`monthStartMs`/`monthStartIso`). ✓ Sia Collezionista sia Scambista resettano col mese.
 - Anti-grinding (partner distinti, no farming) → Task 2 (`distinctPartners`) + modello derivato. ✓
 - Classifiche Nazionale/Città/Squadra/Amici → Task 5 (`scopeMemberUids`). ✓
 - Freschezza "al secondo" scope locali → Task 5 (recompute live membri). ✓
@@ -1244,4 +1318,4 @@ git push
 - Privacy `isPublic` fuori classifiche pubbliche → Task 5 (query `isPublic==true`) + Task 6 (rules). ✓
 - Ricompense / Gruppi / storico vincitori → fuori v1. ✓
 
-**Nota stagionale album (semplificazione v1 dichiarata):** l'asse Collezionista in v1 è calcolato sul completamento **corrente** e coincide tra "stagione" e "all-time" (le figurine possedute sono cumulative). Il vero delta-mensile dell'asse Collezionista (via baseline `users/{uid}/stats` di inizio mese) è un **enhancement v1.1** insieme allo storico vincitori. Gli assi eventi (Scambista) sono già stagionali corretti. Questo va comunicato: in v1 la "stagione" resetta di fatto solo la componente Scambista; il reset pieno del Collezionista arriva con la baseline. Se il founder vuole il reset pieno subito, aggiungere un task che legge lo snapshot stats di inizio mese in `collectScoringInput` e passa `albums` come delta.
+**Reset stagionale (opzione B — scelta dal founder):** entrambi gli assi resettano col mese. Collezionista stagionale = delta dal baseline di inizio mese (`baselineHaveOf` legge lo snapshot `users/{uid}/stats` più vecchio del mese). **Limite noto:** se un utente non ha snapshot stats nel mese corrente (non ha aperto l'app / non ha aggiunto figurine dal 1°), il baseline è vuoto → il suo Collezionista stagionale parte dal completamento corrente (delta 0 finché non aggiunge). Accettabile: gli snapshot si creano automaticamente all'uso (`statsHistory.touchStatsSnapshot`). Lo **storico vincitori stagioni** resta v1.1.
