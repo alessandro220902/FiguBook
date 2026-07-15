@@ -119,7 +119,7 @@ Community acquisisce sub-tab a pill sotto l'header "Il mondo di FiguBook":
    - Asse: `Totale (default) · Collezionista · Scambista`.
 3. **Podio top-3** (1° al centro, 2°-3° ai lati) — riferimento visivo `leaderboard-podium` di Trophy.so, **riscritto** nel design system (avatar via `avatarId`, crest squadra, comune sotto il nome).
 4. **Lista rankings** sotto il podio (riferimento `leaderboard-rankings`): riga = rank, avatar, username, crest squadra, comune, valore. Riga del chiamante evidenziata. "Mostra altri" (paginazione, pattern esistente).
-5. **Stato stagione:** etichetta mese corrente + eventuale "Albo d'Oro" dei vincitori passati (v1: solo etichetta mese; storico vincitori può slittare a v1.1).
+5. **Stato stagione:** solo etichetta mese corrente in v1. **Storico vincitori delle stagioni → rimandato a v1.1** (deciso).
 6. **Empty/incompleto:** senza comune/squadra → banner "Completa il profilo" verso `/profilo` (pattern già presente in Community).
 
 I codici dei componenti Trophy.so **non sono copiabili** (paywall) → ricreati da riferimento visivo nel design system FiguBook.
@@ -142,5 +142,5 @@ I codici dei componenti Trophy.so **non sono copiabili** (paywall) → ricreati 
 ## Rimandato (post-v1)
 - **Ricompense**: avatar/immagini profilo sbloccabili per stagione (+ achievement-card/list di Trophy.so). Spec a sé.
 - **Gruppi**: sottosistema pesante, spec a sé.
-- **Storico vincitori** stagioni (se non entra in v1).
+- **Storico vincitori** stagioni → **v1.1** (deciso).
 - **Trigger on-event** per scalare la freschezza classifiche a molti utenti.
