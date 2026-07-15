@@ -20,6 +20,9 @@ import Album from '@/pages/Album'
 import AlbumList from '@/pages/AlbumList'
 import Scambi from '@/pages/Scambi'
 import Community from '@/pages/Community'
+import Amici from '@/pages/community/Amici'
+import Gruppi from '@/pages/community/Gruppi'
+import AlboDoro from '@/pages/community/AlboDoro'
 import Cerca from '@/pages/Cerca'
 import Notifiche from '@/pages/Notifiche'
 import Profilo from '@/pages/Profilo'
@@ -75,7 +78,11 @@ export default function App() {
         <Route path="/album" element={<AlbumList />} />
         <Route path="/album/:albumId" element={<Album />} />
         <Route path="/scambi" element={<Scambi />} />
-        <Route path="/community" element={<Community />} />
+        <Route path="/community" element={<Community />}>
+          <Route index element={<Amici />} />
+          <Route path="gruppi" element={<Gruppi />} />
+          <Route path="albo-doro" element={<AlboDoro />} />
+        </Route>
         <Route path="/cerca" element={<Cerca />} />
         <Route path="/notifiche" element={<Notifiche />} />
         <Route path="/profilo" element={<Profilo />} />
