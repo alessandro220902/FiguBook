@@ -1,5 +1,16 @@
 {
-  "indexes": [],
+  "indexes": [
+    { "collectionGroup": "scores", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isPublic", "order": "ASCENDING" }, { "fieldPath": "totale", "order": "DESCENDING" } ] },
+    { "collectionGroup": "scores", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isPublic", "order": "ASCENDING" }, { "fieldPath": "collezionista", "order": "DESCENDING" } ] },
+    { "collectionGroup": "scores", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isPublic", "order": "ASCENDING" }, { "fieldPath": "scambista", "order": "DESCENDING" } ] },
+    { "collectionGroup": "scores", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "citta", "order": "ASCENDING" }, { "fieldPath": "isPublic", "order": "ASCENDING" } ] },
+    { "collectionGroup": "scores", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "favTeam", "order": "ASCENDING" }, { "fieldPath": "isPublic", "order": "ASCENDING" } ] }
+  ],
   "fieldOverrides": [
     {
       "collectionGroup": "notifications",
